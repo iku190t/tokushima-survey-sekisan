@@ -8,7 +8,7 @@
 |---|---|---|---|---|
 | T-ENGINE | `node tests/test-engine.js` | 歩掛、精度、数量式、旅費、丸め、諸経費 | `engine.js`、マスター、計算UI変更時は必須 | 合格 |
 | T-RATES | `node tests/test-role-prices.js` | 令和4～8年度の公式技術者単価 | 単価プリセット、年度切替変更時は必須 | 合格 |
-| T-UI | `node tests/test-ui-static.js` | HTML要素の結線、数量制限、5帳票、A4印刷CSS、公開者・免責・応援・Analytics同意 | `index.html`、`app.js`、`analytics.js`、`styles.css`変更時は必須 | 合格 |
+| T-UI | `node tests/test-ui-static.js` | HTML要素の結線、数量制限、5帳票、A4印刷CSS、Ez積算制作署名・応援モーダル・免責・Analytics同意 | `index.html`、`app.js`、`analytics.js`、`styles.css`変更時は必須 | 合格 |
 
 ## 変更領域ごとの最低試験
 

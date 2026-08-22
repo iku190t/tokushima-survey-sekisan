@@ -10,8 +10,8 @@
 - 公開リポジトリ: `https://github.com/iku190t/tokushima-survey-sekisan`
 - GitHub Pages: `https://iku190t.github.io/tokushima-survey-sekisan/`
 - 初回の検証済みアプリコミット: `2fcd20415dc5a116e69d8a30311fd3ffcb724afb`
-- 公開者・免責・応援・Analytics追加とモバイル表示改善の検証済みアプリコミット: `d516af2c8ca72d6a9c4a7acd7afcc718c95a37c7`
-- 正常基準: `VERIFIED_BASELINES.md` の `B-2026-08-22-04`
+- 「Ez積算」制作表示・応援モーダルを含む検証済みアプリコミット: `01868130ed1a35ecc29b774082660456403377f5`
+- 正常基準: `VERIFIED_BASELINES.md` の `B-2026-08-22-05`
 
 ## 現在の構成
 
@@ -32,7 +32,7 @@
 - 代表歩掛、精度管理費、数量補正式、旅費、端数処理、諸経費の固定値試験が通る。
 - 令和4～8年度の技術者単価プリセット試験が通る。
 - 数量入力制限と5種類の帳票生成の静的結線試験が通る。
-- 制作者表示、OFUSE応援導線、参考試算の免責表示、同意式Google Analyticsの静的結線試験が通る。
+- 「Ez積算／制作：株式会社アイズ測量」表示、独立したOFUSE応援モーダル、参考試算の免責表示、同意式Google Analyticsの静的結線試験が通る。
 - 令和8年度率表108項目は、既存再監査記録上、コード単位の照合で108行一致・不一致0件。
 - 詳細な正常基準とファイルハッシュは `VERIFIED_BASELINES.md` に記録する。
 

@@ -171,3 +171,37 @@ OK: UI static wiring checks passed
 | `styles.css` | `C3AB22B6A8D4719313F0B5774AA63AE15159CA3C644D20A8DECC9301977868A0` |
 | `DISCLAIMER.md` | `3854105C044D266A3FB042A9918B4BCDD8E4A496EFEC75D3CC56528C512A6F7B` |
 | `tests/test-ui-static.js` | `8A543AE8612E175D9DBB0133D7D191D34CB2C22059B687A007A6D35AF2F18CEA` |
+
+## B-2026-08-22-05
+
+- 状態: **検証済み**
+- 検証日: 2026-08-22
+- コミット: `01868130ed1a35ecc29b774082660456403377f5`
+- ブランチ: `main`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: 参考画像のEz Viewer型表示に合わせ、「Ez積算／制作：株式会社アイズ測量」の署名と独立したOFUSE応援モーダルを追加した公開版。
+
+### 合格した自動試験
+
+```text
+OK: regulation audit checks passed (master mapping, precision, quantity formulas, travel, rounding, overhead)
+OK: MLIT official role price presets R4-R8
+OK: UI static wiring checks passed
+```
+
+### 公開HTTPS版の実ブラウザー確認
+
+- 制作署名を押すと「Ez積算」の応援モーダルが開く。
+- 無料公開の説明、OFUSEリンク、ログイン送信／ゲスト送信案内、閉じるボタンが表示される。
+- 応援モーダルから免責・プライバシーダイアログへ切り替えられる。
+- 幅390pxでモーダル幅341px、左右17px、内容の縦スクロールなしで表示できる。
+- OFUSEリンクの実送信は外部サービスへの送信となるため自動操作していない。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `C8C21DE49DE6AD538CA67485FC62A408CBF166AED617845F1C96E4E31C17E797` |
+| `app.js` | `FCB3AE66EE5242759FC64CB957D04379098184B920012AC234F4E27595613291` |
+| `styles.css` | `4BD3EC1291DCBAB1D148FC5B74A7A6AF90D82F29D0C7DD0E5F1537FADFF92024` |
+| `tests/test-ui-static.js` | `6970DEC4F85DB354FCC0416E7409A54AEF691E8EF355396192CE8789058403D0` |
