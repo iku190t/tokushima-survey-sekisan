@@ -7,7 +7,7 @@
   <meta name="description" content="発注機関と年度を分離し、国土交通省の公開基準参照版と検証済み都道府県マスターを根拠表示付きで計算する測量積算ソフト">
   <meta name="author" content="株式会社アイズ測量">
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="styles.css?v=20260822-6">
+  <link rel="stylesheet" href="styles.css?v=20260822-7">
 </head>
 <body>
   <header class="app-header">
@@ -322,53 +322,27 @@
   </main>
 
   <footer class="site-footer no-print">
-    <button id="publisherSupportButton" class="publisher-signature" type="button" aria-label="制作会社と応援のご案内を開く">
+    <button id="publisherInfoButton" class="publisher-signature" type="button" aria-label="Ez積算の制作・応援・免責情報を開く">
       <span class="publisher-product">Ez積算</span>
-      <span class="publisher-maker">制作：株式会社アイズ測量</span>
     </button>
-    <div class="footer-links">
-      <a href="https://ez-survey.sakura.ne.jp/" target="_blank" rel="noopener noreferrer">公式サイト</a>
-      <button id="footerSupportButton" class="footer-button support-link" type="button">応援のご案内</button>
-      <button id="footerAboutToolButton" class="footer-button" type="button">免責・プライバシー</button>
-    </div>
   </footer>
-
-  <dialog id="supportDialog" class="support-dialog" aria-labelledby="supportDialogTitle">
-    <div class="support-dialog-inner">
-      <header class="support-brand">
-        <h2 id="supportDialogTitle">Ez積算</h2>
-        <p>制作：株式会社アイズ測量</p>
-      </header>
-      <div class="support-rule"></div>
-      <section class="support-copy">
-        <h3>応援のご案内</h3>
-        <p>このアプリは無料で公開しています。</p>
-        <p>役に立ったら、OFUSEで応援していただけるとうれしいです。</p>
-        <p>いただいた応援は、改善や機能追加の励みになります。</p>
-      </section>
-      <a class="ofuse-primary" href="https://ofuse.me/f475dafe/letter" target="_blank" rel="noopener noreferrer">OFUSEで応援する</a>
-      <div class="ofuse-choice" aria-label="OFUSEでの送信方法">
-        <span>ログインして送信</span>
-        <strong>ゲストとして送信</strong>
-      </div>
-      <p class="guest-guide"><span aria-hidden="true">↗</span> アカウントがない場合は、OFUSE画面の「ゲストとして送信」を選べます。</p>
-      <div class="support-dialog-actions">
-        <button id="supportAboutToolButton" class="support-legal-button" type="button">免責・プライバシー</button>
-        <button id="closeSupportDialogButton" class="support-close-button" type="button">閉じる</button>
-      </div>
-    </div>
-  </dialog>
 
   <dialog id="aboutToolDialog" class="about-dialog" aria-labelledby="aboutToolTitle">
     <div class="dialog-heading">
-      <div><p class="section-kicker">ABOUT THIS TOOL</p><h2 id="aboutToolTitle">このツールについて</h2></div>
+      <div><p class="section-kicker">ABOUT EZ SEKISAN</p><h2 id="aboutToolTitle">Ez積算について</h2></div>
       <button id="closeAboutToolButton" class="dialog-close" type="button" aria-label="閉じる">×</button>
     </div>
     <div class="dialog-body">
       <section>
-        <h3>制作・応援</h3>
+        <h3>制作</h3>
         <p><strong>株式会社アイズ測量</strong>が「Ez積算」として制作しています。</p>
-        <div class="dialog-actions"><a class="button" href="https://ez-survey.sakura.ne.jp/" target="_blank" rel="noopener noreferrer">公式サイト</a><a class="button primary" href="https://ofuse.me/f475dafe/letter" target="_blank" rel="noopener noreferrer">OFUSEで応援する</a></div>
+        <div class="dialog-actions"><a class="button" href="https://ez-survey.sakura.ne.jp/" target="_blank" rel="noopener noreferrer">株式会社アイズ測量 公式サイト</a></div>
+      </section>
+      <section>
+        <h3>応援のご案内</h3>
+        <p>このアプリは無料で公開しています。役に立った場合は、OFUSEから応援していただけます。</p>
+        <div class="dialog-actions"><a class="button primary" href="https://ofuse.me/f475dafe/letter" target="_blank" rel="noopener noreferrer">OFUSEで応援する</a></div>
+        <p class="dialog-hint">OFUSEの画面では、アカウントがなくても「ゲストとして送信」を選べます。</p>
       </section>
       <section>
         <h3>利用条件・免責事項</h3>
@@ -377,10 +351,8 @@
         <p>株式会社アイズ測量および制作者は、法令上認められる範囲で、本ツールの利用または利用不能により生じた損害について責任を負いません。ただし、故意または重大な過失による場合その他法令上責任を免れることができない場合は、この限りではありません。</p>
       </section>
       <section>
-        <h3>アクセス解析と入力データ</h3>
-        <p>公開サイトでは、利用状況の把握と改善のため、同意した場合に限りGoogle Analyticsを使用します。GoogleへCookie、利用者数、セッション、概略地域、ブラウザー・端末情報などが送信される場合があります。</p>
-        <p>業務名、発注者・メモ、宛名、会社情報、数量、単価、金額、保存JSONなどの積算入力値をGoogle Analyticsへ送信する独自イベントは実装していません。入力データは通常、使用中のブラウザー内に保存されます。</p>
-        <p><a href="https://support.google.com/analytics/answer/11593727?hl=ja" target="_blank" rel="noopener noreferrer">Google Analyticsのデータ収集について</a></p>
+        <h3>プライバシー・アクセス解析</h3>
+        <p>Google Analyticsは許可した場合だけ使用します。積算入力データは送信しません。</p>
         <button id="analyticsSettingsButton" class="button" type="button">アクセス解析の設定を変更</button>
       </section>
       <p class="legal-note">この表示は一般的な利用条件の明示であり、個別案件についての法的助言ではありません。</p>
@@ -388,7 +360,7 @@
   </dialog>
 
   <aside id="analyticsConsent" class="analytics-consent no-print" aria-label="アクセス解析の確認" hidden>
-    <div><strong>アクセス解析について</strong><p>サイト改善のためGoogle Analyticsを使用してよいですか。積算の入力内容は解析イベントとして送信しません。</p><button id="analyticsDetailsButton" class="text-button" type="button">詳しく見る</button></div>
+    <div><strong>アクセス解析</strong><p>Google Analyticsを許可しますか。積算入力データは送信しません。</p><button id="analyticsDetailsButton" class="text-button" type="button">設定について</button></div>
     <div class="consent-actions"><button id="analyticsDeclineButton" class="button" type="button">許可しない</button><button id="analyticsAcceptButton" class="button primary" type="button">許可する</button></div>
   </aside>
 
@@ -398,9 +370,11 @@
 
   <script src="data/prefectures.js?v=20260822-2"></script>
   <script src="data/master-r8.js?v=20260822-2"></script>
+  <script src="data/national-standard-masters.js?v=20260822-1"></script>
+  <script src="data/verified-masters.js?v=20260822-1"></script>
   <script src="data/official-role-prices.js?v=20260822-1"></script>
   <script src="engine.js?v=20260822-1"></script>
-  <script src="app.js?v=20260822-5"></script>
+  <script src="app.js?v=20260822-6"></script>
   <script src="analytics.js?v=20260822-1"></script>
 </body>
 </html>

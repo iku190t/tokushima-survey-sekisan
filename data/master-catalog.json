@@ -16,6 +16,51 @@
         "令和8年度 設計業務等標準積算基準書（参考資料）第1編・第2編",
         "令和8年度 設計業務委託等技術者単価（令和8年3月適用）"
       ]
+    },
+    {
+      "id": "r6-hiroshima-2024",
+      "version": "2024.20240801.1",
+      "jurisdictionCode": "34",
+      "jurisdictionName": "広島県",
+      "fiscalYear": 2024,
+      "verificationStatus": "verified",
+      "path": "data/master-hiroshima-r6.json",
+      "sha256": "18181ad84364ab7e97c9edfa505069c04a628fabdec3e8eb7146083a725f958f",
+      "sources": [
+        "令和6年度 広島県 土木設計業務等標準積算基準書",
+        "令和6年度 広島県 土木設計業務等標準積算基準書＜参考資料＞",
+        "令和6年度 設計業務委託等技術者単価"
+      ]
+    },
+    {
+      "id": "r7-hiroshima-2025",
+      "version": "2025.20250801.1",
+      "jurisdictionCode": "34",
+      "jurisdictionName": "広島県",
+      "fiscalYear": 2025,
+      "verificationStatus": "verified",
+      "path": "data/master-hiroshima-r7.json",
+      "sha256": "4ab5e2646c7a7a597b66f487405fdbe9b72ce09cdffb359de441e69517889e6e",
+      "sources": [
+        "令和7年度 広島県 土木設計業務等標準積算基準書",
+        "令和7年度 広島県 土木設計業務等標準積算基準書＜参考資料＞",
+        "令和7年度 設計業務委託等技術者単価"
+      ]
+    },
+    {
+      "id": "r8-hiroshima-2026",
+      "version": "2026.20260801.1",
+      "jurisdictionCode": "34",
+      "jurisdictionName": "広島県",
+      "fiscalYear": 2026,
+      "verificationStatus": "verified",
+      "path": "data/master-hiroshima-r8.json",
+      "sha256": "0992ef182b0e93cc7d0d8c771617459e1761c15eae60a1e398756d43474b2e5a",
+      "sources": [
+        "令和8年度 広島県 土木設計業務等標準積算基準書",
+        "令和8年度 広島県 土木設計業務等標準積算基準書＜参考資料＞",
+        "令和8年度 設計業務委託等技術者単価"
+      ]
     }
   ]
 }

@@ -1,0 +1,1632 @@
+{
+  "schemaVersion": 1,
+  "generatedFrom": "広島県公式PDFの pdftotext -layout 抽出",
+  "years": {
+    "2024": {
+      "2-1-1": {
+        "machineRate": 0.115,
+        "communicationRate": 0.015,
+        "materialRate": 0.025
+      },
+      "2-2-1-1": {
+        "machineRate": 0.09,
+        "communicationRate": 0.065,
+        "materialRate": 0.02
+      },
+      "2-2-1-2": {
+        "machineRate": 0.095,
+        "communicationRate": 0.015,
+        "materialRate": 0.025
+      },
+      "2-3-1-1": {
+        "machineRate": 0.025,
+        "communicationRate": 0.04,
+        "materialRate": 0.01
+      },
+      "2-3-1-2": {
+        "machineRate": 0.025,
+        "communicationRate": 0.04,
+        "materialRate": 0.01
+      },
+      "2-3-1-3": {
+        "machineRate": 0.025,
+        "communicationRate": 0.015,
+        "materialRate": 0.01
+      },
+      "2-3-1-4": {
+        "machineRate": 0.025,
+        "communicationRate": 0.015,
+        "materialRate": 0.01
+      },
+      "2-4-1-1": {
+        "machineRate": 0.025,
+        "communicationRate": 0.07,
+        "materialRate": 0.02
+      },
+      "2-4-1-2": {
+        "machineRate": 0.025,
+        "communicationRate": 0.025,
+        "materialRate": 0.025
+      },
+      "2-5-1": {
+        "machineRate": 0.015,
+        "communicationRate": 0.03,
+        "materialRate": 0.155
+      },
+      "2-5-2": {
+        "machineRate": 0.015,
+        "communicationRate": 0.03,
+        "materialRate": 0.16
+      },
+      "2-5-3": {
+        "machineRate": 0.015,
+        "communicationRate": 0.03,
+        "materialRate": 0.12
+      },
+      "2-5-4": {
+        "machineRate": 0.02,
+        "communicationRate": 0.02,
+        "materialRate": 0.1
+      },
+      "2-5-5": {
+        "machineRate": 0.02,
+        "communicationRate": 0.02,
+        "materialRate": 0.05
+      },
+      "3-1-1": {
+        "machineRate": 0.095,
+        "communicationRate": 0.005,
+        "materialRate": 0.01
+      },
+      "3-1-2": {
+        "machineRate": 0.06,
+        "communicationRate": 0.01,
+        "materialRate": 0.01
+      },
+      "3-1-3": {
+        "machineRate": 0.035,
+        "communicationRate": 0.005,
+        "materialRate": 0.015
+      },
+      "3-1-4": {
+        "machineRate": 0.025,
+        "communicationRate": 0.01,
+        "materialRate": 0.035
+      },
+      "3-2-1": {
+        "machineRate": 0.02,
+        "communicationRate": 0.015,
+        "materialRate": 0.19
+      },
+      "3-2-2": {
+        "machineRate": 0.015,
+        "communicationRate": 0.045,
+        "materialRate": 0.03
+      },
+      "4-1-1": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "4-1-2": {
+        "machineRate": 0.02,
+        "communicationRate": 0,
+        "materialRate": 0.07
+      },
+      "4-1-3": {
+        "machineRate": 0.01,
+        "communicationRate": 0,
+        "materialRate": 0.02
+      },
+      "4-1-4": {
+        "machineRate": 0.04,
+        "communicationRate": 0,
+        "materialRate": 0.05
+      },
+      "4-1-5": {
+        "machineRate": 0.01,
+        "communicationRate": 0,
+        "materialRate": 0.025
+      },
+      "4-1-6": {
+        "machineRate": 0.035,
+        "communicationRate": 0,
+        "materialRate": 0.03
+      },
+      "4-1-7": {
+        "machineRate": 0.04,
+        "communicationRate": 0,
+        "materialRate": 0.06
+      },
+      "4-1-8": {
+        "machineRate": 0.025,
+        "communicationRate": 0,
+        "materialRate": 0.02
+      },
+      "4-1-9": {
+        "machineRate": 0.025,
+        "communicationRate": 0,
+        "materialRate": 0.03
+      },
+      "4-1-10": {
+        "machineRate": 0.025,
+        "communicationRate": 0,
+        "materialRate": 0.03
+      },
+      "4-1-11": {
+        "machineRate": 0.03,
+        "communicationRate": 0,
+        "materialRate": 0.09
+      },
+      "4-1-12": {
+        "machineRate": 0.03,
+        "communicationRate": 0,
+        "materialRate": 0.055
+      },
+      "4-1-13": {
+        "machineRate": 0.04,
+        "communicationRate": 0,
+        "materialRate": 0.065
+      },
+      "5-1-1": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "5-1-2": {
+        "machineRate": 0.01,
+        "communicationRate": 0,
+        "materialRate": 0.065
+      },
+      "5-1-3": {
+        "machineRate": 0.045,
+        "communicationRate": 0,
+        "materialRate": 0.19
+      },
+      "5-1-4": {
+        "machineRate": 0.06,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "5-1-5": {
+        "machineRate": 0.03,
+        "communicationRate": 0,
+        "materialRate": 0.055
+      },
+      "5-1-6": {
+        "machineRate": 0.025,
+        "communicationRate": 0,
+        "materialRate": 0.01
+      },
+      "5-1-7": {
+        "machineRate": 0.09,
+        "communicationRate": 0,
+        "materialRate": 0.12
+      },
+      "5-1-8": {
+        "machineRate": 0.035,
+        "communicationRate": 0,
+        "materialRate": 0.015
+      },
+      "5-1-9": {
+        "machineRate": 0.03,
+        "communicationRate": 0,
+        "materialRate": 0.02
+      },
+      "5-1-10": {
+        "machineRate": 0.04,
+        "communicationRate": 0,
+        "materialRate": 0.04
+      },
+      "6-1-1": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "6-2-1-1": {
+        "machineRate": 0.015,
+        "communicationRate": 0,
+        "materialRate": 0.025
+      },
+      "6-2-1-2": {
+        "machineRate": 0.025,
+        "communicationRate": 0,
+        "materialRate": 0.025
+      },
+      "6-3-1-1": {
+        "machineRate": 0.02,
+        "communicationRate": 0,
+        "materialRate": 0.025
+      },
+      "6-3-1-2": {
+        "machineRate": 0.035,
+        "communicationRate": 0,
+        "materialRate": 0.025
+      },
+      "6-4-1-1": {
+        "machineRate": 0.025,
+        "communicationRate": 0,
+        "materialRate": 0.03
+      },
+      "6-4-1-2": {
+        "machineRate": 0.04,
+        "communicationRate": 0,
+        "materialRate": 0.03
+      },
+      "7-1-1-1": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "7-1-1-2": {
+        "machineRate": 0.01,
+        "communicationRate": 0,
+        "materialRate": 0.035
+      },
+      "7-1-2-1": {
+        "machineRate": 0.01,
+        "communicationRate": 0,
+        "materialRate": 0.02
+      },
+      "7-1-2-2": {
+        "machineRate": 0.01,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "7-1-2-3": {
+        "machineRate": 0.005,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "7-1-2-4": {
+        "machineRate": 0.01,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "7-1-2-5": {
+        "machineRate": 0.005,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "7-1-2-6": {
+        "machineRate": 0.005,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "7-1-2-7": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0.01
+      },
+      "7-1-3-1": {
+        "machineRate": 0.035,
+        "communicationRate": 0,
+        "materialRate": 0.03
+      },
+      "7-1-3-2": {
+        "machineRate": 0.005,
+        "communicationRate": 0,
+        "materialRate": 0.04
+      },
+      "7-1-3-3": {
+        "machineRate": 0.015,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "7-1-4-1": {
+        "machineRate": 0.03,
+        "communicationRate": 0,
+        "materialRate": 0.03
+      },
+      "7-1-4-2": {
+        "machineRate": 0.03,
+        "communicationRate": 0,
+        "materialRate": 0.02
+      },
+      "7-1-4-3": {
+        "machineRate": 0.035,
+        "communicationRate": 0,
+        "materialRate": 0.05
+      },
+      "7-1-4-4": {
+        "machineRate": 0.05,
+        "communicationRate": 0,
+        "materialRate": 0.21
+      },
+      "7-1-5": {
+        "machineRate": 0.04,
+        "communicationRate": 0,
+        "materialRate": 0.03
+      },
+      "7-1-6": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "7-1-7-1": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "7-1-7-2": {
+        "machineRate": 0.03,
+        "communicationRate": 0,
+        "materialRate": 0.025
+      },
+      "7-1-7-3": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "7-1-7-4": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "7-3-1": {
+        "machineRate": 0.005,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "7-3-2": {
+        "machineRate": 0.035,
+        "communicationRate": 0,
+        "materialRate": 0.025
+      },
+      "7-3-3": {
+        "machineRate": 0.025,
+        "communicationRate": 0,
+        "materialRate": 0.015
+      },
+      "7-3-4": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "7-3-5": {
+        "machineRate": 0.005,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "8-2-1-1": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "8-2-1-4": {
+        "machineRate": 0,
+        "communicationRate": 0.015,
+        "materialRate": 0
+      },
+      "8-2-1-5": {
+        "machineRate": 0.005,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "8-2-1-6": {
+        "machineRate": 0.605,
+        "communicationRate": 0,
+        "materialRate": 0.135
+      },
+      "8-3-1": {
+        "machineRate": 0.01,
+        "communicationRate": 0.005,
+        "materialRate": 0.02
+      },
+      "8-3-2": {
+        "machineRate": 0.08,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "8-3-3": {
+        "machineRate": 0.06,
+        "communicationRate": 0.005,
+        "materialRate": 0.005
+      },
+      "8-3-5": {
+        "machineRate": 0.31,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "8-4-1-1": {
+        "machineRate": 0.005,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "8-4-1-2": {
+        "machineRate": 0.03,
+        "communicationRate": 0.005,
+        "materialRate": 0.02
+      },
+      "8-4-1-3": {
+        "machineRate": 0.35,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "8-4-1-4": {
+        "machineRate": 0.125,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "8-4-1-5": {
+        "machineRate": 0.075,
+        "communicationRate": 0.005,
+        "materialRate": 0.03
+      },
+      "8-4-1-6": {
+        "machineRate": 0.16,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "8-4-2-1": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "8-4-2-2": {
+        "machineRate": 0.02,
+        "communicationRate": 0.005,
+        "materialRate": 0.02
+      },
+      "8-4-2-3": {
+        "machineRate": 0.49,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "8-4-2-4": {
+        "machineRate": 0.14,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "8-4-2-5": {
+        "machineRate": 0.08,
+        "communicationRate": 0.005,
+        "materialRate": 0.015
+      },
+      "8-4-2-6": {
+        "machineRate": 0.235,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "9-1-1": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "9-1-2": {
+        "machineRate": 0.06,
+        "communicationRate": 0.005,
+        "materialRate": 0.02
+      },
+      "10-2-1-1": {
+        "machineRate": 0.01,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "10-2-1-2": {
+        "machineRate": 0.095,
+        "communicationRate": 0,
+        "materialRate": 0.05
+      },
+      "10-2-1-5": {
+        "machineRate": 0,
+        "communicationRate": 0.015,
+        "materialRate": 0
+      },
+      "10-2-1-6": {
+        "machineRate": 0.295,
+        "communicationRate": 0,
+        "materialRate": 0.01
+      },
+      "10-2-1-7": {
+        "machineRate": 0.11,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "10-2-1-8": {
+        "machineRate": 0.115,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "10-2-1-9": {
+        "machineRate": 0.115,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "10-2-1-10": {
+        "machineRate": 0.11,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "10-2-1-11": {
+        "machineRate": 0.105,
+        "communicationRate": 0,
+        "materialRate": 0.02
+      }
+    },
+    "2025": {
+      "2-1-1": {
+        "machineRate": 0.12,
+        "communicationRate": 0.015,
+        "materialRate": 0.025
+      },
+      "2-2-1-1": {
+        "machineRate": 0.09,
+        "communicationRate": 0.055,
+        "materialRate": 0.02
+      },
+      "2-2-1-2": {
+        "machineRate": 0.095,
+        "communicationRate": 0.015,
+        "materialRate": 0.02
+      },
+      "2-3-1-1": {
+        "machineRate": 0.025,
+        "communicationRate": 0.035,
+        "materialRate": 0.01
+      },
+      "2-3-1-2": {
+        "machineRate": 0.025,
+        "communicationRate": 0.035,
+        "materialRate": 0.01
+      },
+      "2-3-1-3": {
+        "machineRate": 0.025,
+        "communicationRate": 0.015,
+        "materialRate": 0.01
+      },
+      "2-3-1-4": {
+        "machineRate": 0.025,
+        "communicationRate": 0.015,
+        "materialRate": 0.01
+      },
+      "2-4-1-1": {
+        "machineRate": 0.025,
+        "communicationRate": 0.065,
+        "materialRate": 0.02
+      },
+      "2-4-1-2": {
+        "machineRate": 0.025,
+        "communicationRate": 0.025,
+        "materialRate": 0.02
+      },
+      "2-5-1": {
+        "machineRate": 0.015,
+        "communicationRate": 0.025,
+        "materialRate": 0.14
+      },
+      "2-5-2": {
+        "machineRate": 0.015,
+        "communicationRate": 0.025,
+        "materialRate": 0.145
+      },
+      "2-5-3": {
+        "machineRate": 0.015,
+        "communicationRate": 0.025,
+        "materialRate": 0.11
+      },
+      "2-5-4": {
+        "machineRate": 0.02,
+        "communicationRate": 0.015,
+        "materialRate": 0.09
+      },
+      "2-5-5": {
+        "machineRate": 0.02,
+        "communicationRate": 0.02,
+        "materialRate": 0.05
+      },
+      "3-1-1": {
+        "machineRate": 0.09,
+        "communicationRate": 0.005,
+        "materialRate": 0.01
+      },
+      "3-1-2": {
+        "machineRate": 0.055,
+        "communicationRate": 0.01,
+        "materialRate": 0.01
+      },
+      "3-1-3": {
+        "machineRate": 0.03,
+        "communicationRate": 0.005,
+        "materialRate": 0.015
+      },
+      "3-1-4": {
+        "machineRate": 0.025,
+        "communicationRate": 0.01,
+        "materialRate": 0.035
+      },
+      "3-2-1": {
+        "machineRate": 0.02,
+        "communicationRate": 0.015,
+        "materialRate": 0.18
+      },
+      "3-2-2": {
+        "machineRate": 0.015,
+        "communicationRate": 0.045,
+        "materialRate": 0.025
+      },
+      "4-1-1": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "4-1-2": {
+        "machineRate": 0.015,
+        "communicationRate": 0,
+        "materialRate": 0.065
+      },
+      "4-1-3": {
+        "machineRate": 0.01,
+        "communicationRate": 0,
+        "materialRate": 0.015
+      },
+      "4-1-4": {
+        "machineRate": 0.04,
+        "communicationRate": 0,
+        "materialRate": 0.045
+      },
+      "4-1-5": {
+        "machineRate": 0.005,
+        "communicationRate": 0,
+        "materialRate": 0.025
+      },
+      "4-1-6": {
+        "machineRate": 0.04,
+        "communicationRate": 0,
+        "materialRate": 0.03
+      },
+      "4-1-7": {
+        "machineRate": 0.04,
+        "communicationRate": 0,
+        "materialRate": 0.055
+      },
+      "4-1-8": {
+        "machineRate": 0.025,
+        "communicationRate": 0,
+        "materialRate": 0.02
+      },
+      "4-1-9": {
+        "machineRate": 0.025,
+        "communicationRate": 0,
+        "materialRate": 0.03
+      },
+      "4-1-10": {
+        "machineRate": 0.025,
+        "communicationRate": 0,
+        "materialRate": 0.025
+      },
+      "4-1-11": {
+        "machineRate": 0.03,
+        "communicationRate": 0,
+        "materialRate": 0.085
+      },
+      "4-1-12": {
+        "machineRate": 0.025,
+        "communicationRate": 0,
+        "materialRate": 0.055
+      },
+      "4-1-13": {
+        "machineRate": 0.04,
+        "communicationRate": 0,
+        "materialRate": 0.06
+      },
+      "5-1-1": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "5-1-2": {
+        "machineRate": 0.01,
+        "communicationRate": 0,
+        "materialRate": 0.06
+      },
+      "5-1-3": {
+        "machineRate": 0.05,
+        "communicationRate": 0,
+        "materialRate": 0.2
+      },
+      "5-1-4": {
+        "machineRate": 0.055,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "5-1-5": {
+        "machineRate": 0.03,
+        "communicationRate": 0,
+        "materialRate": 0.055
+      },
+      "5-1-6": {
+        "machineRate": 0.025,
+        "communicationRate": 0,
+        "materialRate": 0.01
+      },
+      "5-1-7": {
+        "machineRate": 0.09,
+        "communicationRate": 0,
+        "materialRate": 0.12
+      },
+      "5-1-8": {
+        "machineRate": 0.035,
+        "communicationRate": 0,
+        "materialRate": 0.015
+      },
+      "5-1-9": {
+        "machineRate": 0.03,
+        "communicationRate": 0,
+        "materialRate": 0.02
+      },
+      "5-1-10": {
+        "machineRate": 0.045,
+        "communicationRate": 0,
+        "materialRate": 0.035
+      },
+      "6-1-1": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "6-2-1-1": {
+        "machineRate": 0.015,
+        "communicationRate": 0,
+        "materialRate": 0.025
+      },
+      "6-2-1-2": {
+        "machineRate": 0.025,
+        "communicationRate": 0,
+        "materialRate": 0.025
+      },
+      "6-3-1-1": {
+        "machineRate": 0.02,
+        "communicationRate": 0,
+        "materialRate": 0.025
+      },
+      "6-3-1-2": {
+        "machineRate": 0.035,
+        "communicationRate": 0,
+        "materialRate": 0.025
+      },
+      "6-4-1-1": {
+        "machineRate": 0.025,
+        "communicationRate": 0,
+        "materialRate": 0.025
+      },
+      "6-4-1-2": {
+        "machineRate": 0.045,
+        "communicationRate": 0,
+        "materialRate": 0.025
+      },
+      "7-1-1-1": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "7-1-1-2": {
+        "machineRate": 0.01,
+        "communicationRate": 0,
+        "materialRate": 0.035
+      },
+      "7-1-2-1": {
+        "machineRate": 0.01,
+        "communicationRate": 0,
+        "materialRate": 0.02
+      },
+      "7-1-2-2": {
+        "machineRate": 0.01,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "7-1-2-3": {
+        "machineRate": 0.005,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "7-1-2-4": {
+        "machineRate": 0.01,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "7-1-2-5": {
+        "machineRate": 0.005,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "7-1-2-6": {
+        "machineRate": 0.005,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "7-1-2-7": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0.01
+      },
+      "7-1-3-1": {
+        "machineRate": 0.04,
+        "communicationRate": 0,
+        "materialRate": 0.03
+      },
+      "7-1-3-2": {
+        "machineRate": 0.005,
+        "communicationRate": 0,
+        "materialRate": 0.04
+      },
+      "7-1-3-3": {
+        "machineRate": 0.01,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "7-1-4-1": {
+        "machineRate": 0.035,
+        "communicationRate": 0,
+        "materialRate": 0.03
+      },
+      "7-1-4-2": {
+        "machineRate": 0.035,
+        "communicationRate": 0,
+        "materialRate": 0.02
+      },
+      "7-1-4-3": {
+        "machineRate": 0.035,
+        "communicationRate": 0,
+        "materialRate": 0.045
+      },
+      "7-1-4-4": {
+        "machineRate": 0.055,
+        "communicationRate": 0,
+        "materialRate": 0.23
+      },
+      "7-1-5": {
+        "machineRate": 0.045,
+        "communicationRate": 0,
+        "materialRate": 0.025
+      },
+      "7-1-6": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "7-1-7-1": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "7-1-7-2": {
+        "machineRate": 0.035,
+        "communicationRate": 0,
+        "materialRate": 0.02
+      },
+      "7-1-7-3": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "7-1-7-4": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "7-3-1": {
+        "machineRate": 0.005,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "7-3-2": {
+        "machineRate": 0.04,
+        "communicationRate": 0,
+        "materialRate": 0.025
+      },
+      "7-3-3": {
+        "machineRate": 0.03,
+        "communicationRate": 0,
+        "materialRate": 0.015
+      },
+      "7-3-4": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "7-3-5": {
+        "machineRate": 0.005,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "8-2-1-1": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "8-2-1-4": {
+        "machineRate": 0,
+        "communicationRate": 0.015,
+        "materialRate": 0
+      },
+      "8-2-1-5": {
+        "machineRate": 0.005,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "8-2-1-6": {
+        "machineRate": 0.535,
+        "communicationRate": 0,
+        "materialRate": 0.16
+      },
+      "8-3-1": {
+        "machineRate": 0.01,
+        "communicationRate": 0.005,
+        "materialRate": 0.02
+      },
+      "8-3-2": {
+        "machineRate": 0.085,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "8-3-3": {
+        "machineRate": 0.055,
+        "communicationRate": 0.005,
+        "materialRate": 0.005
+      },
+      "8-3-5": {
+        "machineRate": 0.315,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "8-4-1-1": {
+        "machineRate": 0.005,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "8-4-1-2": {
+        "machineRate": 0.025,
+        "communicationRate": 0.005,
+        "materialRate": 0.02
+      },
+      "8-4-1-3": {
+        "machineRate": 0.355,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "8-4-1-4": {
+        "machineRate": 0.125,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "8-4-1-5": {
+        "machineRate": 0.075,
+        "communicationRate": 0.005,
+        "materialRate": 0.03
+      },
+      "8-4-1-6": {
+        "machineRate": 0.16,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "8-4-2-1": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "8-4-2-2": {
+        "machineRate": 0.02,
+        "communicationRate": 0.005,
+        "materialRate": 0.02
+      },
+      "8-4-2-3": {
+        "machineRate": 0.49,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "8-4-2-4": {
+        "machineRate": 0.14,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "8-4-2-5": {
+        "machineRate": 0.075,
+        "communicationRate": 0.005,
+        "materialRate": 0.015
+      },
+      "8-4-2-6": {
+        "machineRate": 0.24,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "9-1-1": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "9-1-2": {
+        "machineRate": 0.05,
+        "communicationRate": 0.005,
+        "materialRate": 0.02
+      },
+      "10-2-1-1": {
+        "machineRate": 0.01,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "10-2-1-2": {
+        "machineRate": 0.1,
+        "communicationRate": 0,
+        "materialRate": 0.05
+      },
+      "10-2-1-5": {
+        "machineRate": 0,
+        "communicationRate": 0.015,
+        "materialRate": 0
+      },
+      "10-2-1-6": {
+        "machineRate": 0.325,
+        "communicationRate": 0,
+        "materialRate": 0.01
+      },
+      "10-2-1-7": {
+        "machineRate": 0.11,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "10-2-1-8": {
+        "machineRate": 0.12,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "10-2-1-9": {
+        "machineRate": 0.115,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "10-2-1-10": {
+        "machineRate": 0.11,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "10-2-1-11": {
+        "machineRate": 0.105,
+        "communicationRate": 0,
+        "materialRate": 0.02
+      }
+    },
+    "2026": {
+      "2-1-1": {
+        "machineRate": 0.14,
+        "communicationRate": 0.01,
+        "materialRate": 0.025
+      },
+      "2-2-1-1": {
+        "machineRate": 0.1,
+        "communicationRate": 0.055,
+        "materialRate": 0.02
+      },
+      "2-2-1-2": {
+        "machineRate": 0.11,
+        "communicationRate": 0.015,
+        "materialRate": 0.02
+      },
+      "2-3-1-1": {
+        "machineRate": 0.025,
+        "communicationRate": 0.035,
+        "materialRate": 0.01
+      },
+      "2-3-1-2": {
+        "machineRate": 0.025,
+        "communicationRate": 0.035,
+        "materialRate": 0.01
+      },
+      "2-3-1-3": {
+        "machineRate": 0.025,
+        "communicationRate": 0.015,
+        "materialRate": 0.01
+      },
+      "2-3-1-4": {
+        "machineRate": 0.025,
+        "communicationRate": 0.015,
+        "materialRate": 0.01
+      },
+      "2-4-1-1": {
+        "machineRate": 0.025,
+        "communicationRate": 0.065,
+        "materialRate": 0.02
+      },
+      "2-4-1-2": {
+        "machineRate": 0.03,
+        "communicationRate": 0.025,
+        "materialRate": 0.02
+      },
+      "2-5-1": {
+        "machineRate": 0.015,
+        "communicationRate": 0.025,
+        "materialRate": 0.14
+      },
+      "2-5-2": {
+        "machineRate": 0.015,
+        "communicationRate": 0.025,
+        "materialRate": 0.15
+      },
+      "2-5-3": {
+        "machineRate": 0.015,
+        "communicationRate": 0.025,
+        "materialRate": 0.11
+      },
+      "2-5-4": {
+        "machineRate": 0.02,
+        "communicationRate": 0.015,
+        "materialRate": 0.09
+      },
+      "2-5-5": {
+        "machineRate": 0.02,
+        "communicationRate": 0.02,
+        "materialRate": 0.055
+      },
+      "3-1-1": {
+        "machineRate": 0.085,
+        "communicationRate": 0.005,
+        "materialRate": 0.005
+      },
+      "3-1-2": {
+        "machineRate": 0.055,
+        "communicationRate": 0.01,
+        "materialRate": 0.01
+      },
+      "3-1-3": {
+        "machineRate": 0.03,
+        "communicationRate": 0.005,
+        "materialRate": 0.015
+      },
+      "3-1-4": {
+        "machineRate": 0.025,
+        "communicationRate": 0.01,
+        "materialRate": 0.03
+      },
+      "3-2-1": {
+        "machineRate": 0.02,
+        "communicationRate": 0.015,
+        "materialRate": 0.18
+      },
+      "3-2-2": {
+        "machineRate": 0.015,
+        "communicationRate": 0.04,
+        "materialRate": 0.025
+      },
+      "4-1-1": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "4-1-2": {
+        "machineRate": 0.015,
+        "communicationRate": 0,
+        "materialRate": 0.065
+      },
+      "4-1-3": {
+        "machineRate": 0.01,
+        "communicationRate": 0,
+        "materialRate": 0.015
+      },
+      "4-1-4": {
+        "machineRate": 0.055,
+        "communicationRate": 0,
+        "materialRate": 0.05
+      },
+      "4-1-5": {
+        "machineRate": 0.01,
+        "communicationRate": 0,
+        "materialRate": 0.02
+      },
+      "4-1-6": {
+        "machineRate": 0.05,
+        "communicationRate": 0,
+        "materialRate": 0.035
+      },
+      "4-1-7": {
+        "machineRate": 0.015,
+        "communicationRate": 0,
+        "materialRate": 0.06
+      },
+      "4-1-8": {
+        "machineRate": 0.02,
+        "communicationRate": 0,
+        "materialRate": 0.02
+      },
+      "4-1-9": {
+        "machineRate": 0.02,
+        "communicationRate": 0,
+        "materialRate": 0.03
+      },
+      "4-1-10": {
+        "machineRate": 0.025,
+        "communicationRate": 0,
+        "materialRate": 0.025
+      },
+      "4-1-11": {
+        "machineRate": 0.025,
+        "communicationRate": 0,
+        "materialRate": 0.085
+      },
+      "4-1-12": {
+        "machineRate": 0.025,
+        "communicationRate": 0,
+        "materialRate": 0.05
+      },
+      "4-1-13": {
+        "machineRate": 0.05,
+        "communicationRate": 0,
+        "materialRate": 0.065
+      },
+      "5-1-1": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "5-1-2": {
+        "machineRate": 0.01,
+        "communicationRate": 0,
+        "materialRate": 0.06
+      },
+      "5-1-3": {
+        "machineRate": 0.06,
+        "communicationRate": 0,
+        "materialRate": 0.22
+      },
+      "5-1-4": {
+        "machineRate": 0.055,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "5-1-5": {
+        "machineRate": 0.025,
+        "communicationRate": 0,
+        "materialRate": 0.055
+      },
+      "5-1-6": {
+        "machineRate": 0.02,
+        "communicationRate": 0,
+        "materialRate": 0.01
+      },
+      "5-1-7": {
+        "machineRate": 0.08,
+        "communicationRate": 0,
+        "materialRate": 0.11
+      },
+      "5-1-8": {
+        "machineRate": 0.03,
+        "communicationRate": 0,
+        "materialRate": 0.015
+      },
+      "5-1-9": {
+        "machineRate": 0.04,
+        "communicationRate": 0,
+        "materialRate": 0.02
+      },
+      "5-1-10": {
+        "machineRate": 0.05,
+        "communicationRate": 0,
+        "materialRate": 0.04
+      },
+      "6-1-1": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "6-2-1-1": {
+        "machineRate": 0.02,
+        "communicationRate": 0,
+        "materialRate": 0.02
+      },
+      "6-2-1-2": {
+        "machineRate": 0.03,
+        "communicationRate": 0,
+        "materialRate": 0.025
+      },
+      "6-3-1-1": {
+        "machineRate": 0.025,
+        "communicationRate": 0,
+        "materialRate": 0.025
+      },
+      "6-3-1-2": {
+        "machineRate": 0.04,
+        "communicationRate": 0,
+        "materialRate": 0.025
+      },
+      "6-4-1-1": {
+        "machineRate": 0.03,
+        "communicationRate": 0,
+        "materialRate": 0.025
+      },
+      "6-4-1-2": {
+        "machineRate": 0.05,
+        "communicationRate": 0,
+        "materialRate": 0.025
+      },
+      "7-1-1-1": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "7-1-1-2": {
+        "machineRate": 0.01,
+        "communicationRate": 0,
+        "materialRate": 0.035
+      },
+      "7-1-2-1": {
+        "machineRate": 0.005,
+        "communicationRate": 0,
+        "materialRate": 0.02
+      },
+      "7-1-2-2": {
+        "machineRate": 0.01,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "7-1-2-3": {
+        "machineRate": 0.005,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "7-1-2-4": {
+        "machineRate": 0.01,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "7-1-2-5": {
+        "machineRate": 0.005,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "7-1-2-6": {
+        "machineRate": 0.005,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "7-1-2-7": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0.01
+      },
+      "7-1-3-1": {
+        "machineRate": 0.05,
+        "communicationRate": 0,
+        "materialRate": 0.03
+      },
+      "7-1-3-2": {
+        "machineRate": 0.005,
+        "communicationRate": 0,
+        "materialRate": 0.04
+      },
+      "7-1-3-3": {
+        "machineRate": 0.01,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "7-1-4-1": {
+        "machineRate": 0.045,
+        "communicationRate": 0,
+        "materialRate": 0.03
+      },
+      "7-1-4-2": {
+        "machineRate": 0.045,
+        "communicationRate": 0,
+        "materialRate": 0.02
+      },
+      "7-1-4-3": {
+        "machineRate": 0.045,
+        "communicationRate": 0,
+        "materialRate": 0.05
+      },
+      "7-1-4-4": {
+        "machineRate": 0.07,
+        "communicationRate": 0,
+        "materialRate": 0.255
+      },
+      "7-1-5": {
+        "machineRate": 0.06,
+        "communicationRate": 0,
+        "materialRate": 0.025
+      },
+      "7-1-6": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "7-1-7-1": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "7-1-7-2": {
+        "machineRate": 0.045,
+        "communicationRate": 0,
+        "materialRate": 0.02
+      },
+      "7-1-7-3": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "7-1-7-4": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "7-3-1": {
+        "machineRate": 0.005,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "7-3-2": {
+        "machineRate": 0.05,
+        "communicationRate": 0,
+        "materialRate": 0.025
+      },
+      "7-3-3": {
+        "machineRate": 0.035,
+        "communicationRate": 0,
+        "materialRate": 0.015
+      },
+      "7-3-4": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "7-3-5": {
+        "machineRate": 0.005,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "8-2-1-1": {
+        "machineRate": 0.005,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "8-2-1-4": {
+        "machineRate": 0,
+        "communicationRate": 0.01,
+        "materialRate": 0
+      },
+      "8-2-1-5": {
+        "machineRate": 0.01,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "8-2-1-6": {
+        "machineRate": 0.51,
+        "communicationRate": 0,
+        "materialRate": 0.155
+      },
+      "8-3-1": {
+        "machineRate": 0.01,
+        "communicationRate": 0.005,
+        "materialRate": 0.02
+      },
+      "8-3-2": {
+        "machineRate": 0.1,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "8-3-3": {
+        "machineRate": 0.055,
+        "communicationRate": 0.005,
+        "materialRate": 0.005
+      },
+      "8-3-5": {
+        "machineRate": 0.34,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "8-4-1-1": {
+        "machineRate": 0.01,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "8-4-1-2": {
+        "machineRate": 0.03,
+        "communicationRate": 0.005,
+        "materialRate": 0.02
+      },
+      "8-4-1-3": {
+        "machineRate": 0.365,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "8-4-1-4": {
+        "machineRate": 0.115,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "8-4-1-5": {
+        "machineRate": 0.075,
+        "communicationRate": 0.005,
+        "materialRate": 0.025
+      },
+      "8-4-1-6": {
+        "machineRate": 0.145,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "8-4-2-1": {
+        "machineRate": 0.005,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "8-4-2-2": {
+        "machineRate": 0.02,
+        "communicationRate": 0.005,
+        "materialRate": 0.02
+      },
+      "8-4-2-3": {
+        "machineRate": 0.51,
+        "communicationRate": 0,
+        "materialRate": 0.005
+      },
+      "8-4-2-4": {
+        "machineRate": 0.125,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "8-4-2-5": {
+        "machineRate": 0.075,
+        "communicationRate": 0.005,
+        "materialRate": 0.015
+      },
+      "8-4-2-6": {
+        "machineRate": 0.215,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "9-1-1": {
+        "machineRate": 0,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "9-1-2": {
+        "machineRate": 0.06,
+        "communicationRate": 0.005,
+        "materialRate": 0.02
+      },
+      "10-2-1-1": {
+        "machineRate": 0.01,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "10-2-1-2": {
+        "machineRate": 0.085,
+        "communicationRate": 0,
+        "materialRate": 0.045
+      },
+      "10-2-1-5": {
+        "machineRate": 0,
+        "communicationRate": 0.015,
+        "materialRate": 0
+      },
+      "10-2-1-6": {
+        "machineRate": 0.35,
+        "communicationRate": 0,
+        "materialRate": 0.01
+      },
+      "10-2-1-7": {
+        "machineRate": 0.095,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "10-2-1-8": {
+        "machineRate": 0.1,
+        "communicationRate": 0,
+        "materialRate": 0.015
+      },
+      "10-2-1-9": {
+        "machineRate": 0.095,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "10-2-1-10": {
+        "machineRate": 0.095,
+        "communicationRate": 0,
+        "materialRate": 0
+      },
+      "10-2-1-11": {
+        "machineRate": 0.09,
+        "communicationRate": 0,
+        "materialRate": 0.02
+      }
+    }
+  }
+}
