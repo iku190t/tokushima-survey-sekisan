@@ -7,7 +7,7 @@
   <meta name="description" content="設計、測量、航空・船舶、地質を年度別技術者単価と根拠表示付きで計算するWeb業務積算ソフト">
   <meta name="author" content="株式会社アイズ測量">
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="styles.css?v=20260822-11">
+  <link rel="stylesheet" href="styles.css?v=20260822-12">
 </head>
 <body data-business-scope="design">
   <header class="app-header">
@@ -308,19 +308,40 @@
       </div>
       <section id="pdfClickWorkbench" class="card pdf-click-workbench" hidden>
         <div class="card-title-row"><div><p class="section-kicker">CLICK PDF TO SELECT</p><h2>PDFをクリックして項目を選択</h2></div><span id="pdfClickFileName" class="badge">—</span></div>
-        <p class="import-lead">色の付いた文字枠をクリックすると、業務基本情報・測量数量・設計等の人工を反映待ちへ追加できます。最後に右側の一覧を確認して積算へ反映します。</p>
+        <p class="import-lead">PDF内の文字行をクリックしてください。自動判定できた行は反映待ちへ入り、判定できない行は右側で反映先と数量を指定できます。この画面を閉じずに続けて追加できます。</p>
         <div class="pdf-click-layout">
           <div id="pdfClickPages" class="pdf-click-pages" aria-label="読み込んだPDF"></div>
           <aside class="pdf-click-sidebar">
             <div class="pdf-click-summary"><span>反映待ち</span><strong id="pdfClickSelectedCount">0件</strong><p id="pdfClickSelectionHint">PDF上の色付き枠をクリックしてください。</p></div>
             <div id="pdfClickSelectedList" class="pdf-click-selected-list"></div>
+            <section id="pdfManualMapper" class="pdf-manual-mapper" hidden>
+              <div class="pdf-manual-heading"><strong>この行の反映先を指定</strong><button id="cancelPdfManualLineButton" type="button" aria-label="閉じる">×</button></div>
+              <q id="pdfManualSourceText">—</q>
+              <label class="field"><span>反映する種類</span><select id="pdfManualKind"><option value="survey">測量項目・数量</option><option value="consulting">設計・調査・地質の人工</option><option value="metadata">業務基本情報</option></select></label>
+              <div id="pdfManualSurveyFields" class="pdf-manual-fields">
+                <label class="field"><span>測量項目</span><select id="pdfManualSurveyCode"></select></label>
+                <label class="field"><span>数量</span><span class="pdf-manual-quantity"><input id="pdfManualSurveyQuantity" type="number"><b id="pdfManualSurveyUnit">—</b></span><small id="pdfManualSurveyRule">項目を選択してください。</small></label>
+              </div>
+              <div id="pdfManualConsultingFields" class="pdf-manual-fields" hidden>
+                <label class="field"><span>業務区分</span><select id="pdfManualConsultingService"></select></label>
+                <label class="field"><span>作業名</span><input id="pdfManualConsultingTask" type="text"></label>
+                <label class="field"><span>職種</span><select id="pdfManualConsultingRole"></select></label>
+                <label class="field"><span>人工</span><input id="pdfManualConsultingDays" type="number" min="0" step="0.001"></label>
+              </div>
+              <div id="pdfManualMetadataFields" class="pdf-manual-fields" hidden>
+                <label class="field"><span>基本情報の項目</span><select id="pdfManualMetadataKey"><option value="projectName">業務名</option><option value="orderingParty">発注者</option><option value="department">担当部署</option><option value="contactName">担当者</option><option value="workLocation">業務場所</option><option value="contractPeriod">履行期間</option><option value="documentNumber">文書・業務番号</option><option value="documentDate">公告・資料日</option></select></label>
+                <label class="field"><span>反映する内容</span><input id="pdfManualMetadataValue" type="text"></label>
+              </div>
+              <div class="pdf-manual-actions"><button id="addPdfManualCandidateButton" class="button primary" type="button">反映待ちへ追加</button><button id="ignorePdfManualLineButton" class="button" type="button">この行は対象外</button></div>
+            </section>
             <div class="pdf-click-actions">
               <button id="selectDetectedPdfLinesButton" class="button" type="button">確信度の高い候補を選択</button>
               <button id="clearPdfLineSelectionButton" class="button" type="button">選択をすべて外す</button>
-              <button id="openPdfSelectionReviewButton" class="button primary" type="button" disabled>選択内容を確認・修正</button>
+              <button id="applyPdfSelectionNowButton" class="button primary" type="button" disabled>反映待ちを積算へ追加</button>
+              <button id="openPdfSelectionReviewButton" class="button" type="button" disabled>一覧で詳しく修正</button>
               <button id="openPdfFullReviewButton" class="button" type="button">通常の一覧でも確認</button>
             </div>
-            <p class="pdf-click-note">枠が付かない行は自動対応先を特定できていません。PDFの文字は積算へ直接確定せず、次の確認画面で項目・数量・単位を修正できます。</p>
+            <p class="pdf-click-note">緑・橙の枠は自動判定候補、青い破線は反映先が未判定の行です。PDF上の文字行は確認候補であり、追加前に右側の内容を確認してください。</p>
           </aside>
         </div>
       </section>
@@ -577,7 +598,7 @@
   <script src="document-reader.js?v=20260822-2"></script>
   <script src="app.js?v=20260822-10"></script>
   <script src="consulting.js?v=20260822-2"></script>
-  <script src="document-import.js?v=20260822-4"></script>
+  <script src="document-import.js?v=20260822-5"></script>
   <script src="official-case-search.js?v=20260822-1"></script>
   <script src="analytics.js?v=20260822-1"></script>
 </body>
