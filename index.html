@@ -6,7 +6,7 @@
   <title>徳島県 測量積算ワークベンチ</title>
   <meta name="description" content="徳島県令和8年度の測量積算基準と公式技術者単価を根拠表示付きで計算する積算ソフト">
   <meta name="author" content="株式会社アイズ測量">
-  <link rel="stylesheet" href="styles.css?v=20260822-5">
+  <link rel="stylesheet" href="styles.css?v=20260822-6">
 </head>
 <body>
   <header class="app-header">
@@ -15,7 +15,6 @@
       <div>
         <p class="eyebrow">SURVEY COST WORKBENCH</p>
         <h1>測量積算ワークベンチ</h1>
-        <p class="brand-credit">Ezアイズ Survey Tools ／ 制作：株式会社アイズ測量</p>
       </div>
     </div>
     <div class="header-actions no-print">
@@ -332,14 +331,42 @@
   </main>
 
   <footer class="site-footer no-print">
-    <div class="footer-brand"><strong>制作：株式会社アイズ測量</strong><span>Ezアイズ Survey Tools</span></div>
+    <button id="publisherSupportButton" class="publisher-signature" type="button" aria-label="制作会社と応援のご案内を開く">
+      <span class="publisher-product">Ez積算</span>
+      <span class="publisher-maker">制作：株式会社アイズ測量</span>
+    </button>
     <div class="footer-links">
       <a href="https://ez-survey.sakura.ne.jp/" target="_blank" rel="noopener noreferrer">公式サイト</a>
-      <a class="support-link" href="https://ofuse.me/f475dafe/letter" target="_blank" rel="noopener noreferrer">OFUSEで応援する</a>
+      <button id="footerSupportButton" class="footer-button support-link" type="button">応援のご案内</button>
       <button id="footerAboutToolButton" class="footer-button" type="button">免責・プライバシー</button>
     </div>
-    <p>このツールは無料で公開しています。役に立ったら、改善や機能追加への応援をいただけるとうれしいです。</p>
   </footer>
+
+  <dialog id="supportDialog" class="support-dialog" aria-labelledby="supportDialogTitle">
+    <div class="support-dialog-inner">
+      <header class="support-brand">
+        <h2 id="supportDialogTitle">Ez積算</h2>
+        <p>制作：株式会社アイズ測量</p>
+      </header>
+      <div class="support-rule"></div>
+      <section class="support-copy">
+        <h3>応援のご案内</h3>
+        <p>このアプリは無料で公開しています。</p>
+        <p>役に立ったら、OFUSEで応援していただけるとうれしいです。</p>
+        <p>いただいた応援は、改善や機能追加の励みになります。</p>
+      </section>
+      <a class="ofuse-primary" href="https://ofuse.me/f475dafe/letter" target="_blank" rel="noopener noreferrer">OFUSEで応援する</a>
+      <div class="ofuse-choice" aria-label="OFUSEでの送信方法">
+        <span>ログインして送信</span>
+        <strong>ゲストとして送信</strong>
+      </div>
+      <p class="guest-guide"><span aria-hidden="true">↗</span> アカウントがない場合は、OFUSE画面の「ゲストとして送信」を選べます。</p>
+      <div class="support-dialog-actions">
+        <button id="supportAboutToolButton" class="support-legal-button" type="button">免責・プライバシー</button>
+        <button id="closeSupportDialogButton" class="support-close-button" type="button">閉じる</button>
+      </div>
+    </div>
+  </dialog>
 
   <dialog id="aboutToolDialog" class="about-dialog" aria-labelledby="aboutToolTitle">
     <div class="dialog-heading">
@@ -381,7 +408,7 @@
   <script src="data/master-r8.js?v=20260822-1"></script>
   <script src="data/official-role-prices.js?v=20260822-1"></script>
   <script src="engine.js?v=20260822-1"></script>
-  <script src="app.js?v=20260822-2"></script>
+  <script src="app.js?v=20260822-3"></script>
   <script src="analytics.js?v=20260822-1"></script>
 </body>
 </html>

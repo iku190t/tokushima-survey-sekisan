@@ -51,8 +51,12 @@ assert.ok(!app.includes("let estimate = loadEstimate();"), "起動時に前回�
 assert.ok(app.includes("function restoreSavedDraft()"), "明示操作による復元処理がある");
 assert.ok(app.includes("if (sessionDirty) persistEstimate();"), "未操作の新規画面で前回保存を上書きしない");
 assert.ok(html.includes("制作：株式会社アイズ測量"), "制作者を画面に表示する");
-assert.ok(html.includes("Ezアイズ Survey Tools"), "ツールブランドを画面に表示する");
+assert.ok(html.includes("Ez積算"), "Ez Viewer型の製品名を画面に表示する");
 assert.ok(html.includes("https://ofuse.me/f475dafe/letter"), "確認済みOFUSE応援先を表示する");
+assert.ok(html.includes('id="publisherSupportButton"'), "制作表示から応援案内を開ける");
+assert.ok(html.includes('id="supportDialog"'), "独立した応援案内ダイアログがある");
+assert.ok(html.includes("ゲストとして送信"), "OFUSEのゲスト送信方法を案内する");
+assert.ok(app.includes("function") && app.includes("openSupportDialog"), "応援案内の開閉処理が結線されている");
 assert.ok(html.includes('id="aboutToolDialog"'), "免責・利用条件を画面で確認できる");
 assert.ok(html.includes("参考試算用・公式ソフトではありません"), "公式ソフトではないことを常時表示する");
 assert.ok(app.includes("参考試算・公式資料要照合"), "印刷帳票にも照合注意を表示する");

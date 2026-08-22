@@ -915,9 +915,18 @@
       if (typeof dialog.showModal === "function") dialog.showModal();
       else dialog.setAttribute("open", "");
     };
+    const openSupportDialog = () => {
+      const dialog = $("supportDialog");
+      if (typeof dialog.showModal === "function") dialog.showModal();
+      else dialog.setAttribute("open", "");
+    };
     ["aboutToolButton", "footerAboutToolButton"].forEach((id) => $(id).addEventListener("click", openAboutTool));
+    ["publisherSupportButton", "footerSupportButton"].forEach((id) => $(id).addEventListener("click", openSupportDialog));
     $("closeAboutToolButton").addEventListener("click", () => $("aboutToolDialog").close());
     $("aboutToolDialog").addEventListener("click", (event) => { if (event.target === $("aboutToolDialog")) $("aboutToolDialog").close(); });
+    $("closeSupportDialogButton").addEventListener("click", () => $("supportDialog").close());
+    $("supportDialog").addEventListener("click", (event) => { if (event.target === $("supportDialog")) $("supportDialog").close(); });
+    $("supportAboutToolButton").addEventListener("click", () => { $("supportDialog").close(); openAboutTool(); });
     document.querySelectorAll(".view-tab").forEach((button) => button.addEventListener("click", () => {
       document.querySelectorAll(".view-tab").forEach((entry) => entry.classList.toggle("active", entry === button));
       document.querySelectorAll(".view").forEach((view) => view.classList.remove("active"));
