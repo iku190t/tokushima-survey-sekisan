@@ -14,7 +14,7 @@ const referenced = new Set([...app.matchAll(/\$\("([^"]+)"\)/g)].map((match) => 
 const missing = [...referenced].filter((id) => !ids.has(id));
 
 assert.deepStrictEqual(missing, [], `app.jsから参照されるHTML要素が不足: ${missing.join(", ")}`);
-for (const source of ["data/master-r8.js", "data/official-role-prices.js", "engine.js", "app.js", "analytics.js", "styles.css", "DISCLAIMER.md"]) {
+for (const source of ["data/prefectures.js", "data/master-catalog.json", "data/master-r8.js", "data/official-role-prices.js", "engine.js", "app.js", "analytics.js", "styles.css", "DISCLAIMER.md"]) {
   assert.ok(fs.existsSync(path.join(root, source)), `${source} が存在する`);
 }
 assert.ok(html.includes('id="travelMode"'), "旅費交通費モード選択がある");
@@ -23,7 +23,13 @@ assert.ok(app.includes("line-rule"), "規定変化率選択が結線されてい
 assert.ok(app.includes("line-manual-price"), "個別単価入力が結線されている");
 assert.ok(app.includes("calc-detail"), "項目ごとの計算根拠表示がある");
 assert.ok(html.includes('id="validationPanel"'), "提出前チェックがある");
-assert.ok(html.includes('id="officialRateYear"'), "過去5年の公式技術者単価切替がある");
+assert.ok(html.includes('id="jurisdictionSelect"'), "積算地域を選択できる");
+assert.ok(html.includes('id="fiscalYearSelect"'), "積算年度を選択できる");
+assert.ok(html.includes('id="checkMasterUpdatesButton"'), "年度マスターの更新を確認できる");
+assert.ok(!html.includes('id="officialRateYear"'), "技術者単価だけを入れ替える比較UIを表示しない");
+assert.ok(!html.includes("比較用"), "利用者画面に比較マスターを表示しない");
+assert.ok(app.includes("checkForMasterUpdates({ silent: true })"), "公開版起動時に検証済みマスターの更新を確認する");
+assert.ok(app.includes("sha256Hex"), "配信マスターのSHA-256を検証する");
 assert.ok(app.includes("blockInvalidQuantityKey"), "整数数量への小数キー入力を防止する");
 assert.ok(app.includes("blockInvalidQuantityPaste"), "不正な桁数の貼り付けを防止する");
 assert.ok(app.includes("normalizeQuantityInput"), "数量を単位別規則に正規化する");

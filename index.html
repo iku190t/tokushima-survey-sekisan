@@ -53,9 +53,13 @@
         </div>
       </section>
       <section class="project-strip">
-        <label class="field master-field">
-          <span>使用マスター</span>
-          <select id="masterSelect"></select>
+        <label class="field">
+          <span>積算地域</span>
+          <select id="jurisdictionSelect" aria-describedby="masterStatusText"></select>
+        </label>
+        <label class="field compact-field">
+          <span>積算年度</span>
+          <select id="fiscalYearSelect" aria-describedby="masterStatusText"></select>
         </label>
         <label class="field">
           <span>業務名</span>
@@ -242,39 +246,24 @@
               <p class="section-kicker">ANNUAL MASTER</p>
               <h2>年度マスター管理</h2>
             </div>
-            <span class="badge">ブラウザー内保存</span>
+            <span class="badge">検証済み年度を配信</span>
           </div>
           <div class="master-head-grid">
-            <label class="field"><span>対象マスター</span><select id="masterEditorSelect"></select></label>
+            <label class="field"><span>地域・年度マスター</span><select id="masterEditorSelect"></select></label>
+            <label class="field"><span>積算地域</span><select id="masterJurisdiction"></select></label>
             <label class="field"><span>年度（西暦）</span><input id="masterYear" type="number" min="2000" max="2200"></label>
             <label class="field"><span>名称</span><input id="masterLabel" type="text"></label>
             <label class="field"><span>適用開始日</span><input id="masterEffective" type="date"></label>
           </div>
           <div class="master-toolbar no-print">
-            <button id="applyMasterMetaButton" class="button primary" type="button">名称・年度を反映</button>
-            <button id="cloneMasterButton" class="button" type="button">翌年度候補を複製</button>
+            <button id="applyMasterMetaButton" class="button primary" type="button">地域・年度・名称を反映</button>
+            <button id="checkMasterUpdatesButton" class="button" type="button">年度マスターを更新確認</button>
             <button id="exportMasterButton" class="button" type="button">マスター書出し</button>
             <button id="importMasterButton" class="button" type="button">マスター読込み</button>
             <button id="deleteMasterButton" class="button danger" type="button">このマスターを削除</button>
             <input id="masterFileInput" type="file" accept="application/json,.json" hidden>
           </div>
-          <p class="callout">複製だけでは正式な翌年度マスターにはなりません。技術者単価に加え、歩掛・直接経費率・精度管理費係数・諸経費式・端数処理の改定を確認し、出典資料と適用日をそろえてください。</p>
-        </section>
-
-        <section class="card official-rate-card">
-          <div class="card-title-row">
-            <div>
-              <p class="section-kicker">OFFICIAL RATE PRESETS</p>
-              <h2>国交省 技術者単価（過去5年）</h2>
-            </div>
-            <span class="badge">公式公表値</span>
-          </div>
-          <div class="rate-preset-row">
-            <label class="field"><span>適用する技術者単価</span><select id="officialRateYear"></select></label>
-            <button id="applyOfficialRatesButton" class="button primary no-print" type="button">この単価で複製</button>
-          </div>
-          <p id="officialRateNote" class="callout warning-callout"></p>
-          <a id="officialRateSource" class="source-link" href="#" target="_blank" rel="noreferrer">国土交通省の原資料を開く</a>
+          <p id="masterUpdateStatus" class="callout">公開版では起動時に配信カタログを確認し、出典と内容を検証済みの地域・年度マスターだけを追加します。未収録県へ他県のマスターを流用しません。</p>
         </section>
 
         <section class="card">
@@ -405,10 +394,11 @@
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <script src="data/master-r8.js?v=20260822-1"></script>
+  <script src="data/prefectures.js?v=20260822-1"></script>
+  <script src="data/master-r8.js?v=20260822-2"></script>
   <script src="data/official-role-prices.js?v=20260822-1"></script>
   <script src="engine.js?v=20260822-1"></script>
-  <script src="app.js?v=20260822-3"></script>
+  <script src="app.js?v=20260822-4"></script>
   <script src="analytics.js?v=20260822-1"></script>
 </body>
 </html>

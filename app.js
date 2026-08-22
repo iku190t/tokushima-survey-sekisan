@@ -4,7 +4,8 @@
   const MASTER_KEY = "surveySekisanMastersV1";
   const ESTIMATE_KEY = "surveySekisanEstimateV1";
   const defaultMasterId = "r8-tokushima-2026";
-  const bundledRateYears = [2026, 2025, 2024, 2023, 2022];
+  const defaultJurisdictionCode = "36";
+  const masterCatalogPath = "data/master-catalog.json";
   const yen = new Intl.NumberFormat("ja-JP", { style: "currency", currency: "JPY", maximumFractionDigits: 0 });
   const numberFormat = new Intl.NumberFormat("ja-JP", { maximumFractionDigits: 3 });
   const defaultDocumentTitle = document.title;
@@ -99,36 +100,42 @@
     return `令和${year - 2018}年度`;
   }
 
-  function bundledMaster(rateYear = 2026) {
+  function jurisdictionName(code) {
+    return window.SEKISAN_JURISDICTIONS?.find((entry) => entry.code === String(code))?.name || "地域未設定";
+  }
+
+  function normalizeMasterMetadata(master, fallbackCode = defaultJurisdictionCode) {
+    master.jurisdictionCode = String(master.jurisdictionCode || fallbackCode).padStart(2, "0");
+    master.jurisdictionName = jurisdictionName(master.jurisdictionCode);
+    master.jurisdictionType = "prefecture";
+    master.verificationStatus = master.verificationStatus || "user-supplied";
+    master.scopeStatus = master.scopeStatus === "rate-comparison" ? "retired-comparison" : (master.scopeStatus || "user-custom");
+    return master;
+  }
+
+  function bundledMaster() {
     const master = clone(window.MASTER_R8);
-    const preset = window.OFFICIAL_ROLE_PRICES?.[rateYear];
-    master.id = rateYear === 2026 ? defaultMasterId : `r8-walk-rate-${rateYear}`;
+    master.id = defaultMasterId;
     master.bundled = true;
     master.walkYear = 2026;
-    master.rateYear = rateYear;
-    master.scopeStatus = rateYear === 2026 ? "official-r8" : "rate-comparison";
-    if (preset) {
-      Object.entries(preset.roles).forEach(([key, price]) => {
-        if (master.roles[key]) master.roles[key].price = price;
-      });
-      master.rateSourceUrl = preset.sourceUrl;
-      master.rateSourceLabel = preset.sourceLabel;
-      master.effectiveFrom = preset.effectiveFrom;
-    }
-    master.fiscalYear = rateYear;
-    master.label = rateYear === 2026
-      ? "令和8年度・徳島県測量業務（公式資料収録）"
-      : `${eraLabel(rateYear)}技術者単価 × 令和8年度歩掛（比較用）`;
-    return master;
+    master.rateYear = 2026;
+    master.scopeStatus = "verified";
+    master.verificationStatus = "verified";
+    master.masterVersion = master.masterVersion || "2026.1";
+    master.catalogEntryId = defaultMasterId;
+    master.fiscalYear = 2026;
+    master.label = "令和8年度・徳島県測量業務（検証済み資料収録）";
+    return normalizeMasterMetadata(master);
   }
 
   function loadMasters() {
     let stored = [];
     try { stored = JSON.parse(localStorage.getItem(MASTER_KEY) || "[]"); } catch (_) { stored = []; }
     if (!Array.isArray(stored)) stored = [];
-    const bundledIds = new Set(bundledRateYears.map((year) => year === 2026 ? defaultMasterId : `r8-walk-rate-${year}`));
-    const custom = stored.filter((master) => master && !bundledIds.has(master.id));
-    return [...bundledRateYears.map((year) => bundledMaster(year)), ...custom];
+    const custom = stored
+      .filter((master) => master && master.id !== defaultMasterId && master.scopeStatus !== "rate-comparison" && master.scopeStatus !== "retired-comparison")
+      .map((master) => normalizeMasterMetadata(master));
+    return [bundledMaster(), ...custom];
   }
 
   function emptyEstimate() {
@@ -262,26 +269,33 @@
   }
 
   function populateMasterSelects() {
-    const options = masters.map((master) => `<option value="${h(master.id)}">${h(master.label)}${master.bundled ? "（初期収録）" : ""}</option>`).join("");
-    $("masterSelect").innerHTML = options;
+    const active = activeMaster();
+    const availableCodes = new Set(masters.map((master) => master.jurisdictionCode));
+    $("jurisdictionSelect").innerHTML = (window.SEKISAN_JURISDICTIONS || []).map((region) => {
+      const available = availableCodes.has(region.code);
+      return `<option value="${region.code}" ${available ? "" : "disabled"}>${h(region.name)}${available ? "" : "（マスター未収録）"}</option>`;
+    }).join("");
+    $("jurisdictionSelect").value = active.jurisdictionCode;
+    const regionalMasters = masters.filter((master) => master.jurisdictionCode === active.jurisdictionCode)
+      .sort((a, b) => num(b.fiscalYear) - num(a.fiscalYear) || String(b.masterVersion || "").localeCompare(String(a.masterVersion || "")));
+    $("fiscalYearSelect").innerHTML = regionalMasters.map((master) => `<option value="${h(master.id)}">${h(eraLabel(master.fiscalYear))}${master.verificationStatus === "verified" ? "（検証済み）" : "（利用者作成）"}</option>`).join("");
+    $("fiscalYearSelect").value = active.id;
+    const options = masters.map((master) => `<option value="${h(master.id)}">${h(master.jurisdictionName)}｜${h(eraLabel(master.fiscalYear))}｜${h(master.label)}${master.bundled ? "（初期収録）" : ""}</option>`).join("");
     $("masterEditorSelect").innerHTML = options;
-    $("masterSelect").value = estimate.masterId;
     $("masterEditorSelect").value = editorMasterId;
+    $("masterJurisdiction").innerHTML = (window.SEKISAN_JURISDICTIONS || []).map((region) => `<option value="${region.code}">${h(region.name)}</option>`).join("");
   }
 
   function renderMasterStatus() {
     const master = activeMaster();
     const strip = document.querySelector(".accuracy-strip");
-    strip.classList.toggle("warning", master.scopeStatus !== "official-r8");
-    if (master.scopeStatus === "official-r8") {
-      $("masterStatusTitle").textContent = "令和8年度・徳島県の公式資料を収録";
-      $("masterStatusText").textContent = "歩掛・直接経費率・精度管理費・令和8年度技術者単価を同年度で計算します。案件固有費は提出前チェックに表示します。";
-    } else if (master.scopeStatus === "rate-comparison") {
-      $("masterStatusTitle").textContent = `${eraLabel(master.rateYear)}の公式技術者単価による比較試算`;
-      $("masterStatusText").textContent = `歩掛・経費率は令和8年度のままです。${eraLabel(master.rateYear)}の正式な過去年度積算としては使用できません。`;
+    strip.classList.toggle("warning", master.verificationStatus !== "verified");
+    if (master.verificationStatus === "verified") {
+      $("masterStatusTitle").textContent = `${master.jurisdictionName}・${eraLabel(master.fiscalYear)}の検証済みマスター`;
+      $("masterStatusText").textContent = "同一地域・同一年度の歩掛、経費率、技術者単価を組み合わせています。未収録県には他県の値を流用しません。";
     } else {
       $("masterStatusTitle").textContent = "利用者編集マスター";
-      $("masterStatusText").textContent = "変更した単価・歩掛・経費率の出典と適用日を確認してから使用してください。";
+      $("masterStatusText").textContent = `${master.jurisdictionName}・${eraLabel(master.fiscalYear)}として登録されています。変更した単価・歩掛・経費率の出典と適用日を確認してください。`;
     }
   }
 
@@ -406,7 +420,7 @@
   function validationIssues(result) {
     const issues = [];
     const master = activeMaster();
-    if (master.scopeStatus === "rate-comparison") issues.push({ severity: "warn", text: "過去年度単価の比較用です。歩掛・経費率は令和8年度です。" });
+    if (master.verificationStatus !== "verified") issues.push({ severity: "warn", text: "利用者作成マスターです。地域・年度・出典と正解積算を照合してください。" });
     if (!result.lines.length) issues.push({ severity: "info", text: "作業項目がまだありません。" });
     result.lines.forEach((calculated) => {
       const item = master.workItems.find((entry) => entry.code === calculated.code);
@@ -627,6 +641,7 @@
     const master = editorMaster();
     editorMasterId = master.id;
     $("masterEditorSelect").value = master.id;
+    $("masterJurisdiction").value = master.jurisdictionCode;
     $("masterYear").value = master.fiscalYear;
     $("masterLabel").value = master.label;
     $("masterEffective").value = master.effectiveFrom || "";
@@ -635,25 +650,6 @@
     $("masterRateYear").textContent = `R${num(master.rateYear, master.fiscalYear) - 2018}`;
     $("masterWalkYear").textContent = `R${num(master.walkYear, master.fiscalYear) - 2018}`;
     $("sourceList").innerHTML = (master.sources || []).map((source) => `<li>${h(source)}</li>`).join("");
-    populateOfficialRateSelector(master.rateYear || master.fiscalYear);
-  }
-
-  function populateOfficialRateSelector(selectedYear) {
-    const presets = window.OFFICIAL_ROLE_PRICES || {};
-    $("officialRateYear").innerHTML = Object.keys(presets).sort((a, b) => b - a).map((year) => `<option value="${year}">${h(presets[year].era)}（${h(presets[year].effectiveFrom)}適用）</option>`).join("");
-    $("officialRateYear").value = String(presets[selectedYear] ? selectedYear : 2026);
-    renderOfficialRateNote();
-  }
-
-  function renderOfficialRateNote() {
-    const year = num($("officialRateYear").value, 2026);
-    const preset = window.OFFICIAL_ROLE_PRICES?.[year];
-    const walkYear = num(editorMaster().walkYear, editorMaster().fiscalYear);
-    $("officialRateNote").textContent = year === walkYear
-      ? `${preset.era}の技術者単価を複製マスターに適用します。歩掛年度と単価年度が一致します。`
-      : `${preset.era}の技術者単価だけを適用します。歩掛は令和${walkYear - 2018}年度のままなので、過去年度正式マスターではなく比較試算用です。`;
-    $("officialRateSource").href = preset.sourceUrl;
-    $("officialRateSource").textContent = preset.sourceLabel;
   }
 
   function renderAll() {
@@ -782,10 +778,15 @@
 
   function saveMasterMeta() {
     const master = ensureEditableMaster();
+    master.jurisdictionCode = $("masterJurisdiction").value;
+    master.jurisdictionName = jurisdictionName(master.jurisdictionCode);
+    master.jurisdictionType = "prefecture";
     master.fiscalYear = Math.trunc(num($("masterYear").value, master.fiscalYear));
     master.label = $("masterLabel").value.trim() || `${master.fiscalYear}年度マスター`;
     master.effectiveFrom = $("masterEffective").value;
     master.bundled = false;
+    master.verificationStatus = "user-supplied";
+    master.scopeStatus = "user-custom";
     persistMasters();
     populateMasterSelects();
     showToast("年度情報を保存しました");
@@ -809,58 +810,11 @@
     copy.label = `${copy.label}（編集用）`;
     copy.bundled = false;
     copy.scopeStatus = "user-custom";
+    copy.verificationStatus = "user-supplied";
     masters.push(copy);
     editorMasterId = copy.id;
     if (estimate.masterId === source.id) estimate.masterId = copy.id;
     return copy;
-  }
-
-  function applyOfficialRates() {
-    const source = editorMaster();
-    const year = num($("officialRateYear").value, 2026);
-    const preset = window.OFFICIAL_ROLE_PRICES?.[year];
-    if (!preset) return;
-    const next = clone(source);
-    next.id = `official-rate-${year}-${Date.now()}`;
-    next.bundled = false;
-    next.rateYear = year;
-    next.effectiveFrom = preset.effectiveFrom;
-    next.rateSourceUrl = preset.sourceUrl;
-    next.rateSourceLabel = preset.sourceLabel;
-    Object.entries(preset.roles).forEach(([key, price]) => { if (next.roles[key]) next.roles[key].price = price; });
-    const walkYear = num(next.walkYear, next.fiscalYear);
-    next.fiscalYear = year;
-    next.scopeStatus = year === walkYear ? "user-custom" : "rate-comparison";
-    next.label = year === walkYear
-      ? `${preset.era}・徳島県測量業務（公式単価適用）`
-      : `${preset.era}技術者単価 × 令和${walkYear - 2018}年度歩掛（比較用）`;
-    masters.push(next);
-    editorMasterId = next.id;
-    estimate.masterId = next.id;
-    estimate.options.taxRate = next.taxRate;
-    persistMasters();
-    renderAll();
-    scheduleSave();
-    showToast(`${preset.era}の公式技術者単価で複製しました`);
-  }
-
-  function cloneMasterForNextYear() {
-    const source = editorMaster();
-    const next = clone(source);
-    next.fiscalYear = num(source.fiscalYear) + 1;
-    next.label = `${eraLabel(next.fiscalYear)}候補（歩掛・経費率の改定確認前）`;
-    next.id = `master-${next.fiscalYear}-${Date.now()}`;
-    next.bundled = false;
-    next.scopeStatus = "user-custom";
-    if (source.effectiveFrom) next.effectiveFrom = `${next.fiscalYear}-${source.effectiveFrom.slice(5)}`;
-    masters.push(next);
-    editorMasterId = next.id;
-    estimate.masterId = next.id;
-    estimate.options.taxRate = next.taxRate;
-    persistMasters();
-    renderAll();
-    scheduleSave();
-    showToast("翌年度候補を複製しました。歩掛・経費率を更新してください");
   }
 
   function exportMaster() {
@@ -879,6 +833,9 @@
         master.id = `import-${master.fiscalYear || "year"}-${Date.now()}`;
         master.label = master.label || `${master.fiscalYear || "新"}年度マスター`;
         master.bundled = false;
+        normalizeMasterMetadata(master, $("masterJurisdiction").value || activeMaster().jurisdictionCode);
+        master.verificationStatus = "user-supplied";
+        master.scopeStatus = "user-custom";
         masters.push(master);
         editorMasterId = master.id;
         estimate.masterId = master.id;
@@ -890,6 +847,78 @@
       } catch (error) { alert(`マスターを読み込めませんでした。\n${error.message}`); }
     };
     reader.readAsText(file, "utf-8");
+  }
+
+  async function sha256Hex(text) {
+    const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+    return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+  }
+
+  function validatedCatalogPath(path) {
+    if (!/^data\/[a-z0-9._/-]+$/i.test(path) || path.includes("..")) throw new Error("配信パスが不正です");
+    const url = new URL(path, location.href);
+    if (url.origin !== location.origin) throw new Error("外部配信先は使用できません");
+    return url.href;
+  }
+
+  function validateCatalogMaster(master, entry) {
+    if (!master?.roles || !Array.isArray(master.workItems) || !master.workItems.length) throw new Error("マスター形式が不正です");
+    if (entry.verificationStatus !== "verified") throw new Error("未検証マスターは追加できません");
+    if (String(master.jurisdictionCode) !== String(entry.jurisdictionCode) || num(master.fiscalYear) !== num(entry.fiscalYear)) throw new Error("地域または年度がカタログと一致しません");
+  }
+
+  async function checkForMasterUpdates({ silent = false } = {}) {
+    const status = $("masterUpdateStatus");
+    const button = $("checkMasterUpdatesButton");
+    if (location.protocol === "file:") {
+      status.textContent = "ローカルファイル版では自動更新できません。GitHub Pages公開版で起動すると検証済み年度マスターを確認します。";
+      if (!silent) showToast("公開版で年度マスターを更新確認できます");
+      return;
+    }
+    button.disabled = true;
+    if (!silent) status.textContent = "検証済みマスターの配信カタログを確認しています…";
+    try {
+      const response = await fetch(validatedCatalogPath(masterCatalogPath), { cache: "no-store" });
+      if (!response.ok) throw new Error(`カタログ取得失敗（${response.status}）`);
+      const catalog = await response.json();
+      if (catalog.schemaVersion !== 1 || !Array.isArray(catalog.masters)) throw new Error("カタログ形式が不正です");
+      let added = 0;
+      for (const entry of catalog.masters) {
+        if (entry.verificationStatus !== "verified") continue;
+        const alreadyInstalled = masters.some((master) => (master.catalogEntryId || master.id) === entry.id && String(master.masterVersion || "") === String(entry.version));
+        if (alreadyInstalled) continue;
+        const masterResponse = await fetch(validatedCatalogPath(entry.path), { cache: "no-store" });
+        if (!masterResponse.ok) throw new Error(`${entry.jurisdictionName} ${entry.fiscalYear}年度の取得に失敗しました`);
+        const raw = await masterResponse.text();
+        if ((await sha256Hex(raw)) !== String(entry.sha256).toLowerCase()) throw new Error(`${entry.jurisdictionName} ${entry.fiscalYear}年度の検証値が一致しません`);
+        const master = JSON.parse(raw);
+        validateCatalogMaster(master, entry);
+        master.catalogEntryId = entry.id;
+        master.id = masters.some((installed) => installed.id === entry.id) ? `${entry.id}@${entry.version}` : entry.id;
+        master.masterVersion = entry.version;
+        master.verificationStatus = "verified";
+        master.scopeStatus = "verified";
+        master.catalogManaged = true;
+        master.bundled = false;
+        normalizeMasterMetadata(master, entry.jurisdictionCode);
+        masters.push(master);
+        added += 1;
+      }
+      if (added) {
+        persistMasters();
+        populateMasterSelects();
+        status.textContent = `${added}件の検証済み地域・年度マスターを追加しました。積算地域と積算年度から選択できます。`;
+        showToast(`検証済みマスターを${added}件追加しました`);
+      } else {
+        status.textContent = `更新確認済み（${catalog.updatedAt || "更新日不明"}）。利用可能な検証済みマスターは最新です。`;
+        if (!silent) showToast("年度マスターは最新です");
+      }
+    } catch (error) {
+      status.textContent = `更新確認に失敗しました：${error.message}。現在収録済みのマスターはそのまま使用できます。`;
+      if (!silent) showToast("年度マスターを更新できませんでした");
+    } finally {
+      button.disabled = false;
+    }
   }
 
   function deleteMaster() {
@@ -941,7 +970,12 @@
     $("newItemQuantity").addEventListener("input", (event) => enforceQuantityPrecision(event.target, quantityInputItem(event.target), true));
     $("newItemQuantity").addEventListener("change", (event) => normalizeQuantityInput(event.target, quantityInputItem(event.target), true));
     $("addItemButton").addEventListener("click", addItem);
-    $("masterSelect").addEventListener("change", (event) => switchMaster(event.target.value));
+    $("jurisdictionSelect").addEventListener("change", (event) => {
+      const next = masters.filter((master) => master.jurisdictionCode === event.target.value)
+        .sort((a, b) => num(b.fiscalYear) - num(a.fiscalYear))[0];
+      if (next) switchMaster(next.id);
+    });
+    $("fiscalYearSelect").addEventListener("change", (event) => switchMaster(event.target.value));
     ["projectName", "estimateDate", "projectMemo"].forEach((id) => $(id).addEventListener("input", updateEstimateField));
     document.querySelectorAll(".cost-input").forEach((input) => input.addEventListener("input", updateOptions));
     ["taxRate", "useElectronic", "useFourDigits", "adjustBusinessPrice", "travelMode", "safetyRate"].forEach((id) => $(id).addEventListener("change", updateOptions));
@@ -1002,11 +1036,9 @@
     $("selectFullSetButton").addEventListener("click", () => setReportSections(["quote", "summary", "breakdown", "unitDetail", "conditions"]));
     $("previewPrintButton").addEventListener("click", printReport);
     $("masterEditorSelect").addEventListener("change", (event) => { editorMasterId = event.target.value; renderMasterEditor(); });
-    $("officialRateYear").addEventListener("change", renderOfficialRateNote);
-    $("applyOfficialRatesButton").addEventListener("click", applyOfficialRates);
     $("applyMasterMetaButton").addEventListener("click", saveMasterMeta);
     $("saveRolePricesButton").addEventListener("click", saveRolePrices);
-    $("cloneMasterButton").addEventListener("click", cloneMasterForNextYear);
+    $("checkMasterUpdatesButton").addEventListener("click", () => checkForMasterUpdates());
     $("exportMasterButton").addEventListener("click", exportMaster);
     $("importMasterButton").addEventListener("click", () => $("masterFileInput").click());
     $("masterFileInput").addEventListener("change", (event) => { if (event.target.files[0]) importMaster(event.target.files[0]); event.target.value = ""; });
@@ -1019,4 +1051,5 @@
   bindEvents();
   renderAll();
   renderDraftRecovery();
+  checkForMasterUpdates({ silent: true });
 })();

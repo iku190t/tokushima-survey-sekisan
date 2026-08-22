@@ -1,5 +1,11 @@
 {
   "schemaVersion": 1,
+  "id": "r8-tokushima-2026",
+  "masterVersion": "2026.1",
+  "jurisdictionCode": "36",
+  "jurisdictionName": "徳島県",
+  "jurisdictionType": "prefecture",
+  "verificationStatus": "verified",
   "fiscalYear": 2026,
   "label": "令和8年度・徳島県測量業務",
   "effectiveFrom": "2026-03-01",

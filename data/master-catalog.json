@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-08-22",
+  "masters": [
+    {
+      "id": "r8-tokushima-2026",
+      "version": "2026.1",
+      "jurisdictionCode": "36",
+      "jurisdictionName": "徳島県",
+      "fiscalYear": 2026,
+      "verificationStatus": "verified",
+      "path": "data/master-r8.json",
+      "sha256": "03594de169532381eaf009dd8b6679459df176fe95250822d05bdebbf6f66995",
+      "sources": [
+        "令和8年度 設計業務等標準積算基準書 第1編 測量業務",
+        "令和8年度 設計業務等標準積算基準書（参考資料）第1編・第2編",
+        "令和8年度 設計業務委託等技術者単価（令和8年3月適用）"
+      ]
+    }
+  ]
+}
