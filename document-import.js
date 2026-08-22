@@ -78,8 +78,12 @@
     $("toggleAllImportMetadata").checked = metadataBoxes.length > 0 && metadataChecked === metadataBoxes.length;
     $("toggleAllImportMetadata").indeterminate = metadataChecked > 0 && metadataChecked < metadataBoxes.length;
     const checked = candidateChecked + metadataChecked;
-    $("applyDocumentImportButton").disabled = checked === 0;
-    $("applyDocumentImportButton").textContent = checked ? `確認した${checked}項目を反映` : "反映する項目を選択してください";
+    const hasResults = candidateBoxes.length + metadataBoxes.length > 0;
+    const button = $("applyDocumentImportButton");
+    button.dataset.action = hasResults ? "apply" : "close";
+    button.disabled = hasResults && checked === 0;
+    button.textContent = !hasResults ? "読み取れる項目なし・閉じる" : checked ? `確認した${checked}項目を反映` : "反映する項目を選択してください";
+    $("cancelDocumentImportButton").hidden = !hasResults;
   }
 
   function renderReview(fileName, analysis) {
@@ -89,7 +93,12 @@
     $("importReviewFileName").textContent = fileName;
     $("importReviewMethods").textContent = methods.join("＋") || "原文貼付け";
     $("importReviewCount").textContent = `基本情報${analysis.metadata.fields.length}件＋積算${analysis.candidates.length}件`;
-    $("documentImportMetadataList").innerHTML = analysis.metadata.fields.map(metadataHtml).join("") || '<div class="empty-state"><p>業務基本情報を検出できませんでした。原文を確認し、積算画面から入力してください。</p></div>';
+    const metadataCount = analysis.metadata.fields.length;
+    const candidateCount = analysis.candidates.length;
+    const hasResults = metadataCount + candidateCount > 0;
+    $("documentImportMetadataList").innerHTML = analysis.metadata.fields.map(metadataHtml).join("");
+    $("importMetadataPanel").hidden = metadataCount === 0;
+    $("toggleAllImportMetadataLabel").hidden = metadataCount === 0;
     const master = activeMaster();
     const detected = [analysis.metadata.jurisdictionName, analysis.metadata.fiscalYear ? `令和${analysis.metadata.fiscalYear - 2018}年度` : ""].filter(Boolean).join("・");
     $("importedBasisHint").textContent = `${detected ? `資料候補：${detected}。` : "資料から発注機関・年度を確定できませんでした。"} 取込先：${master.jurisdictionName}・令和${master.fiscalYear - 2018}年度。取込先は自動変更しません。`;
@@ -98,7 +107,14 @@
     if (analysis.metadata.jurisdictionCode && analysis.metadata.jurisdictionCode !== master.jurisdictionCode) warnings.push("資料の発注機関候補と現在の取込先が異なります。発注機関を確認してください。");
     $("documentImportWarnings").hidden = warnings.length === 0;
     $("documentImportWarnings").innerHTML = warnings.length ? `<ul>${warnings.map((warning) => `<li>${h(warning)}</li>`).join("")}</ul>` : "";
-    $("documentImportCandidateList").innerHTML = analysis.candidates.map(candidateHtml).join("") || '<div class="empty-state"><p>積算候補がありません。抽出原文を確認し、現在の積算画面から手入力してください。</p></div>';
+    $("documentImportCandidateList").innerHTML = analysis.candidates.map(candidateHtml).join("");
+    $("importCandidateToolbar").hidden = candidateCount === 0;
+    $("documentImportCandidateList").hidden = candidateCount === 0;
+    const guide = $("documentImportEmptyGuide");
+    guide.hidden = candidateCount > 0;
+    guide.innerHTML = !hasResults
+      ? "<strong>この資料から自動反映できる項目を見つけられませんでした。</strong><p>選択操作は不要です。下の抽出原文を確認し、「読み取れる項目なし・閉じる」を押してください。その後、上部の4業務タブから該当画面を開いて手入力できます。</p>"
+      : "<strong>積算数量・人工は見つかりませんでした。</strong><p>上の業務基本情報だけ反映できます。内容とチェックを確認して、下の反映ボタンを押してください。数量は該当する業務タブから手入力してください。</p>";
     $("documentImportSourcePages").innerHTML = analysis.pages.map((page) => `<section class="import-source-page"><h3>${h(page.pageNumber)}ページ／${h(methodLabel(page.method))}</h3><pre>${h(page.text || "（文字を検出できませんでした）")}</pre></section>`).join("");
     $("toggleAllImportCandidates").checked = analysis.candidates.every((candidate) => candidate.selected);
     $("documentImportDialog").showModal();
@@ -133,6 +149,10 @@
   }
 
   function applyImport() {
+    if ($("applyDocumentImportButton").dataset.action === "close") {
+      $("documentImportDialog").close();
+      return;
+    }
     const survey = [];
     const consulting = [];
     const costs = {};

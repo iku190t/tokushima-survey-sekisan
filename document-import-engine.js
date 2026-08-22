@@ -229,9 +229,38 @@
     return null;
   }
 
+  function fallbackProjectNameField(entries) {
+    const excluded = /(?:業務数量総括表|数量総括表|費目|工種|種別|細別|規格|単位|数量|摘要|直接測量費|間接測量費|諸経費|業務価格)/;
+    const candidates = entries.map((entry) => {
+      const value = visibleLine(entry.text).replace(/^[|｜:：・\-\s]+|[|｜:：・\-\s]+$/g, "");
+      const key = compact(value);
+      if (!/(?:業務|委託)$/.test(value) || value.length < 8 || value.length > 180 || excluded.test(value)) return null;
+      const hasYear = /(?:令和|平成|昭和|20[0-9]{2})/.test(value);
+      const domainWords = ["測量", "調査", "設計", "地質", "用地", "道路", "河川", "砂防", "港湾", "工事"].filter((word) => value.includes(word)).length;
+      if (!hasYear && domainWords < 2) return null;
+      return { entry, value, score: (hasYear ? 100 : 0) + domainWords * 20 + Math.min(key.length, 80) };
+    }).filter(Boolean).sort((a, b) => b.score - a.score);
+    if (!candidates.length) return null;
+    const best = candidates[0];
+    return {
+      key: "projectName",
+      label: "業務名（見出しから推定）",
+      value: best.value,
+      selected: true,
+      page: best.entry.page,
+      method: best.entry.method,
+      confidence: best.entry.method === "ocr" ? "low" : "medium",
+      sourceText: best.entry.text
+    };
+  }
+
   function detectMetadata(pages, jurisdictions) {
     const entries = metadataLineEntries(pages);
     const fields = METADATA_DEFINITIONS.map((definition) => fieldFromLines(entries, definition)).filter(Boolean);
+    if (!fields.some((field) => field.key === "projectName")) {
+      const fallbackProjectName = fallbackProjectNameField(entries);
+      if (fallbackProjectName) fields.unshift(fallbackProjectName);
+    }
     const fieldValue = (key) => fields.find((field) => field.key === key)?.value || "";
     const joined = entries.map((entry) => entry.text).join("\n");
     const yearMatch = joined.match(/令和\s*([0-9]+)\s*年度/);

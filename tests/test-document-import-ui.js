@@ -18,7 +18,7 @@ assert.deepStrictEqual([...referencedIds].filter((id) => !ids.has(id)), [], "資
 for (const file of ["document-import-engine.js", "document-reader.js", "document-import.js", "tests/test-document-import.js"]) {
   assert.ok(fs.existsSync(path.join(root, file)), `${file} が存在する`);
 }
-for (const id of ["importView", "documentDropZone", "documentFileInput", "documentPasteText", "documentImportDialog", "documentImportMetadataList", "toggleAllImportMetadata", "documentImportCandidateList", "applyDocumentImportButton"]) {
+for (const id of ["importView", "documentDropZone", "documentFileInput", "documentPasteText", "documentImportDialog", "importMetadataPanel", "documentImportMetadataList", "toggleAllImportMetadata", "documentImportEmptyGuide", "importCandidateToolbar", "documentImportCandidateList", "applyDocumentImportButton"]) {
   assert.ok(ids.has(id), `${id} が存在する`);
 }
 assert.ok(html.includes("設計・測量・航空船舶・地質"), "資料取込の対象業務を4業務タブ順で明示する");
@@ -32,6 +32,8 @@ assert.ok(!reader.includes("FormData") && !reader.includes('fetch(file'), "資�
 assert.ok(ui.includes("renderReview") && ui.includes("showModal"), "反映前に一覧確認ダイアログを開く");
 assert.ok(ui.includes("sourceText") && ui.includes("confidenceLabel") && ui.includes("methodLabel"), "原文・確信度・抽出方法を確認できる");
 assert.ok(ui.includes("metadataHtml") && ui.includes("import-metadata-select") && ui.includes("import-metadata-value"), "業務基本情報を項目別に確認・修正・選択できる");
+assert.ok(ui.includes('dataset.action = hasResults ? "apply" : "close"') && ui.includes("読み取れる項目なし・閉じる"), "候補0件では選択を要求せず閉じられる");
+assert.ok(ui.includes('$("importCandidateToolbar").hidden = candidateCount === 0') && ui.includes('$("importMetadataPanel").hidden = metadataCount === 0'), "候補がない区分の選択操作を隠す");
 assert.ok(ui.includes("window.confirm") && ui.includes("changesMaster"), "発注機関・年度の切替前に再確認する");
 assert.ok(ui.includes("import-survey-code") && ui.includes("import-survey-quantity"), "測量項目と数量を修正できる");
 assert.ok(ui.includes("import-consulting-service") && ui.includes("import-consulting-role") && ui.includes("import-consulting-days"), "設計・調査・地質の区分・職種・人工を修正できる");

@@ -7,7 +7,7 @@
   <meta name="description" content="設計、測量、航空・船舶、地質を年度別技術者単価と根拠表示付きで計算するWeb業務積算ソフト">
   <meta name="author" content="株式会社アイズ測量">
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="styles.css?v=20260822-9">
+  <link rel="stylesheet" href="styles.css?v=20260822-10">
 </head>
 <body data-business-scope="design">
   <header class="app-header">
@@ -523,13 +523,14 @@
         <div><span>抽出方法</span><strong id="importReviewMethods">—</strong></div>
         <div><span>候補</span><strong id="importReviewCount">0件</strong></div>
       </section>
-      <section class="import-metadata-panel">
-        <div class="import-metadata-heading"><div><strong>業務基本情報</strong><p>読み取れた項目を修正し、反映する項目だけチェックしてください。</p></div><label class="check"><input id="toggleAllImportMetadata" type="checkbox"><span>基本情報をすべて選択／解除</span></label></div>
+      <section id="importMetadataPanel" class="import-metadata-panel">
+        <div class="import-metadata-heading"><div><strong>業務基本情報</strong><p>読み取れた項目を修正し、反映する項目だけチェックしてください。</p></div><label id="toggleAllImportMetadataLabel" class="check"><input id="toggleAllImportMetadata" type="checkbox"><span>基本情報をすべて選択／解除</span></label></div>
         <div id="documentImportMetadataList" class="import-metadata-list"></div>
         <p id="importedBasisHint">現在選択中の発注機関・年度のマスターへ取り込みます。</p>
       </section>
       <div id="documentImportWarnings" class="import-warning-list" hidden></div>
-      <div class="import-review-toolbar"><label class="check"><input id="toggleAllImportCandidates" type="checkbox" checked><span>すべて選択／解除</span></label><span>黄色・赤色の候補は元資料を重点確認してください。</span></div>
+      <div id="documentImportEmptyGuide" class="import-empty-guide" hidden></div>
+      <div id="importCandidateToolbar" class="import-review-toolbar"><label class="check"><input id="toggleAllImportCandidates" type="checkbox" checked><span>積算候補をすべて選択／解除</span></label><span>黄色・赤色の候補は元資料を重点確認してください。</span></div>
       <div id="documentImportCandidateList" class="import-candidate-list"></div>
       <details class="import-source-preview"><summary>抽出した原文をページ別に確認</summary><div id="documentImportSourcePages"></div></details>
     </div>
@@ -553,12 +554,12 @@
   <script src="data/consulting-master.js?v=20260822-1"></script>
   <script src="engine.js?v=20260822-1"></script>
   <script src="consulting-engine.js?v=20260822-1"></script>
-  <script src="document-import-engine.js?v=20260822-2"></script>
+  <script src="document-import-engine.js?v=20260822-3"></script>
   <script src="official-case-engine.js?v=20260822-1"></script>
   <script src="document-reader.js?v=20260822-1"></script>
   <script src="app.js?v=20260822-10"></script>
   <script src="consulting.js?v=20260822-2"></script>
-  <script src="document-import.js?v=20260822-2"></script>
+  <script src="document-import.js?v=20260822-3"></script>
   <script src="official-case-search.js?v=20260822-1"></script>
   <script src="analytics.js?v=20260822-1"></script>
 </body>

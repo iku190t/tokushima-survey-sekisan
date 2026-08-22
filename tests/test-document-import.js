@@ -109,6 +109,21 @@ assert.ok(circledResult.candidates.some((candidate) => candidate.kind === "consu
 assert.ok(circledResult.candidates.some((candidate) => candidate.kind === "consulting" && candidate.role === "geologyEngineer" && candidate.days === 1.25), "OCR丸数字の地質人工を正規化する");
 assert.ok(circledResult.candidates.some((candidate) => candidate.kind === "consultingCost" && candidate.amount === 200000 && !candidate.selected), "OCRの点区切り金額は低確信度の未選択候補にする");
 
+const summaryTableResult = engine.analyze([{
+  pageNumber: 1,
+  method: "text",
+  text: [
+    "業 務 数 量 総 括 表",
+    "費目／工種／種別／細別／規格 単位 数量 摘要",
+    "令和6-7年度 ○○地区工事用道路外用地調査等業務",
+    "用地測量業務 式 1",
+    "直接測量費 式 1"
+  ].join("\n")
+}], surveyMaster, consultingMaster, jurisdictions);
+assert.strictEqual(summaryTableResult.metadata.projectName, "令和6-7年度 ○○地区工事用道路外用地調査等業務", "総括表の見出し行を業務名候補にする");
+assert.ok(summaryTableResult.metadata.fields.some((field) => field.key === "projectName" && field.confidence === "medium" && field.selected), "ラベルのない業務名は要確認候補として選択する");
+assert.strictEqual(summaryTableResult.candidates.length, 0, "総括表の式1を詳細な積算数量へ誤対応させない");
+
 const grouped = reader.textItemsToLines([
   { str: "20点", transform: [1, 0, 0, 1, 180, 700] },
   { str: "2級基準点測量", transform: [1, 0, 0, 1, 20, 700] },

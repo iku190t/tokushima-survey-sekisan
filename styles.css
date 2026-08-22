@@ -359,6 +359,10 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
 .import-warning-list { margin-top: 12px; padding: 11px 14px; color: #704c14; background: #fff4d8; border: 1px solid #e7ca8d; border-radius: 9px; font-size: 11px; line-height: 1.65; }
 .import-warning-list[hidden] { display: none; }
 .import-warning-list ul { margin: 0; padding-left: 18px; }
+.import-empty-guide { margin-top: 12px; padding: 14px 16px; color: #264c40; background: #edf6f2; border: 1px solid #b9d8cb; border-radius: 9px; font-size: 12px; line-height: 1.65; }
+.import-empty-guide strong, .import-empty-guide p { display: block; margin: 0; }
+.import-empty-guide p { margin-top: 4px; color: #4c625a; }
+.import-empty-guide[hidden], .import-metadata-panel[hidden], .import-review-toolbar[hidden], .import-candidate-list[hidden], .import-dialog-actions .button[hidden] { display: none; }
 .import-review-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 16px 0 9px; }
 .import-review-toolbar > span { color: var(--muted); font-size: 10px; }
 .import-candidate-list { display: grid; gap: 9px; }
