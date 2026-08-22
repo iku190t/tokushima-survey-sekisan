@@ -14,8 +14,8 @@
 | T-NATIONAL | `node tests/test-nationwide-standard.js` | 全国標準参考R6～R8の134項目、直接経費率108行、技術者単価、諸経費、代表固定金額、検証状態・出典・限界表示 | 全国標準参考マスター、年度・地域切替変更時は必須 | 合格 |
 | T-CONSULT | `node tests/test-consulting-engine.js` | 設計その他原価・一般管理費、電子成果品、地質諸経費、年度別職種単価、測量との税抜合算、人工桁 | 設計・調査計算、職種単価、総合計変更時は必須 | 合格 |
 | T-CONSULT-UI | `node tests/test-consulting-ui.js` | 4業務区分、人工入力、確認済み歩掛、警告、保存、新規、総合帳票結線 | `consulting.js`、総合画面・帳票変更時は必須 | 合格 |
-| T-DOC-IMPORT | `node tests/test-document-import.js` | PDF文字配置、数量と縮尺の分離、OCR丸数字・文字間隔、業務基本情報、測量数量、設計・地質人工、低確信度候補 | PDF/OCR解析、候補対応付け、正規化変更時は必須 | 合格 |
-| T-DOC-UI | `node tests/test-document-import-ui.js` | ドロップ、直接抽出/OCR切替、基本情報と積算候補の確認・修正・個別選択、マスター切替確認、反映先、ファイル非送信 | 資料取込画面、反映API、読取ライブラリ変更時は必須 | 合格 |
+| T-DOC-IMPORT | `node tests/test-document-import.js` | PDF文字配置、数量と縮尺の分離、OCR丸数字・文字間隔、業務基本情報、総括表見出し、測量数量、設計・地質人工、低確信度候補 | PDF/OCR解析、候補対応付け、正規化変更時は必須 | 合格 |
+| T-DOC-UI | `node tests/test-document-import-ui.js` | ドロップ、直接抽出/OCR切替、基本情報と積算候補の確認・修正・個別選択、0件時の案内・終了、マスター切替確認、反映先、ファイル非送信 | 資料取込画面、反映API、読取ライブラリ変更時は必須 | 合格 |
 | T-OFFICIAL-CASE | `node tests/test-official-case-engine.js` | 官公需API XML解析、案件一致度、資料分類、検索URL、安全なURLスキーム | 公式案件検索、XML解析、資料台帳候補変更時は必須 | 合格 |
 | T-OFFICIAL-CASE-UI | `node tests/test-official-case-ui.js` | 公式検索リンク、XML読込、採用状態、訂正版警告、ローカル資料SHA-256、直接fetch禁止 | 公式案件・資料台帳UI、保存API変更時は必須 | 合格 |
 

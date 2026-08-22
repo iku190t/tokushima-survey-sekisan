@@ -815,3 +815,48 @@ OK: official case search UI, source ledger, revision warning, and safe static-si
 | `README.txt` | `CE81C896E5ADABECB481B635D82567FC858829D91C164F7C0E3D269AD69A5C56` |
 | `DISCLAIMER.md` | `C19A06DD3BFB4EEF7B185D8C65119820FC518AD65BF15FB6D78D7AA616237C6A` |
 | `tests/test-ui-static.js` | `8D46C45E4D03979BE7AA49BD5AFF19464EC4C788D67039AC7DB1AD8001745C8A` |
+
+## B-2026-08-22-18
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-22
+- アプリコミット: `c304ad40d95a2d87d15ef22dbf81deac1eff739b`
+- GitHub Pagesビルド: `1167449473`（`built`）
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: B-2026-08-22-17へ、資料取込0件時の明示案内・終了動作、候補がない区分の選択欄非表示、業務数量総括表のラベルなし見出しを要確認の業務名候補とする処理を追加した版。
+
+### 合格した試験
+
+```text
+OK: consulting/design/geology calculation checks passed
+OK: consulting UI and report wiring checks passed
+OK: document import review UI and safe apply wiring checks passed
+OK: document PDF/OCR extraction and review candidate checks passed
+OK: regulation audit checks passed (master mapping, precision, quantity formulas, travel, rounding, overhead)
+OK: Hiroshima R6-R8 complete annual master audit checks passed
+OK: nationwide jurisdiction and verified master catalog checks passed
+OK: nationwide R6-R8 standard reference master checks passed
+OK: official procurement case matching, XML parsing, and source ledger candidates passed
+OK: official case search UI, source ledger, revision warning, and safe static-site wiring passed
+OK: MLIT official role price presets R4-R8 and consulting roles R6-R8
+OK: UI static wiring checks passed
+```
+
+追加検査: `git diff --check`合格。
+
+### 実ブラウザー確認
+
+- 匿名合成の業務数量総括表で、業務名見出し1件・積算0件を表示し、業務名だけを反映できることを確認した。
+- 基本情報0件・積算0件では両区分の選択操作が非表示となり、「読み取れる項目なし・閉じる」でダイアログが閉じることを確認した。
+- GitHub Pages公開版でも0件時の両選択区分が非表示で、終了ボタンが動作し、ブラウザー警告・エラー0件だった。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `C19C7F42B76A2961A3495D505C71C3F48DA5FCED2FBF763A04C9DBC05D7136E7` |
+| `styles.css` | `FA85663572D2015916B8E941E10ADFD1530C98DDDC8349EC862E8080C78BD595` |
+| `document-import-engine.js` | `5F887CE2F13C16EF8E028FC07CC524D2B0533985C53603FC4B57F077BF694194` |
+| `document-import.js` | `FF73A45FD320EF7642652AF1E43EC901672899C2F5A28805D39466AD5457E9DC` |
+| `tests/test-document-import.js` | `BF5991B5D26A1280B153B80BC301EAA52D0B90FB4D6B67B7FC718CE142CE37C4` |
+| `tests/test-document-import-ui.js` | `FE52FAFE22FD7CBAC6F5AC392B378F9B72B68071DD99E83EF8A46E1C697E347D` |
