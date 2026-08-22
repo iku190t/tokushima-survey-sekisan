@@ -38,6 +38,7 @@ for (const renderer of ["renderQuoteReport", "renderSummaryReport", "renderBreak
 assert.ok(app.includes('window.addEventListener("beforeprint", renderPrintDocument)'), "印刷直前に最新の積算結果から帳票を再生成する");
 assert.ok(css.includes("@page { size: A4 portrait"), "A4縦のページ設定がある");
 assert.ok(css.includes("table-header-group"), "複数ページで表頭を繰り返す設定がある");
+assert.ok(css.includes(".workspace-main, .master-layout { display: grid; min-width: 0;"), "狭い画面で積算表がページ全体を横へ押し出さない");
 assert.ok(html.includes('id="draftRecoveryPanel"'), "前回データの復元案内がある");
 assert.ok(html.includes('id="restoreDraftButton"'), "前回データを明示操作で復元できる");
 assert.ok(html.includes('id="dismissDraftButton"'), "新規画面のまま続けられる");

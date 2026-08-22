@@ -56,6 +56,15 @@
 - 証拠: 修正前後の`app.js`確認、`tests/test-ui-static.js`
 - 未検証: 実ブラウザーを使った操作試験。
 
+## I-007 スマートフォン幅で積算明細表がページ全体を横へ押し出した
+
+- 状態: **再現済み・修正済み・実ブラウザー試験済み**
+- 症状: 公開HTTPS版を幅390pxで表示すると、ページの`scrollWidth`が510pxとなり、積算明細表のために画面全体が横スクロールした。
+- 原因: 積算表自体には横スクロール枠があったが、CSS Grid項目の`.workspace-main`に`min-width: 0`がなく、表の最小内容幅まで親グリッドが縮まなかった。
+- 修正: `.workspace-main, .master-layout`へ`min-width: 0`を追加し、広い表は`.table-scroll`内だけで横スクロールさせる。
+- 再発防止: T-UIで親グリッドの最小幅解除を静的検査し、公開版の幅390pxで`documentElement.scrollWidth === innerWidth`を確認する。
+- 証拠: 公開版の幅390px実測、`styles.css`、`tests/test-ui-static.js`
+
 ## 廃止された考え方
 
 - 状態: **廃止**

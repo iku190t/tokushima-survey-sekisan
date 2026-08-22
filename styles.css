@@ -121,7 +121,7 @@ textarea { height: auto; min-height: 88px; resize: vertical; line-height: 1.65; 
 input:focus, select:focus, textarea:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(18,100,79,.11); }
 
 .workspace-grid { display: grid; grid-template-columns: minmax(0, 1fr) 310px; gap: 18px; align-items: start; }
-.workspace-main, .master-layout { display: grid; gap: 18px; }
+.workspace-main, .master-layout { display: grid; min-width: 0; gap: 18px; }
 .card, .summary-card {
   padding: 22px; background: var(--paper); border: 1px solid var(--line);
   border-radius: var(--radius); box-shadow: var(--shadow);
