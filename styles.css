@@ -14,7 +14,8 @@
 }
 
 * { box-sizing: border-box; }
-html { color-scheme: light; overflow-x: hidden; }
+html { color-scheme: light; }
+html, body { overflow-x: clip; }
 body {
   margin: 0;
   min-width: 320px;
