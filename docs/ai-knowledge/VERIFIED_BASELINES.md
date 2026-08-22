@@ -491,3 +491,327 @@ OK: nationwide R6-R8 standard reference master checks passed
 - 地方整備局等ごとの適用通知、特記仕様、個別費用。
 - 匿名化済み正解積算との全項目・全条件一致。
 - GA管理画面への許可時着信。
+
+## B-2026-08-22-12
+
+- 状態: **検証済み・未コミット作業ツリー**
+- 検証日: 2026-08-22
+- 基点コミット: `7c6f599b48f1d409fc66f816484e406396e478e6`
+- 内容: 既存の測量積算を保持し、土木設計、調査・計画、地質解析等、地質一般調査の人工入力・年度単価・区分別経費計算・測量との総合計・総合帳票を追加したローカル版。
+- 公開・push: 未実施。
+
+### 合格した試験
+
+```text
+OK: consulting/design/geology calculation checks passed
+OK: consulting UI and report wiring checks passed
+OK: MLIT official role price presets R4-R8 and consulting roles R6-R8
+OK: regulation audit checks passed (master mapping, precision, quantity formulas, travel, rounding, overhead)
+OK: UI static wiring checks passed
+OK: nationwide jurisdiction and verified master catalog checks passed
+OK: Hiroshima R6-R8 complete annual master audit checks passed
+OK: nationwide R6-R8 standard reference master checks passed
+```
+
+追加検査: `node --check app.js`、`node --check consulting.js`、`node --check consulting-engine.js`、`node --check data/consulting-master.js`、`node --check data/official-role-prices.js`、`git diff --check`。
+
+### 実ブラウザー確認
+
+- 画面切替は「測量積算」「設計・調査積算」「帳票・PDF」「年度・単価マスター」「使い方・計算根拠」の5タブ。
+- 令和8年度の確認済みプリセット「設計留意書の作成」は、主任技師0.5人日＋技師（A）1.0人日、直接人件費98,050円、その他原価52,796円、一般管理費等81,224円、設計業務価格232,070円、税込255,277円。
+- 令和7年度へ切り替えると直接人件費93,050円、設計業務価格220,235円、税込242,258円。
+- 令和8年度地質一般調査で地質調査技師1人日、直接調査費（人件費以外）100,000円、間接調査費200,000円、対象外費用10,000円とした固定値は、対象額358,300円、諸経費率82.5%、諸経費295,597円、地質業務価格663,897円。
+- 上記設計と地質を合算した総合業務価格895,967円、消費税89,596円、税込985,563円。
+- ブラウザー警告・エラー0件。
+- 幅390pxで本文幅375px、設計・調査の表表示枠345px・内部表850px。表は専用枠内で横スクロールする。既知のページ根元`scrollWidth=485px`は継続観察とする。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `A2FD1011BF3FE03596C383E79E5FDDC9E287F2A8525215CC1FE1780EAA4A3CDC` |
+| `app.js` | `B5F1F5E3E849F3273A45096092BFACB030FF699595456DF57FC5E8F145F1F0D9` |
+| `consulting.js` | `564DE66DB00DE7083B2A3E0BFE064DD672A805CC739BD969214643AF07E8F976` |
+| `consulting-engine.js` | `A283B6C5D6081045FE0029B76FBDA54C924CCCBAEE624EF55EDD17FDFDC81212` |
+| `styles.css` | `D40005DE47F613F1A61523565533161E1AFCA8B50B97C1CB46A269CCBBE0D160` |
+| `data/consulting-master.js` | `2C9AC54CA56457309290716F7307EFED93A38D228D0706E190D542BE096284D8` |
+| `data/official-role-prices.js` | `08048B827EB6EC705903F09EB863D7F7C83BC813C51E28264FB4FE1232240100` |
+| `tests/test-consulting-engine.js` | `DD0179824BF7EA70DFD181227DC37F4F1EB6C1FE0CD4F639DD6C4F05DABB1399` |
+| `tests/test-consulting-ui.js` | `0D7749CD86AEBC04A975DA3EA9A74284C3D60A852909623B84ED6799EFC16D2C` |
+
+### 保証しない範囲
+
+- 設計・調査・地質の全標準歩掛、市場単価、機械・材料・運搬・仮設・旅費、都道府県差分。
+- 人工入力行の採用歩掛が案件に適合すること。
+- 総合帳票を実際にPDF保存した全ページの目視品質。
+- 匿名化済み正解積算との費目別一致。
+
+## B-2026-08-22-13
+
+- 状態: **検証済み・未コミット作業ツリー**
+- 検証日: 2026-08-22
+- 基点コミット: `7c6f599b48f1d409fc66f816484e406396e478e6`
+- 内容: B-2026-08-22-12へ、PDF直接抽出、画像・画像PDFの日本語OCR、測量・設計・調査・地質の候補化、確認・修正ダイアログ、選択後反映を追加したローカル版。
+- 公開・push: 未実施。
+
+### 合格した試験
+
+```text
+OK: document PDF/OCR extraction and review candidate checks passed
+OK: document import review UI and safe apply wiring checks passed
+OK: consulting/design/geology calculation checks passed
+OK: consulting UI and report wiring checks passed
+OK: MLIT official role price presets R4-R8 and consulting roles R6-R8
+OK: regulation audit checks passed (master mapping, precision, quantity formulas, travel, rounding, overhead)
+OK: UI static wiring checks passed
+OK: nationwide jurisdiction and verified master catalog checks passed
+OK: Hiroshima R6-R8 complete annual master audit checks passed
+OK: nationwide R6-R8 standard reference master checks passed
+```
+
+追加検査: `node --check`を`app.js`、`consulting.js`、`consulting-engine.js`、`document-import-engine.js`、`document-reader.js`、`document-import.js`、`data/consulting-master.js`、`data/official-role-prices.js`へ実行し合格。`git diff --check`合格。
+
+### 匿名合成資料による実ブラウザー確認
+
+- A4・1ページの文字入り合成PDFを作成し、PDF.js 4.10.38の直接文字抽出で「PDF文字抽出」と判定した。
+- 測量3候補（2級基準点20点、4級水準3.5km、現地測量作業計画1業務）、設計・地質人工3候補（技師A 2.5人日、主任技師0.75人日、地質調査技師1.25人日）、低確信度・未選択の間接調査費1候補を表示した。
+- 確認画面で2級基準点を21点、技師Aを2.75人日に修正し、測量3件・人工3件を反映した。測量側は21点・3.5km・1業務、設計側は2.75・0.75・1.25人日を保持し、測量合算を有効にした。
+- 同じ合成資料をPNG画像としてTesseract.js 5.1.1の日本語・英語OCRへ入力した。OCRが数字を丸数字、4級を4紐、金額区切りを点として認識する状態を再現した。
+- 丸数字、日本語文字間隔、3桁点区切りの正規化後、候補7件を表示した。基準点、現地測量、設計、地質解析、地質一般の5件は選択、水準測量と金額は低確信度・未選択とした。
+- 確認ダイアログのデスクトップ表示を目視し、設計・調査行の確信度表示が狭い列へ回り込む不具合を修正後、再表示で解消を確認した。
+- 検証用PDF、PNG、生成スクリプトは検証後に削除した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `B801565FF325351B670210A09AF24A34C26F678973E2B500DCE0D20C455EA1BA` |
+| `styles.css` | `5C3DD968E36285827116F25974D2AB68801786D6A0E00D7ED45143DA1DE13980` |
+| `app.js` | `B7B6332637C9F75639C074193293489724D49E4591CA5E8C17D9C95E4644F366` |
+| `consulting.js` | `66D86E0D840C1DCC3928C8783935EFE2C44F82FD4547E54BEC913FEF639D442D` |
+| `document-import-engine.js` | `58084E4692D3F6D970E4DA3DDAB98FC7C72BCAA713F4EF83D15338A674CB47C9` |
+| `document-reader.js` | `29BEC05F987DC705235CB671DC68C62CFBF31A9D35FD926F3A7A91DFABD2CD8E` |
+| `document-import.js` | `2E1706E0C6E206A02614A6E127EB6CC56D92E336F7FBFAFAED29EF5703313A49` |
+| `tests/test-document-import.js` | `5620EC4DF48E989CCA9837BD4CE2917531E9941052439E6D18394AC86DF7D82E` |
+| `tests/test-document-import-ui.js` | `8C3F179C43FFF6BCE7F8B1FF046D25DE2303C02DAE10182D91D68CFA8C24069F` |
+| `README.txt` | `16893B117FEB5027FF5E37B6AEB5BE9B1418348CF37AF6F0759FD76C147CEDB8` |
+| `DISCLAIMER.md` | `84B9B3B1BF98B0C13DADF35F672A47263F9489323B3C3459327B84893709BC96` |
+
+### 保証しない範囲
+
+- 匿名合成資料以外の発注機関様式、複雑な表、縦書き、低解像度、傾き、手書き、押印重なりに対する抽出率。
+- OCR・PDF抽出候補が元資料と一致すること。候補は利用者の原文照合前に正解値として扱わない。
+- PDF.js、Tesseract.js、OCR言語データの外部配信先へ接続できない環境でのPDF・OCR自動読取り。原文貼付け経路は残す。
+- 実案件の抽出結果と正解積算の一致。
+
+## B-2026-08-22-14
+
+- 状態: **検証済み・未コミット作業ツリー**
+- 検証日: 2026-08-22
+- 基点コミット: `7c6f599b48f1d409fc66f816484e406396e478e6`
+- 内容: B-2026-08-22-13へ、業務名、発注者、担当部署、担当者、業務場所、履行期間、文書・業務番号、公告・資料日の項目別抽出・確認・修正・選択反映、業務基本情報欄、帳票連携を追加したローカル版。発注機関・年度マスターは初期未選択とする。
+- 公開・push: 未実施。
+
+### 合格した試験
+
+```text
+OK: document PDF/OCR extraction and review candidate checks passed
+OK: document import review UI and safe apply wiring checks passed
+OK: consulting/design/geology calculation checks passed
+OK: consulting UI and report wiring checks passed
+OK: MLIT official role price presets R4-R8 and consulting roles R6-R8
+OK: regulation audit checks passed (master mapping, precision, quantity formulas, travel, rounding, overhead)
+OK: UI static wiring checks passed
+OK: nationwide jurisdiction and verified master catalog checks passed
+OK: Hiroshima R6-R8 complete annual master audit checks passed
+OK: nationwide R6-R8 standard reference master checks passed
+```
+
+追加検査: `node --check`を`app.js`、`consulting.js`、`consulting-engine.js`、`document-import-engine.js`、`document-reader.js`、`document-import.js`、`data/consulting-master.js`、`data/official-role-prices.js`へ実行し合格。`git diff --check`合格。
+
+### 匿名合成原文による実ブラウザー確認
+
+- 業務基本情報10候補（通常8項目、初期未選択の発注機関・年度2項目）と積算2候補（測量数量、設計人工）を同一ダイアログへ表示した。
+- 各基本情報候補に、編集欄、反映チェック、元の行、ページ、抽出方法、確信度が表示された。確認画面のデスクトップ表示を目視し、列崩れ・文字重なりがないことを確認した。
+- 担当者を確認画面で修正し、通常基本情報8件、測量1件、設計人工1件を反映した。業務基本情報欄に修正値を保持し、発注者は帳票宛名、履行期間は帳票納期へ同期した。
+- 測量2級基準点20点と設計技師A 2.5人日は従来どおり各積算へ反映された。
+- 発注機関・年度の初期未選択、変更時確認のコード結線は静的試験済み。実ブラウザーによるマスター切替完了までは未検証扱いとする。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `6C69EFDC341ECBFCD5DFDD1285E943DB7B6E222BFB952C2F197E747DC76C965A` |
+| `styles.css` | `9F54631C22660972952B1721BCFAC4B214773DF3E15679B42007361AFFD6DFE6` |
+| `app.js` | `05597E3AE5C5175AF8A17AB936B252005D39762A294FA74A9552B421CDEC9E68` |
+| `consulting.js` | `FFEC2CA9BF03BCFF1F1E1F3D7CD530939EBB8BB5EFF39C7BB2D20967496F7786` |
+| `document-import-engine.js` | `CD732CCA110FC3492E7CD13350F08E29DEA77545A78696C12089342D20ED1174` |
+| `document-reader.js` | `29BEC05F987DC705235CB671DC68C62CFBF31A9D35FD926F3A7A91DFABD2CD8E` |
+| `document-import.js` | `97B9D075123E4C5DBD517D5B9762D5E3D7A8F8D8D469859D154AF6422B712508` |
+| `tests/test-document-import.js` | `06E91915CF6F1A26CAF5E45FDB5B39F209C90CF2D5F42F4F927823019019DFD2` |
+| `tests/test-document-import-ui.js` | `9A5ED6C0C13EFFB6E088DDFB30506365D84EE6C1A05DD0535B96C18AFC982445` |
+| `README.txt` | `BA8D06E98E6C024B144943B0B6493FDF518E4BC5E0D817DAE2F0B308F00FAED6` |
+| `DISCLAIMER.md` | `84B9B3B1BF98B0C13DADF35F672A47263F9489323B3C3459327B84893709BC96` |
+
+### 保証しない範囲
+
+- 匿名合成原文以外の発注機関様式、表セル分割、複数候補、変更契約、住所改行、縦書き、低品質OCRでの業務基本情報抽出率。
+- 抽出された発注者、担当者、場所、期間、番号、日付が元資料と一致すること。利用者の原文照合を必須とする。
+- 発注機関・年度マスターを確認ダイアログから切り替える実ブラウザー完了操作。
+
+## B-2026-08-22-15
+
+- 状態: **検証済み・未コミット作業ツリー**
+- 検証日: 2026-08-22
+- 基点コミット: `7c6f599b48f1d409fc66f816484e406396e478e6`
+- 内容: B-2026-08-22-14へ、官公需情報ポータルAPI用検索条件、公式XML読込、案件一致度、公告・仕様書・数量表・質問回答・訂正版等の資料分類、採用状態・取得元・ハッシュを保持する案件資料台帳を追加したローカル版。
+- 公開・push: 未実施。
+
+### 合格した試験
+
+```text
+OK: regulation audit checks passed (master mapping, precision, quantity formulas, travel, rounding, overhead)
+OK: MLIT official role price presets R4-R8 and consulting roles R6-R8
+OK: UI static wiring checks passed
+OK: nationwide jurisdiction and verified master catalog checks passed
+OK: Hiroshima R6-R8 complete annual master audit checks passed
+OK: nationwide R6-R8 standard reference master checks passed
+OK: consulting/design/geology calculation checks passed
+OK: consulting UI and report wiring checks passed
+OK: document PDF/OCR extraction and review candidate checks passed
+OK: document import review UI and safe apply wiring checks passed
+OK: official procurement case matching, XML parsing, and source ledger candidates passed
+OK: official case search UI, source ledger, revision warning, and safe static-site wiring passed
+```
+
+追加検査: `node --check`を主要JavaScript 10ファイルへ実行し合格。`git diff --check`合格。危険なURLスキームを台帳候補から除外する固定値試験も合格。
+
+### 公式仕様・実ブラウザー確認
+
+- 官公需情報ポータル検索APIガイドV1.1で、案件名、機関名、地方公共団体コード、公告日等の検索条件と、案件キー、原ページURL、案件名、機関名、履行場所、添付資料URL等のXML結果項目を確認した。
+- 公式HTTPS APIが2026-08-22時点でXMLを返すこと、試験条件の応答に検索結果1件と添付資料2件が含まれることを確認した。応答にCORS許可ヘッダーは確認できなかった。
+- 匿名合成XMLをローカル実画面へ読み込み、番号・業務名・発注機関・都道府県・年度の一致理由と一致度100を表示した。
+- 公告、仕様書、数量表、訂正版の4資料を台帳登録し、採用済み資料なし・訂正版未採用の警告を表示した。公告と訂正版を採用後、警告が消えることを確認した。
+- 候補表示と資料台帳のデスクトップ表示を目視し、列崩れ・文字重なりがないこと、ブラウザー警告・エラー0件を確認した。検証用XMLは削除した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `DB969C90A470C1EBBBBC3C955A01D915A473B694A18073729B8A27A74B3E574D` |
+| `styles.css` | `13B661FDF52C4D0E17C41931EC6FF0959A09102955830D29DA3D722D363A1AD6` |
+| `app.js` | `31D6785F8507C82DB5748FA3FDFF51235BED79FC37FA3473785D6FFAD1DF7D5C` |
+| `official-case-engine.js` | `8B010B1A4AE9EF904021C617011B95039B2E6E1FD7615844486296D4C392FFB0` |
+| `official-case-search.js` | `C9CFF129D94D72EE5E17A3B6F13C3A05F5FE4CC1A1DD1E33D428558E55306075` |
+| `tests/test-official-case-engine.js` | `6C90BCA389A6FA63647437F6370CD3979DBE4F6B5673386BB12E8E73ADCDF980` |
+| `tests/test-official-case-ui.js` | `C3D02E2FF8913CFD5C412764C8974AFAE09E5C3A303B42B3AF06B32DCA75D54D` |
+| `README.txt` | `E8D1C27605FBAF4B68F5F063E71001E253C1E184B88F3297E036CD15EB973C58` |
+| `DISCLAIMER.md` | `1796EC618248F5D3B40E36303352BB39BC7DEECF6AE277E75AA38A88EB812B98` |
+
+### 保証しない範囲
+
+- 官公需情報ポータルに全公告・全添付・最新版が収録されること、公開リンクが継続すること。
+- 実案件での候補再現率・誤一致率、同名案件・番号表記ゆれ・変更契約・後日訂正の自動解決。
+- 一致度、資料種別、採用状態が原資料の内容確認を代替すること。利用者が発注機関の原ページと最新版を確認する。
+
+## B-2026-08-22-16
+
+- 状態: **検証済み・未コミット作業ツリー**
+- 検証日: 2026-08-22
+- 基点コミット: `7c6f599b48f1d409fc66f816484e406396e478e6`
+- 内容: B-2026-08-22-15へ、アプリ見出し「web積算」、設計業務・測量業務・航空／船舶関係・地質業務の4業務タブ、タブ別の作業・業務区分・積上費用表示を追加したローカル版。既存の保存データ構造と計算エンジンは変更しない。
+- 公開・push: 未実施。
+
+### 合格した試験
+
+```text
+OK: regulation audit checks passed (master mapping, precision, quantity formulas, travel, rounding, overhead)
+OK: MLIT official role price presets R4-R8 and consulting roles R6-R8
+OK: UI static wiring checks passed
+OK: nationwide jurisdiction and verified master catalog checks passed
+OK: Hiroshima R6-R8 complete annual master audit checks passed
+OK: nationwide R6-R8 standard reference master checks passed
+OK: consulting/design/geology calculation checks passed
+OK: consulting UI and report wiring checks passed
+OK: document PDF/OCR extraction and review candidate checks passed
+OK: document import review UI and safe apply wiring checks passed
+OK: official procurement case matching, XML parsing, and source ledger candidates passed
+OK: official case search UI, source ledger, revision warning, and safe static-site wiring passed
+```
+
+追加検査: `node --check`を`app.js`、`consulting.js`へ実行し合格。`git diff --check`合格。
+
+### 実ブラウザー確認
+
+- ヘッダー見出しが「web積算」、初期表示が「設計業務」であることを確認した。
+- 業務タブの順番が「設計業務」「測量業務」「航空・船舶関係」「地質業務」であることを確認した。
+- 設計業務タブは土木設計業務・調査計画業務だけ、地質業務タブは地質解析等調査業務・地質一般調査業務だけを表示した。
+- 測量業務タブは共通・基準点・水準・路線・河川・用地・現地測量の77項目、航空・船舶関係タブは深浅・空中写真・航空レーザ・UAV写真点群・地上レーザ・UAVレーザの57項目を表示した。合計134項目で重複なし。
+- 地質業務に確認済み標準歩掛がない状態では追加ボタンを無効化し、推定歩掛を追加しないことを確認した。
+- デスクトップ表示でタブ、入力欄、総合結果の重なり・崩れがなく、ブラウザー警告・エラー0件を確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `6D5AA6AC4FC53E096EF9FB49CC51CFEF3144AC477E9D3994AB1F4390CF62F1FF` |
+| `styles.css` | `049B679C8029882EDA08C3C2D71E7673639BFDFB672BE100BAF153D4F8546924` |
+| `app.js` | `57009410D18E0346E1DA35E6BAF74ABB2A0408215A70FDDFFD66D4FC060EA0FA` |
+| `consulting.js` | `7739467617DE1BB7259ACF9EB7F55B7BF418154959C5C81DC89FDD30D1883DBD` |
+| `tests/test-ui-static.js` | `650FDAD07582DB9C91DDDEA92E41D8BE0D2A9D49CAAB4B90DB155A8600E5B8E2` |
+| `tests/test-consulting-ui.js` | `5B5B07CB4149FF9A62F27482078696F63BF0DA37F300C8C922EC3C198C0A544E` |
+| `tests/test-document-import-ui.js` | `0341F1418519784F537644DCF974EE1F8B3A05DF00E7BEE4D8E950E9B0D362F3` |
+| `README.txt` | `A4B3CB06E278CD4B460D0D1DD37B7C0DAA8AC478587A0FEB087143EB99B7695D` |
+| `DISCLAIMER.md` | `C19A06DD3BFB4EEF7B185D8C65119820FC518AD65BF15FB6D78D7AA616237C6A` |
+
+### 保証しない範囲
+
+- タブ分離は表示と入力候補の区分であり、各業務を別案件・別保存ファイルへ自動分割しない。
+- 航空・船舶関係を独立した別計算方式へ変更したものではなく、収録済み測量積算基準の該当作業を表示する。
+
+## B-2026-08-22-17
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-22
+- アプリコミット: `0f6a2a567f92740a9bb825e714c53ef0d1ac7766`
+- GitHub Pagesビルド: `1167424133`（`built`）
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: B-2026-08-22-16を公開し、大型の黄色い参考試算注意帯を廃止。「使い方・計算根拠」の右側に小型の「参考試算・免責」ボタンを配置し、押した場合だけ既存の統合案内を表示する。
+
+### 合格した試験
+
+```text
+OK: regulation audit checks passed (master mapping, precision, quantity formulas, travel, rounding, overhead)
+OK: MLIT official role price presets R4-R8 and consulting roles R6-R8
+OK: UI static wiring checks passed
+OK: nationwide jurisdiction and verified master catalog checks passed
+OK: Hiroshima R6-R8 complete annual master audit checks passed
+OK: nationwide R6-R8 standard reference master checks passed
+OK: consulting/design/geology calculation checks passed
+OK: consulting UI and report wiring checks passed
+OK: document PDF/OCR extraction and review candidate checks passed
+OK: document import review UI and safe apply wiring checks passed
+OK: official procurement case matching, XML parsing, and source ledger candidates passed
+OK: official case search UI, source ledger, revision warning, and safe static-site wiring passed
+```
+
+追加検査: `git diff --check`合格。
+
+### ローカル・公開版の実ブラウザー確認
+
+- 本文先頭の大型注意帯が0件、「使い方・計算根拠」直後の小型「参考試算・免責」ボタンが表示されることを確認した。
+- 小型ボタンから統合ダイアログが開き、公式ソフトではない旨、制作、応援、免責、プライバシーが表示されることを確認した。
+- 公開HTTPS版で見出し「web積算」、4業務タブ、上部小型免責ボタン、大型注意帯0件を確認した。
+- ローカル版・公開版ともブラウザー警告・エラー0件。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `754B0B17D6B3D7300924196E5DF1FC44B4776A78712F599DD19A045204CF9E0D` |
+| `styles.css` | `5CB0BD3EAD842AA566A5B8C53327EB6C2FE360571F5AED01414EC9E91E2FF415` |
+| `app.js` | `57009410D18E0346E1DA35E6BAF74ABB2A0408215A70FDDFFD66D4FC060EA0FA` |
+| `consulting.js` | `7739467617DE1BB7259ACF9EB7F55B7BF418154959C5C81DC89FDD30D1883DBD` |
+| `README.txt` | `CE81C896E5ADABECB481B635D82567FC858829D91C164F7C0E3D269AD69A5C56` |
+| `DISCLAIMER.md` | `C19A06DD3BFB4EEF7B185D8C65119820FC518AD65BF15FB6D78D7AA616237C6A` |
+| `tests/test-ui-static.js` | `8D46C45E4D03979BE7AA49BD5AFF19464EC4C788D67039AC7DB1AD8001745C8A` |
