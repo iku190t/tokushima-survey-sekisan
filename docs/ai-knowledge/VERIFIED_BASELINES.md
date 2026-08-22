@@ -293,3 +293,201 @@ OK: nationwide jurisdiction and verified master catalog checks passed
 
 - 地方整備局等ごとの適用通知、特記仕様、個別費用、匿名化済み正解積算との一致。
 - 徳島県以外46都道府県の完全マスター。未収録県には国交省版・徳島県版を流用しない。
+
+## B-2026-08-22-08
+
+- 状態: **検証済み・未コミット作業ツリー**
+- 検証日: 2026-08-22
+- 基点コミット: `3cfed5f`
+- 内容: 広島県の令和6・7・8年度完全年度マスター、公式原資料台帳、PDF抽出直接経費率108行監査、ローカル初期収録、配信カタログを追加した版。
+- 注意: 既存の未コミット変更を保護しているため、この基準はコミットIDではなく下記ハッシュで識別する。公開・pushは未実施。
+
+### 合格した自動試験
+
+```text
+OK: regulation audit checks passed (master mapping, precision, quantity formulas, travel, rounding, overhead)
+OK: MLIT official role price presets R4-R8
+OK: Hiroshima R6-R8 complete annual master audit checks passed
+OK: nationwide jurisdiction and verified master catalog checks passed
+OK: UI static wiring checks passed
+```
+
+追加検査: `node --check app.js`、`node --check data/verified-masters.js`、`node --check tools/generate-hiroshima-masters.js`、`git diff --check`。
+
+### 実ブラウザー確認
+
+- 広島県を選択すると令和8・7・6年度の順に3年度を表示する。
+- 2級基準点測量10点の標準直接費は、令和8年度3,448,507円、令和7年度3,387,528円、令和6年度3,073,858円へ切り替わる。
+- 完全検証済み表示は2/47都道府県。ブラウザー警告・エラーは0件。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `app.js` | `9BD33563699EBDB6BF0214B1C4FE43F2FBD29F956232ACF0F2A766B8A90A35FF` |
+| `index.html` | `CCEB3CF9BB8E2FB217ADD0592668E4C90C798AAFF56FFA3D8E258AB7EE2D5055` |
+| `data/master-catalog.json` | `9CA6639DB30B1813B322BBE3C9F4C1639E2B831694B92C1AC35DB967E81D37CF` |
+| `data/official-source-catalog.json` | `0C64F9AD03F2298860B4BFA7A4B1CC85A97D896FD8E19F174D5B2FF8EF632346` |
+| `data/master-hiroshima-r6.json` | `18181AD84364AB7E97C9EDFA505069C04A628FABDEC3E8EB7146083A725F958F` |
+| `data/master-hiroshima-r7.json` | `4AB5E2646C7A7A597B66F487405FDBE9B72CE09CDFFB359DE441E69517889E6E` |
+| `data/master-hiroshima-r8.json` | `0992EF182B0E93CC7D0D8C771617459E1761C15EAE60A1E398756D43474B2E5A` |
+| `data/source-audits/hiroshima-r6-r8-expense-rates.json` | `4EC6D5233646790C1B0A1FE26BBC3C3313584759D20744C8C98567C966C2E899` |
+| `data/verified-masters.js` | `3330736383445F419B13E6E0C18BDB31795FD97C1667CA070E1E4A75F9936F8F` |
+| `tests/test-hiroshima-masters.js` | `FF1C90B6F48AB38B50D591D39459ED19DC31E7AA14579D3E967E880CB27F89BC` |
+| `tests/test-master-catalog.js` | `3CB89661FE46C68DAAE57EF8A694DE8569FAAB3D6045FDE15189CA0C1D8F2AF2` |
+| `tests/test-ui-static.js` | `87BD32B5122E8A588763FBB11EED0A77E88E66E126D242EAD087966BAD581323` |
+| `tools/generate-hiroshima-masters.js` | `EDEB4F4046937F8FE5D2C47FBE2DE925C9DEB5BB1939A1FB5C6A22D2F4E026E9` |
+
+### 保証しない範囲
+
+- 航空運航費、成果検定費、案件固有条件、特記仕様、将来の正誤表。
+- 匿名化済み正解積算との全134項目・全条件一致。
+- 徳島県・広島県以外45都道府県の完全年度マスター。
+- 国土交通省直轄の地方整備局等別運用。国版は引き続き公開基準参照・要確認である。
+
+## B-2026-08-22-09
+
+- 状態: **検証済み・未コミット作業ツリー**
+- 検証日: 2026-08-22
+- 基点コミット: `3cfed5f`
+- 内容: SurveyPlan型の「全国標準土台＋県版検証済み上書き」へ変更。国交省と47都道府県の全発注機関で令和6・7・8年度を選択でき、県差分未確認時は全国標準参考として警告する。徳島県令和8年度、広島県令和6～8年度は県版検証済みを優先する。
+- 注意: 既存の未コミット変更を保護しているため、この基準はコミットIDではなく下記ハッシュで識別する。公開・pushは未実施。
+
+### 合格した自動試験
+
+```text
+OK: regulation audit checks passed (master mapping, precision, quantity formulas, travel, rounding, overhead)
+OK: MLIT official role price presets R4-R8
+OK: UI static wiring checks passed
+OK: nationwide jurisdiction and verified master catalog checks passed
+OK: Hiroshima R6-R8 complete annual master audit checks passed
+OK: nationwide R6-R8 standard reference master checks passed
+```
+
+追加検査: `node --check app.js`、`node --check data/national-standard-masters.js`、`node --check data/verified-masters.js`、`node --check tools/generate-hiroshima-masters.js`、`git diff --check`。
+
+### ローカルHTTP実ブラウザー確認
+
+- 発注機関48件、無効0件。国交省と47都道府県すべてを選択できる。
+- 徳島県は令和8年度が県版検証済み、令和6・7年度が全国標準参考。広島県は令和6～8年度が県版検証済み。北海道等の県差分未確認県と国交省は令和6～8年度が全国標準参考。
+- 北海道では県独自歩掛、労務・材料・市場・機械単価、補正、適用通知が未反映である警告を表示する。
+- 国交省全国標準参考の2級基準点測量10点は、令和6年度3,073,858円／1点307,300円、令和7年度3,387,528円／1点338,700円、令和8年度3,448,507円／1点344,800円を表示する。
+- ブラウザーの警告・エラーは0件。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `app.js` | `16E3A2BA4D7370843BEEF6E761EAF6806AD15787F26A6FCB482C9F0D43DB69F8` |
+| `index.html` | `E9930812803066DFEC623D85BD9ADD6700DFEBBCCE85A8DADC0A10CC8670AEBC` |
+| `data/national-standard-masters.js` | `A1E865B6A2717F582342CDEA754AD46981B3D79C51162BC01787AFAE51E1A740` |
+| `data/master-standard-r6.json` | `D740435B129CAE0F988A1DDDFCAEEAD89BD1F44E1DFDD20E3BF4C2996EE93F7C` |
+| `data/master-standard-r7.json` | `0EAD9280B64B58509489F6E1CE764A25847C86CA093451DBFF65A59A2AA72F5B` |
+| `data/master-standard-r8.json` | `496398A9695DDF482AAA5CE93B542EFCBF40417B95F6CF8D249A37FD99713BAD` |
+| `data/verified-masters.js` | `3330736383445F419B13E6E0C18BDB31795FD97C1667CA070E1E4A75F9936F8F` |
+| `data/official-source-catalog.json` | `0C64F9AD03F2298860B4BFA7A4B1CC85A97D896FD8E19F174D5B2FF8EF632346` |
+| `data/source-audits/hiroshima-r6-r8-expense-rates.json` | `4EC6D5233646790C1B0A1FE26BBC3C3313584759D20744C8C98567C966C2E899` |
+| `tests/test-nationwide-standard.js` | `0FB7104286D86345472830BD3CA287433898071CD2E75E8716AA3BA7386828AD` |
+| `tests/test-hiroshima-masters.js` | `FF1C90B6F48AB38B50D591D39459ED19DC31E7AA14579D3E967E880CB27F89BC` |
+| `tests/test-master-catalog.js` | `B3144A02CF4A7613DB127BEB783877CA442E1A716E6F175E2C3E34D94C91BD43` |
+| `tests/test-ui-static.js` | `8D69B0E8461ABC82B3A25D77558C9B608B0CD0AB8C4820594276CFE6B31189A6` |
+| `tools/generate-hiroshima-masters.js` | `0F312D99B8CBCDFFD87B51F90499CDF510883F209D6487085EB6F9CC6FA993B5` |
+
+### 保証しない範囲
+
+- 徳島県・広島県以外45都道府県の県独自歩掛、単価、補正、適用通知。
+- 地方整備局等ごとの適用通知、特記仕様、個別費用。
+- 航空運航費、成果検定費、案件固有条件、将来の正誤表。
+- 匿名化済み正解積算との全134項目・全条件一致。
+
+## B-2026-08-22-10
+
+- 状態: **検証済み・未コミット作業ツリー**
+- 検証日: 2026-08-22
+- 基点コミット: `3cfed5f`
+- 内容: フッターの重複導線を「Ez積算」1ボタンに統合。制作会社・公式サイト・OFUSE応援・ゲスト送信案内・免責・プライバシー設定を1つのダイアログへ集約した。
+- 注意: B-2026-08-22-09以降の未コミット変更を含む。公開・pushは未実施。
+
+### 合格した試験
+
+```text
+OK: UI static wiring checks passed
+OK: regulation audit checks passed (master mapping, precision, quantity formulas, travel, rounding, overhead)
+OK: MLIT official role price presets R4-R8
+OK: nationwide jurisdiction and verified master catalog checks passed
+OK: Hiroshima R6-R8 complete annual master audit checks passed
+OK: nationwide R6-R8 standard reference master checks passed
+```
+
+追加検査: `node --check app.js`、`git diff --check`。
+
+### ローカルHTTP実ブラウザー確認
+
+- フッターの表示・ボタンは「Ez積算」1個、フッター内リンク0件、ページ内ダイアログ1個。
+- Analytics同意を拒否した後、フッターの「Ez積算」を押すと統合ダイアログがモーダル表示される。
+- 統合ダイアログに「制作」「応援のご案内」「利用条件・免責事項」「プライバシー・アクセス解析」、公式サイト、OFUSE、アクセス解析設定を表示する。
+- ブラウザーの警告・エラーは0件。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `49C9B5AA9EE38CD35101B72E5BD825A0D0EB655DE689DEE0C0C703D2D89DD261` |
+| `app.js` | `B462A8DF2E7F70D38F38D2F202974B4A41A4AB5B1CE0DB01F2FD83BD65289ED4` |
+| `styles.css` | `1CD4AF87E59B244EC56C51FD40B36859DF6B066B7781EAB07AC8F84FFF78ACDE` |
+| `tests/test-ui-static.js` | `D96F6BD46855152017D00BE53B9927B2843AA961CABC3A86E053D5340E5A69A5` |
+
+### 未検証
+
+- GitHub Pages公開後の表示とキャッシュ更新。
+- GA管理画面への許可時着信。
+
+## B-2026-08-22-11
+
+- 状態: **検証済み・GitHub Pages公開版**
+- 検証日: 2026-08-22
+- アプリコミット: `7ab9313941940e2d7ce41204344816ba549a253f`
+- ブランチ: `main`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- Pagesビルド: `1167136725`、状態`built`、エラーなし
+- 内容: B-2026-08-22-09とB-2026-08-22-10を統合して公開。国交省＋47都道府県、全国標準参考R6～R8、徳島県R8・広島県R6～R8の県版検証済み上書き、フッター1ボタンの統合案内を含む。
+
+### 合格した試験
+
+```text
+OK: regulation audit checks passed (master mapping, precision, quantity formulas, travel, rounding, overhead)
+OK: MLIT official role price presets R4-R8
+OK: UI static wiring checks passed
+OK: nationwide jurisdiction and verified master catalog checks passed
+OK: Hiroshima R6-R8 complete annual master audit checks passed
+OK: nationwide R6-R8 standard reference master checks passed
+```
+
+追加検査: `node --check app.js`、`node --check data/national-standard-masters.js`、`node --check data/verified-masters.js`、`node --check tools/generate-hiroshima-masters.js`、`git diff --check`、秘密鍵・GitHubトークン形式の静的走査。
+
+### 公開HTTPS版の実ブラウザー確認
+
+- 発注機関48件、無効0件。初期選択の徳島県で令和8年度県版検証済み、令和7・6年度全国標準参考を表示する。
+- フッターは「Ez積算」ボタン1個、直リンク0件、ページ内ダイアログ1個。
+- 「Ez積算」を押すと、制作、公式サイト、OFUSE応援、免責、プライバシー・アクセス解析設定を1画面に表示する。
+- ブラウザー警告・エラー0件。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `49C9B5AA9EE38CD35101B72E5BD825A0D0EB655DE689DEE0C0C703D2D89DD261` |
+| `app.js` | `B462A8DF2E7F70D38F38D2F202974B4A41A4AB5B1CE0DB01F2FD83BD65289ED4` |
+| `styles.css` | `1CD4AF87E59B244EC56C51FD40B36859DF6B066B7781EAB07AC8F84FFF78ACDE` |
+| `DISCLAIMER.md` | `EF7336700C53FF8C10F9F2A28B69B7EB040C86D5E29B26F4BE1C32FF7DA98148` |
+| `data/master-catalog.json` | `9CA6639DB30B1813B322BBE3C9F4C1639E2B831694B92C1AC35DB967E81D37CF` |
+| `data/national-standard-masters.js` | `A1E865B6A2717F582342CDEA754AD46981B3D79C51162BC01787AFAE51E1A740` |
+| `tests/test-ui-static.js` | `D96F6BD46855152017D00BE53B9927B2843AA961CABC3A86E053D5340E5A69A5` |
+| `tests/test-nationwide-standard.js` | `0FB7104286D86345472830BD3CA287433898071CD2E75E8716AA3BA7386828AD` |
+
+### 保証しない範囲
+
+- 徳島県・広島県以外45都道府県の県独自歩掛、単価、補正、適用通知。
+- 地方整備局等ごとの適用通知、特記仕様、個別費用。
+- 匿名化済み正解積算との全項目・全条件一致。
+- GA管理画面への許可時着信。
