@@ -3,19 +3,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ez積算｜国土交通省・都道府県別 測量積算ワークベンチ</title>
-  <meta name="description" content="発注機関と年度を分離し、国土交通省の公開基準参照版と検証済み都道府県マスターを根拠表示付きで計算する測量積算ソフト">
+  <title>web積算｜設計・測量・航空船舶・地質 業務積算</title>
+  <meta name="description" content="設計、測量、航空・船舶、地質を年度別技術者単価と根拠表示付きで計算するWeb業務積算ソフト">
   <meta name="author" content="株式会社アイズ測量">
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="styles.css?v=20260822-7">
+  <link rel="stylesheet" href="styles.css?v=20260822-9">
 </head>
-<body>
+<body data-business-scope="design">
   <header class="app-header">
     <div class="brand">
       <div class="brand-mark" aria-hidden="true">∑</div>
       <div>
-        <p class="eyebrow">SURVEY COST WORKBENCH</p>
-        <h1>測量積算ワークベンチ</h1>
+        <p class="eyebrow">PROFESSIONAL SERVICES COST WORKBENCH</p>
+        <h1>web積算</h1>
       </div>
     </div>
     <div class="header-actions no-print">
@@ -28,18 +28,23 @@
   </header>
 
   <nav class="view-tabs no-print" aria-label="画面切替">
-    <button class="view-tab active" data-view="estimate" type="button">積算</button>
-    <button class="view-tab" data-view="report" type="button">帳票・PDF</button>
-    <button class="view-tab" data-view="master" type="button">年度・単価マスター</button>
-    <button class="view-tab" data-view="guide" type="button">使い方・計算根拠</button>
+    <div class="view-tab-group business-view-tabs" role="group" aria-label="業務区分">
+      <button class="view-tab active" data-view="consulting" data-business-scope="design" type="button">設計業務</button>
+      <button class="view-tab" data-view="estimate" data-business-scope="survey" type="button">測量業務</button>
+      <button class="view-tab" data-view="estimate" data-business-scope="aerial" type="button">航空・船舶関係</button>
+      <button class="view-tab" data-view="consulting" data-business-scope="geology" type="button">地質業務</button>
+    </div>
+    <div class="view-tab-group utility-view-tabs" role="group" aria-label="共通機能">
+      <button class="view-tab" data-view="import" type="button">PDF・写真取込</button>
+      <button class="view-tab" data-view="report" type="button">帳票・PDF</button>
+      <button class="view-tab" data-view="master" type="button">年度・単価マスター</button>
+      <button class="view-tab" data-view="guide" type="button">使い方・計算根拠</button>
+      <button id="aboutToolButton" class="nav-notice-button" type="button" title="参考試算・免責・利用条件を表示"><span aria-hidden="true">i</span>参考試算・免責</button>
+    </div>
   </nav>
 
   <main>
-    <aside class="reference-notice no-print" aria-label="本ツールの位置づけ">
-      <div><strong>参考試算用・公式ソフトではありません</strong><span>実務利用時は、最新の公式基準・特記仕様書・発注者運用・正解積算と必ず照合してください。</span></div>
-      <button id="aboutToolButton" class="text-button" type="button">免責・利用条件を見る</button>
-    </aside>
-    <section id="estimateView" class="view active">
+    <section id="estimateView" class="view">
       <section id="draftRecoveryPanel" class="draft-recovery no-print" hidden>
         <div class="draft-recovery-copy">
           <span class="draft-recovery-icon" aria-hidden="true">↶</span>
@@ -75,6 +80,18 @@
           <input id="projectMemo" type="text" placeholder="任意">
         </label>
       </section>
+      <details class="project-details-panel">
+        <summary>発注者・履行場所・期間などの業務基本情報</summary>
+        <div class="project-info-grid">
+          <label class="field"><span>発注者</span><input class="project-info-input" data-project-info="orderingParty" type="text"></label>
+          <label class="field"><span>担当部署</span><input class="project-info-input" data-project-info="department" type="text"></label>
+          <label class="field"><span>担当者</span><input class="project-info-input" data-project-info="contactName" type="text"></label>
+          <label class="field"><span>業務場所</span><input class="project-info-input" data-project-info="workLocation" type="text"></label>
+          <label class="field"><span>履行期間</span><input class="project-info-input" data-project-info="contractPeriod" type="text"></label>
+          <label class="field"><span>文書・業務番号</span><input class="project-info-input" data-project-info="documentNumber" type="text"></label>
+          <label class="field"><span>公告・資料日</span><input class="project-info-input" data-project-info="documentDate" type="text"></label>
+        </div>
+      </details>
 
       <section class="accuracy-strip" aria-live="polite">
         <span class="accuracy-icon" aria-hidden="true">✓</span>
@@ -90,7 +107,7 @@
             <div class="card-title-row">
               <div>
                 <p class="section-kicker">WORK ITEM</p>
-                <h2>作業項目を追加</h2>
+                <h2 id="surveyWorkItemHeading">測量作業項目を追加</h2>
               </div>
               <span id="itemCountBadge" class="badge"></span>
             </div>
@@ -116,7 +133,7 @@
             <div class="card-title-row">
               <div>
                 <p class="section-kicker">ESTIMATE DETAIL</p>
-                <h2>積算内訳</h2>
+                <h2 id="surveyDetailHeading">測量業務の積算内訳</h2>
               </div>
               <button id="exportCsvButton" class="button quiet no-print" type="button">CSV出力</button>
             </div>
@@ -137,7 +154,7 @@
               </table>
               <div id="emptyState" class="empty-state">
                 <span class="empty-icon">＋</span>
-                <p>上の「作業項目を追加」から積算を始めます。</p>
+                <p id="surveyEmptyText">上の「測量作業項目を追加」から積算を始めます。</p>
               </div>
             </div>
           </section>
@@ -169,7 +186,7 @@
 
         <aside class="summary-card">
           <p class="section-kicker">COST SUMMARY</p>
-          <h2>積算結果</h2>
+          <h2 id="surveySummaryHeading">案件全体の測量積算結果</h2>
           <div class="grand-total">
             <span>税込合計</span>
             <strong id="totalAmount">¥0</strong>
@@ -184,6 +201,141 @@
           <p class="summary-note">金額は現在選択中の年度マスターと入力条件から再計算されます。</p>
         </aside>
       </div>
+    </section>
+
+    <section id="consultingView" class="view active">
+      <section class="project-strip consulting-project-strip">
+        <label class="field"><span>業務名（共通）</span><input id="consultingProjectName" type="text" placeholder="例：○○地区 測量・地質調査・道路設計業務"></label>
+        <label class="field compact-field"><span>積算年度</span><select id="consultingFiscalYear"></select></label>
+        <div class="field static-field"><span>発注機関</span><strong id="consultingAuthorityText">—</strong></div>
+        <div class="field static-field"><span>単価・計算基準</span><strong id="consultingBasisText">—</strong></div>
+      </section>
+
+      <section class="accuracy-strip consulting-accuracy" aria-live="polite">
+        <span class="accuracy-icon" aria-hidden="true">✓</span>
+        <div><strong id="consultingScopeTitle">設計業務の年度別技術者単価と計算方式</strong><span id="consultingScopeDescription">土木設計・調査計画を設計方式で計算します。歩掛を確認できない作業の人工は自動推定しません。</span></div>
+      </section>
+
+      <div class="workspace-grid consulting-workspace">
+        <div class="workspace-main">
+          <section class="card add-card no-print">
+            <div class="card-title-row"><div><p class="section-kicker">SERVICE ITEM</p><h2 id="consultingAddHeading">設計業務の人工を追加</h2></div><span class="badge">人工は小数第3位まで</span></div>
+            <div class="consulting-picker-grid">
+              <label class="field"><span>業務区分</span><select id="consultingServiceType"></select></label>
+              <label class="field"><span>作業名</span><select id="consultingTaskTemplate"></select></label>
+              <label class="field consulting-task-name"><span>内訳名称（編集可）</span><input id="consultingTaskName" type="text"></label>
+              <label class="field"><span>職種</span><select id="consultingRole"></select></label>
+              <label class="field small-field"><span>人工</span><input id="consultingDays" type="number" min="0" step="0.001" value="1"></label>
+              <button id="addConsultingLineButton" class="button primary add-button" type="button">追加</button>
+            </div>
+            <p id="consultingRoleMeta" class="field-note"></p>
+            <div class="verified-preset-row">
+              <label class="field"><span>確認済み標準歩掛</span><select id="consultingPreset"></select></label>
+              <button id="addConsultingPresetButton" class="button" type="button">標準歩掛を追加</button>
+              <small>現在は原資料で数値確認できた項目だけを登録しています。</small>
+            </div>
+          </section>
+
+          <section class="card table-card">
+            <div class="card-title-row"><div><p class="section-kicker">STAFFING DETAIL</p><h2 id="consultingDetailHeading">設計業務の職種別内訳</h2></div></div>
+            <div class="table-scroll">
+              <table class="estimate-table consulting-table">
+                <thead><tr><th>業務区分・作業</th><th>職種</th><th>人工</th><th>基準日額</th><th>直接人件費</th><th class="no-print"><span class="sr-only">操作</span></th></tr></thead>
+                <tbody id="consultingLineBody"></tbody>
+              </table>
+              <div id="consultingEmptyState" class="empty-state"><span class="empty-icon">＋</span><p id="consultingEmptyText">設計業務の作業名、職種、人工を選んで追加します。</p></div>
+            </div>
+          </section>
+
+          <section class="card no-print">
+            <div class="card-title-row"><div><p class="section-kicker">DIRECT COSTS</p><h2>積上げ費用・計算条件</h2></div></div>
+            <div class="cost-grid consulting-cost-grid">
+              <label class="field" data-consulting-scope="design"><span>設計・調査計画の積上直接経費</span><input class="consulting-cost" data-cost="designDirectExpenses" type="number" min="0" step="1"></label>
+              <label class="field" data-consulting-scope="geology"><span>地質一般：直接調査費（人件費以外）</span><input class="consulting-cost" data-cost="geologyDirectNonLabor" type="number" min="0" step="1"></label>
+              <label class="field" data-consulting-scope="geology"><span>地質一般：間接調査費</span><input class="consulting-cost" data-cost="geologyIndirect" type="number" min="0" step="1"></label>
+              <label class="field" data-consulting-scope="geology"><span>地質一般：諸経費対象外費用</span><input class="consulting-cost" data-cost="geologyExcluded" type="number" min="0" step="1"></label>
+            </div>
+            <div class="option-row consulting-options">
+              <label class="field inline-select" data-consulting-scope="design"><span>電子成果品作成費</span><select id="consultingElectronicMode"><option value="none">計上しない</option><option value="detailed">概略・予備・詳細設計</option><option value="other">その他の設計業務</option></select></label>
+              <label class="check"><input id="consultingIncludeSurvey" type="checkbox"><span>現在の測量積算を合算</span></label>
+              <label class="check"><input id="consultingAdjustBusinessPrice" type="checkbox"><span>総合業務価格を千円止め</span></label>
+              <label class="field inline-select"><span>消費税率</span><input id="consultingTaxRate" type="number" min="0" max="100" step="0.1"></label>
+            </div>
+            <div class="warning-box compact-warning"><strong>入力上の注意</strong><p>市場単価、ボーリング機械・材料、運搬・仮設、旅費、特殊解析等は案件条件で変わるため、該当欄へ積み上げてください。未入力の0円は「不要」と確定した意味ではありません。</p></div>
+          </section>
+
+          <section class="card source-card consulting-source-card">
+            <p class="section-kicker">OFFICIAL SOURCES</p><h2>計算根拠</h2><ul id="consultingSourceList" class="source-list"></ul>
+          </section>
+        </div>
+
+        <aside class="summary-card">
+          <p class="section-kicker">COMBINED SUMMARY</p><h2>案件全体の総合積算結果</h2>
+          <div class="grand-total"><span>税込合計</span><strong id="consultingTotalAmount">¥0</strong></div>
+          <dl class="summary-list" id="consultingSummaryList"></dl>
+          <div class="rate-chip"><span>地質一般・諸経費率</span><strong id="consultingGeologyRate">—</strong></div>
+          <section class="validation-panel"><strong>提出前チェック</strong><ul id="consultingValidationList"></ul></section>
+          <button id="consultingPrintButton" class="button primary full no-print" type="button">総合内訳をPDF出力</button>
+          <p class="summary-note">測量を含める場合、現在の測量積算の税抜業務価格を合算し、消費税を一度だけ計算します。</p>
+        </aside>
+      </div>
+    </section>
+
+    <section id="importView" class="view">
+      <div class="import-layout">
+        <section class="card import-hero-card">
+          <div class="card-title-row"><div><p class="section-kicker">DOCUMENT TO ESTIMATE</p><h2>PDF・写真から積算取込</h2></div><span class="badge">設計・測量・航空船舶・地質</span></div>
+          <p class="import-lead">発注仕様書、数量表、設計書などから、業務基本情報と積算候補を作ります。文字情報を持つPDFは直接抽出し、画像PDFと写真だけ日本語OCRを使用します。</p>
+          <button id="documentDropZone" class="document-drop-zone" type="button">
+            <span class="drop-zone-icon" aria-hidden="true">↓</span>
+            <strong>ここへPDF・写真をドロップ</strong>
+            <span>またはクリックして選択／PDF・PNG・JPEG・WebP／最大30MB・PDFは60ページまで</span>
+          </button>
+          <input id="documentFileInput" type="file" accept="application/pdf,image/png,image/jpeg,image/webp,.pdf,.png,.jpg,.jpeg,.webp" hidden>
+          <div id="documentImportProgress" class="import-progress" hidden><div class="import-progress-track"><span id="documentImportProgressBar"></span></div><strong id="documentImportStatus">解析を準備しています…</strong></div>
+          <div class="paste-fallback">
+            <label class="field"><span>抽出済みテキストを貼り付ける場合</span><textarea id="documentPasteText" rows="7" placeholder="例：2級基準点測量 新点10点 伐採有り　20点&#10;設計計算　技師（A） 2.5人日"></textarea></label>
+            <button id="analyzePastedTextButton" class="button" type="button">貼り付けた原文を解析</button>
+          </div>
+        </section>
+
+        <aside class="card import-safety-card">
+          <p class="section-kicker">SAFE REVIEW</p><h2>確定前に必ず確認</h2>
+          <ol class="compact-flow"><li><strong>直接抽出／OCR</strong><span>PDFの状態に応じて自動で切替</span></li><li><strong>基本情報・積算候補へ分類</strong><span>発注者、場所、期間、測量数量、設計等の人工を整理</span></li><li><strong>一覧で修正</strong><span>元の文章、ページ、確信度と並べて確認</span></li><li><strong>選択項目だけ反映</strong><span>OKを押すまで積算データは変更しません</span></li></ol>
+          <div class="privacy-note"><strong>資料内容は外部送信しません</strong><p>解析はブラウザー内で行います。OCR時は解析プログラムと日本語言語データを取得しますが、読み込んだPDF・写真そのものはアップロードしません。</p></div>
+          <div id="lastImportSummary" class="last-import-summary" hidden></div>
+        </aside>
+      </div>
+      <section class="card case-search-card">
+        <div class="card-title-row"><div><p class="section-kicker">OFFICIAL CASE FILE</p><h2>公式案件検索・資料台帳</h2></div><span class="badge">候補照合＋訂正版管理</span></div>
+        <p class="import-lead">PDFから読んだ業務名・発注者・番号・年度を使い、公式の調達情報から同一案件候補を探します。検索結果だけで確定せず、候補を確認して案件資料へ登録してください。</p>
+        <div class="case-search-grid">
+          <label class="field span-2"><span>業務名</span><input id="caseSearchProjectName" type="text"></label>
+          <label class="field"><span>発注機関</span><input id="caseSearchOrganization" type="text"></label>
+          <label class="field"><span>業務・公告番号</span><input id="caseSearchDocumentNumber" type="text"></label>
+          <label class="field"><span>積算年度</span><input id="caseSearchFiscalYear" type="number" min="2019" max="2100" step="1"></label>
+          <label class="field"><span>都道府県</span><select id="caseSearchPrefecture"></select></label>
+        </div>
+        <div class="case-search-actions">
+          <button id="refreshCaseSearchButton" class="button" type="button">現在の業務情報をセット</button>
+          <a id="openKkjPortalSearchLink" class="button primary" href="https://www.kkj.go.jp/s/" target="_blank" rel="noopener">公式ポータルで検索</a>
+          <a id="openKkjApiSearchLink" class="button" href="https://www.kkj.go.jp/api/?Query=%E6%B8%AC%E9%87%8F" target="_blank" rel="noopener">公式API検索XMLを開く</a>
+          <button id="importKkjXmlButton" class="button" type="button">保存した検索XMLを読込</button>
+          <input id="kkjXmlFileInput" type="file" accept="application/xml,text/xml,.xml" hidden>
+        </div>
+        <div class="official-api-note"><strong>公式APIの利用について</strong><p>官公需情報ポータルの検索APIを使用しています。公開版は静的サイトのため、公式APIのブラウザー制限により検索結果を直接受信できません。「公式API検索XMLを開く」で表示されたXMLを保存し、ここへ読み込んでください。検索結果は全公告の収録やリンクの有効性を保証しません。</p><a href="https://www.kkj.go.jp/s/" target="_blank" rel="noopener">官公需情報ポータル</a></div>
+        <div id="caseCandidateSummary" class="case-candidate-summary" hidden></div>
+        <div id="officialCaseCandidateList" class="official-case-candidate-list"></div>
+        <div class="case-ledger-heading"><div><h3>案件資料台帳</h3><p>採用・要確認・不採用、資料種別、取得元、SHA-256を保存します。資料本文は保存JSONへ含めません。</p></div><button id="registerLocalSourceButton" class="button" type="button">手元資料を台帳登録</button><input id="caseSourceFileInput" type="file" accept="application/pdf,image/png,image/jpeg,image/webp,.pdf,.png,.jpg,.jpeg,.webp" hidden></div>
+        <div class="manual-source-row">
+          <input id="manualSourceTitle" type="text" placeholder="資料名（例：特記仕様書）">
+          <input id="manualSourceUrl" type="url" placeholder="公式資料URL（https://...）">
+          <select id="manualSourceType" aria-label="資料種別"><option value="notice">公告・公示</option><option value="instructions">入札説明書</option><option value="specification">仕様書・特記仕様書</option><option value="quantity">数量表・数量総括表</option><option value="designDocument">金抜設計書・内訳書</option><option value="qa">質問回答書</option><option value="correction">訂正・差替え</option><option value="other" selected>その他</option></select>
+          <button id="registerManualSourceButton" class="button" type="button">URLを登録</button>
+        </div>
+        <div id="caseSourceWarnings" class="import-warning-list" hidden></div>
+        <div id="caseSourceLedger" class="case-source-ledger"></div>
+      </section>
     </section>
 
     <section id="reportView" class="view">
@@ -302,6 +454,7 @@
           <li><strong>直接測量費を作る</strong><span>直接作業費、精度管理費、電子成果品作成費、旅費等、成果検定費、安全費を合算します。</span></li>
           <li><strong>諸経費と消費税を計算</strong><span>成果検定費を除く対象額で諸経費率を算定し、業務価格を千円単位に調整します。</span></li>
         </ol>
+        <div class="callout"><strong>PDF・写真から始める場合</strong><br>「PDF・写真取込」で資料を読み取り、確認・修正画面で業務名、発注者、担当部署、場所、期間、元の文章、ページ、単位、数量、職種、人工を確認します。低確信度候補、金額、年度・発注機関マスターは初期選択しません。確認ボタンを押すまで積算データは変更されません。</div>
         <div class="callout"><strong>数量の入力桁</strong><br>点・回・箇所・業務・測線・本・枚・日・m²などは整数だけ入力できます。km・km²・時間などの連続量は小数第3位までです。画面入力、貼り付け、保存済みJSONの読込みでも同じ規則を適用します。</div>
         <div class="formula-grid">
           <div><span>諸経費率</span><code>Z = 288.50 × X<sup>-0.084</sup></code><small>50万円以下95.8%、1億円超61.4%、中間は小数1位四捨五入</small></div>
@@ -359,6 +512,30 @@
     </div>
   </dialog>
 
+  <dialog id="documentImportDialog" class="import-review-dialog">
+    <div class="dialog-heading">
+      <div><p class="section-kicker">REVIEW BEFORE APPLY</p><h2>抽出結果の確認・修正</h2></div>
+      <button id="closeDocumentImportDialogButton" class="dialog-close" type="button" aria-label="閉じる">×</button>
+    </div>
+    <div class="import-dialog-body">
+      <section class="import-review-summary">
+        <div><span>資料</span><strong id="importReviewFileName">—</strong></div>
+        <div><span>抽出方法</span><strong id="importReviewMethods">—</strong></div>
+        <div><span>候補</span><strong id="importReviewCount">0件</strong></div>
+      </section>
+      <section class="import-metadata-panel">
+        <div class="import-metadata-heading"><div><strong>業務基本情報</strong><p>読み取れた項目を修正し、反映する項目だけチェックしてください。</p></div><label class="check"><input id="toggleAllImportMetadata" type="checkbox"><span>基本情報をすべて選択／解除</span></label></div>
+        <div id="documentImportMetadataList" class="import-metadata-list"></div>
+        <p id="importedBasisHint">現在選択中の発注機関・年度のマスターへ取り込みます。</p>
+      </section>
+      <div id="documentImportWarnings" class="import-warning-list" hidden></div>
+      <div class="import-review-toolbar"><label class="check"><input id="toggleAllImportCandidates" type="checkbox" checked><span>すべて選択／解除</span></label><span>黄色・赤色の候補は元資料を重点確認してください。</span></div>
+      <div id="documentImportCandidateList" class="import-candidate-list"></div>
+      <details class="import-source-preview"><summary>抽出した原文をページ別に確認</summary><div id="documentImportSourcePages"></div></details>
+    </div>
+    <div class="import-dialog-actions"><button id="cancelDocumentImportButton" class="button" type="button">取り込まず閉じる</button><button id="applyDocumentImportButton" class="button primary" type="button">確認した項目を積算へ反映</button></div>
+  </dialog>
+
   <aside id="analyticsConsent" class="analytics-consent no-print" aria-label="アクセス解析の確認" hidden>
     <div><strong>アクセス解析</strong><p>Google Analyticsを許可しますか。積算入力データは送信しません。</p><button id="analyticsDetailsButton" class="text-button" type="button">設定について</button></div>
     <div class="consent-actions"><button id="analyticsDeclineButton" class="button" type="button">許可しない</button><button id="analyticsAcceptButton" class="button primary" type="button">許可する</button></div>
@@ -373,8 +550,16 @@
   <script src="data/national-standard-masters.js?v=20260822-1"></script>
   <script src="data/verified-masters.js?v=20260822-1"></script>
   <script src="data/official-role-prices.js?v=20260822-1"></script>
+  <script src="data/consulting-master.js?v=20260822-1"></script>
   <script src="engine.js?v=20260822-1"></script>
-  <script src="app.js?v=20260822-6"></script>
+  <script src="consulting-engine.js?v=20260822-1"></script>
+  <script src="document-import-engine.js?v=20260822-2"></script>
+  <script src="official-case-engine.js?v=20260822-1"></script>
+  <script src="document-reader.js?v=20260822-1"></script>
+  <script src="app.js?v=20260822-10"></script>
+  <script src="consulting.js?v=20260822-2"></script>
+  <script src="document-import.js?v=20260822-2"></script>
+  <script src="official-case-search.js?v=20260822-1"></script>
   <script src="analytics.js?v=20260822-1"></script>
 </body>
 </html>

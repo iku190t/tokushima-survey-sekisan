@@ -44,8 +44,8 @@ for (const master of masters) {
     expected[year].overhead,
     `${year}: 年度別諸経費率`
   );
-  for (const [role, price] of Object.entries(rolePrices[year].roles)) {
-    assert.strictEqual(master.roles[role].price, price, `${year}: ${role} の全国技術者単価`);
+  for (const [role, definition] of Object.entries(master.roles)) {
+    assert.strictEqual(definition.price, rolePrices[year].roles[role], `${year}: ${role} の全国測量技術者単価`);
   }
   for (const [code, rates] of Object.entries(audit.years[year])) {
     const item = master.workItems.find((entry) => entry.code === code);

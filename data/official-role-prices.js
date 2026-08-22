@@ -5,9 +5,12 @@ window.OFFICIAL_ROLE_PRICES = {
     sourceUrl: "https://www.mlit.go.jp/tec/content/001981914.pdf",
     sourceLabel: "国土交通省 令和8年度 設計業務委託等技術者単価",
     roles: {
+      designPrincipal: 90300, designDirector: 82800, designLead: 70900,
+      designEngineerA: 62600, designEngineerB: 49300, designEngineerC: 42500, designTechnician: 36700,
       surveyChief: 61000, surveyEngineer: 52700, surveyAssistantEngineer: 41300,
       surveyAssistant: 37700, surveyWorker: 29600, pilot: 62000,
-      mechanic: 44200, cameraOperator: 51600, cameraAssistant: 38100, boatOperator: 42000
+      mechanic: 44200, cameraOperator: 51600, cameraAssistant: 38100, boatOperator: 42000,
+      geologyEngineer: 58300, geologyChiefOperator: 45500, geologyOperator: 35200
     }
   },
   2025: {
@@ -16,9 +19,12 @@ window.OFFICIAL_ROLE_PRICES = {
     sourceUrl: "https://www.mlit.go.jp/tec/content/001864579.pdf",
     sourceLabel: "国土交通省 令和7年度 設計業務委託等技術者単価",
     roles: {
+      designPrincipal: 88600, designDirector: 77500, designLead: 66900,
+      designEngineerA: 59600, designEngineerB: 48500, designEngineerC: 40300, designTechnician: 36100,
       surveyChief: 60600, surveyEngineer: 52300, surveyAssistantEngineer: 41100,
       surveyAssistant: 34900, surveyWorker: 28700, pilot: 56300,
-      mechanic: 43200, cameraOperator: 48200, cameraAssistant: 36400, boatOperator: 38300
+      mechanic: 43200, cameraOperator: 48200, cameraAssistant: 36400, boatOperator: 38300,
+      geologyEngineer: 56000, geologyChiefOperator: 43800, geologyOperator: 34100
     }
   },
   2024: {
@@ -27,9 +33,12 @@ window.OFFICIAL_ROLE_PRICES = {
     sourceUrl: "https://www.mlit.go.jp/tec/content/001724089.pdf",
     sourceLabel: "国土交通省 令和6年度 設計業務委託等技術者単価",
     roles: {
+      designPrincipal: 80200, designDirector: 75800, designLead: 64800,
+      designEngineerA: 57000, designEngineerB: 47200, designEngineerC: 38400, designTechnician: 33600,
       surveyChief: 54600, surveyEngineer: 47100, surveyAssistantEngineer: 36900,
       surveyAssistant: 34600, surveyWorker: 25900, pilot: 56300,
-      mechanic: 43200, cameraOperator: 43500, cameraAssistant: 36100, boatOperator: 36300
+      mechanic: 43200, cameraOperator: 43500, cameraAssistant: 36100, boatOperator: 36300,
+      geologyEngineer: 53200, geologyChiefOperator: 41500, geologyOperator: 31400
     }
   },
   2023: {

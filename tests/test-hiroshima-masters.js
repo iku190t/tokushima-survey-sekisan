@@ -63,8 +63,8 @@ for (const year of [2024, 2025, 2026]) {
     expected[year].overhead,
     `${year}: 年度別諸経費率`
   );
-  for (const [role, value] of Object.entries(roleContext.window.OFFICIAL_ROLE_PRICES[year].roles)) {
-    assert.strictEqual(master.roles[role].price, value, `${year}: ${role} の技術者単価`);
+  for (const [role, definition] of Object.entries(master.roles)) {
+    assert.strictEqual(definition.price, roleContext.window.OFFICIAL_ROLE_PRICES[year].roles[role], `${year}: ${role} の測量技術者単価`);
   }
   assert.deepStrictEqual(master.workItems.find((item) => item.code === "11-3-1").laborDays, expected[year].uavPlan, `${year}: UAVレーザ作業計画歩掛`);
   assert.deepStrictEqual(master.workItems.find((item) => item.code === "11-3-2").laborDays, expected[year].uavWork, `${year}: UAVレーザ作業一式歩掛`);

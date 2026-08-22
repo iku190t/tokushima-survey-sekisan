@@ -15,6 +15,10 @@ const referenced = new Set([...app.matchAll(/\$\("([^"]+)"\)/g)].map((match) => 
 const missing = [...referenced].filter((id) => !ids.has(id));
 
 assert.deepStrictEqual(missing, [], `app.jsから参照されるHTML要素が不足: ${missing.join(", ")}`);
+assert.ok(html.includes("<title>web積算｜") && html.includes("<h1>web積算</h1>"), "アプリタイトルをweb積算に統一する");
+const businessTabs = [...html.matchAll(/<button class="view-tab(?: active)?" data-view="[^"]+" data-business-scope="([^"]+)"[^>]*>([^<]+)<\/button>/g)].map((match) => [match[1], match[2]]);
+assert.deepStrictEqual(businessTabs, [["design", "設計業務"], ["survey", "測量業務"], ["aerial", "航空・船舶関係"], ["geology", "地質業務"]], "4業務タブを指定順で表示する");
+assert.ok(html.includes('id="consultingView" class="view active"') && !html.includes('id="estimateView" class="view active"'), "初期画面を設計業務にする");
 for (const source of ["data/prefectures.js", "data/master-catalog.json", "data/official-source-catalog.json", "data/master-r8.js", "data/national-standard-masters.js", "data/verified-masters.js", "data/official-role-prices.js", "engine.js", "app.js", "analytics.js", "styles.css", "DISCLAIMER.md"]) {
   assert.ok(fs.existsSync(path.join(root, source)), `${source} が存在する`);
 }
@@ -46,6 +50,7 @@ assert.ok(html.includes("発注機関"), "国と都道府県を発注機関と�
 assert.ok(app.includes("blockInvalidQuantityKey"), "整数数量への小数キー入力を防止する");
 assert.ok(app.includes("blockInvalidQuantityPaste"), "不正な桁数の貼り付けを防止する");
 assert.ok(app.includes("normalizeQuantityInput"), "数量を単位別規則に正規化する");
+assert.ok(app.includes("aerialShipCategories") && app.includes("surveyItemsForScope"), "測量と航空・船舶の作業項目をタブ別に分ける");
 assert.ok(html.includes('id="reportView"'), "提出用帳票の設定画面がある");
 assert.ok(html.includes('id="printDocument"'), "画面とは独立した印刷専用文書がある");
 for (const section of ["quote", "summary", "breakdown", "unitDetail", "conditions"]) {
@@ -54,7 +59,7 @@ for (const section of ["quote", "summary", "breakdown", "unitDetail", "condition
 for (const renderer of ["renderQuoteReport", "renderSummaryReport", "renderBreakdownReport", "renderUnitDetailReport", "renderConditionsReport"]) {
   assert.ok(app.includes(`function ${renderer}`), `${renderer}が実装されている`);
 }
-assert.ok(app.includes('window.addEventListener("beforeprint", renderPrintDocument)'), "印刷直前に最新の積算結果から帳票を再生成する");
+assert.ok(app.includes('window.addEventListener("beforeprint"') && app.includes('dataset.mode !== "consulting"') && app.includes("renderPrintDocument()"), "印刷直前に帳票種別を守って最新結果から再生成する");
 assert.ok(css.includes("@page { size: A4 portrait"), "A4縦のページ設定がある");
 assert.ok(css.includes("table-header-group"), "複数ページで表頭を繰り返す設定がある");
 assert.ok(css.includes(".workspace-main, .master-layout { display: grid; min-width: 0;"), "狭い画面で積算表がページ全体を横へ押し出さない");
@@ -73,13 +78,15 @@ assert.ok(html.includes("<h3>制作</h3>") && html.includes("株式会社アイ�
 assert.ok(html.includes("Ez積算"), "Ez Viewer型の製品名を画面に表示する");
 assert.ok(html.includes("https://ofuse.me/f475dafe/letter"), "確認済みOFUSE応援先を表示する");
 assert.ok(html.includes('id="publisherInfoButton"'), "フッターのEz積算から統合案内を開ける");
-assert.ok(app.includes('["aboutToolButton", "publisherInfoButton"]'), "上部注意表示とフッターを同じ案内へ結線する");
+assert.ok(app.includes('["aboutToolButton", "publisherInfoButton"]'), "ナビの免責ボタンとフッターを同じ案内へ結線する");
+assert.ok(!html.includes('class="reference-notice') && !css.includes(".reference-notice"), "大きな参考試算注意帯を表示しない");
+assert.ok(html.includes('>使い方・計算根拠</button>\n      <button id="aboutToolButton"') && html.includes("参考試算・免責</button>"), "使い方・計算根拠の右側に小さな免責ボタンを置く");
 assert.ok(html.includes("ゲストとして送信"), "OFUSEのゲスト送信方法を案内する");
 assert.ok(html.includes('id="aboutToolDialog"'), "免責・利用条件を画面で確認できる");
 assert.ok(html.includes("応援のご案内") && html.includes("利用条件・免責事項") && html.includes("プライバシー・アクセス解析"), "制作・応援・免責・プライバシーを1画面に統合する");
 assert.ok(!html.includes('id="supportDialog"') && !html.includes('id="footerSupportButton"') && !html.includes('id="footerAboutToolButton"'), "重複したフッター導線と別ダイアログを残さない");
 assert.ok(!app.includes("openSupportDialog") && !app.includes('$("supportDialog")'), "廃止した応援専用ダイアログへ結線しない");
-assert.ok(html.includes("参考試算用・公式ソフトではありません"), "公式ソフトではないことを常時表示する");
+assert.ok(html.includes("公式の積算ソフト、発注機関の認定製品または公式帳票ではありません"), "免責ダイアログで非公式性を説明する");
 assert.ok(app.includes("参考試算・公式資料要照合"), "印刷帳票にも照合注意を表示する");
 assert.ok(html.includes('id="analyticsConsent"'), "アクセス解析の同意UIがある");
 assert.ok(html.includes("Google Analyticsを許可しますか。積算入力データは送信しません。"), "解析同意を最小限の説明で確認する");

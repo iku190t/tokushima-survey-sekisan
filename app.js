@@ -14,6 +14,24 @@
   const clone = (value) => JSON.parse(JSON.stringify(value));
   const h = (value) => String(value ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
   const num = (value, fallback = 0) => Number.isFinite(Number(value)) ? Number(value) : fallback;
+  const aerialShipCategories = new Set(["深浅測量", "空中写真測量", "航空レーザ測量", "UAV写真点群測量", "地上レーザ測量", "UAVレーザ測量"]);
+  let activeSurveyScope = "survey";
+
+  function isAerialShipItem(item) {
+    return aerialShipCategories.has(item?.category);
+  }
+
+  function surveyItemsForScope(master = activeMaster()) {
+    return master.workItems.filter((item) => activeSurveyScope === "aerial" ? isAerialShipItem(item) : !isAerialShipItem(item));
+  }
+
+  function renderSurveyScopeLabels() {
+    const aerial = activeSurveyScope === "aerial";
+    $("surveyWorkItemHeading").textContent = aerial ? "航空・船舶関係の作業項目を追加" : "測量作業項目を追加";
+    $("surveyDetailHeading").textContent = aerial ? "航空・船舶関係の積算内訳" : "測量業務の積算内訳";
+    $("surveyEmptyText").textContent = aerial ? "上の「航空・船舶関係の作業項目を追加」から積算を始めます。" : "上の「測量作業項目を追加」から積算を始めます。";
+    $("surveySummaryHeading").textContent = aerial ? "案件全体の測量・航空船舶積算結果" : "案件全体の測量積算結果";
+  }
 
   function quantityRule(item, master = activeMaster()) {
     return window.SekisanEngine.quantityRule(item, master);
@@ -207,15 +225,36 @@
     const today = new Date();
     const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
     return {
-      schemaVersion: 1,
+      schemaVersion: 3,
       masterId: masters[0]?.id || defaultMasterId,
       projectName: "",
+      projectInfo: defaultProjectInfo(),
+      caseFile: defaultCaseFile(),
       date: localDate,
       memo: "",
       report: defaultReportSettings(localDate),
       lines: [],
+      consulting: defaultConsultingState(),
       costs: { travel: 0, roundtrip: 0, baseCost: 0, other: 0, inspection: 0 },
       options: { useElectronicDeliverable: true, useFourSignificantDigits: true, adjustBusinessPrice: true, travelMode: "noLodging", safetyRate: 0, taxRate: masters[0]?.taxRate ?? .1 }
+    };
+  }
+
+  function defaultProjectInfo() {
+    return { orderingParty: "", department: "", contactName: "", workLocation: "", contractPeriod: "", documentNumber: "", documentDate: "" };
+  }
+
+  function defaultCaseFile() {
+    return { schemaVersion: 1, sources: [] };
+  }
+
+  function defaultConsultingState() {
+    return {
+      schemaVersion: 1,
+      fiscalYear: 2026,
+      lines: [],
+      costs: { designDirectExpenses: 0, geologyDirectNonLabor: 0, geologyIndirect: 0, geologyExcluded: 0 },
+      options: { includeSurvey: false, electronicMode: "none", adjustBusinessPrice: false, taxRate: 0.1 }
     };
   }
 
@@ -246,8 +285,15 @@
         if (saved.masterId === legacyMlitMasterId) saved.masterId = "standard-r8-2026";
         if (!masters.some((master) => master.id === saved.masterId)) saved.masterId = masters[0].id;
         const normalized = Object.assign(emptyEstimate(), saved);
+        normalized.projectInfo = Object.assign(defaultProjectInfo(), saved.projectInfo || {});
+        normalized.caseFile = Object.assign(defaultCaseFile(), saved.caseFile || {});
+        normalized.caseFile.sources = Array.isArray(saved.caseFile?.sources) ? saved.caseFile.sources : [];
         normalized.costs = Object.assign(emptyEstimate().costs, saved.costs || {});
         normalized.options = Object.assign(emptyEstimate().options, saved.options || {});
+        normalized.consulting = Object.assign(defaultConsultingState(), saved.consulting || {});
+        normalized.consulting.lines = Array.isArray(saved.consulting?.lines) ? saved.consulting.lines : [];
+        normalized.consulting.costs = Object.assign(defaultConsultingState().costs, saved.consulting?.costs || {});
+        normalized.consulting.options = Object.assign(defaultConsultingState().options, saved.consulting?.options || {});
         normalized.report = Object.assign(defaultReportSettings(normalized.date), saved.report || {});
         normalized.report.sections = Object.assign(defaultReportSettings().sections, saved.report?.sections || {});
         return normalized;
@@ -259,7 +305,8 @@
   function hasDraftContent(draft) {
     if (!draft) return false;
     return Boolean(
-      draft.projectName?.trim() || draft.memo?.trim() || draft.lines?.length ||
+      draft.projectName?.trim() || draft.memo?.trim() || Object.values(draft.projectInfo || {}).some((value) => String(value || "").trim()) || draft.caseFile?.sources?.length || draft.lines?.length ||
+      draft.consulting?.lines?.length || Object.values(draft.consulting?.costs || {}).some((value) => num(value) !== 0) ||
       Object.values(draft.costs || {}).some((value) => num(value) !== 0)
     );
   }
@@ -385,19 +432,21 @@
 
   function populateCategories() {
     const master = activeMaster();
-    const categories = [...new Set(master.workItems.map((item) => item.category))];
+    const scopedItems = surveyItemsForScope(master);
+    const categories = [...new Set(scopedItems.map((item) => item.category))];
     const previous = $("categorySelect").value;
     $("categorySelect").innerHTML = `<option value="">すべての分類</option>` + categories.map((category) => `<option>${h(category)}</option>`).join("");
-    if (categories.includes(previous)) $("categorySelect").value = previous;
+    $("categorySelect").value = categories.includes(previous) ? previous : "";
     populateItems();
-    $("itemCountBadge").textContent = `${master.workItems.length}項目収録`;
+    $("itemCountBadge").textContent = `${scopedItems.length}項目収録`;
+    renderSurveyScopeLabels();
   }
 
   function populateItems() {
     const master = activeMaster();
     const category = $("categorySelect").value;
     const previous = $("itemSelect").value;
-    const filtered = master.workItems.filter((item) => !category || item.category === category);
+    const filtered = surveyItemsForScope(master).filter((item) => !category || item.category === category);
     $("itemSelect").innerHTML = filtered.map((item) => `<option value="${h(item.code)}">${h(item.code)}｜${h(item.name)}</option>`).join("");
     if (filtered.some((item) => item.code === previous)) $("itemSelect").value = previous;
     updateSelectedItemMeta();
@@ -436,7 +485,11 @@
 
   function renderLines(result) {
     const master = activeMaster();
-    $("lineTableBody").innerHTML = result.lines.map((calculated) => {
+    const visibleLines = result.lines.filter((calculated) => {
+      const item = master.workItems.find((entry) => entry.code === calculated.code);
+      return activeSurveyScope === "aerial" ? isAerialShipItem(item) : !isAerialShipItem(item);
+    });
+    $("lineTableBody").innerHTML = visibleLines.map((calculated) => {
       const line = estimate.lines.find((entry) => entry.id === calculated.id);
       const item = master.workItems.find((entry) => entry.code === calculated.code);
       const qRule = quantityRule(item, master);
@@ -464,8 +517,9 @@
         <p><b>精度管理費</b>(${yen.format(calculated.labor)}＋${yen.format(calculated.machine)}) × ${(calculated.precisionRate * 100).toFixed(0)}% ＝ ${yen.format(calculated.precision)}</p>
         <p class="calc-source">出典：基準書 p.${h(item.source.standardPage)}${item.source.ratioPage ? `／直接経費率 p.${h(item.source.ratioPage)}` : ""}</p>
       </div></details>`;
+      const importSource = line.importSource ? `<small>資料取込：${h(line.importSource.fileName || "貼付け原文")} p.${h(line.importSource.page || 1)}／${line.importSource.method === "ocr" ? "OCR" : "文字抽出"}／要原文照合</small>` : "";
       return `<tr data-line-id="${h(line.id)}">
-        <td><span class="item-name">${h(calculated.name)}</span><span class="item-code">${h(calculated.code)} ｜ 標準歩掛 ${numberFormat.format(item.standardQuantity)} ${h(item.unit)} 一式＝${yen.format(calculated.standardDirect)}</span>${precisionInput}${outside ? `<span class="limit-warning">適用範囲外：${h(item.applicability.note)}</span>` : ""}${item.manualCostNote ? `<span class="limit-warning">${h(item.manualCostNote)}</span>` : ""}${auditDetail}</td>
+        <td><span class="item-name">${h(calculated.name)}</span><span class="item-code">${h(calculated.code)} ｜ 標準歩掛 ${numberFormat.format(item.standardQuantity)} ${h(item.unit)} 一式＝${yen.format(calculated.standardDirect)}</span>${importSource}${precisionInput}${outside ? `<span class="limit-warning">適用範囲外：${h(item.applicability.note)}</span>` : ""}${item.manualCostNote ? `<span class="limit-warning">${h(item.manualCostNote)}</span>` : ""}${auditDetail}</td>
         <td><input class="table-input line-quantity" type="number" min="${qRule.min}" step="${qRule.step}" inputmode="${qRule.integer ? "numeric" : "decimal"}" data-quantity-decimals="${qRule.decimals}" aria-description="${h(item.unit)}は${h(quantityLabel(qRule))}" value="${h(calculated.quantity)}"><span> ${h(item.unit)}</span><small>${h(quantityLabel(qRule))}</small></td>
         <td>${conditionInput}${rulesInput}<label class="mini-field">手動追加 <span class="percent-wrap"><input class="table-input line-correction" type="number" step=".1" value="${h(num(line.correctionRate) * 100)}"><span>%</span></span></label><small>規定変化率 ${(calculated.ruleCorrectionRate * 100).toFixed(1)}%／適用係数 ${calculated.correctionFactor.toFixed(2)}</small>${item.quantityFormula ? `<small>${h(item.quantityFormula.note)}／数量係数 ${calculated.quantityFactor.toFixed(2)}</small>` : ""}</td>
         <td>${priceCell}</td>
@@ -474,7 +528,7 @@
         <td class="no-print"><button class="delete-line" type="button" title="削除" aria-label="${h(calculated.name)}を削除">×</button></td>
       </tr>`;
     }).join("");
-    $("emptyState").classList.toggle("hidden", result.lines.length > 0);
+    $("emptyState").classList.toggle("hidden", visibleLines.length > 0);
   }
 
   function renderSummary(result) {
@@ -539,6 +593,8 @@
     $("projectName").value = estimate.projectName || "";
     $("estimateDate").value = estimate.date || "";
     $("projectMemo").value = estimate.memo || "";
+    const projectInfo = estimate.projectInfo || (estimate.projectInfo = defaultProjectInfo());
+    document.querySelectorAll(".project-info-input").forEach((input) => { input.value = projectInfo[input.dataset.projectInfo] || ""; });
     document.querySelectorAll(".cost-input").forEach((input) => { input.value = estimate.costs[input.dataset.cost] || ""; });
     $("taxRate").value = num(estimate.options.taxRate, activeMaster().taxRate) * 100;
     $("useElectronic").checked = estimate.options.useElectronicDeliverable !== false;
@@ -589,6 +645,17 @@
     return `<footer class="report-page-footer"><span>${h(estimate.projectName || "測量業務")}</span><span>参考試算・公式資料要照合 ／ ${h(label)}</span></footer>`;
   }
 
+  function projectInfoRows(includeEstimateDate = false) {
+    const info = estimate.projectInfo || {};
+    const rows = [
+      ["業務名", estimate.projectName], ["発注者", info.orderingParty], ["担当部署", info.department],
+      ["担当者", info.contactName], ["業務場所", info.workLocation], ["履行期間", info.contractPeriod],
+      ["文書・業務番号", info.documentNumber], ["公告・資料日", info.documentDate]
+    ];
+    if (includeEstimateDate) rows.push(["積算日", displayDate(estimate.date)]);
+    return rows.filter(([, value]) => String(value || "").trim()).map(([label, value]) => `<div><dt>${h(label)}</dt><dd>${h(value)}</dd></div>`).join("") || "<div><dt>業務名</dt><dd>—</dd></div>";
+  }
+
   function money(value) {
     return yen.format(num(value));
   }
@@ -622,7 +689,7 @@
       ["測量業務費", "", "税込合計", t.total, true]
     ];
     return `<section class="report-page">${reportHeader("積 算 総 括 表", activeMaster().label)}
-      <dl class="report-project-meta"><div><dt>業務名</dt><dd>${h(estimate.projectName || "—")}</dd></div><div><dt>積算日</dt><dd>${h(displayDate(estimate.date))}</dd></div></dl>
+      <dl class="report-project-meta">${projectInfoRows(true)}</dl>
       <table class="report-table summary-report-table"><thead><tr><th>大区分</th><th>中区分</th><th>費目</th><th>金額</th></tr></thead><tbody>${rows.map(([major, middle, label, value, strong]) => `<tr${strong ? ' class="total-row"' : ""}><td>${h(major)}</td><td>${h(middle)}</td><td>${h(label)}</td><td>${money(value)}</td></tr>`).join("")}</tbody></table>
       <p class="report-caption">諸経費率 ${t.overheadBase > 0 ? `${t.overheadRate.toFixed(1)}%` : "—"} ／ 諸経費対象額 ${money(t.overheadBase)} ／ 千円止め調整 ${money(t.adjustment)}</p>
       ${reportFooter("積算総括表")}</section>`;
@@ -648,7 +715,7 @@
     const extraRows = extraItems.map(([label, value]) => `<tr class="expense-row"><td>—</td><td><b>${h(label)}</b><small>直接測量費</small></td><td>1</td><td>式</td><td>${money(value)}</td><td>${money(value)}</td><td>${money(value)}</td></tr>`).join("");
     const rows = `${workRows}${extraRows}`;
     return `<section class="report-page report-long-table">${reportHeader("業 務 費 内 訳 書", activeMaster().label)}
-      <dl class="report-project-meta"><div><dt>業務名</dt><dd>${h(estimate.projectName || "—")}</dd></div></dl>
+      <dl class="report-project-meta">${projectInfoRows(false)}</dl>
       <table class="report-table breakdown-report-table"><thead><tr><th>No.</th><th>作業項目</th><th>数量</th><th>単位</th><th>単価</th><th>直接作業費</th><th>金額<br><small>精度管理費含む</small></th></tr></thead><tbody>${rows || '<tr><td colspan="7" class="empty-report-cell">作業項目がありません</td></tr>'}</tbody><tfoot><tr><th colspan="6">直接測量費</th><th>${money(t.directMeasurement)}</th></tr><tr><th colspan="6">諸経費</th><th>${money(t.overhead)}</th></tr><tr><th colspan="6">業務価格（税抜）</th><th>${money(t.businessPrice)}</th></tr><tr><th colspan="6">消費税</th><th>${money(t.tax)}</th></tr><tr class="grand-row"><th colspan="6">税込合計</th><th>${money(t.total)}</th></tr></tfoot></table>
       ${reportFooter("業務費内訳書")}</section>`;
   }
@@ -690,6 +757,7 @@
     if (sections.breakdown) pages.push(renderBreakdownReport(result));
     if (sections.unitDetail) pages.push(renderUnitDetailReport(result));
     if (sections.conditions) pages.push(renderConditionsReport(result));
+    $("printDocument").dataset.mode = "survey";
     $("printDocument").innerHTML = pages.join("") || `<section class="report-page">${reportHeader("帳票未選択")}<p class="empty-report-message">帳票・PDF画面で、出力する帳票を1つ以上選択してください。</p></section>`;
   }
 
@@ -745,6 +813,7 @@
     renderMasterEditor();
     renderMasterStatus();
     renderReportSettings();
+    document.dispatchEvent(new CustomEvent("ezsekisan:estimatechange"));
   }
 
   function recalculate() {
@@ -764,11 +833,150 @@
     showToast("作業項目を追加しました");
   }
 
+  function importSurveyLines(entries, metadata = {}) {
+    const master = activeMaster();
+    let added = 0;
+    let rejected = 0;
+    (Array.isArray(entries) ? entries : []).forEach((entry) => {
+      const item = master.workItems.find((candidate) => candidate.code === entry.code);
+      if (!item) { rejected += 1; return; }
+      const quantity = window.SekisanEngine.normalizeQuantity(entry.quantity, item, master);
+      if (!(quantity > 0)) { rejected += 1; return; }
+      estimate.lines.push({
+        id: `line-import-${Date.now()}-${added}-${Math.random().toString(16).slice(2)}`,
+        code: item.code,
+        quantity,
+        correctionRate: 0,
+        correctionSelections: {},
+        conditionValue: item.conditionFormula?.default,
+        precisionRate: item.precisionRate,
+        manualUnitPrice: 0,
+        importSource: {
+          fileName: String(entry.fileName || metadata.fileName || "").slice(0, 180),
+          page: Math.max(1, Math.floor(num(entry.page, 1))),
+          method: entry.method === "ocr" ? "ocr" : "text",
+          confidence: ["high", "medium", "low"].includes(entry.confidence) ? entry.confidence : "low"
+        }
+      });
+      added += 1;
+    });
+    if (metadata.projectName) estimate.projectName = String(metadata.projectName).trim().slice(0, 180);
+    renderAll();
+    scheduleSave();
+    return { added, rejected };
+  }
+
+  function applyImportedProjectName(projectName) {
+    const normalized = String(projectName || "").trim().slice(0, 180);
+    if (!normalized) return false;
+    estimate.projectName = normalized;
+    renderAll();
+    scheduleSave();
+    return true;
+  }
+
+  function preferredMaster(jurisdictionCode, fiscalYear) {
+    const priority = (master) => master.verificationStatus === "verified" ? 30 : master.verificationStatus === "user-supplied" ? 20 : 10;
+    return masters.filter((master) => (!jurisdictionCode || master.jurisdictionCode === jurisdictionCode) && (!fiscalYear || master.fiscalYear === fiscalYear))
+      .sort((a, b) => priority(b) - priority(a) || num(b.fiscalYear) - num(a.fiscalYear))[0] || null;
+  }
+
+  function applyImportedMetadata(values = {}) {
+    const allowed = ["orderingParty", "department", "contactName", "workLocation", "contractPeriod", "documentNumber", "documentDate"];
+    let applied = 0;
+    let masterChanged = false;
+    let masterFound = true;
+    const requestedMaster = preferredMaster(values.jurisdictionCode || activeMaster().jurisdictionCode, num(values.fiscalYear) || activeMaster().fiscalYear);
+    if ((values.jurisdictionCode || values.fiscalYear) && !requestedMaster) masterFound = false;
+    else if (requestedMaster && requestedMaster.id !== activeMaster().id && (values.jurisdictionCode || values.fiscalYear)) {
+      switchMaster(requestedMaster.id);
+      masterChanged = true;
+      applied += 1;
+    }
+    if (String(values.projectName || "").trim()) {
+      estimate.projectName = String(values.projectName).trim().slice(0, 180);
+      applied += 1;
+    }
+    const projectInfo = estimate.projectInfo || (estimate.projectInfo = defaultProjectInfo());
+    allowed.forEach((key) => {
+      if (!String(values[key] || "").trim()) return;
+      projectInfo[key] = String(values[key]).trim().slice(0, 180);
+      applied += 1;
+    });
+    if (String(values.orderingParty || "").trim()) estimate.report.clientName = String(values.orderingParty).trim().slice(0, 180);
+    if (String(values.contractPeriod || "").trim()) estimate.report.delivery = String(values.contractPeriod).trim().slice(0, 180);
+    renderAll();
+    scheduleSave();
+    return { applied, masterChanged, masterFound };
+  }
+
+  function addCaseSources(entries = []) {
+    estimate.caseFile = estimate.caseFile || defaultCaseFile();
+    estimate.caseFile.sources = Array.isArray(estimate.caseFile.sources) ? estimate.caseFile.sources : [];
+    let added = 0;
+    let duplicate = 0;
+    entries.forEach((entry) => {
+      const url = String(entry.url || "").trim().slice(0, 1000);
+      const sha256 = String(entry.sha256 || "").trim().toUpperCase().slice(0, 64);
+      if (!url && !sha256) return;
+      if (estimate.caseFile.sources.some((source) => (url && source.url === url) || (sha256 && source.sha256 === sha256))) { duplicate += 1; return; }
+      estimate.caseFile.sources.push({
+        id: `source-${Date.now()}-${added}-${Math.random().toString(16).slice(2)}`,
+        title: String(entry.title || "公式資料").trim().slice(0, 180) || "公式資料",
+        url,
+        documentType: ["notice", "instructions", "specification", "quantity", "designDocument", "qa", "correction", "other", "local"].includes(entry.documentType) ? entry.documentType : "other",
+        organization: String(entry.organization || "").trim().slice(0, 120),
+        publishedDate: String(entry.publishedDate || "").trim().slice(0, 10),
+        acquiredAt: new Date().toISOString(),
+        discoveredVia: String(entry.discoveredVia || "手動登録").trim().slice(0, 80),
+        portalKey: String(entry.portalKey || "").trim().slice(0, 240),
+        matchScore: Math.max(0, Math.min(100, Math.floor(num(entry.matchScore)))),
+        sha256,
+        status: ["adopted", "review", "rejected"].includes(entry.status) ? entry.status : "review",
+        note: String(entry.note || "").trim().slice(0, 240)
+      });
+      added += 1;
+    });
+    if (added) { renderAll(); scheduleSave(); }
+    return { added, duplicate };
+  }
+
+  function updateCaseSource(id, patch = {}) {
+    const source = estimate.caseFile?.sources?.find((entry) => entry.id === id);
+    if (!source) return false;
+    if (["adopted", "review", "rejected"].includes(patch.status)) source.status = patch.status;
+    if (["notice", "instructions", "specification", "quantity", "designDocument", "qa", "correction", "other", "local"].includes(patch.documentType)) source.documentType = patch.documentType;
+    if (patch.note != null) source.note = String(patch.note).trim().slice(0, 240);
+    scheduleSave();
+    document.dispatchEvent(new CustomEvent("ezsekisan:casefilechange"));
+    return true;
+  }
+
+  function removeCaseSource(id) {
+    if (!estimate.caseFile?.sources) return false;
+    const before = estimate.caseFile.sources.length;
+    estimate.caseFile.sources = estimate.caseFile.sources.filter((entry) => entry.id !== id);
+    if (estimate.caseFile.sources.length === before) return false;
+    scheduleSave();
+    document.dispatchEvent(new CustomEvent("ezsekisan:casefilechange"));
+    return true;
+  }
+
   function updateEstimateField() {
     estimate.projectName = $("projectName").value;
     estimate.date = $("estimateDate").value;
     estimate.memo = $("projectMemo").value;
     if (!estimate.report.issueDate) estimate.report.issueDate = estimate.date;
+    renderReportCompleteness();
+    scheduleSave();
+  }
+
+  function updateProjectInfo(event) {
+    const input = event.target;
+    estimate.projectInfo = estimate.projectInfo || defaultProjectInfo();
+    estimate.projectInfo[input.dataset.projectInfo] = input.value;
+    if (input.dataset.projectInfo === "orderingParty") estimate.report.clientName = input.value;
+    if (input.dataset.projectInfo === "contractPeriod") estimate.report.delivery = input.value;
     renderReportCompleteness();
     scheduleSave();
   }
@@ -830,6 +1038,10 @@
         estimate = Object.assign(emptyEstimate(), imported);
         estimate.costs = Object.assign(emptyEstimate().costs, imported.costs || {});
         estimate.options = Object.assign(emptyEstimate().options, imported.options || {});
+        estimate.consulting = Object.assign(defaultConsultingState(), imported.consulting || {});
+        estimate.consulting.lines = Array.isArray(imported.consulting?.lines) ? imported.consulting.lines : [];
+        estimate.consulting.costs = Object.assign(defaultConsultingState().costs, imported.consulting?.costs || {});
+        estimate.consulting.options = Object.assign(defaultConsultingState().options, imported.consulting?.options || {});
         estimate.report = Object.assign(defaultReportSettings(estimate.date), imported.report || {});
         estimate.report.sections = Object.assign(defaultReportSettings().sections, imported.report?.sections || {});
         if (!masters.some((master) => master.id === estimate.masterId)) estimate.masterId = masters[0].id;
@@ -1037,8 +1249,17 @@
       document.querySelectorAll(".view-tab").forEach((entry) => entry.classList.toggle("active", entry === button));
       document.querySelectorAll(".view").forEach((view) => view.classList.remove("active"));
       $(`${button.dataset.view}View`).classList.add("active");
+      const businessScope = button.dataset.businessScope || "";
+      document.body.dataset.businessScope = businessScope;
+      if (businessScope === "survey" || businessScope === "aerial") {
+        activeSurveyScope = businessScope;
+        populateCategories();
+        renderEstimate();
+      }
+      document.dispatchEvent(new CustomEvent("ezsekisan:businessscope", { detail: { scope: businessScope } }));
       if (button.dataset.view === "master") { editorMasterId = estimate.masterId; populateMasterSelects(); renderMasterEditor(); }
       if (button.dataset.view === "report") renderReportSettings();
+      if (button.dataset.view === "consulting") document.dispatchEvent(new CustomEvent("ezsekisan:estimatechange"));
     }));
     $("categorySelect").addEventListener("change", populateItems);
     $("itemSelect").addEventListener("change", updateSelectedItemMeta);
@@ -1057,6 +1278,7 @@
     });
     $("fiscalYearSelect").addEventListener("change", (event) => switchMaster(event.target.value));
     ["projectName", "estimateDate", "projectMemo"].forEach((id) => $(id).addEventListener("input", updateEstimateField));
+    document.querySelectorAll(".project-info-input").forEach((input) => input.addEventListener("input", updateProjectInfo));
     document.querySelectorAll(".cost-input").forEach((input) => input.addEventListener("input", updateOptions));
     ["taxRate", "useElectronic", "useFourDigits", "adjustBusinessPrice", "travelMode", "safetyRate"].forEach((id) => $(id).addEventListener("change", updateOptions));
     $("lineTableBody").addEventListener("input", (event) => {
@@ -1100,7 +1322,7 @@
       recalculate();
     });
     $("newEstimateButton").addEventListener("click", () => {
-      if (estimate.lines.length && !confirm("現在の積算内容を消して新規作成しますか？")) return;
+      if ((estimate.lines.length || estimate.consulting?.lines?.length) && !confirm("現在の積算内容を消して新規作成しますか？")) return;
       recoverableDraft = null; estimate = emptyEstimate(); editorMasterId = estimate.masterId; renderAll(); renderDraftRecovery(); persistEstimate(); showToast("新しい積算書を作成しました");
     });
     $("restoreDraftButton").addEventListener("click", restoreSavedDraft);
@@ -1124,9 +1346,24 @@
     $("masterFileInput").addEventListener("change", (event) => { if (event.target.files[0]) importMaster(event.target.files[0]); event.target.value = ""; });
     $("deleteMasterButton").addEventListener("click", deleteMaster);
     window.addEventListener("beforeunload", () => { if (sessionDirty) persistEstimate(); });
-    window.addEventListener("beforeprint", renderPrintDocument);
-    window.addEventListener("afterprint", () => { document.title = defaultDocumentTitle; });
+    window.addEventListener("beforeprint", () => { if ($("printDocument").dataset.mode !== "consulting") renderPrintDocument(); });
+    window.addEventListener("afterprint", () => { delete $("printDocument").dataset.mode; document.title = defaultDocumentTitle; });
   }
+
+  window.EzSekisanApp = {
+    getEstimate: () => estimate,
+    getSurveyResult: currentResult,
+    getActiveSurveyMaster: activeMaster,
+    saveDraft: scheduleSave,
+    notify: showToast,
+    importSurveyLines,
+    applyImportedProjectName,
+    applyImportedMetadata,
+    addCaseSources,
+    updateCaseSource,
+    removeCaseSource,
+    safeName
+  };
 
   bindEvents();
   renderAll();
