@@ -245,3 +245,45 @@ OK: nationwide jurisdiction and verified master catalog checks passed
 | `data/prefectures.js` | `D71D9AA5F44DB4DF8A8CA8112A91DCD3AEF5382017579235A94EBA3FCFDA41AC` |
 | `tests/test-ui-static.js` | `7405F2BD2BFB896CAD2CB8AFAB564B40487F9A028E236DE14A895A8D70591C07` |
 | `tests/test-master-catalog.js` | `F5EA2388BF6ABD7E92B0FB199E18E8A74CD80E5C2A0442C0E3EC973AA945AFBC` |
+
+## B-2026-08-22-07
+
+- 状態: **検証済み**
+- 検証日: 2026-08-22
+- コミット: `db7662ac5a3c7f8e773de4c948471de6b03b4933`
+- ブランチ: `main`
+- 内容: 国土交通省（直轄）を47都道府県とは別の発注機関として追加し、令和8年度公開基準参照版、公式出典リンク、地方整備局等の要確認警告、完全マスター収録状況を表示する版。
+- 完全検証済み都道府県: 徳島県1/47。国土交通省版は「公開基準参照・要確認」であり、完全検証済みとは表示しない。
+
+### 合格した自動試験
+
+```text
+OK: regulation audit checks passed (master mapping, precision, quantity formulas, travel, rounding, overhead)
+OK: MLIT official role price presets R4-R8
+OK: UI static wiring checks passed
+OK: nationwide jurisdiction and verified master catalog checks passed
+```
+
+追加構文検査: `node --check app.js`
+
+### ローカルHTTP実ブラウザー確認
+
+- 発注機関48件（国土交通省＋47都道府県）、無効46件、初期選択は徳島県を確認した。
+- 国土交通省を選ぶと「令和8年度（公開基準参照・要確認）」、地方整備局等の確認警告、国交省公式出典リンク2件を表示する。
+- 収録状況は「完全検証済み1/47都道府県、国土交通省公開基準参照版収録」と表示する。
+- JavaScriptページエラー、コンソールエラーはいずれも0件だった。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `26499CA035274A1067F1E870F27B1223C86F21EA22F5B0067FD954831753857C` |
+| `app.js` | `8AF7064AC3723C7B508378C2FF4F16ABE5869BFFC6172ADA892D445E351FD33B` |
+| `data/prefectures.js` | `27C4380447B2206B7090AFD50A5D5D5ECECD0775D63F62345BC92A8E2BE7DB3B` |
+| `tests/test-ui-static.js` | `DB9E374CE092114FB9F5DB949D6DFC5D5FBD7F122EB1B823B82E03DEDCD97588` |
+| `tests/test-master-catalog.js` | `4CA98EAEB7D480B4ACA40FD126036B83AF4A4902F7253161A9B53E58E0EE240E` |
+
+### 保証しない範囲
+
+- 地方整備局等ごとの適用通知、特記仕様、個別費用、匿名化済み正解積算との一致。
+- 徳島県以外46都道府県の完全マスター。未収録県には国交省版・徳島県版を流用しない。
