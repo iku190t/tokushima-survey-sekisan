@@ -952,3 +952,50 @@ OK: UI static wiring checks passed
 | `document-import.js` | `571CC812B6BB67996DE6DEA16FB802C8FF9B1C34D533F66762DA99BC9C482E43` |
 | `tests/test-document-import.js` | `5DF46E8A67EACC8DFA6CAC4E7D5DA6EFA6BA1B80931765CA1C17D5830AAC2165` |
 | `tests/test-document-import-ui.js` | `06D69EB54AA6427B1EAABA8BB09FA46CFD98AC5C405EC5BA830F11D9342C9186` |
+
+## B-2026-08-23-01
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-23
+- アプリコミット: `ae74cb9c0af6a1861935a96af48473d1dee869fb`
+- GitHub Pagesビルド: `1168043049`（`built`）
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: B-2026-08-22-20へ、PDF同一行の文字ブロック・表セル分割、行文脈を使う数量推定、測量分類から詳細項目を絞る操作、小型ファイル投下欄を追加し、貼付け原文解析と公式案件検索・資料台帳UIを廃止した版。
+
+### 合格した試験
+
+```text
+OK: consulting/design/geology calculation checks passed
+OK: consulting UI and report wiring checks passed
+OK: document import review UI and safe apply wiring checks passed
+OK: document PDF/OCR extraction and review candidate checks passed
+OK: regulation audit checks passed (master mapping, precision, quantity formulas, travel, rounding, overhead)
+OK: Hiroshima R6-R8 complete annual master audit checks passed
+OK: nationwide jurisdiction and verified master catalog checks passed
+OK: nationwide R6-R8 standard reference master checks passed
+OK: official procurement case matching, XML parsing, and source ledger candidates passed
+OK: official case search UI is removed while saved-data compatibility remains
+OK: MLIT official role price presets R4-R8 and consulting roles R6-R8
+OK: UI static wiring checks passed
+```
+
+追加検査: `node --check document-reader.js`、`node --check document-import.js`、`git diff --check`合格。
+
+### 実ブラウザー確認
+
+- 国土地理院公開PDF7ページを直接抽出し、合計290文字ブロックを表示した。表の同一行は最大10ブロックへ分割され、近接する日本語文字は語単位へ結合された。
+- 手動対応の測量項目は全分類で空欄を含む135件、分類「基準点測量」選択後は15件へ絞られることを確認した。
+- ローカル版とGitHub Pages公開版でファイル投下欄の高さ132px、貼付け解析欄なし、公式案件検索・資料台帳なしを確認した。
+- 公開版で`document-reader.js?v=20260823-1`、`document-import.js?v=20260823-1`、`styles.css?v=20260823-1`を確認し、ブラウザー警告・エラー0件だった。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `7AFB4574D1A2423F52BFF5798E6B80C0D01765179F953CB43EB55101E7DCC1F3` |
+| `styles.css` | `DE7A711A99112D497C01C216A84A52054EA60FBFED1FBB975D6DBE3A593375ED` |
+| `document-reader.js` | `EA40159534120846D3A7AE3B02F6D04A382C15C893BAF481ADD8EC64891FC330` |
+| `document-import.js` | `89B6E7CDAA6B608FA5D9E7ABC4239534D1F39EEB40734ADA82C0AF6B47712A6F` |
+| `tests/test-document-import.js` | `2AE125741AC42B9432F199B15E3654EA67931BB6A7037EC7293D72AB92F765E9` |
+| `tests/test-document-import-ui.js` | `4A6D51493EC8DEA818B38ADF5BC60F897C20764ACC26753FC811B9F958BE1A16` |
+| `tests/test-official-case-ui.js` | `760D164512AD48103DDB5FF5542DBF53B729DB8BC7B7D22E0AE7D1C77770BB5C` |
