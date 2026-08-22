@@ -18,7 +18,7 @@
     if (typeof callback === "function") callback({ message, progress });
   }
 
-  function textItemsToLines(items) {
+  function textItemRows(items) {
     const rows = [];
     (items || []).forEach((item) => {
       const text = String(item.str || "").trim();
@@ -27,11 +27,59 @@
       const y = Number(item.transform?.[5]) || 0;
       let row = rows.find((entry) => Math.abs(entry.y - y) <= 2.5);
       if (!row) { row = { y, cells: [] }; rows.push(row); }
-      row.cells.push({ x, text });
+      row.cells.push({ x, y, text, width: Math.max(0, Number(item.width) || 0), height: Math.max(0, Number(item.height) || 0) });
     });
-    return rows.sort((a, b) => b.y - a.y)
-      .map((row) => row.cells.sort((a, b) => a.x - b.x).map((cell) => cell.text).join(" ").replace(/\s+/g, " ").trim())
+    return rows.sort((a, b) => b.y - a.y).map((row) => ({ ...row, cells: row.cells.sort((a, b) => a.x - b.x) }));
+  }
+
+  function textItemsToLines(items) {
+    return textItemRows(items)
+      .map((row) => row.cells.map((cell) => cell.text).join(" ").replace(/\s+/g, " ").trim())
       .filter(Boolean).join("\n");
+  }
+
+  function normalizedBox(left, top, width, height, pageWidth, pageHeight) {
+    const safeWidth = Math.max(1, Number(pageWidth) || 1);
+    const safeHeight = Math.max(1, Number(pageHeight) || 1);
+    return {
+      left: Math.max(0, Math.min(1, left / safeWidth)),
+      top: Math.max(0, Math.min(1, top / safeHeight)),
+      width: Math.max(0.004, Math.min(1, width / safeWidth)),
+      height: Math.max(0.008, Math.min(1, height / safeHeight))
+    };
+  }
+
+  function textItemsToLayout(items, viewport) {
+    if (!viewport || typeof viewport.convertToViewportPoint !== "function") return [];
+    return textItemRows(items).map((row) => {
+      const text = row.cells.map((cell) => cell.text).join(" ").replace(/\s+/g, " ").trim();
+      const boxes = row.cells.map((cell) => {
+        const point = viewport.convertToViewportPoint(cell.x, cell.y);
+        const height = Math.max(8, cell.height * (Number(viewport.scale) || 1));
+        const width = Math.max(height * Math.max(1, cell.text.length) * 0.45, cell.width * (Number(viewport.scale) || 1));
+        return { left: point[0], top: point[1] - height, right: point[0] + width, bottom: point[1] + Math.max(2, height * 0.18) };
+      });
+      const left = Math.min(...boxes.map((box) => box.left));
+      const top = Math.min(...boxes.map((box) => box.top));
+      const right = Math.max(...boxes.map((box) => box.right));
+      const bottom = Math.max(...boxes.map((box) => box.bottom));
+      return { text, ...normalizedBox(left - 3, top - 2, right - left + 6, bottom - top + 4, viewport.width, viewport.height) };
+    }).filter((line) => line.text);
+  }
+
+  function ocrLinesToLayout(data, width, height) {
+    const lines = [];
+    (data?.blocks || []).forEach((block) => {
+      (block.paragraphs || []).forEach((paragraph) => {
+        (paragraph.lines || []).forEach((line) => {
+          const text = String(line.text || "").replace(/\s+/g, " ").trim();
+          const box = line.bbox || {};
+          if (!text || !Number.isFinite(box.x0) || !Number.isFinite(box.y0) || !Number.isFinite(box.x1) || !Number.isFinite(box.y1)) return;
+          lines.push({ text, ...normalizedBox(box.x0 - 3, box.y0 - 2, box.x1 - box.x0 + 6, box.y1 - box.y0 + 4, width, height) });
+        });
+      });
+    });
+    return lines;
   }
 
   function loadScript(src) {
@@ -78,7 +126,7 @@
     context.fillStyle = "#fff";
     context.fillRect(0, 0, canvas.width, canvas.height);
     await page.render({ canvasContext: context, viewport }).promise;
-    return canvas;
+    return { canvas, viewport };
   }
 
   function assertFile(file) {
@@ -116,16 +164,24 @@
         const content = await page.getTextContent({ includeMarkedContent: false });
         let text = textItemsToLines(content.items);
         let method = "text";
+        const rendered = await renderPage(page);
+        let previewLines = textItemsToLayout(content.items, rendered.viewport);
         if (text.replace(/\s/g, "").length < 20) {
           if (!ocrWorker) ocrWorker = await createOcrWorker(onStatus);
-          const canvas = await renderPage(page);
-          const result = await ocrWorker.recognize(canvas, { rotateAuto: true });
+          const result = await ocrWorker.recognize(rendered.canvas, { rotateAuto: true }, { blocks: true, text: true });
           text = String(result?.data?.text || "").trim();
           method = "ocr";
-          canvas.width = 1;
-          canvas.height = 1;
+          previewLines = ocrLinesToLayout(result?.data, rendered.canvas.width, rendered.canvas.height);
         }
-        pages.push({ pageNumber, text, method });
+        const preview = {
+          width: rendered.canvas.width,
+          height: rendered.canvas.height,
+          imageDataUrl: rendered.canvas.toDataURL("image/jpeg", 0.88),
+          lines: previewLines
+        };
+        pages.push({ pageNumber, text, method, preview });
+        rendered.canvas.width = 1;
+        rendered.canvas.height = 1;
         page.cleanup();
       }
     } finally {
@@ -154,5 +210,5 @@
     return { fileName: file.name, fileSize: file.size, pages };
   }
 
-  return { read, textItemsToLines, constants: { MAX_FILE_BYTES, MAX_PAGES } };
+  return { read, textItemsToLines, textItemsToLayout, ocrLinesToLayout, constants: { MAX_FILE_BYTES, MAX_PAGES } };
 });

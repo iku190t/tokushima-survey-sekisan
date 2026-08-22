@@ -131,4 +131,17 @@ const grouped = reader.textItemsToLines([
 ]);
 assert.strictEqual(grouped, "2級基準点測量 20点\n別の行", "PDF文字要素を座標順で行へ復元する");
 
+const textLayout = reader.textItemsToLayout([
+  { str: "2級基準点測量", width: 90, height: 12, transform: [1, 0, 0, 1, 20, 700] },
+  { str: "20点", width: 28, height: 12, transform: [1, 0, 0, 1, 180, 700] }
+], { scale: 1, width: 500, height: 800, convertToViewportPoint: (x, y) => [x, 800 - y] });
+assert.strictEqual(textLayout.length, 1, "PDFの同じ行を1つのクリック領域にまとめる");
+assert.strictEqual(textLayout[0].text, "2級基準点測量 20点", "クリック領域へ表示行を保持する");
+assert.ok(textLayout[0].left > 0 && textLayout[0].left < 0.1 && textLayout[0].width > 0.3, "PDF座標をページ比率へ変換する");
+
+const ocrLayout = reader.ocrLinesToLayout({ blocks: [{ paragraphs: [{ lines: [{ text: "水準測量 3.5km", bbox: { x0: 100, y0: 200, x1: 460, y1: 240 } }] }] }] }, 1000, 1400);
+assert.strictEqual(ocrLayout.length, 1, "OCR行の座標をクリック領域にする");
+assert.strictEqual(ocrLayout[0].text, "水準測量 3.5km", "OCR行の文字を保持する");
+assert.ok(ocrLayout[0].top > 0.1 && ocrLayout[0].top < 0.2, "OCR座標をページ比率へ変換する");
+
 console.log("OK: document PDF/OCR extraction and review candidate checks passed");

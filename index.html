@@ -7,7 +7,7 @@
   <meta name="description" content="設計、測量、航空・船舶、地質を年度別技術者単価と根拠表示付きで計算するWeb業務積算ソフト">
   <meta name="author" content="株式会社アイズ測量">
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="styles.css?v=20260822-10">
+  <link rel="stylesheet" href="styles.css?v=20260822-11">
 </head>
 <body data-business-scope="design">
   <header class="app-header">
@@ -306,6 +306,24 @@
           <div id="lastImportSummary" class="last-import-summary" hidden></div>
         </aside>
       </div>
+      <section id="pdfClickWorkbench" class="card pdf-click-workbench" hidden>
+        <div class="card-title-row"><div><p class="section-kicker">CLICK PDF TO SELECT</p><h2>PDFをクリックして項目を選択</h2></div><span id="pdfClickFileName" class="badge">—</span></div>
+        <p class="import-lead">色の付いた文字枠をクリックすると、業務基本情報・測量数量・設計等の人工を反映待ちへ追加できます。最後に右側の一覧を確認して積算へ反映します。</p>
+        <div class="pdf-click-layout">
+          <div id="pdfClickPages" class="pdf-click-pages" aria-label="読み込んだPDF"></div>
+          <aside class="pdf-click-sidebar">
+            <div class="pdf-click-summary"><span>反映待ち</span><strong id="pdfClickSelectedCount">0件</strong><p id="pdfClickSelectionHint">PDF上の色付き枠をクリックしてください。</p></div>
+            <div id="pdfClickSelectedList" class="pdf-click-selected-list"></div>
+            <div class="pdf-click-actions">
+              <button id="selectDetectedPdfLinesButton" class="button" type="button">確信度の高い候補を選択</button>
+              <button id="clearPdfLineSelectionButton" class="button" type="button">選択をすべて外す</button>
+              <button id="openPdfSelectionReviewButton" class="button primary" type="button" disabled>選択内容を確認・修正</button>
+              <button id="openPdfFullReviewButton" class="button" type="button">通常の一覧でも確認</button>
+            </div>
+            <p class="pdf-click-note">枠が付かない行は自動対応先を特定できていません。PDFの文字は積算へ直接確定せず、次の確認画面で項目・数量・単位を修正できます。</p>
+          </aside>
+        </div>
+      </section>
       <section class="card case-search-card">
         <div class="card-title-row"><div><p class="section-kicker">OFFICIAL CASE FILE</p><h2>公式案件検索・資料台帳</h2></div><span class="badge">候補照合＋訂正版管理</span></div>
         <p class="import-lead">PDFから読んだ業務名・発注者・番号・年度を使い、公式の調達情報から同一案件候補を探します。検索結果だけで確定せず、候補を確認して案件資料へ登録してください。</p>
@@ -556,10 +574,10 @@
   <script src="consulting-engine.js?v=20260822-1"></script>
   <script src="document-import-engine.js?v=20260822-3"></script>
   <script src="official-case-engine.js?v=20260822-1"></script>
-  <script src="document-reader.js?v=20260822-1"></script>
+  <script src="document-reader.js?v=20260822-2"></script>
   <script src="app.js?v=20260822-10"></script>
   <script src="consulting.js?v=20260822-2"></script>
-  <script src="document-import.js?v=20260822-3"></script>
+  <script src="document-import.js?v=20260822-4"></script>
   <script src="official-case-search.js?v=20260822-1"></script>
   <script src="analytics.js?v=20260822-1"></script>
 </body>
