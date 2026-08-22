@@ -39,6 +39,7 @@ assert.ok(app.includes('window.addEventListener("beforeprint", renderPrintDocume
 assert.ok(css.includes("@page { size: A4 portrait"), "A4縦のページ設定がある");
 assert.ok(css.includes("table-header-group"), "複数ページで表頭を繰り返す設定がある");
 assert.ok(css.includes(".workspace-main, .master-layout { display: grid; min-width: 0;"), "狭い画面で積算表がページ全体を横へ押し出さない");
+assert.ok(css.includes("html { color-scheme: light; overflow-x: hidden; }"), "表とタブの横スクロールをページ内に封じる");
 assert.ok(html.includes('id="draftRecoveryPanel"'), "前回データの復元案内がある");
 assert.ok(html.includes('id="restoreDraftButton"'), "前回データを明示操作で復元できる");
 assert.ok(html.includes('id="dismissDraftButton"'), "新規画面のまま続けられる");
