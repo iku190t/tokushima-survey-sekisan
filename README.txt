@@ -1,6 +1,14 @@
 測量積算ワークベンチ
 ====================
 
+公開版
+------
+https://iku190t.github.io/tokushima-survey-sekisan/
+
+ソースコード
+------------
+https://github.com/iku190t/tokushima-survey-sekisan
+
 起動方法
 --------
 「index.html」をダブルクリックしてください。インストールは不要です。
