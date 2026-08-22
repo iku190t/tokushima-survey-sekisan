@@ -906,3 +906,49 @@ OK: UI static wiring checks passed
 | `document-import.js` | `7A966365A9947323E6DE4146418BCBD2599A68A7D9051700A3DA1E50AA50A898` |
 | `tests/test-document-import.js` | `5DF46E8A67EACC8DFA6CAC4E7D5DA6EFA6BA1B80931765CA1C17D5830AAC2165` |
 | `tests/test-document-import-ui.js` | `4F17459C7BCF7AF343BFE45F235F8779202C6529E64BD8381578413360175B9B` |
+
+## B-2026-08-22-20
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-22
+- アプリコミット: `a3a14e1495056639a638e0bbf4b3430aa2dc15aa`
+- GitHub Pagesビルド: `1167519629`（`built`）
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: B-2026-08-22-19へ、PDF全抽出行のクリック、未判定行の手動対応付け、右側での数量・人工・基本情報編集、同一PDF画面での連続反映、追加済み行の二重反映防止を追加した版。
+
+### 合格した試験
+
+```text
+OK: consulting/design/geology calculation checks passed
+OK: consulting UI and report wiring checks passed
+OK: document import review UI and safe apply wiring checks passed
+OK: document PDF/OCR extraction and review candidate checks passed
+OK: regulation audit checks passed (master mapping, precision, quantity formulas, travel, rounding, overhead)
+OK: Hiroshima R6-R8 complete annual master audit checks passed
+OK: nationwide jurisdiction and verified master catalog checks passed
+OK: nationwide R6-R8 standard reference master checks passed
+OK: official procurement case matching, XML parsing, and source ledger candidates passed
+OK: official case search UI, source ledger, revision warning, and safe static-site wiring passed
+OK: MLIT official role price presets R4-R8 and consulting roles R6-R8
+OK: UI static wiring checks passed
+```
+
+追加検査: `node --check document-import.js`、`git diff --check`合格。
+
+### 実ブラウザー確認
+
+- 文字入り匿名合成PDF 1ページを直接抽出し、11文字行すべてにクリック枠を表示した。自動判定0行でも青い破線の未判定枠として全行を選択できた。
+- 「公図等の転写」を模した未判定行を測量項目へ対応付け、抽出数量11、単位「回」、整数のみの入力規則を確認後、測量1件を反映した。
+- 別の未判定行を土木設計業務・主任技術者・1人工へ対応付け、設計人工1件を反映した。2回ともPDF取込画面を維持し、追加済み行2行、反映待ち0件となった。
+- ローカル版とGitHub Pages公開版でブラウザー警告・エラー0件。公開版で`document-import.js?v=20260822-5`と`styles.css?v=20260822-12`を確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `12193E82986ACA8471F93B0C6F57EA0F6C9563C55BA6741E25DF6B7D88D0C3AA` |
+| `styles.css` | `F489DF977FCE9115B689A747826C93A9D6FDA24DF3427DEC2D338FC72A61922F` |
+| `document-reader.js` | `E453944BF9F3598DA558D904097B171B6EF386848439E77B2E5A6C99AB49B0A7` |
+| `document-import.js` | `571CC812B6BB67996DE6DEA16FB802C8FF9B1C34D533F66762DA99BC9C482E43` |
+| `tests/test-document-import.js` | `5DF46E8A67EACC8DFA6CAC4E7D5DA6EFA6BA1B80931765CA1C17D5830AAC2165` |
+| `tests/test-document-import-ui.js` | `06D69EB54AA6427B1EAABA8BB09FA46CFD98AC5C405EC5BA830F11D9342C9186` |
