@@ -65,6 +65,8 @@
 - 再発防止: T-UIで親グリッドの最小幅解除を静的検査し、公開版の幅390pxで`documentElement.scrollWidth === innerWidth`を確認する。
 - 証拠: 公開版の幅390px実測、`styles.css`、`tests/test-ui-static.js`
 
+補足: 修正直後の公開確認ではブラウザーが旧`styles.css`を再利用したため、HTMLからCSS・JavaScriptを版番号付きURLで参照し、公開更新時のキャッシュ混在を防止した。
+
 ## 廃止された考え方
 
 - 状態: **廃止**

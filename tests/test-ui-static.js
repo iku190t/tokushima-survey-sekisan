@@ -55,6 +55,7 @@ assert.ok(html.includes('id="aboutToolDialog"'), "免責・利用条件を画面
 assert.ok(html.includes("参考試算用・公式ソフトではありません"), "公式ソフトではないことを常時表示する");
 assert.ok(app.includes("参考試算・公式資料要照合"), "印刷帳票にも照合注意を表示する");
 assert.ok(html.includes('id="analyticsConsent"'), "アクセス解析の同意UIがある");
+assert.ok(html.includes('href="styles.css?v=') && html.includes('src="app.js?v='), "公開時にCSSとアプリJSの旧キャッシュを再利用しない");
 assert.ok(analytics.includes('const measurementId = "G-88B9YPJXWP"'), "既存Ezアイズ製品と同じGA4測定IDを使う");
 assert.ok(analytics.includes('location.protocol === "file:"'), "ローカルファイル実行時は解析を送信しない");
 assert.ok(analytics.includes('analytics_storage: "granted"'), "同意後だけAnalytics保存を許可する");
