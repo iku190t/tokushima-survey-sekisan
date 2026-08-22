@@ -1,4 +1,4 @@
-window.SEKISAN_JURISDICTIONS = [
+window.SEKISAN_PREFECTURES = [
   { code: "01", name: "北海道" },
   { code: "02", name: "青森県" },
   { code: "03", name: "岩手県" },
@@ -46,4 +46,9 @@ window.SEKISAN_JURISDICTIONS = [
   { code: "45", name: "宮崎県" },
   { code: "46", name: "鹿児島県" },
   { code: "47", name: "沖縄県" }
+];
+
+window.SEKISAN_JURISDICTIONS = [
+  { code: "mlit", name: "国土交通省（直轄）", type: "national" },
+  ...window.SEKISAN_PREFECTURES.map((entry) => ({ ...entry, type: "prefecture" }))
 ];

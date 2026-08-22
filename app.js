@@ -4,6 +4,7 @@
   const MASTER_KEY = "surveySekisanMastersV1";
   const ESTIMATE_KEY = "surveySekisanEstimateV1";
   const defaultMasterId = "r8-tokushima-2026";
+  const mlitMasterId = "r8-mlit-2026-reference";
   const defaultJurisdictionCode = "36";
   const masterCatalogPath = "data/master-catalog.json";
   const yen = new Intl.NumberFormat("ja-JP", { style: "currency", currency: "JPY", maximumFractionDigits: 0 });
@@ -100,6 +101,23 @@
     return `令和${year - 2018}年度`;
   }
 
+  function verificationLabel(master) {
+    if (master.verificationStatus === "verified") return "検証済み";
+    if (master.verificationStatus === "official-reference") return "公開基準参照・要確認";
+    return "利用者作成";
+  }
+
+  function sourceListHtml(master) {
+    const entries = Array.isArray(master.sourceLinks) && master.sourceLinks.length ? master.sourceLinks : (master.sources || []);
+    return entries.map((entry) => {
+      if (typeof entry === "string") return `<li>${h(entry)}</li>`;
+      const label = h(entry.label || entry.note || "出典");
+      const url = String(entry.url || "");
+      if (!/^https:\/\//i.test(url)) return `<li>${label}</li>`;
+      return `<li><a href="${h(url)}" target="_blank" rel="noopener noreferrer">${label}</a></li>`;
+    }).join("");
+  }
+
   function jurisdictionName(code) {
     return window.SEKISAN_JURISDICTIONS?.find((entry) => entry.code === String(code))?.name || "地域未設定";
   }
@@ -107,7 +125,7 @@
   function normalizeMasterMetadata(master, fallbackCode = defaultJurisdictionCode) {
     master.jurisdictionCode = String(master.jurisdictionCode || fallbackCode).padStart(2, "0");
     master.jurisdictionName = jurisdictionName(master.jurisdictionCode);
-    master.jurisdictionType = "prefecture";
+    master.jurisdictionType = master.jurisdictionCode === "mlit" ? "national" : "prefecture";
     master.verificationStatus = master.verificationStatus || "user-supplied";
     master.scopeStatus = master.scopeStatus === "rate-comparison" ? "retired-comparison" : (master.scopeStatus || "user-custom");
     return master;
@@ -128,14 +146,44 @@
     return normalizeMasterMetadata(master);
   }
 
+  function bundledMlitMaster() {
+    const master = clone(window.MASTER_R8);
+    master.id = mlitMasterId;
+    master.bundled = true;
+    master.walkYear = 2026;
+    master.rateYear = 2026;
+    master.fiscalYear = 2026;
+    master.effectiveFrom = "";
+    master.jurisdictionCode = "mlit";
+    master.jurisdictionName = "国土交通省（直轄）";
+    master.jurisdictionType = "national";
+    master.authority = "国土交通省（公開基準参照版）";
+    master.label = "令和8年度・国土交通省測量業務（公開基準参照版）";
+    master.scopeStatus = "official-reference";
+    master.verificationStatus = "official-reference";
+    master.masterVersion = "2026.reference.1";
+    master.sources = [
+      "国土交通省 令和8年度 測量業務積算基準",
+      "国土交通省 令和8年度 積算基準・標準歩掛等改定内容",
+      "国土交通省 令和8年度 設計業務委託等技術者単価",
+      "徳島県令和8年度統合版を国交省公開基準と照合して構成（地方整備局等の適用通知は案件ごとに確認）"
+    ];
+    master.sourceLinks = [
+      { label: "国土交通省 設計業務等標準積算基準書（令和8年度・測量業務積算基準を含む）", url: "https://www.mlit.go.jp/tec/gyoumu_sekisan.html" },
+      { label: "国土交通省 令和8年3月適用 設計業務委託等技術者単価", url: "https://www.mlit.go.jp/report/press/kanbo08_hh_001297.html" },
+      { label: "徳島県令和8年度統合版と照合して構成。地方整備局等の適用通知・特記仕様は案件ごとに確認" }
+    ];
+    return normalizeMasterMetadata(master, "mlit");
+  }
+
   function loadMasters() {
     let stored = [];
     try { stored = JSON.parse(localStorage.getItem(MASTER_KEY) || "[]"); } catch (_) { stored = []; }
     if (!Array.isArray(stored)) stored = [];
     const custom = stored
-      .filter((master) => master && master.id !== defaultMasterId && master.scopeStatus !== "rate-comparison" && master.scopeStatus !== "retired-comparison")
+      .filter((master) => master && ![defaultMasterId, mlitMasterId].includes(master.id) && master.scopeStatus !== "rate-comparison" && master.scopeStatus !== "retired-comparison")
       .map((master) => normalizeMasterMetadata(master));
-    return [bundledMaster(), ...custom];
+    return [bundledMaster(), bundledMlitMaster(), ...custom];
   }
 
   function emptyEstimate() {
@@ -278,12 +326,17 @@
     $("jurisdictionSelect").value = active.jurisdictionCode;
     const regionalMasters = masters.filter((master) => master.jurisdictionCode === active.jurisdictionCode)
       .sort((a, b) => num(b.fiscalYear) - num(a.fiscalYear) || String(b.masterVersion || "").localeCompare(String(a.masterVersion || "")));
-    $("fiscalYearSelect").innerHTML = regionalMasters.map((master) => `<option value="${h(master.id)}">${h(eraLabel(master.fiscalYear))}${master.verificationStatus === "verified" ? "（検証済み）" : "（利用者作成）"}</option>`).join("");
+    $("fiscalYearSelect").innerHTML = regionalMasters.map((master) => `<option value="${h(master.id)}">${h(eraLabel(master.fiscalYear))}（${h(verificationLabel(master))}）</option>`).join("");
     $("fiscalYearSelect").value = active.id;
     const options = masters.map((master) => `<option value="${h(master.id)}">${h(master.jurisdictionName)}｜${h(eraLabel(master.fiscalYear))}｜${h(master.label)}${master.bundled ? "（初期収録）" : ""}</option>`).join("");
     $("masterEditorSelect").innerHTML = options;
     $("masterEditorSelect").value = editorMasterId;
     $("masterJurisdiction").innerHTML = (window.SEKISAN_JURISDICTIONS || []).map((region) => `<option value="${region.code}">${h(region.name)}</option>`).join("");
+    const verifiedAuthorities = new Set(masters.filter((master) => master.verificationStatus === "verified").map((master) => master.jurisdictionCode));
+    const referenceAuthorities = new Set(masters.filter((master) => master.verificationStatus === "official-reference").map((master) => master.jurisdictionCode));
+    const prefectureCount = window.SEKISAN_PREFECTURES?.length || 47;
+    const verifiedPrefectures = [...verifiedAuthorities].filter((code) => code !== "mlit").length;
+    $("masterCoverageStatus").textContent = `収録状況：完全検証済み ${verifiedPrefectures}/${prefectureCount}都道府県、国土交通省 公開基準参照版 ${referenceAuthorities.has("mlit") ? "収録" : "未収録"}。未収録県は公式完全版を取得・照合するまで計算できません。`;
   }
 
   function renderMasterStatus() {
@@ -293,6 +346,9 @@
     if (master.verificationStatus === "verified") {
       $("masterStatusTitle").textContent = `${master.jurisdictionName}・${eraLabel(master.fiscalYear)}の検証済みマスター`;
       $("masterStatusText").textContent = "同一地域・同一年度の歩掛、経費率、技術者単価を組み合わせています。未収録県には他県の値を流用しません。";
+    } else if (master.verificationStatus === "official-reference") {
+      $("masterStatusTitle").textContent = `国土交通省・${eraLabel(master.fiscalYear)}の公開基準参照マスター`;
+      $("masterStatusText").textContent = "国交省公開の積算基準・改定資料・技術者単価に基づく参照版です。地方整備局等の適用日、特記仕様、個別費用を発注図書で確認してください。";
     } else {
       $("masterStatusTitle").textContent = "利用者編集マスター";
       $("masterStatusText").textContent = `${master.jurisdictionName}・${eraLabel(master.fiscalYear)}として登録されています。変更した単価・歩掛・経費率の出典と適用日を確認してください。`;
@@ -420,7 +476,8 @@
   function validationIssues(result) {
     const issues = [];
     const master = activeMaster();
-    if (master.verificationStatus !== "verified") issues.push({ severity: "warn", text: "利用者作成マスターです。地域・年度・出典と正解積算を照合してください。" });
+    if (master.verificationStatus === "official-reference") issues.push({ severity: "warn", text: "国土交通省の公開基準参照版です。地方整備局等の適用通知・特記仕様・正解積算と照合してください。" });
+    else if (master.verificationStatus !== "verified") issues.push({ severity: "warn", text: "利用者作成マスターです。発注機関・年度・出典と正解積算を照合してください。" });
     if (!result.lines.length) issues.push({ severity: "info", text: "作業項目がまだありません。" });
     result.lines.forEach((calculated) => {
       const item = master.workItems.find((entry) => entry.code === calculated.code);
@@ -590,7 +647,7 @@
     return `<section class="report-page">${reportHeader("積 算 条 件 書", master.label)}
       <table class="report-table conditions-table"><tbody>${conditionRows.map(([label, value]) => `<tr><th>${h(label)}</th><td>${h(value)}</td></tr>`).join("")}</tbody></table>
       <section class="report-note-block"><h2>提出前の確認事項</h2><ul>${issues.length ? issues.map((issue) => `<li>${h(issue.text)}</li>`).join("") : "<li>案件の特記仕様書、成果検定費、旅費条件を最終照合すること。</li>"}</ul></section>
-      <section class="report-note-block source-note"><h2>マスター収録出典</h2><ul>${(master.sources || []).map((source) => `<li>${h(source)}</li>`).join("")}</ul></section>
+      <section class="report-note-block source-note"><h2>マスター収録出典</h2><ul>${sourceListHtml(master)}</ul></section>
       <p class="report-disclaimer"><strong>参考試算用・公式帳票ではありません。</strong> 本書は選択中の年度マスターと入力条件に基づく積算条件を記録したものです。計算結果等を保証するものではありません。実務利用時は、最新の公式基準、案件固有の特記仕様、貸与資料、現場条件、発注機関の運用および検証済みの正解積算を優先し、利用者の責任で照合してください。</p>
       ${reportFooter("積算条件書")}</section>`;
   }
@@ -649,7 +706,7 @@
     $("masterItemCount").textContent = master.workItems.length;
     $("masterRateYear").textContent = `R${num(master.rateYear, master.fiscalYear) - 2018}`;
     $("masterWalkYear").textContent = `R${num(master.walkYear, master.fiscalYear) - 2018}`;
-    $("sourceList").innerHTML = (master.sources || []).map((source) => `<li>${h(source)}</li>`).join("");
+    $("sourceList").innerHTML = sourceListHtml(master);
   }
 
   function renderAll() {
@@ -780,7 +837,7 @@
     const master = ensureEditableMaster();
     master.jurisdictionCode = $("masterJurisdiction").value;
     master.jurisdictionName = jurisdictionName(master.jurisdictionCode);
-    master.jurisdictionType = "prefecture";
+    master.jurisdictionType = master.jurisdictionCode === "mlit" ? "national" : "prefecture";
     master.fiscalYear = Math.trunc(num($("masterYear").value, master.fiscalYear));
     master.label = $("masterLabel").value.trim() || `${master.fiscalYear}年度マスター`;
     master.effectiveFrom = $("masterEffective").value;

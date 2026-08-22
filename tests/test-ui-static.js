@@ -26,10 +26,18 @@ assert.ok(html.includes('id="validationPanel"'), "提出前チェックがある
 assert.ok(html.includes('id="jurisdictionSelect"'), "積算地域を選択できる");
 assert.ok(html.includes('id="fiscalYearSelect"'), "積算年度を選択できる");
 assert.ok(html.includes('id="checkMasterUpdatesButton"'), "年度マスターの更新を確認できる");
+assert.ok(html.includes('id="masterCoverageStatus"'), "国と47都道府県の収録状況を明示する");
 assert.ok(!html.includes('id="officialRateYear"'), "技術者単価だけを入れ替える比較UIを表示しない");
 assert.ok(!html.includes("比較用"), "利用者画面に比較マスターを表示しない");
 assert.ok(app.includes("checkForMasterUpdates({ silent: true })"), "公開版起動時に検証済みマスターの更新を確認する");
 assert.ok(app.includes("sha256Hex"), "配信マスターのSHA-256を検証する");
+assert.ok(app.includes('const mlitMasterId = "r8-mlit-2026-reference"'), "国土交通省直轄マスターを収録する");
+assert.ok(app.includes('master.verificationStatus = "official-reference"'), "国交省参照版を完全検証済みと誤表示しない");
+assert.ok(app.includes('master.effectiveFrom = ""'), "国交省版に地方整備局未確認の一律適用日を表示しない");
+assert.ok(app.includes("https://www.mlit.go.jp/tec/gyoumu_sekisan.html"), "国交省積算基準の公式出典を表示する");
+assert.ok(app.includes("https://www.mlit.go.jp/report/press/kanbo08_hh_001297.html"), "国交省技術者単価の公式出典を表示する");
+assert.ok(app.includes("function sourceListHtml"), "マスター画面と帳票で公式出典をリンク表示する");
+assert.ok(html.includes("発注機関"), "国と都道府県を発注機関として選択する");
 assert.ok(app.includes("blockInvalidQuantityKey"), "整数数量への小数キー入力を防止する");
 assert.ok(app.includes("blockInvalidQuantityPaste"), "不正な桁数の貼り付けを防止する");
 assert.ok(app.includes("normalizeQuantityInput"), "数量を単位別規則に正規化する");

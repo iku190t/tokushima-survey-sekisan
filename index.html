@@ -3,9 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>徳島県 測量積算ワークベンチ</title>
-  <meta name="description" content="徳島県令和8年度の測量積算基準と公式技術者単価を根拠表示付きで計算する積算ソフト">
+  <title>Ez積算｜国土交通省・都道府県別 測量積算ワークベンチ</title>
+  <meta name="description" content="発注機関と年度を分離し、国土交通省の公開基準参照版と検証済み都道府県マスターを根拠表示付きで計算する測量積算ソフト">
   <meta name="author" content="株式会社アイズ測量">
+  <link rel="icon" href="data:,">
   <link rel="stylesheet" href="styles.css?v=20260822-6">
 </head>
 <body>
@@ -54,7 +55,7 @@
       </section>
       <section class="project-strip">
         <label class="field">
-          <span>積算地域</span>
+          <span>発注機関</span>
           <select id="jurisdictionSelect" aria-describedby="masterStatusText"></select>
         </label>
         <label class="field compact-field">
@@ -250,7 +251,7 @@
           </div>
           <div class="master-head-grid">
             <label class="field"><span>地域・年度マスター</span><select id="masterEditorSelect"></select></label>
-            <label class="field"><span>積算地域</span><select id="masterJurisdiction"></select></label>
+            <label class="field"><span>発注機関</span><select id="masterJurisdiction"></select></label>
             <label class="field"><span>年度（西暦）</span><input id="masterYear" type="number" min="2000" max="2200"></label>
             <label class="field"><span>名称</span><input id="masterLabel" type="text"></label>
             <label class="field"><span>適用開始日</span><input id="masterEffective" type="date"></label>
@@ -263,7 +264,8 @@
             <button id="deleteMasterButton" class="button danger" type="button">このマスターを削除</button>
             <input id="masterFileInput" type="file" accept="application/json,.json" hidden>
           </div>
-          <p id="masterUpdateStatus" class="callout">公開版では起動時に配信カタログを確認し、出典と内容を検証済みの地域・年度マスターだけを追加します。未収録県へ他県のマスターを流用しません。</p>
+          <p id="masterUpdateStatus" class="callout">公開版では起動時に配信カタログを確認し、出典と内容を検証済みの発注機関・年度マスターだけを追加します。国と県、県同士のマスターを無条件に流用しません。</p>
+          <p id="masterCoverageStatus" class="callout warning-callout"></p>
         </section>
 
         <section class="card">
@@ -394,11 +396,11 @@
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <script src="data/prefectures.js?v=20260822-1"></script>
+  <script src="data/prefectures.js?v=20260822-2"></script>
   <script src="data/master-r8.js?v=20260822-2"></script>
   <script src="data/official-role-prices.js?v=20260822-1"></script>
   <script src="engine.js?v=20260822-1"></script>
-  <script src="app.js?v=20260822-4"></script>
+  <script src="app.js?v=20260822-5"></script>
   <script src="analytics.js?v=20260822-1"></script>
 </body>
 </html>
