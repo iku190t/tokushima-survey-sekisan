@@ -40,7 +40,7 @@ assert.ok(css.includes("@page { size: A4 portrait"), "A4縦のページ設定が
 assert.ok(css.includes("table-header-group"), "複数ページで表頭を繰り返す設定がある");
 assert.ok(css.includes(".workspace-main, .master-layout { display: grid; min-width: 0;"), "狭い画面で積算表がページ全体を横へ押し出さない");
 assert.ok(css.includes("html, body { overflow-x: clip; }"), "表とタブの横スクロールをページ内に封じる");
-assert.ok(css.includes(".table-scroll { max-width: 100%; overflow-x: auto; contain: paint; }"), "横長表の描画範囲をスクロール枠内に封じる");
+assert.ok(css.includes(".table-scroll { max-width: 100%; overflow-x: auto; contain: layout paint; }"), "横長表のレイアウトと描画範囲をスクロール枠内に封じる");
 assert.ok(css.includes(".view-tabs { overflow-x: visible; flex-wrap: wrap;"), "スマートフォン幅では画面切替タブを2段に折り返す");
 assert.ok(html.includes('id="draftRecoveryPanel"'), "前回データの復元案内がある");
 assert.ok(html.includes('id="restoreDraftButton"'), "前回データを明示操作で復元できる");
