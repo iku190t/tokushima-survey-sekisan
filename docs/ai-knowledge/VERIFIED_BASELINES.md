@@ -205,3 +205,41 @@ OK: UI static wiring checks passed
 | `app.js` | `FCB3AE66EE5242759FC64CB957D04379098184B920012AC234F4E27595613291` |
 | `styles.css` | `4BD3EC1291DCBAB1D148FC5B74A7A6AF90D82F29D0C7DD0E5F1537FADFF92024` |
 | `tests/test-ui-static.js` | `6970DEC4F85DB354FCC0416E7409A54AEF691E8EF355396192CE8789058403D0` |
+
+## B-2026-08-22-06
+
+- 状態: **検証済み**
+- 検証日: 2026-08-22
+- コミット: `5b269c5`
+- ブランチ: `main`
+- 内容: 比較用マスターUIを廃止し、積算地域・積算年度を分離。47都道府県一覧、未収録県の選択禁止、検証済みマスターの同一オリジン・SHA-256付き配信基盤を追加した版。
+- 収録済み完全マスター: 徳島県・令和8年度のみ。徳島県以外46県と過去年度は未収録。
+
+### 合格した自動試験
+
+```text
+OK: regulation audit checks passed (master mapping, precision, quantity formulas, travel, rounding, overhead)
+OK: MLIT official role price presets R4-R8
+OK: UI static wiring checks passed
+OK: nationwide jurisdiction and verified master catalog checks passed
+```
+
+### 実ブラウザー確認
+
+- ローカルHTTP版で積算地域に47都道府県が表示される。
+- 徳島県だけが選択可能で、他46県は「マスター未収録」として無効化される。
+- 積算年度は「令和8年度（検証済み）」だけを表示する。
+- 年度マスター画面に「更新確認済み（2026-08-22）」が表示され、コンソール警告・エラーは0件だった。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `0EC6C8E04378CED3E76D3F42703A69A18EF026356B216B8B736825C9178B40B6` |
+| `app.js` | `BE5430D8A7593B0D37EE3BF024666FE8C1FF7E3DC445A80F1106536C612F8796` |
+| `styles.css` | `27E7D26CFFD81977AEA3DA90994D7F5C364CFC397CC63E68CA52AF752EE79928` |
+| `data/master-r8.json` | `03594DE169532381EAF009DD8B6679459DF176FE95250822D05BDEBBF6F66995` |
+| `data/master-catalog.json` | `6D8AC4B80FA36D44FE8FE710ADEF5822C9F67B4298F5BFB0024CA3C439EF40B3` |
+| `data/prefectures.js` | `D71D9AA5F44DB4DF8A8CA8112A91DCD3AEF5382017579235A94EBA3FCFDA41AC` |
+| `tests/test-ui-static.js` | `7405F2BD2BFB896CAD2CB8AFAB564B40487F9A028E236DE14A895A8D70591C07` |
+| `tests/test-master-catalog.js` | `F5EA2388BF6ABD7E92B0FB199E18E8A74CD80E5C2A0442C0E3EC973AA945AFBC` |
