@@ -486,7 +486,7 @@
   }
 
   function reportFooter(label) {
-    return `<footer class="report-page-footer"><span>${h(estimate.projectName || "測量業務")}</span><span>${h(label)}</span></footer>`;
+    return `<footer class="report-page-footer"><span>${h(estimate.projectName || "測量業務")}</span><span>参考試算・公式資料要照合 ／ ${h(label)}</span></footer>`;
   }
 
   function money(value) {
@@ -577,7 +577,7 @@
       <table class="report-table conditions-table"><tbody>${conditionRows.map(([label, value]) => `<tr><th>${h(label)}</th><td>${h(value)}</td></tr>`).join("")}</tbody></table>
       <section class="report-note-block"><h2>提出前の確認事項</h2><ul>${issues.length ? issues.map((issue) => `<li>${h(issue.text)}</li>`).join("") : "<li>案件の特記仕様書、成果検定費、旅費条件を最終照合すること。</li>"}</ul></section>
       <section class="report-note-block source-note"><h2>マスター収録出典</h2><ul>${(master.sources || []).map((source) => `<li>${h(source)}</li>`).join("")}</ul></section>
-      <p class="report-disclaimer">本書は選択中の年度マスターと入力条件に基づく積算条件を記録したものです。案件固有の特記仕様、貸与資料、現場条件および発注機関の運用を優先してください。</p>
+      <p class="report-disclaimer"><strong>参考試算用・公式帳票ではありません。</strong> 本書は選択中の年度マスターと入力条件に基づく積算条件を記録したものです。計算結果等を保証するものではありません。実務利用時は、最新の公式基準、案件固有の特記仕様、貸与資料、現場条件、発注機関の運用および検証済みの正解積算を優先し、利用者の責任で照合してください。</p>
       ${reportFooter("積算条件書")}</section>`;
   }
 
@@ -910,6 +910,14 @@
   }
 
   function bindEvents() {
+    const openAboutTool = () => {
+      const dialog = $("aboutToolDialog");
+      if (typeof dialog.showModal === "function") dialog.showModal();
+      else dialog.setAttribute("open", "");
+    };
+    ["aboutToolButton", "footerAboutToolButton"].forEach((id) => $(id).addEventListener("click", openAboutTool));
+    $("closeAboutToolButton").addEventListener("click", () => $("aboutToolDialog").close());
+    $("aboutToolDialog").addEventListener("click", (event) => { if (event.target === $("aboutToolDialog")) $("aboutToolDialog").close(); });
     document.querySelectorAll(".view-tab").forEach((button) => button.addEventListener("click", () => {
       document.querySelectorAll(".view-tab").forEach((entry) => entry.classList.toggle("active", entry === button));
       document.querySelectorAll(".view").forEach((view) => view.classList.remove("active"));

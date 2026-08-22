@@ -8,12 +8,13 @@ const root = path.join(__dirname, "..");
 const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const app = fs.readFileSync(path.join(root, "app.js"), "utf8");
 const css = fs.readFileSync(path.join(root, "styles.css"), "utf8");
+const analytics = fs.readFileSync(path.join(root, "analytics.js"), "utf8");
 const ids = new Set([...html.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]));
 const referenced = new Set([...app.matchAll(/\$\("([^"]+)"\)/g)].map((match) => match[1]));
 const missing = [...referenced].filter((id) => !ids.has(id));
 
 assert.deepStrictEqual(missing, [], `app.jsから参照されるHTML要素が不足: ${missing.join(", ")}`);
-for (const source of ["data/master-r8.js", "data/official-role-prices.js", "engine.js", "app.js", "styles.css"]) {
+for (const source of ["data/master-r8.js", "data/official-role-prices.js", "engine.js", "app.js", "analytics.js", "styles.css", "DISCLAIMER.md"]) {
   assert.ok(fs.existsSync(path.join(root, source)), `${source} が存在する`);
 }
 assert.ok(html.includes('id="travelMode"'), "旅費交通費モード選択がある");
@@ -45,5 +46,17 @@ assert.ok(app.includes("let estimate = emptyEstimate();"), "起動時の入力�
 assert.ok(!app.includes("let estimate = loadEstimate();"), "起動時に前回データを自動表示しない");
 assert.ok(app.includes("function restoreSavedDraft()"), "明示操作による復元処理がある");
 assert.ok(app.includes("if (sessionDirty) persistEstimate();"), "未操作の新規画面で前回保存を上書きしない");
+assert.ok(html.includes("制作：株式会社アイズ測量"), "制作者を画面に表示する");
+assert.ok(html.includes("Ezアイズ Survey Tools"), "ツールブランドを画面に表示する");
+assert.ok(html.includes("https://ofuse.me/f475dafe/letter"), "確認済みOFUSE応援先を表示する");
+assert.ok(html.includes('id="aboutToolDialog"'), "免責・利用条件を画面で確認できる");
+assert.ok(html.includes("参考試算用・公式ソフトではありません"), "公式ソフトではないことを常時表示する");
+assert.ok(app.includes("参考試算・公式資料要照合"), "印刷帳票にも照合注意を表示する");
+assert.ok(html.includes('id="analyticsConsent"'), "アクセス解析の同意UIがある");
+assert.ok(analytics.includes('const measurementId = "G-88B9YPJXWP"'), "既存Ezアイズ製品と同じGA4測定IDを使う");
+assert.ok(analytics.includes('location.protocol === "file:"'), "ローカルファイル実行時は解析を送信しない");
+assert.ok(analytics.includes('analytics_storage: "granted"'), "同意後だけAnalytics保存を許可する");
+assert.ok(analytics.includes('ad_storage: "denied"'), "広告用保存は拒否する");
+assert.ok(!app.includes("gtag("), "積算アプリから入力値をAnalyticsイベントへ送らない");
 
 console.log("OK: UI static wiring checks passed");

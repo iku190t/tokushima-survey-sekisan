@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>徳島県 測量積算ワークベンチ</title>
   <meta name="description" content="徳島県令和8年度の測量積算基準と公式技術者単価を根拠表示付きで計算する積算ソフト">
+  <meta name="author" content="株式会社アイズ測量">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -14,6 +15,7 @@
       <div>
         <p class="eyebrow">SURVEY COST WORKBENCH</p>
         <h1>測量積算ワークベンチ</h1>
+        <p class="brand-credit">Ezアイズ Survey Tools ／ 制作：株式会社アイズ測量</p>
       </div>
     </div>
     <div class="header-actions no-print">
@@ -33,6 +35,10 @@
   </nav>
 
   <main>
+    <aside class="reference-notice no-print" aria-label="本ツールの位置づけ">
+      <div><strong>参考試算用・公式ソフトではありません</strong><span>実務利用時は、最新の公式基準・特記仕様書・発注者運用・正解積算と必ず照合してください。</span></div>
+      <button id="aboutToolButton" class="text-button" type="button">免責・利用条件を見る</button>
+    </aside>
     <section id="estimateView" class="view active">
       <section id="draftRecoveryPanel" class="draft-recovery no-print" hidden>
         <div class="draft-recovery-copy">
@@ -325,6 +331,49 @@
     </section>
   </main>
 
+  <footer class="site-footer no-print">
+    <div class="footer-brand"><strong>制作：株式会社アイズ測量</strong><span>Ezアイズ Survey Tools</span></div>
+    <div class="footer-links">
+      <a href="https://ez-survey.sakura.ne.jp/" target="_blank" rel="noopener noreferrer">公式サイト</a>
+      <a class="support-link" href="https://ofuse.me/f475dafe/letter" target="_blank" rel="noopener noreferrer">OFUSEで応援する</a>
+      <button id="footerAboutToolButton" class="footer-button" type="button">免責・プライバシー</button>
+    </div>
+    <p>このツールは無料で公開しています。役に立ったら、改善や機能追加への応援をいただけるとうれしいです。</p>
+  </footer>
+
+  <dialog id="aboutToolDialog" class="about-dialog" aria-labelledby="aboutToolTitle">
+    <div class="dialog-heading">
+      <div><p class="section-kicker">ABOUT THIS TOOL</p><h2 id="aboutToolTitle">このツールについて</h2></div>
+      <button id="closeAboutToolButton" class="dialog-close" type="button" aria-label="閉じる">×</button>
+    </div>
+    <div class="dialog-body">
+      <section>
+        <h3>制作・応援</h3>
+        <p><strong>株式会社アイズ測量</strong>が「Ezアイズ Survey Tools」の一つとして制作しています。</p>
+        <div class="dialog-actions"><a class="button" href="https://ez-survey.sakura.ne.jp/" target="_blank" rel="noopener noreferrer">公式サイト</a><a class="button primary" href="https://ofuse.me/f475dafe/letter" target="_blank" rel="noopener noreferrer">OFUSEで応援する</a></div>
+      </section>
+      <section>
+        <h3>利用条件・免責事項</h3>
+        <p>本ツールは、公開されている基準資料等を参考に作成した試算・学習用ツールです。公式の積算ソフト、発注機関の認定製品または公式帳票ではありません。</p>
+        <p>計算結果、単価、歩掛、適用条件および帳票の正確性・完全性・特定目的への適合性を保証しません。実務、入札、契約または顧客提出に使用する場合は、利用者の責任で、最新の公式基準、特記仕様書、貸与資料、発注者の運用および検証済みの正解積算と照合してください。</p>
+        <p>株式会社アイズ測量および制作者は、法令上認められる範囲で、本ツールの利用または利用不能により生じた損害について責任を負いません。ただし、故意または重大な過失による場合その他法令上責任を免れることができない場合は、この限りではありません。</p>
+      </section>
+      <section>
+        <h3>アクセス解析と入力データ</h3>
+        <p>公開サイトでは、利用状況の把握と改善のため、同意した場合に限りGoogle Analyticsを使用します。GoogleへCookie、利用者数、セッション、概略地域、ブラウザー・端末情報などが送信される場合があります。</p>
+        <p>業務名、発注者・メモ、宛名、会社情報、数量、単価、金額、保存JSONなどの積算入力値をGoogle Analyticsへ送信する独自イベントは実装していません。入力データは通常、使用中のブラウザー内に保存されます。</p>
+        <p><a href="https://support.google.com/analytics/answer/11593727?hl=ja" target="_blank" rel="noopener noreferrer">Google Analyticsのデータ収集について</a></p>
+        <button id="analyticsSettingsButton" class="button" type="button">アクセス解析の設定を変更</button>
+      </section>
+      <p class="legal-note">この表示は一般的な利用条件の明示であり、個別案件についての法的助言ではありません。</p>
+    </div>
+  </dialog>
+
+  <aside id="analyticsConsent" class="analytics-consent no-print" aria-label="アクセス解析の確認" hidden>
+    <div><strong>アクセス解析について</strong><p>サイト改善のためGoogle Analyticsを使用してよいですか。積算の入力内容は解析イベントとして送信しません。</p><button id="analyticsDetailsButton" class="text-button" type="button">詳しく見る</button></div>
+    <div class="consent-actions"><button id="analyticsDeclineButton" class="button" type="button">許可しない</button><button id="analyticsAcceptButton" class="button primary" type="button">許可する</button></div>
+  </aside>
+
   <div id="printDocument" class="print-document" aria-hidden="true"></div>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
@@ -333,5 +382,6 @@
   <script src="data/official-role-prices.js"></script>
   <script src="engine.js"></script>
   <script src="app.js"></script>
+  <script src="analytics.js"></script>
 </body>
 </html>
