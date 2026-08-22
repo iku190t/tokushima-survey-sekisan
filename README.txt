@@ -12,7 +12,7 @@ https://github.com/iku190t/tokushima-survey-sekisan
 制作・応援
 ----------
 制作：株式会社アイズ測量
-Ezアイズ Survey Tools
+製品名：Ez積算
 公式サイト：https://ez-survey.sakura.ne.jp/
 OFUSE：https://ofuse.me/f475dafe/letter
 
