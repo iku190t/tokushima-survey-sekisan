@@ -135,13 +135,38 @@ const textLayout = reader.textItemsToLayout([
   { str: "2級基準点測量", width: 90, height: 12, transform: [1, 0, 0, 1, 20, 700] },
   { str: "20点", width: 28, height: 12, transform: [1, 0, 0, 1, 180, 700] }
 ], { scale: 1, width: 500, height: 800, convertToViewportPoint: (x, y) => [x, 800 - y] });
-assert.strictEqual(textLayout.length, 1, "PDFの同じ行を1つのクリック領域にまとめる");
-assert.strictEqual(textLayout[0].text, "2級基準点測量 20点", "クリック領域へ表示行を保持する");
-assert.ok(textLayout[0].left > 0 && textLayout[0].left < 0.1 && textLayout[0].width > 0.3, "PDF座標をページ比率へ変換する");
+assert.strictEqual(textLayout.length, 2, "PDFの同じ行でも離れた名称セルと数量セルを個別クリック領域にする");
+assert.deepStrictEqual(textLayout.map((part) => part.text), ["2級基準点測量", "20点"], "文字ブロックごとの文字を保持する");
+assert.ok(textLayout.every((part) => part.contextText === "2級基準点測量 20点"), "数量推定用に同じ横行の全文も保持する");
+assert.ok(textLayout[0].left > 0 && textLayout[0].left < 0.1 && textLayout[0].width < 0.25, "PDF座標を文字ブロック比率へ変換する");
+
+const fiveCellLayout = reader.textItemsToLayout([
+  { str: "用地測量", width: 48, height: 12, transform: [1, 0, 0, 1, 20, 700] },
+  { str: "打合せ", width: 36, height: 12, transform: [1, 0, 0, 1, 100, 700] },
+  { str: "業務着手時", width: 60, height: 12, transform: [1, 0, 0, 1, 170, 700] },
+  { str: "回", width: 12, height: 12, transform: [1, 0, 0, 1, 300, 700] },
+  { str: "1", width: 8, height: 12, transform: [1, 0, 0, 1, 360, 700] }
+], { scale: 1, width: 500, height: 800, convertToViewportPoint: (x, y) => [x, 800 - y] });
+assert.deepStrictEqual(fiveCellLayout.map((part) => part.text), ["用地測量", "打合せ", "業務着手時", "回", "1"], "横一行の5つの表セルを個別選択できる");
+
+const adjacentGlyphLayout = reader.textItemsToLayout([
+  { str: "公", width: 12, height: 12, transform: [1, 0, 0, 1, 20, 700] },
+  { str: "図", width: 12, height: 12, transform: [1, 0, 0, 1, 32, 700] },
+  { str: "等", width: 12, height: 12, transform: [1, 0, 0, 1, 44, 700] }
+], { scale: 1, width: 500, height: 800, convertToViewportPoint: (x, y) => [x, 800 - y] });
+assert.deepStrictEqual(adjacentGlyphLayout.map((part) => part.text), ["公図等"], "隣接する1文字ずつのPDF要素は語としてまとめる");
 
 const ocrLayout = reader.ocrLinesToLayout({ blocks: [{ paragraphs: [{ lines: [{ text: "水準測量 3.5km", bbox: { x0: 100, y0: 200, x1: 460, y1: 240 } }] }] }] }, 1000, 1400);
 assert.strictEqual(ocrLayout.length, 1, "OCR行の座標をクリック領域にする");
 assert.strictEqual(ocrLayout[0].text, "水準測量 3.5km", "OCR行の文字を保持する");
 assert.ok(ocrLayout[0].top > 0.1 && ocrLayout[0].top < 0.2, "OCR座標をページ比率へ変換する");
+
+const ocrCellLayout = reader.ocrLinesToLayout({ blocks: [{ paragraphs: [{ lines: [{ text: "公図等の転写 10,000㎡ 11", bbox: { x0: 100, y0: 200, x1: 700, y1: 240 }, words: [
+  { text: "公図等の転写", bbox: { x0: 100, y0: 200, x1: 260, y1: 240 } },
+  { text: "10,000㎡", bbox: { x0: 430, y0: 200, x1: 530, y1: 240 } },
+  { text: "11", bbox: { x0: 650, y0: 200, x1: 690, y1: 240 } }
+] }] }] }] }, 1000, 1400);
+assert.deepStrictEqual(ocrCellLayout.map((part) => part.text), ["公図等の転写", "10,000㎡", "11"], "OCRでも離れた表セルを文字ブロックへ分ける");
+assert.ok(ocrCellLayout.every((part) => part.contextText === "公図等の転写 10,000㎡ 11"), "OCR文字ブロックにも同じ横行の全文を保持する");
 
 console.log("OK: document PDF/OCR extraction and review candidate checks passed");

@@ -7,7 +7,7 @@
   <meta name="description" content="設計、測量、航空・船舶、地質を年度別技術者単価と根拠表示付きで計算するWeb業務積算ソフト">
   <meta name="author" content="株式会社アイズ測量">
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="styles.css?v=20260822-12">
+  <link rel="stylesheet" href="styles.css?v=20260823-1">
 </head>
 <body data-business-scope="design">
   <header class="app-header">
@@ -293,10 +293,6 @@
           </button>
           <input id="documentFileInput" type="file" accept="application/pdf,image/png,image/jpeg,image/webp,.pdf,.png,.jpg,.jpeg,.webp" hidden>
           <div id="documentImportProgress" class="import-progress" hidden><div class="import-progress-track"><span id="documentImportProgressBar"></span></div><strong id="documentImportStatus">解析を準備しています…</strong></div>
-          <div class="paste-fallback">
-            <label class="field"><span>抽出済みテキストを貼り付ける場合</span><textarea id="documentPasteText" rows="7" placeholder="例：2級基準点測量 新点10点 伐採有り　20点&#10;設計計算　技師（A） 2.5人日"></textarea></label>
-            <button id="analyzePastedTextButton" class="button" type="button">貼り付けた原文を解析</button>
-          </div>
         </section>
 
         <aside class="card import-safety-card">
@@ -319,7 +315,8 @@
               <q id="pdfManualSourceText">—</q>
               <label class="field"><span>反映する種類</span><select id="pdfManualKind"><option value="survey">測量項目・数量</option><option value="consulting">設計・調査・地質の人工</option><option value="metadata">業務基本情報</option></select></label>
               <div id="pdfManualSurveyFields" class="pdf-manual-fields">
-                <label class="field"><span>測量項目</span><select id="pdfManualSurveyCode"></select></label>
+                <label class="field"><span>分類</span><select id="pdfManualSurveyCategory"></select></label>
+                <label class="field"><span>詳細項目</span><select id="pdfManualSurveyCode"></select></label>
                 <label class="field"><span>数量</span><span class="pdf-manual-quantity"><input id="pdfManualSurveyQuantity" type="number"><b id="pdfManualSurveyUnit">—</b></span><small id="pdfManualSurveyRule">項目を選択してください。</small></label>
               </div>
               <div id="pdfManualConsultingFields" class="pdf-manual-fields" hidden>
@@ -341,39 +338,9 @@
               <button id="openPdfSelectionReviewButton" class="button" type="button" disabled>一覧で詳しく修正</button>
               <button id="openPdfFullReviewButton" class="button" type="button">通常の一覧でも確認</button>
             </div>
-            <p class="pdf-click-note">緑・橙の枠は自動判定候補、青い破線は反映先が未判定の行です。PDF上の文字行は確認候補であり、追加前に右側の内容を確認してください。</p>
+            <p class="pdf-click-note">緑・橙の枠は自動判定候補、青い破線は反映先が未判定の文字ブロックです。同じ横一行でも、離れた文字や表セルは個別にクリックできます。追加前に右側の内容を確認してください。</p>
           </aside>
         </div>
-      </section>
-      <section class="card case-search-card">
-        <div class="card-title-row"><div><p class="section-kicker">OFFICIAL CASE FILE</p><h2>公式案件検索・資料台帳</h2></div><span class="badge">候補照合＋訂正版管理</span></div>
-        <p class="import-lead">PDFから読んだ業務名・発注者・番号・年度を使い、公式の調達情報から同一案件候補を探します。検索結果だけで確定せず、候補を確認して案件資料へ登録してください。</p>
-        <div class="case-search-grid">
-          <label class="field span-2"><span>業務名</span><input id="caseSearchProjectName" type="text"></label>
-          <label class="field"><span>発注機関</span><input id="caseSearchOrganization" type="text"></label>
-          <label class="field"><span>業務・公告番号</span><input id="caseSearchDocumentNumber" type="text"></label>
-          <label class="field"><span>積算年度</span><input id="caseSearchFiscalYear" type="number" min="2019" max="2100" step="1"></label>
-          <label class="field"><span>都道府県</span><select id="caseSearchPrefecture"></select></label>
-        </div>
-        <div class="case-search-actions">
-          <button id="refreshCaseSearchButton" class="button" type="button">現在の業務情報をセット</button>
-          <a id="openKkjPortalSearchLink" class="button primary" href="https://www.kkj.go.jp/s/" target="_blank" rel="noopener">公式ポータルで検索</a>
-          <a id="openKkjApiSearchLink" class="button" href="https://www.kkj.go.jp/api/?Query=%E6%B8%AC%E9%87%8F" target="_blank" rel="noopener">公式API検索XMLを開く</a>
-          <button id="importKkjXmlButton" class="button" type="button">保存した検索XMLを読込</button>
-          <input id="kkjXmlFileInput" type="file" accept="application/xml,text/xml,.xml" hidden>
-        </div>
-        <div class="official-api-note"><strong>公式APIの利用について</strong><p>官公需情報ポータルの検索APIを使用しています。公開版は静的サイトのため、公式APIのブラウザー制限により検索結果を直接受信できません。「公式API検索XMLを開く」で表示されたXMLを保存し、ここへ読み込んでください。検索結果は全公告の収録やリンクの有効性を保証しません。</p><a href="https://www.kkj.go.jp/s/" target="_blank" rel="noopener">官公需情報ポータル</a></div>
-        <div id="caseCandidateSummary" class="case-candidate-summary" hidden></div>
-        <div id="officialCaseCandidateList" class="official-case-candidate-list"></div>
-        <div class="case-ledger-heading"><div><h3>案件資料台帳</h3><p>採用・要確認・不採用、資料種別、取得元、SHA-256を保存します。資料本文は保存JSONへ含めません。</p></div><button id="registerLocalSourceButton" class="button" type="button">手元資料を台帳登録</button><input id="caseSourceFileInput" type="file" accept="application/pdf,image/png,image/jpeg,image/webp,.pdf,.png,.jpg,.jpeg,.webp" hidden></div>
-        <div class="manual-source-row">
-          <input id="manualSourceTitle" type="text" placeholder="資料名（例：特記仕様書）">
-          <input id="manualSourceUrl" type="url" placeholder="公式資料URL（https://...）">
-          <select id="manualSourceType" aria-label="資料種別"><option value="notice">公告・公示</option><option value="instructions">入札説明書</option><option value="specification">仕様書・特記仕様書</option><option value="quantity">数量表・数量総括表</option><option value="designDocument">金抜設計書・内訳書</option><option value="qa">質問回答書</option><option value="correction">訂正・差替え</option><option value="other" selected>その他</option></select>
-          <button id="registerManualSourceButton" class="button" type="button">URLを登録</button>
-        </div>
-        <div id="caseSourceWarnings" class="import-warning-list" hidden></div>
-        <div id="caseSourceLedger" class="case-source-ledger"></div>
       </section>
     </section>
 
@@ -594,12 +561,10 @@
   <script src="engine.js?v=20260822-1"></script>
   <script src="consulting-engine.js?v=20260822-1"></script>
   <script src="document-import-engine.js?v=20260822-3"></script>
-  <script src="official-case-engine.js?v=20260822-1"></script>
-  <script src="document-reader.js?v=20260822-2"></script>
+  <script src="document-reader.js?v=20260823-1"></script>
   <script src="app.js?v=20260822-10"></script>
   <script src="consulting.js?v=20260822-2"></script>
-  <script src="document-import.js?v=20260822-5"></script>
-  <script src="official-case-search.js?v=20260822-1"></script>
+  <script src="document-import.js?v=20260823-1"></script>
   <script src="analytics.js?v=20260822-1"></script>
 </body>
 </html>

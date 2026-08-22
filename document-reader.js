@@ -49,33 +49,91 @@
     };
   }
 
+  function joinSegmentText(previous, next, gap) {
+    const left = String(previous || "");
+    const right = String(next || "");
+    const needsSpace = gap > 1 && /[A-Za-z0-9）)]$/.test(left) && /^[A-Za-z0-9（(]/.test(right);
+    return `${left}${needsSpace ? " " : ""}${right}`;
+  }
+
+  function segmentPdfRow(row) {
+    const groups = [];
+    (row.cells || []).forEach((cell) => {
+      const estimatedWidth = Math.max(cell.width, cell.height * Math.max(1, Array.from(cell.text).length) * 0.48);
+      const right = cell.x + estimatedWidth;
+      const previous = groups[groups.length - 1];
+      if (!previous) {
+        groups.push({ text: cell.text, cells: [cell], right, height: cell.height });
+        return;
+      }
+      const gap = cell.x - previous.right;
+      const mergeGap = Math.max(6, Math.min(24, Math.max(previous.height, cell.height) * 1.6));
+      if (gap > mergeGap) groups.push({ text: cell.text, cells: [cell], right, height: cell.height });
+      else {
+        previous.text = joinSegmentText(previous.text, cell.text, gap);
+        previous.cells.push(cell);
+        previous.right = Math.max(previous.right, right);
+        previous.height = Math.max(previous.height, cell.height);
+      }
+    });
+    return groups;
+  }
+
   function textItemsToLayout(items, viewport) {
     if (!viewport || typeof viewport.convertToViewportPoint !== "function") return [];
-    return textItemRows(items).map((row) => {
-      const text = row.cells.map((cell) => cell.text).join(" ").replace(/\s+/g, " ").trim();
-      const boxes = row.cells.map((cell) => {
-        const point = viewport.convertToViewportPoint(cell.x, cell.y);
-        const height = Math.max(8, cell.height * (Number(viewport.scale) || 1));
-        const width = Math.max(height * Math.max(1, cell.text.length) * 0.45, cell.width * (Number(viewport.scale) || 1));
-        return { left: point[0], top: point[1] - height, right: point[0] + width, bottom: point[1] + Math.max(2, height * 0.18) };
+    const parts = [];
+    textItemRows(items).forEach((row, rowIndex) => {
+      const contextText = row.cells.map((cell) => cell.text).join(" ").replace(/\s+/g, " ").trim();
+      const groups = segmentPdfRow(row);
+      groups.forEach((group, segmentIndex) => {
+        const boxes = group.cells.map((cell) => {
+          const point = viewport.convertToViewportPoint(cell.x, cell.y);
+          const height = Math.max(8, cell.height * (Number(viewport.scale) || 1));
+          const width = Math.max(height * Math.max(1, Array.from(cell.text).length) * 0.45, cell.width * (Number(viewport.scale) || 1));
+          return { left: point[0], top: point[1] - height, right: point[0] + width, bottom: point[1] + Math.max(2, height * 0.18) };
+        });
+        const left = Math.min(...boxes.map((box) => box.left));
+        const top = Math.min(...boxes.map((box) => box.top));
+        const right = Math.max(...boxes.map((box) => box.right));
+        const bottom = Math.max(...boxes.map((box) => box.bottom));
+        parts.push({ text: group.text.trim(), contextText, rowIndex, segmentIndex, segmentCount: groups.length, ...normalizedBox(left - 3, top - 2, right - left + 6, bottom - top + 4, viewport.width, viewport.height) });
       });
-      const left = Math.min(...boxes.map((box) => box.left));
-      const top = Math.min(...boxes.map((box) => box.top));
-      const right = Math.max(...boxes.map((box) => box.right));
-      const bottom = Math.max(...boxes.map((box) => box.bottom));
-      return { text, ...normalizedBox(left - 3, top - 2, right - left + 6, bottom - top + 4, viewport.width, viewport.height) };
-    }).filter((line) => line.text);
+    });
+    return parts.filter((part) => part.text);
   }
 
   function ocrLinesToLayout(data, width, height) {
     const lines = [];
     (data?.blocks || []).forEach((block) => {
       (block.paragraphs || []).forEach((paragraph) => {
-        (paragraph.lines || []).forEach((line) => {
-          const text = String(line.text || "").replace(/\s+/g, " ").trim();
-          const box = line.bbox || {};
-          if (!text || !Number.isFinite(box.x0) || !Number.isFinite(box.y0) || !Number.isFinite(box.x1) || !Number.isFinite(box.y1)) return;
-          lines.push({ text, ...normalizedBox(box.x0 - 3, box.y0 - 2, box.x1 - box.x0 + 6, box.y1 - box.y0 + 4, width, height) });
+        (paragraph.lines || []).forEach((line, rowIndex) => {
+          const contextText = String(line.text || "").replace(/\s+/g, " ").trim();
+          const words = (line.words || []).filter((word) => {
+            const box = word.bbox || {};
+            return String(word.text || "").trim() && Number.isFinite(box.x0) && Number.isFinite(box.y0) && Number.isFinite(box.x1) && Number.isFinite(box.y1);
+          }).sort((a, b) => a.bbox.x0 - b.bbox.x0);
+          const groups = [];
+          words.forEach((word) => {
+            const box = word.bbox;
+            const previous = groups[groups.length - 1];
+            const gap = previous ? box.x0 - previous.x1 : 0;
+            const mergeGap = Math.max(6, Math.min(24, (box.y1 - box.y0) * 0.7));
+            if (!previous || gap > mergeGap) groups.push({ text: String(word.text).trim(), x0: box.x0, y0: box.y0, x1: box.x1, y1: box.y1 });
+            else {
+              previous.text = joinSegmentText(previous.text, String(word.text).trim(), gap);
+              previous.x1 = Math.max(previous.x1, box.x1);
+              previous.y0 = Math.min(previous.y0, box.y0);
+              previous.y1 = Math.max(previous.y1, box.y1);
+            }
+          });
+          if (!groups.length) {
+            const box = line.bbox || {};
+            if (!contextText || !Number.isFinite(box.x0) || !Number.isFinite(box.y0) || !Number.isFinite(box.x1) || !Number.isFinite(box.y1)) return;
+            groups.push({ text: contextText, x0: box.x0, y0: box.y0, x1: box.x1, y1: box.y1 });
+          }
+          groups.forEach((group, segmentIndex) => {
+            lines.push({ text: group.text, contextText, rowIndex, segmentIndex, segmentCount: groups.length, ...normalizedBox(group.x0 - 3, group.y0 - 2, group.x1 - group.x0 + 6, group.y1 - group.y0 + 4, width, height) });
+          });
         });
       });
     });
@@ -96,7 +154,7 @@
       script.crossOrigin = "anonymous";
       script.dataset.documentReader = src;
       script.addEventListener("load", () => { script.dataset.loaded = "true"; resolve(); }, { once: true });
-      script.addEventListener("error", () => reject(new Error("OCRプログラムを取得できませんでした。ネット接続を確認するか、原文貼付けを使用してください。")), { once: true });
+      script.addEventListener("error", () => reject(new Error("OCRプログラムを取得できませんでした。ネット接続を確認して、もう一度ファイルを読み込んでください。")), { once: true });
       document.head.appendChild(script);
     });
   }
@@ -143,7 +201,7 @@
     report(onStatus, "PDFの文字情報を確認しています…", 0);
     let pdfjs;
     try { pdfjs = await import(PDF_MODULE); }
-    catch (_) { throw new Error("PDF解析プログラムを取得できませんでした。ネット接続を確認するか、原文貼付けを使用してください。"); }
+    catch (_) { throw new Error("PDF解析プログラムを取得できませんでした。ネット接続を確認して、もう一度ファイルを読み込んでください。"); }
     pdfjs.GlobalWorkerOptions.workerSrc = PDF_WORKER;
     const data = new Uint8Array(await file.arrayBuffer());
     const documentTask = pdfjs.getDocument({
