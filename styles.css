@@ -295,8 +295,8 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
   .header-actions { justify-content: flex-start; }
   .save-state { width: 100%; }
   .project-strip, .picker-grid, .cost-grid, .master-head-grid, .role-price-grid, .formula-grid, .rate-preset-row { grid-template-columns: 1fr; }
-  .view-tabs { overflow-x: auto; }
-  .view-tab { white-space: nowrap; }
+  .view-tabs { overflow-x: visible; flex-wrap: wrap; padding-block: 5px; }
+  .view-tab { flex: 1 1 calc(50% - 8px); padding: 10px 8px 8px; white-space: normal; }
   .inline-select { margin-left: 0; }
   .metric-row { grid-template-columns: 1fr; }
   .metric-row div { border-right: 0; border-bottom: 1px solid var(--line); }
