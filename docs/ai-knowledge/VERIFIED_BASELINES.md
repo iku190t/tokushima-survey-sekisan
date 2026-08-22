@@ -273,6 +273,12 @@ OK: nationwide jurisdiction and verified master catalog checks passed
 - 収録状況は「完全検証済み1/47都道府県、国土交通省公開基準参照版収録」と表示する。
 - JavaScriptページエラー、コンソールエラーはいずれも0件だった。
 
+### 公開HTTPS版の実ブラウザー確認
+
+- GitHub Pagesビルド `1167057698` はコミット `ec18d38d47275ceb7d92714578e34bbd2bfcd41f` で成功した。
+- 公開版でも発注機関48件、無効46件、国土交通省参照版、要確認警告、公式出典リンク2件を確認した。
+- JavaScriptページエラー、コンソールエラーはいずれも0件だった。
+
 ### 主要ファイルのSHA-256
 
 | ファイル | SHA-256 |
