@@ -14,8 +14,8 @@
 | T-NATIONAL | `node tests/test-nationwide-standard.js` | 全国標準参考R6～R8の134項目、直接経費率108行、技術者単価、諸経費、代表固定金額、検証状態・出典・限界表示 | 全国標準参考マスター、年度・地域切替変更時は必須 | 合格 |
 | T-CONSULT | `node tests/test-consulting-engine.js` | 設計その他原価・一般管理費、電子成果品、地質諸経費、年度別職種単価、測量との税抜合算、人工桁 | 設計・調査計算、職種単価、総合計変更時は必須 | 合格 |
 | T-CONSULT-UI | `node tests/test-consulting-ui.js` | 4業務区分、人工入力、確認済み歩掛、警告、保存、新規、総合帳票結線 | `consulting.js`、総合画面・帳票変更時は必須 | 合格 |
-| T-DOC-IMPORT | `node tests/test-document-import.js` | PDF文字配置、数量と縮尺の分離、OCR丸数字・文字間隔、業務基本情報、総括表見出し、測量数量、設計・地質人工、低確信度候補 | PDF/OCR解析、候補対応付け、正規化変更時は必須 | 合格 |
-| T-DOC-UI | `node tests/test-document-import-ui.js` | ドロップ、直接抽出/OCR切替、基本情報と積算候補の確認・修正・個別選択、0件時の案内・終了、マスター切替確認、反映先、ファイル非送信 | 資料取込画面、反映API、読取ライブラリ変更時は必須 | 合格 |
+| T-DOC-IMPORT | `node tests/test-document-import.js` | PDF文字配置・行座標、OCR行座標、数量と縮尺の分離、OCR丸数字・文字間隔、業務基本情報、総括表見出し、測量数量、設計・地質人工、低確信度候補 | PDF/OCR解析、候補対応付け、正規化変更時は必須 | 合格 |
+| T-DOC-UI | `node tests/test-document-import-ui.js` | ドロップ、直接抽出/OCR切替、PDFクリック選択と反映待ち、基本情報と積算候補の確認・修正・個別選択、0件時の案内・終了、マスター切替確認、反映先、ファイル非送信 | 資料取込画面、反映API、読取ライブラリ変更時は必須 | 合格 |
 | T-OFFICIAL-CASE | `node tests/test-official-case-engine.js` | 官公需API XML解析、案件一致度、資料分類、検索URL、安全なURLスキーム | 公式案件検索、XML解析、資料台帳候補変更時は必須 | 合格 |
 | T-OFFICIAL-CASE-UI | `node tests/test-official-case-ui.js` | 公式検索リンク、XML読込、採用状態、訂正版警告、ローカル資料SHA-256、直接fetch禁止 | 公式案件・資料台帳UI、保存API変更時は必須 | 合格 |
 
@@ -33,7 +33,7 @@
 | 起動・自動保存復元 | T-UI | 新規起動、復元ボタン、未操作終了、JSON読込を実ブラウザーで確認 |
 | 公開表示・アクセス解析 | T-UI | フッター1ボタン・統合ダイアログ、HTTPS公開版で応援リンク、同意／拒否、GA着信を確認 |
 | 4業務タブ・設計地質積算 | T-CONSULT, T-CONSULT-UI, T-RATES, T-UI, T-ENGINE | 指定順、初期設計画面、測量／航空船舶の項目分離、設計／地質の区分分離、年度切替、総合計、実ブラウザー表示 |
-| PDF・写真取込 | T-DOC-IMPORT, T-DOC-UI, T-ENGINE, T-CONSULT | 文字入りPDF、画像OCR、基本情報・候補修正、未選択候補、年度・発注機関の切替警告、測量・設計・地質への反映を実ブラウザー確認 |
+| PDF・写真取込 | T-DOC-IMPORT, T-DOC-UI, T-ENGINE, T-CONSULT | 文字入りPDFのページ表示・候補行クリック・反映待ち、画像OCR、基本情報・候補修正、未選択候補、年度・発注機関の切替警告、測量・設計・地質への反映を実ブラウザー確認 |
 | 公式案件検索・資料台帳 | T-OFFICIAL-CASE, T-OFFICIAL-CASE-UI, T-DOC-UI, T-UI | 公式API仕様、検索条件、匿名合成XML、候補一致理由、採用状態、訂正版警告、危険URL除外、ブラウザーエラーを確認 |
 
 ## 現在未完了の手動検証
