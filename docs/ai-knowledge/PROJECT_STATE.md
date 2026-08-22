@@ -10,7 +10,8 @@
 - 公開リポジトリ: `https://github.com/iku190t/tokushima-survey-sekisan`
 - GitHub Pages: `https://iku190t.github.io/tokushima-survey-sekisan/`
 - 初回の検証済みアプリコミット: `2fcd20415dc5a116e69d8a30311fd3ffcb724afb`
-- 正常基準: `VERIFIED_BASELINES.md` の `B-2026-08-22-02`
+- 公開者・免責・応援・Analytics追加の検証済みアプリコミット: `a7896aaa18fa8e428f620140f931418ad6a1402f`
+- 正常基準: `VERIFIED_BASELINES.md` の `B-2026-08-22-03`
 
 ## 現在の構成
 
