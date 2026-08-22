@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>徳島県 測量積算ワークベンチ</title>
+  <meta name="description" content="徳島県令和8年度の測量積算基準と公式技術者単価を根拠表示付きで計算する積算ソフト">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">∑</div>
+      <div>
+        <p class="eyebrow">SURVEY COST WORKBENCH</p>
+        <h1>測量積算ワークベンチ</h1>
+      </div>
+    </div>
+    <div class="header-actions no-print">
+      <span id="saveState" class="save-state">新規・未保存</span>
+      <button class="button quiet" id="newEstimateButton" type="button">新規</button>
+      <button class="button quiet" id="loadEstimateButton" type="button">読込</button>
+      <button class="button primary" id="saveEstimateButton" type="button">積算書を保存</button>
+      <input id="estimateFileInput" type="file" accept="application/json,.json" hidden>
+    </div>
+  </header>
+
+  <nav class="view-tabs no-print" aria-label="画面切替">
+    <button class="view-tab active" data-view="estimate" type="button">積算</button>
+    <button class="view-tab" data-view="report" type="button">帳票・PDF</button>
+    <button class="view-tab" data-view="master" type="button">年度・単価マスター</button>
+    <button class="view-tab" data-view="guide" type="button">使い方・計算根拠</button>
+  </nav>
+
+  <main>
+    <section id="estimateView" class="view active">
+      <section id="draftRecoveryPanel" class="draft-recovery no-print" hidden>
+        <div class="draft-recovery-copy">
+          <span class="draft-recovery-icon" aria-hidden="true">↶</span>
+          <div>
+            <strong>前回の自動保存データがあります</strong>
+            <span id="draftRecoveryText">必要な場合だけ復元してください。現在の画面は新規です。</span>
+          </div>
+        </div>
+        <div class="draft-recovery-actions">
+          <button id="dismissDraftButton" class="button" type="button">新規のまま続ける</button>
+          <button id="restoreDraftButton" class="button primary" type="button">前回データを復元</button>
+        </div>
+      </section>
+      <section class="project-strip">
+        <label class="field master-field">
+          <span>使用マスター</span>
+          <select id="masterSelect"></select>
+        </label>
+        <label class="field">
+          <span>業務名</span>
+          <input id="projectName" type="text" placeholder="例：○○地区基準点測量業務">
+        </label>
+        <label class="field compact-field">
+          <span>積算日</span>
+          <input id="estimateDate" type="date">
+        </label>
+        <label class="field">
+          <span>発注者・メモ</span>
+          <input id="projectMemo" type="text" placeholder="任意">
+        </label>
+      </section>
+
+      <section class="accuracy-strip" aria-live="polite">
+        <span class="accuracy-icon" aria-hidden="true">✓</span>
+        <div>
+          <strong id="masterStatusTitle">収録資料を確認中</strong>
+          <span id="masterStatusText"></span>
+        </div>
+      </section>
+
+      <div class="workspace-grid">
+        <div class="workspace-main">
+          <section class="card add-card no-print">
+            <div class="card-title-row">
+              <div>
+                <p class="section-kicker">WORK ITEM</p>
+                <h2>作業項目を追加</h2>
+              </div>
+              <span id="itemCountBadge" class="badge"></span>
+            </div>
+            <div class="picker-grid">
+              <label class="field">
+                <span>分類</span>
+                <select id="categorySelect"></select>
+              </label>
+              <label class="field item-picker">
+                <span>作業項目</span>
+                <select id="itemSelect"></select>
+              </label>
+              <label class="field small-field">
+                <span>積算数量</span>
+                <input id="newItemQuantity" type="number" min="0" step="0.001" value="1">
+              </label>
+              <button id="addItemButton" class="button primary add-button" type="button">追加</button>
+            </div>
+            <p id="selectedItemMeta" class="field-note"></p>
+          </section>
+
+          <section class="card table-card">
+            <div class="card-title-row">
+              <div>
+                <p class="section-kicker">ESTIMATE DETAIL</p>
+                <h2>積算内訳</h2>
+              </div>
+              <button id="exportCsvButton" class="button quiet no-print" type="button">CSV出力</button>
+            </div>
+            <div class="table-scroll">
+              <table class="estimate-table">
+                <thead>
+                  <tr>
+                    <th>作業項目・根拠</th>
+                    <th>積算数量</th>
+                    <th>条件・変化率</th>
+                    <th>1単位当り単価</th>
+                    <th>直接作業費</th>
+                    <th>精度管理費</th>
+                    <th class="no-print"><span class="sr-only">操作</span></th>
+                  </tr>
+                </thead>
+                <tbody id="lineTableBody"></tbody>
+              </table>
+              <div id="emptyState" class="empty-state">
+                <span class="empty-icon">＋</span>
+                <p>上の「作業項目を追加」から積算を始めます。</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="card no-print">
+            <div class="card-title-row">
+              <div>
+                <p class="section-kicker">ADDITIONAL COSTS</p>
+                <h2>追加費用・条件</h2>
+              </div>
+            </div>
+            <div class="cost-grid">
+              <label class="field"><span>旅費交通費の算定</span><select id="travelMode"><option value="noLodging">宿泊なし：直接人件費×0.56%（上限23万円）</option><option value="lodging">宿泊あり：直接人件費×0.83%（上限31.3万円）</option><option value="manual">率によらず実費積上げ</option></select></label>
+              <label class="field"><span>旅費交通費（実費積上げ時）</span><input class="cost-input" data-cost="travel" type="number" min="0" step="1"></label>
+              <label class="field"><span>往復経費</span><input class="cost-input" data-cost="roundtrip" type="number" min="0" step="1"></label>
+              <label class="field"><span>基地費</span><input class="cost-input" data-cost="baseCost" type="number" min="0" step="1"></label>
+              <label class="field"><span>その他原価</span><input class="cost-input" data-cost="other" type="number" min="0" step="1"></label>
+              <label class="field"><span>成果検定費</span><input class="cost-input" data-cost="inspection" type="number" min="0" step="1"></label>
+              <label class="field"><span>消費税率</span><input id="taxRate" type="number" min="0" max="100" step="0.1"></label>
+            </div>
+            <div class="option-row">
+              <label class="check"><input id="useElectronic" type="checkbox"><span>電子成果品作成費を自動計上</span></label>
+              <label class="check"><input id="useFourDigits" type="checkbox"><span>測量単価を有効4桁で止める</span></label>
+              <label class="check"><input id="adjustBusinessPrice" type="checkbox"><span>業務価格を千円止め</span></label>
+              <label class="field inline-select"><span>安全費</span><select id="safetyRate"></select></label>
+            </div>
+          </section>
+        </div>
+
+        <aside class="summary-card">
+          <p class="section-kicker">COST SUMMARY</p>
+          <h2>積算結果</h2>
+          <div class="grand-total">
+            <span>税込合計</span>
+            <strong id="totalAmount">¥0</strong>
+          </div>
+          <dl class="summary-list" id="summaryList"></dl>
+          <div class="rate-chip"><span>諸経費率</span><strong id="overheadRateDisplay">—</strong></div>
+          <section id="validationPanel" class="validation-panel" aria-live="polite">
+            <strong id="validationTitle">提出前チェック</strong>
+            <ul id="validationList"></ul>
+          </section>
+          <button id="printButton" class="button primary full no-print" type="button">帳票・PDFを作成</button>
+          <p class="summary-note">金額は現在選択中の年度マスターと入力条件から再計算されます。</p>
+        </aside>
+      </div>
+    </section>
+
+    <section id="reportView" class="view">
+      <div class="report-builder">
+        <section class="card report-settings-card">
+          <div class="card-title-row">
+            <div>
+              <p class="section-kicker">CLIENT DOCUMENTS</p>
+              <h2>提出用帳票・PDF</h2>
+            </div>
+            <span class="badge">A4印刷対応</span>
+          </div>
+          <p class="report-lead">見積書と積算根拠を、選択した順に一つのPDFとして出力します。「印刷」画面のプリンターで「PDFに保存」を選んでください。</p>
+          <div id="reportCompleteness" class="report-completeness" aria-live="polite"></div>
+
+          <h3 class="settings-heading">宛先・見積条件</h3>
+          <div class="report-form-grid">
+            <label class="field span-2"><span>宛名</span><input id="reportClientName" class="report-input" data-report="clientName" type="text" placeholder="例：株式会社○○　御中"></label>
+            <label class="field"><span>見積番号</span><input id="reportQuoteNumber" class="report-input" data-report="quoteNumber" type="text" placeholder="例：2026-001"></label>
+            <label class="field"><span>見積日</span><input id="reportIssueDate" class="report-input" data-report="issueDate" type="date"></label>
+            <label class="field"><span>見積有効期限</span><input id="reportValidity" class="report-input" data-report="validity" type="text" placeholder="例：見積日より30日間"></label>
+            <label class="field"><span>履行期限・納期</span><input id="reportDelivery" class="report-input" data-report="delivery" type="text" placeholder="例：契約後60日以内"></label>
+            <label class="field span-2"><span>支払条件</span><input id="reportPaymentTerms" class="report-input" data-report="paymentTerms" type="text" placeholder="例：成果品納入・検収後、翌月末払い"></label>
+            <label class="field span-4"><span>見積条件・備考</span><textarea id="reportRemarks" class="report-input" data-report="remarks" rows="4" placeholder="作業範囲、貸与資料、現地条件、別途費用など"></textarea></label>
+          </div>
+
+          <h3 class="settings-heading">発行者情報</h3>
+          <div class="report-form-grid">
+            <label class="field span-2"><span>会社名</span><input id="reportCompanyName" class="report-input" data-report="companyName" type="text"></label>
+            <label class="field span-2"><span>代表者・担当者</span><input id="reportRepresentative" class="report-input" data-report="representative" type="text"></label>
+            <label class="field"><span>郵便番号</span><input id="reportPostalCode" class="report-input" data-report="postalCode" type="text" placeholder="〒000-0000"></label>
+            <label class="field span-3"><span>住所</span><input id="reportAddress" class="report-input" data-report="address" type="text"></label>
+            <label class="field"><span>電話番号</span><input id="reportPhone" class="report-input" data-report="phone" type="tel"></label>
+            <label class="field span-2"><span>メール</span><input id="reportEmail" class="report-input" data-report="email" type="email"></label>
+            <label class="field"><span>適格請求書発行事業者番号</span><input id="reportRegistrationNumber" class="report-input" data-report="registrationNumber" type="text" placeholder="T＋13桁（任意）"></label>
+          </div>
+
+          <h3 class="settings-heading">出力する帳票</h3>
+          <div class="document-choice-grid">
+            <label class="document-choice"><input class="report-section-input" data-section="quote" type="checkbox"><span><strong>見積書</strong><small>宛名、税込見積額、条件、発行者</small></span></label>
+            <label class="document-choice"><input class="report-section-input" data-section="summary" type="checkbox"><span><strong>積算総括表</strong><small>国交省基準の費目構成で総額を表示</small></span></label>
+            <label class="document-choice"><input class="report-section-input" data-section="breakdown" type="checkbox"><span><strong>業務費内訳書</strong><small>作業項目、数量、単価、金額</small></span></label>
+            <label class="document-choice"><input class="report-section-input" data-section="unitDetail" type="checkbox"><span><strong>単価・歩掛内訳書</strong><small>標準歩掛、直接経費、補正、出典頁</small></span></label>
+            <label class="document-choice"><input class="report-section-input" data-section="conditions" type="checkbox"><span><strong>積算条件書</strong><small>年度、端数、経費条件、要確認事項</small></span></label>
+          </div>
+          <div class="report-actions">
+            <button id="selectClientSetButton" class="button" type="button">お客様向け3帳票を選択</button>
+            <button id="selectFullSetButton" class="button" type="button">全帳票を選択</button>
+            <button id="previewPrintButton" class="button primary" type="button">PDFプレビュー・印刷</button>
+          </div>
+          <p class="field-note">ブラウザーの印刷設定は「A4」「倍率100%」「背景のグラフィック ON」を推奨します。PDFには入力欄、操作ボタン、警告パネルは出ません。</p>
+        </section>
+      </div>
+    </section>
+
+    <section id="masterView" class="view">
+      <div class="master-layout">
+        <section class="card">
+          <div class="card-title-row">
+            <div>
+              <p class="section-kicker">ANNUAL MASTER</p>
+              <h2>年度マスター管理</h2>
+            </div>
+            <span class="badge">ブラウザー内保存</span>
+          </div>
+          <div class="master-head-grid">
+            <label class="field"><span>対象マスター</span><select id="masterEditorSelect"></select></label>
+            <label class="field"><span>年度（西暦）</span><input id="masterYear" type="number" min="2000" max="2200"></label>
+            <label class="field"><span>名称</span><input id="masterLabel" type="text"></label>
+            <label class="field"><span>適用開始日</span><input id="masterEffective" type="date"></label>
+          </div>
+          <div class="master-toolbar no-print">
+            <button id="applyMasterMetaButton" class="button primary" type="button">名称・年度を反映</button>
+            <button id="cloneMasterButton" class="button" type="button">翌年度候補を複製</button>
+            <button id="exportMasterButton" class="button" type="button">マスター書出し</button>
+            <button id="importMasterButton" class="button" type="button">マスター読込み</button>
+            <button id="deleteMasterButton" class="button danger" type="button">このマスターを削除</button>
+            <input id="masterFileInput" type="file" accept="application/json,.json" hidden>
+          </div>
+          <p class="callout">複製だけでは正式な翌年度マスターにはなりません。技術者単価に加え、歩掛・直接経費率・精度管理費係数・諸経費式・端数処理の改定を確認し、出典資料と適用日をそろえてください。</p>
+        </section>
+
+        <section class="card official-rate-card">
+          <div class="card-title-row">
+            <div>
+              <p class="section-kicker">OFFICIAL RATE PRESETS</p>
+              <h2>国交省 技術者単価（過去5年）</h2>
+            </div>
+            <span class="badge">公式公表値</span>
+          </div>
+          <div class="rate-preset-row">
+            <label class="field"><span>適用する技術者単価</span><select id="officialRateYear"></select></label>
+            <button id="applyOfficialRatesButton" class="button primary no-print" type="button">この単価で複製</button>
+          </div>
+          <p id="officialRateNote" class="callout warning-callout"></p>
+          <a id="officialRateSource" class="source-link" href="#" target="_blank" rel="noreferrer">国土交通省の原資料を開く</a>
+        </section>
+
+        <section class="card">
+          <div class="card-title-row">
+            <div>
+              <p class="section-kicker">LABOR PRICES</p>
+              <h2>技術者単価（日額）</h2>
+            </div>
+            <button id="saveRolePricesButton" class="button primary no-print" type="button">単価を保存</button>
+          </div>
+          <div id="rolePriceGrid" class="role-price-grid"></div>
+        </section>
+
+        <section class="card source-card">
+          <p class="section-kicker">MASTER CONTENT</p>
+          <h2>収録内容</h2>
+          <div class="metric-row">
+            <div><strong id="masterItemCount">134</strong><span>積算項目</span></div>
+            <div><strong id="masterRateYear">R8</strong><span>技術者単価年度</span></div>
+            <div><strong id="masterWalkYear">R8</strong><span>歩掛年度</span></div>
+          </div>
+          <ul id="sourceList" class="source-list"></ul>
+        </section>
+      </div>
+    </section>
+
+    <section id="guideView" class="view">
+      <article class="guide card">
+        <p class="section-kicker">CALCULATION GUIDE</p>
+        <h2>計算の流れと注意点</h2>
+        <ol class="flow-list">
+          <li><strong>作業項目を選ぶ</strong><span>基準書の標準歩掛に、年度マスターの日額単価と直接経費率を掛けます。</span></li>
+          <li><strong>数量と規定条件を入れる</strong><span>標準数量と1点・1km等の計上単価を区別して表示します。変化率は各表の合計値を入力し、深浅測量の水面幅と現地測量の作業量補正式は自動計算します。</span></li>
+          <li><strong>直接測量費を作る</strong><span>直接作業費、精度管理費、電子成果品作成費、旅費等、成果検定費、安全費を合算します。</span></li>
+          <li><strong>諸経費と消費税を計算</strong><span>成果検定費を除く対象額で諸経費率を算定し、業務価格を千円単位に調整します。</span></li>
+        </ol>
+        <div class="callout"><strong>数量の入力桁</strong><br>点・回・箇所・業務・測線・本・枚・日・m²などは整数だけ入力できます。km・km²・時間などの連続量は小数第3位までです。画面入力、貼り付け、保存済みJSONの読込みでも同じ規則を適用します。</div>
+        <div class="formula-grid">
+          <div><span>諸経費率</span><code>Z = 288.50 × X<sup>-0.084</sup></code><small>50万円以下95.8%、1億円超61.4%、中間は小数1位四捨五入</small></div>
+          <div><span>電子成果品作成費</span><code>2.3 × x<sup>0.44</sup></code><small>x＝直接人件費（千円）、1万円以上17万円以下、千円未満切捨て</small></div>
+          <div><span>旅費交通費（宿泊なし）</span><code>直接人件費 × 0.56%</code><small>上限23万円。往復旅行時間の直接人件費を別途計上しません。</small></div>
+          <div><span>旅費交通費（宿泊あり）</span><code>直接人件費 × 0.83%</code><small>上限31.3万円。往復旅行時間の直接人件費は別途計上します。</small></div>
+        </div>
+        <div class="warning-box">
+          <strong>実務利用前の照合</strong>
+          <p>規定式・率表で確定できる部分は自動計算し、運航条件、個別見積、「別途計上」と規定された機械経費・精度係数は要確認表示にしています。未入力の0円を確定額として扱わず、最終提出前に特記仕様書と採用条件を照合してください。</p>
+        </div>
+        <div class="warning-box example-box">
+          <strong>数量の読み方（2級基準点測量の例）</strong>
+          <p>「新点10点」は標準歩掛のまとまりです。令和8年度単価では、標準10点の直接費3,448,507円 ÷ 10点 → 1点当り344,800円（有効4桁止め）。10点を積算すると直接作業費は3,448,000円です。34万4,800円を10点総額として扱いません。</p>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <div id="printDocument" class="print-document" aria-hidden="true"></div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="data/master-r8.js"></script>
+  <script src="data/official-role-prices.js"></script>
+  <script src="engine.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
