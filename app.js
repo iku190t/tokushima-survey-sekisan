@@ -493,6 +493,7 @@
       const line = estimate.lines.find((entry) => entry.id === calculated.id);
       const item = master.workItems.find((entry) => entry.code === calculated.code);
       const qRule = quantityRule(item, master);
+      const itemEditorOptions = surveyItemsForScope(master).map((candidate) => `<option value="${h(candidate.code)}" ${candidate.code === line.code ? "selected" : ""}>${h(candidate.code)}｜${h(candidate.name)}</option>`).join("");
       line.quantity = calculated.quantity;
       const outside = item.applicability && ((Number.isFinite(item.applicability.minimum) && calculated.quantity < item.applicability.minimum) || (Number.isFinite(item.applicability.maximum) && calculated.quantity > item.applicability.maximum));
       const conditionInput = item.conditionFormula ? `<label class="mini-field">${h(item.conditionFormula.label)} <input class="table-input line-condition" type="number" min="0" step=".1" value="${h(line.conditionValue ?? item.conditionFormula.default)}">${h(item.conditionFormula.unit)}</label><small>${h(item.conditionFormula.note)}</small>` : "";
@@ -519,7 +520,7 @@
       </div></details>`;
       const importSource = line.importSource ? `<small>資料取込：${h(line.importSource.fileName || "貼付け原文")} p.${h(line.importSource.page || 1)}／${line.importSource.method === "ocr" ? "OCR" : "文字抽出"}／要原文照合</small>` : "";
       return `<tr data-line-id="${h(line.id)}">
-        <td><span class="item-name">${h(calculated.name)}</span><span class="item-code">${h(calculated.code)} ｜ 標準歩掛 ${numberFormat.format(item.standardQuantity)} ${h(item.unit)} 一式＝${yen.format(calculated.standardDirect)}</span>${importSource}${precisionInput}${outside ? `<span class="limit-warning">適用範囲外：${h(item.applicability.note)}</span>` : ""}${item.manualCostNote ? `<span class="limit-warning">${h(item.manualCostNote)}</span>` : ""}${auditDetail}</td>
+        <td><select class="line-code table-item-select" aria-label="作業項目を変更">${itemEditorOptions}</select><span class="item-code">クリックして作業項目を変更 ｜ 標準歩掛 ${numberFormat.format(item.standardQuantity)} ${h(item.unit)} 一式＝${yen.format(calculated.standardDirect)}</span>${importSource}${precisionInput}${outside ? `<span class="limit-warning">適用範囲外：${h(item.applicability.note)}</span>` : ""}${item.manualCostNote ? `<span class="limit-warning">${h(item.manualCostNote)}</span>` : ""}${auditDetail}</td>
         <td><input class="table-input line-quantity" type="number" min="${qRule.min}" step="${qRule.step}" inputmode="${qRule.integer ? "numeric" : "decimal"}" data-quantity-decimals="${qRule.decimals}" aria-description="${h(item.unit)}は${h(quantityLabel(qRule))}" value="${h(calculated.quantity)}"><span> ${h(item.unit)}</span><small>${h(quantityLabel(qRule))}</small></td>
         <td>${conditionInput}${rulesInput}<label class="mini-field">手動追加 <span class="percent-wrap"><input class="table-input line-correction" type="number" step=".1" value="${h(num(line.correctionRate) * 100)}"><span>%</span></span></label><small>規定変化率 ${(calculated.ruleCorrectionRate * 100).toFixed(1)}%／適用係数 ${calculated.correctionFactor.toFixed(2)}</small>${item.quantityFormula ? `<small>${h(item.quantityFormula.note)}／数量係数 ${calculated.quantityFactor.toFixed(2)}</small>` : ""}</td>
         <td>${priceCell}</td>
@@ -1301,6 +1302,19 @@
     $("lineTableBody").addEventListener("change", (event) => {
       const row = event.target.closest("tr");
       const line = estimate.lines.find((entry) => entry.id === row?.dataset.lineId);
+      if (line && event.target.classList.contains("line-code")) {
+        const item = activeMaster().workItems.find((entry) => entry.code === event.target.value);
+        if (item) {
+          line.code = item.code;
+          line.quantity = window.SekisanEngine.normalizeQuantity(line.quantity, item, activeMaster());
+          line.correctionRate = 0;
+          line.correctionSelections = {};
+          line.conditionValue = item.conditionFormula?.default;
+          line.precisionRate = item.precisionRate;
+          line.manualUnitPrice = 0;
+          showToast(`作業項目を「${item.name}」へ変更しました`);
+        }
+      }
       if (line && event.target.classList.contains("line-quantity")) {
         const item = activeMaster().workItems.find((entry) => entry.code === line.code);
         line.quantity = normalizeQuantityInput(event.target, item, true);

@@ -26,6 +26,8 @@ assert.ok(html.includes('id="travelMode"'), "旅費交通費モード選択が�
 assert.ok(app.includes("line-condition"), "水面幅条件入力が結線されている");
 assert.ok(app.includes("line-rule"), "規定変化率選択が結線されている");
 assert.ok(app.includes("line-manual-price"), "個別単価入力が結線されている");
+assert.ok(app.includes('class="line-code table-item-select"') && app.includes('classList.contains("line-code")'), "追加済み作業項目をクリックして変更できる");
+assert.ok(app.includes("line.correctionSelections = {}") && app.includes("line.manualUnitPrice = 0"), "作業項目変更時に旧項目固有の補正と手動単価を引き継がない");
 assert.ok(app.includes("calc-detail"), "項目ごとの計算根拠表示がある");
 assert.ok(html.includes('id="validationPanel"'), "提出前チェックがある");
 assert.ok(html.includes('id="jurisdictionSelect"'), "積算地域を選択できる");
@@ -88,14 +90,14 @@ assert.ok(!html.includes('id="supportDialog"') && !html.includes('id="footerSupp
 assert.ok(!app.includes("openSupportDialog") && !app.includes('$("supportDialog")'), "廃止した応援専用ダイアログへ結線しない");
 assert.ok(html.includes("公式の積算ソフト、発注機関の認定製品または公式帳票ではありません"), "免責ダイアログで非公式性を説明する");
 assert.ok(app.includes("参考試算・公式資料要照合"), "印刷帳票にも照合注意を表示する");
-assert.ok(html.includes('id="analyticsConsent"'), "アクセス解析の同意UIがある");
-assert.ok(html.includes("Google Analyticsを許可しますか。積算入力データは送信しません。"), "解析同意を最小限の説明で確認する");
+assert.ok(!html.includes('id="analyticsConsent"') && !html.includes('id="analyticsAcceptButton"') && !html.includes('id="analyticsDeclineButton"'), "アクセス解析の同意ポップアップを表示しない");
+assert.ok(!html.includes('id="analyticsSettingsButton"') && !analytics.includes("readConsent") && !analytics.includes("writeConsent"), "アクセス解析の同意保存と設定変更UIを残さない");
 assert.ok(!html.includes("サイト改善のため") && !html.includes("利用状況の把握と改善のため"), "アクセス解析の目的説明を画面へ表示しない");
 assert.ok(!html.includes("概略地域、ブラウザー・端末情報"), "アクセス解析の詳細列挙を画面へ表示しない");
 assert.ok(html.includes('href="styles.css?v=') && html.includes('src="app.js?v='), "公開時にCSSとアプリJSの旧キャッシュを再利用しない");
 assert.ok(analytics.includes('const measurementId = "G-88B9YPJXWP"'), "既存Ezアイズ製品と同じGA4測定IDを使う");
-assert.ok(analytics.includes('location.protocol === "file:"'), "ローカルファイル実行時は解析を送信しない");
-assert.ok(analytics.includes('analytics_storage: "granted"'), "同意後だけAnalytics保存を許可する");
+assert.ok(analytics.includes('location.protocol !== "https:"'), "公開HTTPS版以外では解析を送信しない");
+assert.ok(analytics.includes('analytics_storage: "granted"') && analytics.includes('send_page_view: true'), "公開HTTPS版ではページアクセス解析を常時開始する");
 assert.ok(analytics.includes('ad_storage: "denied"'), "広告用保存は拒否する");
 assert.ok(!app.includes("gtag("), "積算アプリから入力値をAnalyticsイベントへ送らない");
 

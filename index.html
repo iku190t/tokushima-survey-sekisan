@@ -7,7 +7,7 @@
   <meta name="description" content="設計、測量、航空・船舶、地質を年度別技術者単価と根拠表示付きで計算するWeb業務積算ソフト">
   <meta name="author" content="株式会社アイズ測量">
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="styles.css?v=20260823-1">
+  <link rel="stylesheet" href="styles.css?v=20260823-2">
 </head>
 <body data-business-scope="design">
   <header class="app-header">
@@ -35,7 +35,7 @@
       <button class="view-tab" data-view="consulting" data-business-scope="geology" type="button">地質業務</button>
     </div>
     <div class="view-tab-group utility-view-tabs" role="group" aria-label="共通機能">
-      <button class="view-tab" data-view="import" type="button">PDF・写真取込</button>
+      <button class="view-tab" data-view="import" type="button">PDF・写真から取込み</button>
       <button class="view-tab" data-view="report" type="button">帳票・PDF</button>
       <button class="view-tab" data-view="master" type="button">年度・単価マスター</button>
       <button class="view-tab" data-view="guide" type="button">使い方・計算根拠</button>
@@ -284,7 +284,7 @@
     <section id="importView" class="view">
       <div class="import-layout">
         <section class="card import-hero-card">
-          <div class="card-title-row"><div><p class="section-kicker">DOCUMENT TO ESTIMATE</p><h2>PDF・写真から積算取込</h2></div><span class="badge">設計・測量・航空船舶・地質</span></div>
+          <div class="card-title-row"><div><p class="section-kicker">DOCUMENT TO ESTIMATE</p><h2>PDF・写真から取込み</h2></div><span class="badge">設計・測量・航空船舶・地質</span></div>
           <p class="import-lead">発注仕様書、数量表、設計書などから、業務基本情報と積算候補を作ります。文字情報を持つPDFは直接抽出し、画像PDFと写真だけ日本語OCRを使用します。</p>
           <button id="documentDropZone" class="document-drop-zone" type="button">
             <span class="drop-zone-icon" aria-hidden="true">↓</span>
@@ -318,7 +318,7 @@
               </div>
             </section>
             <section id="pdfManualMapper" class="pdf-manual-mapper" hidden>
-              <div class="pdf-manual-heading"><strong>この行の反映先を指定</strong><button id="cancelPdfManualLineButton" type="button" aria-label="閉じる">×</button></div>
+              <div class="pdf-manual-heading"><strong id="pdfManualHeadingText">この行の反映先を指定</strong><button id="cancelPdfManualLineButton" type="button" aria-label="閉じる">×</button></div>
               <q id="pdfManualSourceText">—</q>
               <label class="field"><span>反映する種類</span><select id="pdfManualKind"><option value="survey">測量項目・数量</option><option value="consulting">設計・調査・地質の人工</option><option value="metadata">業務基本情報</option></select></label>
               <div id="pdfManualSurveyFields" class="pdf-manual-fields">
@@ -467,7 +467,7 @@
           <li><strong>直接測量費を作る</strong><span>直接作業費、精度管理費、電子成果品作成費、旅費等、成果検定費、安全費を合算します。</span></li>
           <li><strong>諸経費と消費税を計算</strong><span>成果検定費を除く対象額で諸経費率を算定し、業務価格を千円単位に調整します。</span></li>
         </ol>
-        <div class="callout"><strong>PDF・写真から始める場合</strong><br>「PDF・写真取込」で資料を読み取り、確認・修正画面で業務名、発注者、担当部署、場所、期間、元の文章、ページ、単位、数量、職種、人工を確認します。低確信度候補、金額、年度・発注機関マスターは初期選択しません。確認ボタンを押すまで積算データは変更されません。</div>
+        <div class="callout"><strong>PDF・写真から始める場合</strong><br>「PDF・写真から取込み」で資料を読み取り、確認・修正画面で業務名、発注者、担当部署、場所、期間、元の文章、ページ、単位、数量、職種、人工を確認します。低確信度候補、金額、年度・発注機関マスターは初期選択しません。確認ボタンを押すまで積算データは変更されません。</div>
         <div class="callout"><strong>数量の入力桁</strong><br>点・回・箇所・業務・測線・本・枚・日・m²などは整数だけ入力できます。km・km²・時間などの連続量は小数第3位までです。画面入力、貼り付け、保存済みJSONの読込みでも同じ規則を適用します。</div>
         <div class="formula-grid">
           <div><span>諸経費率</span><code>Z = 288.50 × X<sup>-0.084</sup></code><small>50万円以下95.8%、1億円超61.4%、中間は小数1位四捨五入</small></div>
@@ -518,8 +518,7 @@
       </section>
       <section>
         <h3>プライバシー・アクセス解析</h3>
-        <p>Google Analyticsは許可した場合だけ使用します。積算入力データは送信しません。</p>
-        <button id="analyticsSettingsButton" class="button" type="button">アクセス解析の設定を変更</button>
+        <p>公開サイトではGoogle Analyticsによるページアクセス解析を使用します。積算入力データや読み込んだPDF・写真は送信しません。</p>
       </section>
       <p class="legal-note">この表示は一般的な利用条件の明示であり、個別案件についての法的助言ではありません。</p>
     </div>
@@ -550,11 +549,6 @@
     <div class="import-dialog-actions"><button id="cancelDocumentImportButton" class="button" type="button">取り込まず閉じる</button><button id="applyDocumentImportButton" class="button primary" type="button">確認した項目を積算へ反映</button></div>
   </dialog>
 
-  <aside id="analyticsConsent" class="analytics-consent no-print" aria-label="アクセス解析の確認" hidden>
-    <div><strong>アクセス解析</strong><p>Google Analyticsを許可しますか。積算入力データは送信しません。</p><button id="analyticsDetailsButton" class="text-button" type="button">設定について</button></div>
-    <div class="consent-actions"><button id="analyticsDeclineButton" class="button" type="button">許可しない</button><button id="analyticsAcceptButton" class="button primary" type="button">許可する</button></div>
-  </aside>
-
   <div id="printDocument" class="print-document" aria-hidden="true"></div>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
@@ -569,9 +563,9 @@
   <script src="consulting-engine.js?v=20260822-1"></script>
   <script src="document-import-engine.js?v=20260822-3"></script>
   <script src="document-reader.js?v=20260823-1"></script>
-  <script src="app.js?v=20260822-10"></script>
+  <script src="app.js?v=20260823-1"></script>
   <script src="consulting.js?v=20260822-2"></script>
-  <script src="document-import.js?v=20260823-2"></script>
-  <script src="analytics.js?v=20260822-1"></script>
+  <script src="document-import.js?v=20260823-3"></script>
+  <script src="analytics.js?v=20260823-1"></script>
 </body>
 </html>

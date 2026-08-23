@@ -15,12 +15,14 @@
   let currentFileName = "";
   const clickLineTargets = new Map();
   const clickLines = new Map();
+  const editablePdfTargets = new Map();
   const ignoredPdfLines = new Set();
   const manualSourceLineIds = new Set();
   let currentManualLineId = "";
   let manualItemLineId = "";
   let manualQuantityLineId = "";
   let manualCandidateSequence = 0;
+  let currentEditingTarget = null;
   let running = false;
   const PDF_LINE_DRAG_TYPE = "application/x-ezsekisan-pdf-line";
   let pointerPdfDrag = null;
@@ -92,6 +94,10 @@
     manualSourceLineIds.clear();
     $("pdfDragItemValue").textContent = "ここへドロップ";
     $("pdfDragQuantityValue").textContent = "ここへドロップ";
+    currentEditingTarget = null;
+    $("pdfManualKind").disabled = false;
+    $("pdfManualHeadingText").textContent = "この行の反映先を指定";
+    $("addPdfManualCandidateButton").textContent = "反映待ちへ追加";
     $("pdfManualMapper").hidden = true;
   }
 
@@ -139,6 +145,10 @@
     if (!line) return;
     const preserve = options.preserve === true && !$("pdfManualMapper").hidden;
     if (!preserve) {
+      currentEditingTarget = null;
+      $("pdfManualKind").disabled = false;
+      $("pdfManualHeadingText").textContent = "この行の反映先を指定";
+      $("addPdfManualCandidateButton").textContent = "反映待ちへ追加";
       currentManualLineId = lineId;
       manualItemLineId = "";
       manualQuantityLineId = "";
@@ -281,6 +291,63 @@
     return `${item.label}：${Number(item.amount || 0).toLocaleString("ja-JP")}円`;
   }
 
+  function isEditableClickTarget(target) {
+    return target.type === "metadata"
+      ? Object.prototype.hasOwnProperty.call(metadataLabels, target.item.key)
+      : target.item.kind === "survey" || target.item.kind === "consulting";
+  }
+
+  function sourceLineIdsForTarget(target) {
+    const lineIds = [];
+    clickLineTargets.forEach((targets, lineId) => {
+      if (targets.some((entry) => entry.type === target.type && entry.item === target.item)) lineIds.push(lineId);
+    });
+    return lineIds;
+  }
+
+  function openSelectedTargetEditor(target) {
+    if (!isEditableClickTarget(target)) {
+      app.notify("この費用項目は「一覧で詳しく修正」から変更してください");
+      return;
+    }
+    const lineIds = sourceLineIdsForTarget(target);
+    const primaryLineId = lineIds[0];
+    if (!primaryLineId || !clickLines.has(primaryLineId)) {
+      app.notify("元のPDF行を確認できないため、一覧で詳しく修正してください");
+      return;
+    }
+    openManualMapper(primaryLineId, { scroll: false });
+    currentEditingTarget = target;
+    manualSourceLineIds.clear();
+    lineIds.forEach((lineId) => manualSourceLineIds.add(lineId));
+    $("pdfManualKind").disabled = true;
+    $("pdfManualHeadingText").textContent = "追加した項目を変更";
+    $("addPdfManualCandidateButton").textContent = "変更を保存";
+    if (target.type === "metadata") {
+      $("pdfManualKind").value = "metadata";
+      $("pdfManualMetadataKey").value = target.item.key;
+      $("pdfManualMetadataValue").value = target.item.value || target.item.displayValue || "";
+    } else if (target.item.kind === "survey") {
+      const selectedItem = activeMaster().workItems.find((entry) => entry.code === target.item.code);
+      $("pdfManualKind").value = "survey";
+      $("pdfManualSurveyCategory").value = selectedItem?.category || "";
+      populateManualSurveyItems();
+      $("pdfManualSurveyCode").value = target.item.code;
+      $("pdfManualSurveyQuantity").value = target.item.quantity;
+      updateManualSurveyRule();
+    } else {
+      $("pdfManualKind").value = "consulting";
+      $("pdfManualConsultingService").value = target.item.serviceType;
+      updateManualConsultingRoles();
+      $("pdfManualConsultingTask").value = target.item.taskName;
+      $("pdfManualConsultingRole").value = target.item.role;
+      $("pdfManualConsultingDays").value = target.item.days;
+    }
+    updateManualKind();
+    $("pdfManualSourceText").textContent = `変更中：${clickTargetLabel(target)}`;
+    $("pdfManualMapper").scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
   function updatePdfClickSelection() {
     const targets = allClickTargets();
     const selected = targets.filter((target) => target.item.selected && !target.item.applied);
@@ -288,8 +355,15 @@
     $("pdfClickSelectionHint").textContent = selected.length
       ? "内容を確認し、下のボタンでこの画面のまま積算へ追加できます。"
       : clickLines.size ? `PDFの文字行が${clickLines.size}行あります。必要な行を続けてクリックしてください。` : "クリックできる文字行を表示できませんでした。";
+    editablePdfTargets.clear();
     $("pdfClickSelectedList").innerHTML = selected.length
-      ? selected.map((target) => `<div class="pdf-click-selected-item"><strong>${h(clickTargetLabel(target))}</strong><span>${h(methodLabel(target.item.method))}／p.${h(target.item.page)}／${h(confidenceLabel(target.item.confidence))}</span></div>`).join("")
+      ? selected.map((target, index) => {
+        const detail = `${methodLabel(target.item.method)}／p.${target.item.page}／${confidenceLabel(target.item.confidence)}`;
+        if (!isEditableClickTarget(target)) return `<div class="pdf-click-selected-item"><strong>${h(clickTargetLabel(target))}</strong><span>${h(detail)}／一覧で変更</span></div>`;
+        const key = `target-${index}`;
+        editablePdfTargets.set(key, target);
+        return `<button class="pdf-click-selected-item" data-pdf-edit-target="${h(key)}" type="button" title="クリックして変更"><strong>${h(clickTargetLabel(target))}</strong><span>${h(detail)}／クリックして変更</span></button>`;
+      }).join("")
       : '<div class="empty-state"><p>まだ選択されていません。</p></div>';
     $("openPdfSelectionReviewButton").disabled = selected.length === 0;
     $("applyPdfSelectionNowButton").disabled = selected.length === 0;
@@ -341,31 +415,54 @@
     const line = clickLines.get(primaryLineId);
     if (!line || !currentAnalysis) return;
     const source = { page: line.page, method: line.method, confidence: "medium", sourceText: line.text, selected: true, applied: false, manual: true };
+    const editingTarget = currentEditingTarget;
     let target;
     if ($("pdfManualKind").value === "survey") {
       const item = activeMaster().workItems.find((entry) => entry.code === $("pdfManualSurveyCode").value);
       if (!item) { app.notify("反映する測量項目を選択してください"); return; }
       const quantity = window.SekisanEngine.normalizeQuantity($("pdfManualSurveyQuantity").value, item, activeMaster());
       $("pdfManualSurveyQuantity").value = quantity;
-      const candidate = { ...source, id: `manual-${++manualCandidateSequence}`, kind: "survey", code: item.code, label: item.name, unit: item.unit, quantity };
-      currentAnalysis.candidates.push(candidate);
-      target = { type: "candidate", item: candidate };
+      if (editingTarget) {
+        Object.assign(editingTarget.item, { kind: "survey", code: item.code, label: item.name, unit: item.unit, quantity, selected: true });
+        target = editingTarget;
+      } else {
+        const candidate = { ...source, id: `manual-${++manualCandidateSequence}`, kind: "survey", code: item.code, label: item.name, unit: item.unit, quantity };
+        currentAnalysis.candidates.push(candidate);
+        target = { type: "candidate", item: candidate };
+      }
     } else if ($("pdfManualKind").value === "consulting") {
       const serviceType = $("pdfManualConsultingService").value;
       const taskName = $("pdfManualConsultingTask").value.trim();
       const days = Math.round(Math.max(0, Number($("pdfManualConsultingDays").value) || 0) * 1000) / 1000;
       if (!taskName) { app.notify("作業名を入力してください"); return; }
       if (days <= 0) { app.notify("人工は0より大きい値を入力してください"); return; }
-      const candidate = { ...source, id: `manual-${++manualCandidateSequence}`, kind: "consulting", serviceType, taskName, role: $("pdfManualConsultingRole").value, days };
-      currentAnalysis.candidates.push(candidate);
-      target = { type: "candidate", item: candidate };
+      if (editingTarget) {
+        Object.assign(editingTarget.item, { kind: "consulting", serviceType, taskName, role: $("pdfManualConsultingRole").value, days, selected: true });
+        target = editingTarget;
+      } else {
+        const candidate = { ...source, id: `manual-${++manualCandidateSequence}`, kind: "consulting", serviceType, taskName, role: $("pdfManualConsultingRole").value, days };
+        currentAnalysis.candidates.push(candidate);
+        target = { type: "candidate", item: candidate };
+      }
     } else {
       const key = $("pdfManualMetadataKey").value;
       const value = $("pdfManualMetadataValue").value.trim();
       if (!value) { app.notify("反映する内容を入力してください"); return; }
-      const field = { ...source, key, label: metadataLabels[key] || key, value, displayValue: value, affectsCalculation: false };
-      currentAnalysis.metadata.fields.push(field);
-      target = { type: "metadata", item: field };
+      if (editingTarget) {
+        Object.assign(editingTarget.item, { key, label: metadataLabels[key] || key, value, displayValue: value, selected: true });
+        target = editingTarget;
+      } else {
+        const field = { ...source, key, label: metadataLabels[key] || key, value, displayValue: value, affectsCalculation: false };
+        currentAnalysis.metadata.fields.push(field);
+        target = { type: "metadata", item: field };
+      }
+    }
+    if (editingTarget) {
+      const changedLabel = clickTargetLabel(target);
+      closeManualMapper();
+      updatePdfClickSelection();
+      app.notify(`「${changedLabel}」へ変更しました`);
+      return;
     }
     const sourceLineIds = manualSourceLineIds.size ? [...manualSourceLineIds] : [primaryLineId];
     sourceLineIds.forEach((lineId) => {
@@ -634,6 +731,12 @@
     });
     $("pdfManualConsultingService").addEventListener("change", updateManualConsultingRoles);
     $("addPdfManualCandidateButton").addEventListener("click", addManualCandidate);
+    $("pdfClickSelectedList").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-pdf-edit-target]");
+      if (!button) return;
+      const target = editablePdfTargets.get(button.dataset.pdfEditTarget);
+      if (target) openSelectedTargetEditor(target);
+    });
     $("cancelPdfManualLineButton").addEventListener("click", closeManualMapper);
     $("ignorePdfManualLineButton").addEventListener("click", () => {
       if (!currentManualLineId) return;
