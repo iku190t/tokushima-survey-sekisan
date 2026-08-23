@@ -1275,9 +1275,12 @@ OK: R8 UAV laser detailed work item expansion checks passed
 
 ## B-2026-08-23-08
 
-- 状態: **検証済み・ローカル公開前**
+- 状態: **検証済み・GitHub Pages公開済み**
 - 検証日: 2026-08-23
 - アプリコミット: `3752520d675ad51227ba4349137a520be3a1f2d9`
+- 公開コミット: `1c3e7bc4b9767a69c7450ad411617a20bf55eb6f`
+- GitHub Pagesビルド: `1169066467`（`built`）
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
 - 内容: B-2026-08-23-07へ、主要業務積算製品と公式積算基準体系の横断調査、国交省一般と港湾・航空局・用地・農林・上下水道等の別体系表示、航空測量／空港・深浅測量／港湾船舶の混同防止を追加した版。
 
 ### 合格した試験
