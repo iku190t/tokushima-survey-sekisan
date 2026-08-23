@@ -30,9 +30,9 @@
     $("consultingScopeDescription").textContent = geology
       ? "地質解析は設計方式、地質一般調査は地質調査方式で別計算します。機械・材料・運搬・仮設等は案件条件を確認してください。"
       : "土木設計・調査計画を設計方式で計算します。歩掛を確認できない作業の人工は自動推定しません。";
-    $("consultingAddHeading").textContent = geology ? "地質業務の人工を追加" : "設計業務の人工を追加";
+    $("consultingAddHeading").textContent = geology ? "地質業務の詳細項目・人工を追加" : "設計業務の詳細項目・人工を追加";
     $("consultingDetailHeading").textContent = geology ? "地質業務の職種別内訳" : "設計業務の職種別内訳";
-    $("consultingEmptyText").textContent = geology ? "地質業務の作業名、職種、人工を選んで追加します。" : "設計業務の作業名、職種、人工を選んで追加します。";
+    $("consultingEmptyText").textContent = geology ? "地質業務の業務区分、詳細項目、職種、人工を選んで追加します。" : "設計業務の業務区分、詳細項目、職種、人工を選んで追加します。";
   }
 
   function state() {

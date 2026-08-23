@@ -18,7 +18,7 @@ assert.deepStrictEqual([...referencedIds].filter((id) => !ids.has(id)), [], "資
 for (const file of ["document-import-engine.js", "document-reader.js", "document-import.js", "tests/test-document-import.js"]) {
   assert.ok(fs.existsSync(path.join(root, file)), `${file} が存在する`);
 }
-for (const id of ["importView", "documentDropZone", "documentFileInput", "pdfClickWorkbench", "pdfClickPages", "pdfClickSelectedList", "pdfManualMapper", "pdfManualHeadingText", "pdfManualKind", "pdfManualSurveyCategory", "pdfManualSurveyCode", "pdfManualSurveyQuantity", "pdfManualSurveySourceUnit", "pdfManualSurveyConversion", "pdfManualConsultingService", "pdfManualConsultingRole", "pdfManualConsultingDays", "pdfManualMetadataKey", "pdfManualMetadataValue", "addPdfManualCandidateButton", "ignorePdfManualLineButton", "selectDetectedPdfLinesButton", "clearPdfLineSelectionButton", "applyPdfSelectionNowButton", "openPdfSelectionReviewButton", "openPdfFullReviewButton", "documentImportDialog", "importMetadataPanel", "documentImportMetadataList", "toggleAllImportMetadata", "documentImportEmptyGuide", "importCandidateToolbar", "documentImportCandidateList", "applyDocumentImportButton"]) {
+for (const id of ["importView", "documentDropZone", "documentFileInput", "pdfClickWorkbench", "pdfClickPages", "pdfClickSelectedList", "pdfManualMapper", "pdfManualHeadingText", "pdfManualKind", "pdfManualSurveyCategory", "pdfManualSurveyCode", "pdfManualSurveyQuantity", "pdfManualSurveySourceUnit", "pdfManualSurveyConversion", "pdfManualConsultingService", "pdfManualConsultingTaskTemplate", "pdfManualConsultingTask", "pdfManualConsultingRole", "pdfManualConsultingDays", "pdfManualMetadataKey", "pdfManualMetadataValue", "addPdfManualCandidateButton", "ignorePdfManualLineButton", "selectDetectedPdfLinesButton", "clearPdfLineSelectionButton", "applyPdfSelectionNowButton", "openPdfSelectionReviewButton", "openPdfFullReviewButton", "documentImportDialog", "importMetadataPanel", "documentImportMetadataList", "toggleAllImportMetadata", "documentImportEmptyGuide", "importCandidateToolbar", "documentImportCandidateList", "applyDocumentImportButton"]) {
   assert.ok(ids.has(id), `${id} が存在する`);
 }
 assert.ok(html.includes("設計・測量・航空船舶・地質"), "資料取込の対象業務を4業務タブ順で明示する");
@@ -45,6 +45,7 @@ assert.ok(ui.includes("renderPdfClickWorkbench") && ui.includes("pdf-line-hotspo
 assert.ok(ui.includes("clickLines.set") && !ui.includes('if (!targets.length) return ""'), "自動判定の有無にかかわらずPDFの全抽出行をクリック対象にする");
 assert.ok(ui.includes("openManualMapper") && ui.includes("addManualCandidate") && ui.includes("metadataLabels"), "未判定行の反映先・数量・人工・基本情報を右側で指定できる");
 assert.ok(ui.includes("surveyCategoryOptions") && ui.includes("populateManualSurveyItems") && ui.includes("pdfManualSurveyCategory"), "長い測量項目を分類で絞り込んで詳細項目を選べる");
+assert.ok(ui.includes("taskOptions") && ui.includes("updateManualConsultingTasks") && ui.includes("pdfManualConsultingTaskTemplate"), "設計・地質も業務区分ごとの詳細項目から選べる");
 assert.ok(app.includes("getSurveyItemsForScope") && ui.includes("consultingServiceIdsByKind") && ui.includes("businessKindForSurveyItem") && ui.includes("businessKindForService"), "PDF取込も本体と同じ4業務区分で項目・人工を絞る");
 assert.ok(html.includes('draggable="true"') || ui.includes('draggable="true"'), "PDF文字ブロックをドラッグ開始できる");
 assert.ok(!html.includes('id="pdfDragDock"') && !html.includes("PDFからドラッグして入力"), "別置きの重複したドラッグ入力欄を表示しない");

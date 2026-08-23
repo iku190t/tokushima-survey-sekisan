@@ -7,7 +7,7 @@
   <meta name="description" content="設計、測量、航空・船舶、地質を年度別技術者単価と根拠表示付きで計算するWeb業務積算ソフト">
   <meta name="author" content="株式会社アイズ測量">
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="styles.css?v=20260823-5">
+  <link rel="stylesheet" href="styles.css?v=20260823-6">
 </head>
 <body data-business-scope="design">
   <header class="app-header">
@@ -111,6 +111,7 @@
               </div>
               <span id="itemCountBadge" class="badge"></span>
             </div>
+            <p id="surveyScopeNote" class="scope-note"></p>
             <div class="picker-grid">
               <label class="field">
                 <span>分類</span>
@@ -219,11 +220,11 @@
       <div class="workspace-grid consulting-workspace">
         <div class="workspace-main">
           <section class="card add-card no-print">
-            <div class="card-title-row"><div><p class="section-kicker">SERVICE ITEM</p><h2 id="consultingAddHeading">設計業務の人工を追加</h2></div><span class="badge">人工は小数第3位まで</span></div>
+            <div class="card-title-row"><div><p class="section-kicker">SERVICE ITEM</p><h2 id="consultingAddHeading">設計業務の詳細項目・人工を追加</h2></div><span class="badge">人工は小数第3位まで</span></div>
             <div class="consulting-picker-grid">
               <label class="field"><span>業務区分</span><select id="consultingServiceType"></select></label>
-              <label class="field"><span>作業名</span><select id="consultingTaskTemplate"></select></label>
-              <label class="field consulting-task-name"><span>内訳名称（編集可）</span><input id="consultingTaskName" type="text"></label>
+              <label class="field"><span>詳細項目（作業工程）</span><select id="consultingTaskTemplate"></select></label>
+              <label class="field consulting-task-name"><span>内訳名称（必要時のみ修正）</span><input id="consultingTaskName" type="text"></label>
               <label class="field"><span>職種</span><select id="consultingRole"></select></label>
               <label class="field small-field"><span>人工</span><input id="consultingDays" type="number" min="0" step="0.001" value="1"></label>
               <button id="addConsultingLineButton" class="button primary add-button" type="button">追加</button>
@@ -311,7 +312,7 @@
             <section id="pdfManualMapper" class="pdf-manual-mapper" hidden>
               <div class="pdf-manual-heading"><strong id="pdfManualHeadingText">この行の反映先を指定</strong><button id="cancelPdfManualLineButton" type="button" aria-label="閉じる">×</button></div>
               <q id="pdfManualSourceText">—</q>
-              <label class="field"><span>反映する業務区分</span><select id="pdfManualKind"><option value="design">設計業務（作業・職種・人工）</option><option value="survey">測量業務（項目・数量・単位）</option><option value="aerial">航空・船舶関係（項目・数量・単位）</option><option value="geology">地質業務（作業・職種・人工）</option><option value="metadata">業務基本情報</option></select></label>
+              <label class="field"><span>反映する業務区分</span><select id="pdfManualKind"><option value="design">設計業務（詳細項目・職種・人工）</option><option value="survey">測量業務（項目・数量・単位）</option><option value="aerial">航空・船舶関係（項目・数量・単位）</option><option value="geology">地質業務（詳細項目・職種・人工）</option><option value="metadata">業務基本情報</option></select></label>
               <div id="pdfManualSurveyFields" class="pdf-manual-fields">
                 <label class="field"><span>分類</span><select id="pdfManualSurveyCategory"></select></label>
                 <label class="field pdf-field-drop-target" data-pdf-drop-target="item"><span class="pdf-drop-title"><b aria-hidden="true">1</b>PDFの項目名をドロップ</span><small class="pdf-drop-callout">左のPDFから項目名の文字枠をつかんで、ここへ移動</small><select id="pdfManualSurveyCode" aria-label="積算する詳細項目"></select></label>
@@ -319,9 +320,11 @@
               </div>
               <div id="pdfManualConsultingFields" class="pdf-manual-fields" hidden>
                 <label class="field"><span>業務区分</span><select id="pdfManualConsultingService"></select></label>
-                <label class="field"><span>作業名</span><input id="pdfManualConsultingTask" type="text"></label>
+                <label class="field"><span>詳細項目（作業工程）</span><select id="pdfManualConsultingTaskTemplate"></select></label>
+                <label class="field"><span>内訳名称（必要時のみ修正）</span><input id="pdfManualConsultingTask" type="text"></label>
                 <label class="field"><span>職種</span><select id="pdfManualConsultingRole"></select></label>
                 <label class="field"><span>人工</span><input id="pdfManualConsultingDays" type="number" min="0" step="0.001"></label>
+                <small class="field-note">詳細項目は基準上の作業を整理するための選択肢です。確認済み標準歩掛がない項目は、原資料の職種・人工を入力してください。</small>
               </div>
               <div id="pdfManualMetadataFields" class="pdf-manual-fields" hidden>
                 <label class="field"><span>基本情報の項目</span><select id="pdfManualMetadataKey"><option value="projectName">業務名</option><option value="orderingParty">発注者</option><option value="department">担当部署</option><option value="contactName">担当者</option><option value="workLocation">業務場所</option><option value="contractPeriod">履行期間</option><option value="documentNumber">文書・業務番号</option><option value="documentDate">公告・資料日</option></select></label>
@@ -555,14 +558,15 @@
   <script src="data/national-standard-masters.js?v=20260822-1"></script>
   <script src="data/verified-masters.js?v=20260822-1"></script>
   <script src="data/official-role-prices.js?v=20260822-1"></script>
-  <script src="data/consulting-master.js?v=20260822-1"></script>
+  <script src="data/consulting-master.js?v=20260823-1"></script>
+  <script src="data/verified-work-item-expansions.js?v=20260823-1"></script>
   <script src="engine.js?v=20260822-1"></script>
   <script src="consulting-engine.js?v=20260822-1"></script>
   <script src="document-import-engine.js?v=20260823-1"></script>
   <script src="document-reader.js?v=20260823-1"></script>
-  <script src="app.js?v=20260823-2"></script>
-  <script src="consulting.js?v=20260822-2"></script>
-  <script src="document-import.js?v=20260823-5"></script>
+  <script src="app.js?v=20260823-4"></script>
+  <script src="consulting.js?v=20260823-1"></script>
+  <script src="document-import.js?v=20260823-6"></script>
   <script src="analytics.js?v=20260823-1"></script>
 </body>
 </html>

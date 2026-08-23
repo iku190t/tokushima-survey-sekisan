@@ -19,7 +19,7 @@ assert.ok(html.includes("<title>web積算｜") && html.includes("<h1>web積算</
 const businessTabs = [...html.matchAll(/<button class="view-tab(?: active)?" data-view="[^"]+" data-business-scope="([^"]+)"[^>]*>([^<]+)<\/button>/g)].map((match) => [match[1], match[2]]);
 assert.deepStrictEqual(businessTabs, [["design", "設計業務"], ["survey", "測量業務"], ["aerial", "航空・船舶関係"], ["geology", "地質業務"]], "4業務タブを指定順で表示する");
 assert.ok(html.includes('id="consultingView" class="view active"') && !html.includes('id="estimateView" class="view active"'), "初期画面を設計業務にする");
-for (const source of ["data/prefectures.js", "data/master-catalog.json", "data/official-source-catalog.json", "data/master-r8.js", "data/national-standard-masters.js", "data/verified-masters.js", "data/official-role-prices.js", "engine.js", "app.js", "analytics.js", "styles.css", "DISCLAIMER.md"]) {
+for (const source of ["data/prefectures.js", "data/master-catalog.json", "data/official-source-catalog.json", "data/master-r8.js", "data/national-standard-masters.js", "data/verified-masters.js", "data/official-role-prices.js", "data/verified-work-item-expansions.js", "engine.js", "app.js", "analytics.js", "styles.css", "DISCLAIMER.md"]) {
   assert.ok(fs.existsSync(path.join(root, source)), `${source} が存在する`);
 }
 assert.ok(html.includes('id="travelMode"'), "旅費交通費モード選択がある");
@@ -53,6 +53,8 @@ assert.ok(app.includes("blockInvalidQuantityKey"), "整数数量への小数キ�
 assert.ok(app.includes("blockInvalidQuantityPaste"), "不正な桁数の貼り付けを防止する");
 assert.ok(app.includes("normalizeQuantityInput"), "数量を単位別規則に正規化する");
 assert.ok(app.includes("aerialShipCategories") && app.includes("surveyItemsForScope"), "測量と航空・船舶の作業項目をタブ別に分ける");
+assert.ok(html.includes('id="surveyScopeNote"') && app.includes("深浅測量、空中写真測量、航空レーザ測量、UAV写真点群測量、地上レーザ測量、UAVレーザ測量"), "航空・船舶の収録分類と案件条件を画面で明示する");
+assert.ok(app.includes("applyVerifiedWorkItemExpansions") && html.includes("data/verified-work-item-expansions.js?v="), "令和8年度UAVレーザの公式詳細工程を年度マスターへ展開する");
 assert.ok(html.includes('id="reportView"'), "提出用帳票の設定画面がある");
 assert.ok(html.includes('id="printDocument"'), "画面とは独立した印刷専用文書がある");
 for (const section of ["quote", "summary", "breakdown", "unitDetail", "conditions"]) {

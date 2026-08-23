@@ -105,6 +105,12 @@
     return roles.map((role) => `<option value="${h(role.id)}" ${role.id === valid ? "selected" : ""}>${h(role.name)}</option>`).join("");
   }
 
+  function taskOptions(serviceType, selectedTask = "") {
+    const tasks = consultingMaster.taskNames?.[serviceType] || ["任意作業"];
+    const selected = tasks.includes(selectedTask) ? selectedTask : tasks[0];
+    return tasks.map((task) => `<option value="${h(task)}" ${task === selected ? "selected" : ""}>${h(task)}</option>`).join("");
+  }
+
   function jurisdictionOptions(selectedCode) {
     return (window.SEKISAN_JURISDICTIONS || []).map((entry) => `<option value="${h(entry.code)}" ${entry.code === selectedCode ? "selected" : ""}>${h(entry.name)}</option>`).join("");
   }
@@ -218,11 +224,21 @@
     $("pdfManualConsultingRole").innerHTML = roleOptions(serviceType, $("pdfManualConsultingRole").value);
   }
 
+  function updateManualConsultingTasks(selectedTask = "", preserveName = false) {
+    const serviceType = $("pdfManualConsultingService").value;
+    const previous = selectedTask || $("pdfManualConsultingTaskTemplate").value;
+    $("pdfManualConsultingTaskTemplate").innerHTML = taskOptions(serviceType, previous);
+    if (!preserveName || !$("pdfManualConsultingTask").value.trim()) {
+      $("pdfManualConsultingTask").value = $("pdfManualConsultingTaskTemplate").value;
+    }
+  }
+
   function updateManualConsultingServices(selectedId = "") {
     const kind = $("pdfManualKind").value;
     const previous = selectedId || $("pdfManualConsultingService").value;
     $("pdfManualConsultingService").innerHTML = serviceOptions(previous, kind);
     if (![...$("pdfManualConsultingService").options].some((option) => option.value === previous)) $("pdfManualConsultingService").selectedIndex = 0;
+    updateManualConsultingTasks("", true);
     updateManualConsultingRoles();
   }
 
@@ -250,7 +266,6 @@
       $("pdfManualConsultingDays").value = quantityFromLine(line.text);
       $("pdfManualMetadataValue").value = line.text;
       updateManualSurveyRule();
-      updateManualConsultingRoles();
       updateManualKind();
     } else {
       manualSourceLineIds.add(lineId);
@@ -443,6 +458,7 @@
     } else {
       $("pdfManualKind").value = businessKindForService(target.item.serviceType);
       updateManualConsultingServices(target.item.serviceType);
+      updateManualConsultingTasks(target.item.taskName, true);
       updateManualConsultingRoles();
       $("pdfManualConsultingTask").value = target.item.taskName;
       $("pdfManualConsultingRole").value = target.item.role;
@@ -836,7 +852,13 @@
     });
     $("pdfManualSurveySourceUnit").addEventListener("change", () => updateManualSurveyRule($("pdfManualSurveySourceUnit").value));
     $("pdfManualSurveyQuantity").addEventListener("input", updateManualSurveyConversion);
-    $("pdfManualConsultingService").addEventListener("change", updateManualConsultingRoles);
+    $("pdfManualConsultingService").addEventListener("change", () => {
+      updateManualConsultingTasks();
+      updateManualConsultingRoles();
+    });
+    $("pdfManualConsultingTaskTemplate").addEventListener("change", () => {
+      $("pdfManualConsultingTask").value = $("pdfManualConsultingTaskTemplate").value;
+    });
     $("addPdfManualCandidateButton").addEventListener("click", addManualCandidate);
     $("pdfClickSelectedList").addEventListener("click", (event) => {
       const button = event.target.closest("[data-pdf-edit-target]");

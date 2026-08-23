@@ -13,7 +13,7 @@ const ids = new Set([...html.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1
 const referencedIds = new Set([...ui.matchAll(/\$\("([^"]+)"\)/g)].map((match) => match[1]));
 assert.deepStrictEqual([...referencedIds].filter((id) => !ids.has(id)), [], "consulting.jsから参照するHTML要素が揃う");
 
-for (const id of ["consultingView", "consultingFiscalYear", "consultingServiceType", "consultingTaskName", "consultingRole", "consultingDays", "consultingLineBody", "consultingSummaryList", "consultingPrintButton"]) {
+for (const id of ["consultingView", "consultingFiscalYear", "consultingServiceType", "consultingTaskTemplate", "consultingTaskName", "consultingRole", "consultingDays", "consultingLineBody", "consultingSummaryList", "consultingPrintButton"]) {
   assert.ok(html.includes(`id="${id}"`), `${id}を表示する`);
 }
 for (const file of ["data/consulting-master.js", "consulting-engine.js", "consulting.js"]) {
@@ -21,6 +21,8 @@ for (const file of ["data/consulting-master.js", "consulting-engine.js", "consul
   assert.ok(fs.existsSync(path.join(root, file)), `${file}が存在する`);
 }
 for (const type of ["土木設計業務", "調査・計画業務", "地質解析等調査業務", "地質一般調査業務"]) assert.ok(master.includes(type), `${type}を区分する`);
+for (const task of ["設計条件の確認", "施工計画", "資料整理とりまとめ", "孔内水平載荷試験", "地下水位観測", "土質・岩石試験"]) assert.ok(master.includes(task), `${task}を詳細項目として選べる`);
+assert.ok(html.includes("詳細項目（作業工程）") && ui.includes("consultingTaskTemplate"), "設計・地質で詳細項目を選んで内訳名称へ反映する");
 assert.ok(ui.includes('["design", "planning"]') && ui.includes('["geologyAnalysis", "geologyGeneral"]'), "設計業務と地質業務のタブで対象区分を分離する");
 assert.ok(ui.includes('ezsekisan:businessscope') && ui.includes("activeConsultingScope"), "業務タブ切替を設計・地質入力へ反映する");
 assert.ok(html.includes('data-consulting-scope="design"') && html.includes('data-consulting-scope="geology"'), "タブに対応する積上費用だけを表示する");

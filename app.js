@@ -31,6 +31,9 @@
     $("surveyDetailHeading").textContent = aerial ? "航空・船舶関係の積算内訳" : "測量業務の積算内訳";
     $("surveyEmptyText").textContent = aerial ? "上の「航空・船舶関係の作業項目を追加」から積算を始めます。" : "上の「測量作業項目を追加」から積算を始めます。";
     $("surveySummaryHeading").textContent = aerial ? "案件全体の測量・航空船舶積算結果" : "案件全体の測量積算結果";
+    $("surveyScopeNote").textContent = aerial
+      ? "深浅測量、空中写真測量、航空レーザ測量、UAV写真点群測量、地上レーザ測量、UAVレーザ測量を分類して収録しています。運航・滞留・基地・成果検定などの案件条件も確認してください。"
+      : "共通、基準点、水準、路線、河川、用地、現地測量を分類して収録しています。分類を選ぶと詳細項目を絞り込めます。";
   }
 
   function quantityRule(item, master = activeMaster()) {
@@ -141,13 +144,31 @@
     return window.SEKISAN_JURISDICTIONS?.find((entry) => entry.code === String(code))?.name || "地域未設定";
   }
 
+  function applyVerifiedWorkItemExpansions(master) {
+    if (!Array.isArray(master.workItems)) return master;
+    (window.SEKISAN_VERIFIED_WORK_ITEM_EXPANSIONS || [])
+      .filter((entry) => Number(entry.fiscalYear) === Number(master.fiscalYear))
+      .forEach((entry) => {
+        const replaceIndex = master.workItems.findIndex((item) => item.code === entry.replaceCode);
+        if (replaceIndex < 0 || master.workItems.some((item) => entry.items.some((expanded) => expanded.code === item.code))) return;
+        master.workItems.splice(replaceIndex, 1, ...clone(entry.items));
+        master.runtimeExpansions = [...(master.runtimeExpansions || []), {
+          replaceCode: entry.replaceCode,
+          itemCount: entry.items.length,
+          sourceLabel: entry.sourceLabel,
+          sourceUrl: entry.sourceUrl
+        }];
+      });
+    return master;
+  }
+
   function normalizeMasterMetadata(master, fallbackCode = defaultJurisdictionCode) {
     master.jurisdictionCode = String(master.jurisdictionCode || fallbackCode).padStart(2, "0");
     master.jurisdictionName = jurisdictionName(master.jurisdictionCode);
     master.jurisdictionType = master.jurisdictionCode === "mlit" ? "national" : "prefecture";
     master.verificationStatus = master.verificationStatus || "user-supplied";
     master.scopeStatus = master.scopeStatus === "rate-comparison" ? "retired-comparison" : (master.scopeStatus || "user-custom");
-    return master;
+    return applyVerifiedWorkItemExpansions(master);
   }
 
   function bundledMaster() {
