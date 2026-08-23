@@ -1223,3 +1223,52 @@ OK: UI static wiring checks passed
 | `index.html` | `64C97AB93F3CE799E204B2C1069E0BD527C21666C8FFB943D450907724E3DDA4` |
 | `styles.css` | `47D7F603146A9390EFBC7AD7A3476981C7D2A76BB0608C2B856C0F40F3DF652D` |
 | `tests/test-document-import-ui.js` | `939596A4B8E339212E69F9F86997D5EEC3CA2EBF197ADC1B22C449CEF04B6DBF` |
+
+## B-2026-08-23-07
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-23
+- アプリコミット: `22895a13b8b85f79fb7c1ceaa2e038ef2e8f236f`
+- GitHub Pagesビルド: `1169042409`（`built`）
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: B-2026-08-23-06へ、設計・地質の詳細項目選択、PDF取込への同じ選択肢、航空・船舶6分類の明示、令和8年度UAVレーザ測量8工程の公式展開を追加した版。
+
+### 合格した試験
+
+```text
+OK: consulting/design/geology calculation checks passed
+OK: consulting UI and report wiring checks passed
+OK: document import review UI and safe apply wiring checks passed
+OK: document PDF/OCR extraction and review candidate checks passed
+OK: regulation audit checks passed (master mapping, precision, quantity formulas, travel, rounding, overhead)
+OK: Hiroshima R6-R8 complete annual master audit checks passed
+OK: nationwide jurisdiction and verified master catalog checks passed
+OK: nationwide R6-R8 standard reference master checks passed
+OK: official procurement case matching, XML parsing, and source ledger candidates passed
+OK: official case search UI is removed while saved-data compatibility remains
+OK: MLIT official role price presets R4-R8 and consulting roles R6-R8
+OK: UI static wiring checks passed
+OK: R8 UAV laser detailed work item expansion checks passed
+```
+
+追加検査: `node --check app.js`、`node --check consulting.js`、`node --check document-import.js`、`node --check data/verified-work-item-expansions.js`、`git diff --check`合格。
+
+### 実ブラウザー確認
+
+- 設計業務に11詳細項目、地質解析に11詳細項目、地質一般に14詳細項目を表示し、選択時に内訳名称が更新された。
+- 公開PDFを読み込み、PDF取込で設計・地質の業務区分別詳細項目、職種、人工を同じ画面から選べた。入力欄315px内で横あふれなし、ページ全体の横あふれなし、ブラウザー警告・エラー0件。
+- 令和8年度の航空・船舶関係は64項目、UAVレーザ測量は作業計画と8工程を表示した。計測工程0.1km²の直接人件費484,710円、適用上限0.2km²、機械経費等・精度管理費の別途確認表示を確認した。
+- GitHub Pages公開版で航空・船舶64項目、UAVレーザ9選択肢、設計・地質の詳細項目、`verified-work-item-expansions.js?v=20260823-1`、ブラウザー警告・エラー0件を確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `app.js` | `2B5BF5801E34E395B4F6661B3746DF77F60BB9A978C1CC255EF9BC10603E5D00` |
+| `consulting.js` | `5BE602FF66664828AC180AC9C4BCAF5CF9FEC72DA37D48D681A7E782FA3D966F` |
+| `data/consulting-master.js` | `D1F9630909D31945358695DC8B17A26C3438E5014D25501F68C622385E463D5C` |
+| `data/verified-work-item-expansions.js` | `8F64574DADFC1431029EAAF2213D1ADFE858866B7AA551544797AD4BC5545EF4` |
+| `document-import.js` | `B26D51EE743F6B7532807C0811811E79CF0B727C7ED7BD53B527F330DD667BA0` |
+| `index.html` | `277D618A965265C2333A5178C098D68D01AA6A2012BA9994AB133487293933E4` |
+| `styles.css` | `760255E26BD18BC3FF2BAFE27AB57A5448B6E83F9C8970B7AE7B1C59DB65B3B6` |
+| `tests/test-work-item-expansions.js` | `6F2418DBB463D001E0DAFD8E9867FF80362C24DB8DDE1CF5B4A4A956FC44FB87` |
