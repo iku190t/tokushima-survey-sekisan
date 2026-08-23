@@ -1415,3 +1415,56 @@ OK: R8 UAV laser detailed work item expansion checks passed
 | `tests/test-ui-static.js` | `7CD2BBE6B8E82E84458907089374AD882CEF0CCC49ECD483AE49C78956C90974` |
 | `tests/test-consulting-ui.js` | `6863CA3748BD31A7E016ACFC81451C6A133C89622153CB84331DE066EFB973DF` |
 | `tests/test-document-import-ui.js` | `0D2D63B72E9D37425BFF000DD3FEECEFE701E81C894B0ADD4C9DD01DBABD3D7D` |
+
+## B-2026-08-23-11
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-23
+- アプリコミット: `8c037c4a4c5e851864068143be150f94b5667dca`
+- GitHub Pagesビルド: `1169197989`（`built`）
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: B-2026-08-23-10へ、国交省令和6～8年度の公式掲載資料24件の年度別台帳、公開全編から抽出した設計・調査計画・地質の職種別標準歩掛735表、年度・業務タブ・検索語・標準単位・出典ページ・数量倍率による追加、年度連動の画面／帳票出典を追加した版。
+
+### 合格した試験
+
+```text
+OK: regulation audit checks passed (master mapping, precision, quantity formulas, travel, rounding, overhead)
+OK: MLIT official role price presets R4-R8 and consulting roles R6-R8
+OK: UI static wiring checks passed
+OK: nationwide submission destinations and standard master catalog checks passed
+OK: Hiroshima R6-R8 complete annual master audit checks passed
+OK: nationwide R6-R8 standard reference master checks passed
+OK: consulting/design/geology calculation checks passed
+OK: consulting UI and report wiring checks passed
+OK: R6-R8 consulting/planning/geology source-table walks and MLIT source catalog checks passed
+OK: R8 UAV laser detailed work item expansion checks passed
+OK: document PDF/OCR extraction and review candidate checks passed
+OK: document import review UI and safe apply wiring checks passed
+OK: official procurement case matching, XML parsing, and source ledger candidates passed
+OK: official case search UI is removed while saved-data compatibility remains
+```
+
+追加検査: `node --check app.js`、`node --check consulting.js`、`node --check document-import-engine.js`、`node --check document-import.js`、生成データ2件、`git diff --check`合格。
+
+### 実ブラウザー確認
+
+- GitHub Pages公開版の令和8年度・設計業務で184候補（既存確認済み1件を含む、全区分250表）を表示し、「道路詳細設計（A）」検索でp.151の1km当り表だけへ絞り込んだ。
+- 同表を追加すると、理事・技師長0.2、主任技師2.9、技師(A)9.8、技師(B)20.8、技師(C)28.2、技術員28.2となり、直接人件費4,094,530円、設計業務価格9,691,193円、税込10,660,312円だった。
+- 計算根拠は令和8年度の技術者単価、年度別全編、同年度8資料、国交省年度別ページを表示した。ローカル版では令和7年度へ切り替えると候補p.150、同年度資料11リンクへ変わった。公開版のブラウザー警告・エラー0件。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `024DFB7CB3A0CE2B8845FADB6DD2BA33FDD59A88D5F001EA89A764A76FDF8BCF` |
+| `consulting.js` | `939BB018AB688883461E275333EAF9BC5106CAD9B070060AE4D586F55EA79C85` |
+| `data/consulting-master.js` | `D1B10D900E14DA6FBEBDC79B791231E07795C22CF56ABA5880972534B0DE08E1` |
+| `data/consulting-standard-walks.json` | `6119F1072CB0EB6C71C6E4C66F24C5ED201BD8FB71BFCE4101FEC59E9C1BCDD6` |
+| `data/consulting-standard-walks.js` | `1516EF71D6945C442E78845C8E0D01F1AB52A2666AA958FDB958D8B6C8B6F097` |
+| `data/official-source-catalog.json` | `EB52EB7B5DC44F063A3E8A433FEF820F16776622FAC74D0306C9815203515B58` |
+| `data/official-source-catalog.js` | `5ED19F6A1ACCF8C4EE6333C27D0917425144526F0E71CE014DA4F51866312130` |
+| `styles.css` | `19B0FD94655B67D9B3AA3723B5439A9D062E8B747A6AF4DCFDAF80A8E08D6E53` |
+| `tests/test-consulting-ui.js` | `E436796D8109B8EA9B6C73C4ECCCD30E63871C13FB4C377CD9A538502D4E7EBE` |
+| `tests/test-consulting-walks.js` | `888BCE2AF68CD0068E648DD5949C29E9D7E1DD9A857D5A78528371B378657FEB` |
+| `tools/generate-consulting-walks.py` | `A0ABBF475A46A184C338EE1436C500AE317A6C3514AC0D231C18F22001DCC1FA` |
+| `tools/update-mlit-source-catalog.py` | `13862E2F17B53DA9010B31E8247AC2C1BBF70474ED57AF7849B59EEC3BF1A0B6` |
