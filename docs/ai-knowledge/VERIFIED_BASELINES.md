@@ -1367,3 +1367,51 @@ OK: R8 UAV laser detailed work item expansion checks passed
 | `data/prefectures.js` | `850BAB880C3FD863BF080DC2A9D3268788A28AE19B5F30824437ABAFACF3EF6C` |
 | `tests/test-ui-static.js` | `C16C536E13C54A8A57D51F66C6097225D02E49D89CA45E98CDEF74E832B186B8` |
 | `tests/test-master-catalog.js` | `25BE14F75E3994AF542669FA23D18B60656C0AB2A14B800572A4439C6E58D062` |
+
+## B-2026-08-23-10
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-23
+- アプリコミット: `f0b23cc5495e00f17e4ec928881df5617f82d606`
+- GitHub Pagesビルド: `1169138934`（`built`）
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: B-2026-08-23-09へ、積算基準の4業務区分、測量の作業規程第2～5編分類、航空・UAV・レーザ・深浅測量の測量内統合、設計等の詳細項目・職種・人工ドラッグを追加した版。
+
+### 合格した試験
+
+```text
+OK: consulting/design/geology calculation checks passed
+OK: consulting UI and report wiring checks passed
+OK: document import review UI and safe apply wiring checks passed
+OK: document PDF/OCR extraction and review candidate checks passed
+OK: regulation audit checks passed (master mapping, precision, quantity formulas, travel, rounding, overhead)
+OK: Hiroshima R6-R8 complete annual master audit checks passed
+OK: nationwide submission destinations and standard master catalog checks passed
+OK: nationwide R6-R8 standard reference master checks passed
+OK: official procurement case matching, XML parsing, and source ledger candidates passed
+OK: official case search UI is removed while saved-data compatibility remains
+OK: MLIT official role price presets R4-R8 and consulting roles R6-R8
+OK: UI static wiring checks passed
+OK: R8 UAV laser detailed work item expansion checks passed
+```
+
+追加検査: `node --check app.js`、`node --check consulting.js`、`node --check document-import.js`、`git diff --check`合格。
+
+### 実ブラウザー確認
+
+- ローカル版で上位タブを設計・測量・調査計画・地質の順に表示し、設計は土木設計だけ、調査計画は調査・計画だけへ分離した。
+- 令和8年度測量141項目を積算共通5、第2編20、第3編24、第4編35、第5編57へ分類し、合計141・未分類0件。深浅測量の根拠表示は「作業規程 第5編 第3章 第7節」だった。
+- 公開版で4タブ、5作業規程分類、141項目、更新済みCSS／JSを確認した。ページ幅とスクロール幅は1265px、ブラウザー警告・エラー0件。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `BE4AED99BB97050F53DD536AC076C3140F12C9A3E17748078F25CEC01DB51558` |
+| `app.js` | `289F125ED3D7D78116C31011753ADE3E4A00428E742CCD54A21DC58FA688600B` |
+| `consulting.js` | `938E6B3A66AAB9237DB979A5C1CF8DF8E43C5DBFED80EA0C6917CBBB91E7A876` |
+| `document-import.js` | `67AAF2C655AC1DB21F4A3A5597F0FD42C1D21A53CCB44F89EC6B0217BFD86103` |
+| `styles.css` | `700C274F9A5C244551040429D1EF7C2C897FD23697423A7A2F9DEB9C9541E434` |
+| `tests/test-ui-static.js` | `7CD2BBE6B8E82E84458907089374AD882CEF0CCC49ECD483AE49C78956C90974` |
+| `tests/test-consulting-ui.js` | `6863CA3748BD31A7E016ACFC81451C6A133C89622153CB84331DE066EFB973DF` |
+| `tests/test-document-import-ui.js` | `0D2D63B72E9D37425BFF000DD3FEECEFE701E81C894B0ADD4C9DD01DBABD3D7D` |
