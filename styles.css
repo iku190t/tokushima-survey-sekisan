@@ -139,8 +139,8 @@ input:focus, select:focus, textarea:focus { border-color: var(--green); box-shad
 .static-field strong { min-height: 40px; display: flex; align-items: center; padding: 7px 10px; color: #29453b; background: #f2f7f4; border: 1px solid var(--line); border-radius: 8px; font-size: 12px; }
 .consulting-picker-grid { display: grid; grid-template-columns: minmax(150px,.75fr) minmax(145px,.7fr) minmax(210px,1.15fr) minmax(145px,.7fr) 92px 76px; gap: 12px; align-items: end; }
 .scope-note { margin: -4px 0 14px; padding: 10px 12px; border-left: 3px solid var(--green); border-radius: 0 8px 8px 0; background: #edf6f1; color: var(--muted); line-height: 1.55; }
-.verified-preset-row { display: grid; grid-template-columns: minmax(280px,1fr) auto minmax(220px,.8fr); gap: 12px; align-items: end; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
-.verified-preset-row small { align-self: center; color: var(--muted); line-height: 1.5; }
+.verified-preset-row { display: grid; grid-template-columns: minmax(180px,.7fr) minmax(320px,1.45fr) 150px auto; gap: 12px; align-items: end; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
+.verified-preset-row small { grid-column: 1 / -1; align-self: center; color: var(--muted); line-height: 1.5; }
 .add-button { height: 40px; }
 .field-note { min-height: 19px; margin: 10px 0 0; color: var(--muted); font-size: 12px; }
 

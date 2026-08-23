@@ -5,6 +5,8 @@
   const master = window.CONSULTING_MASTER;
   const engine = window.ConsultingEngine;
   const pricesByYear = window.OFFICIAL_ROLE_PRICES;
+  const standardWalks = window.CONSULTING_STANDARD_WALKS || { presets: [], audits: [] };
+  const officialSourceCatalog = window.OFFICIAL_SOURCE_CATALOG || { sources: [] };
   if (!app || !master || !engine || !pricesByYear) return;
 
   const $ = (id) => document.getElementById(id);
@@ -13,6 +15,7 @@
   const service = (id) => master.serviceTypes.find((entry) => entry.id === id) || master.serviceTypes[0];
   const roleDefinition = (serviceType, roleId) => master.roleGroups[service(serviceType).roleGroup].find((entry) => entry.id === roleId);
   let activeConsultingScope = "design";
+  let visiblePresets = [];
 
   function serviceInScope(entry) {
     if (activeConsultingScope === "geology") return ["geologyAnalysis", "geologyGeneral"].includes(entry.id);
@@ -95,11 +98,22 @@
   }
 
   function renderPresets() {
-    const presets = master.verifiedPresets.filter((preset) => scopedServices().some((entry) => entry.id === preset.serviceType));
-    $("consultingPreset").innerHTML = presets.length
-      ? presets.map((preset) => `<option value="${h(preset.id)}">${h(preset.label)}｜${h(preset.source)}</option>`).join("")
+    const query = String($("consultingPresetSearch").value || "").trim().toLocaleLowerCase("ja");
+    const year = Number(state().fiscalYear);
+    const allPresets = [...master.verifiedPresets, ...(Array.isArray(standardWalks.presets) ? standardWalks.presets : [])];
+    visiblePresets = allPresets.filter((preset) =>
+      scopedServices().some((entry) => entry.id === preset.serviceType)
+      && (!preset.fiscalYear || Number(preset.fiscalYear) === year)
+      && (!query || `${preset.label} ${preset.standardUnit || ""} ${preset.source || ""}`.toLocaleLowerCase("ja").includes(query))
+    );
+    $("consultingPreset").innerHTML = visiblePresets.length
+      ? visiblePresets.map((preset) => `<option value="${h(preset.id)}">${h(preset.label)}｜${h(preset.standardUnit || "1業務当り")}｜p.${h(preset.sourcePage || "—")}</option>`).join("")
       : '<option value="">この業務区分の確認済み歩掛は未収録</option>';
-    $("addConsultingPresetButton").disabled = presets.length === 0;
+    $("addConsultingPresetButton").disabled = visiblePresets.length === 0;
+    const audit = (standardWalks.audits || []).find((entry) => Number(entry.fiscalYear) === year);
+    $("consultingPresetStatus").textContent = visiblePresets.length
+      ? `令和${year - 2018}年度：${visiblePresets.length}表を表示中（全区分 ${audit?.presetCount || visiblePresets.length}表）。標準単位と出典ページを確認し、数量補正後の倍率を入力してください。`
+      : `令和${year - 2018}年度：検索条件に一致する標準歩掛がありません。`;
   }
 
   function renderLines(result) {
@@ -163,9 +177,23 @@
     $("consultingValidationList").innerHTML = issues.length ? issues.map((issue) => `<li>${h(issue)}</li>`).join("") : "<li>自動検査範囲では未入力警告はありません。案件固有条件を最終照合してください。</li>";
   }
 
-  function renderSources() {
+  function currentSources() {
     const yearSource = pricesByYear[state().fiscalYear];
-    const sources = [{ label: yearSource.sourceLabel, url: yearSource.sourceUrl }, ...master.sources];
+    const fiscalYear = Number(state().fiscalYear);
+    const mlitSources = (officialSourceCatalog.sources || [])
+      .filter((source) => source.jurisdictionCode === "mlit" && Number(source.fiscalYear) === fiscalYear && !String(source.kind).startsWith("role"))
+      .map((source) => ({ label: source.title || source.kind, url: source.url }));
+    const fullBook = (standardWalks.audits || []).find((entry) => Number(entry.fiscalYear) === fiscalYear);
+    return [
+      { label: yearSource.sourceLabel, url: yearSource.sourceUrl },
+      ...(fullBook ? [{ label: `${fullBook.source}（職種別標準歩掛 ${fullBook.presetCount}表の抽出元）`, url: fullBook.sourceUrl }] : []),
+      ...mlitSources,
+      { label: "国土交通省 設計業務等標準積算基準書（年度別一覧）", url: "https://www.mlit.go.jp/tec/gyoumu_sekisan.html" }
+    ];
+  }
+
+  function renderSources() {
+    const sources = currentSources();
     $("consultingSourceList").innerHTML = sources.map((source) => `<li><a href="${h(source.url)}" target="_blank" rel="noopener noreferrer">${h(source.label)}</a></li>`).join("");
   }
 
@@ -201,11 +229,20 @@
   }
 
   function addPreset() {
-    const preset = master.verifiedPresets.find((entry) => entry.id === $("consultingPreset").value);
+    const preset = visiblePresets.find((entry) => entry.id === $("consultingPreset").value);
     if (!preset) return;
-    Object.entries(preset.roles).forEach(([role, days]) => state().lines.push({ id: `consult-${Date.now()}-${role}`, serviceType: preset.serviceType, taskName: preset.label, role, days, verifiedSource: preset.source }));
+    const multiplier = Math.max(0.001, engine.normalizeDays($("consultingPresetMultiplier").value || 1));
+    Object.entries(preset.roles).forEach(([role, days]) => state().lines.push({
+      id: `consult-${Date.now()}-${role}-${Math.random().toString(16).slice(2)}`,
+      serviceType: preset.serviceType,
+      taskName: `${preset.label}（${preset.standardUnit || "標準表1式"}${multiplier === 1 ? "" : `×${multiplier}`}）`,
+      role,
+      days: engine.normalizeDays(Number(days) * multiplier),
+      verifiedSource: `${preset.source}${preset.sourceUrl ? `／${preset.sourceUrl}` : ""}`,
+      standardWalk: { id: preset.id, fiscalYear: preset.fiscalYear || state().fiscalYear, standardUnit: preset.standardUnit || "標準表1式", multiplier }
+    }));
     updateAndRender();
-    app.notify("確認済み標準歩掛を追加しました");
+    app.notify(`令和${state().fiscalYear - 2018}年度の標準歩掛を追加しました`);
   }
 
   function importCandidates(detail) {
@@ -248,7 +285,7 @@
     const issueDate = estimate.date ? estimate.date.replace(/-/g, "/") : "—";
     const authority = app.getSubmissionJurisdictionName?.() || "—";
     const rows = result.lines.map((line, index) => `<tr><td>${index + 1}</td><td>${h(line.serviceName)}</td><td>${h(line.taskName)}</td><td>${h(roleDefinition(line.serviceType, line.role)?.name || line.role)}</td><td>${h(line.days)}</td><td>${money(line.dailyRate)}</td><td>${money(line.amount)}</td></tr>`).join("");
-    const sourceRows = [{ label: pricesByYear[current.fiscalYear].sourceLabel, url: pricesByYear[current.fiscalYear].sourceUrl }, ...master.sources].map((source) => `<li>${h(source.label)}<br><small>${h(source.url)}</small></li>`).join("");
+    const sourceRows = currentSources().map((source) => `<li>${h(source.label)}<br><small>${h(source.url)}</small></li>`).join("");
     const header = (title) => `<header class="report-page-header"><div><p>測量・調査・設計業務 提出用帳票</p><h1>${h(title)}</h1><span>令和${current.fiscalYear - 2018}年度／${h(authority)}</span></div><div class="report-header-meta"><span>${h(issueDate)}</span></div></header>`;
     const footer = (label) => `<footer class="report-page-footer"><span>${h(estimate.projectName || "総合業務積算")}</span><span>参考試算・公式資料要照合 ／ ${h(label)}</span></footer>`;
     const info = estimate.projectInfo || {};
@@ -274,6 +311,7 @@
   function bindEvents() {
     $("consultingServiceType").addEventListener("change", () => renderServiceControls(true));
     $("consultingTaskTemplate").addEventListener("change", () => { $("consultingTaskName").value = $("consultingTaskTemplate").value; });
+    $("consultingPresetSearch").addEventListener("input", renderPresets);
     $("consultingRole").addEventListener("change", renderRoleMeta);
     $("consultingFiscalYear").addEventListener("change", (event) => { state().fiscalYear = Number(event.target.value); renderAll(); app.saveDraft(); });
     $("consultingProjectName").addEventListener("input", (event) => { app.getEstimate().projectName = event.target.value; $("projectName").value = event.target.value; app.saveDraft(); });

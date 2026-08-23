@@ -31,10 +31,36 @@ window.CONSULTING_MASTER = {
   },
   verifiedPresets: [
     {
-      id: "design-note",
+      id: "design-note-r8",
+      fiscalYear: 2026,
       label: "設計留意書の作成（1業務）",
       serviceType: "design",
+      standardUnit: "1業務当り",
       source: "令和8年度 土木設計業務等積算基準 3-1-4",
+      sourceUrl: "https://www.mlit.go.jp/tec/content/001867426.pdf",
+      sourcePage: 4,
+      roles: { designLead: 0.5, designEngineerA: 1.0 }
+    },
+    {
+      id: "design-note-r7",
+      fiscalYear: 2025,
+      label: "設計留意書の作成（1業務）",
+      serviceType: "design",
+      standardUnit: "1業務当り",
+      source: "令和7年度 土木設計業務等積算基準 3-1-4",
+      sourceUrl: "https://www.mlit.go.jp/tec/content/001984380.pdf",
+      sourcePage: 3,
+      roles: { designLead: 0.5, designEngineerA: 1.0 }
+    },
+    {
+      id: "design-note-r6",
+      fiscalYear: 2024,
+      label: "設計留意書の作成（1業務）",
+      serviceType: "design",
+      standardUnit: "1業務当り",
+      source: "令和6年度 土木設計業務等積算基準 3-1-4",
+      sourceUrl: "https://www.mlit.go.jp/tec/content/001984388.pdf",
+      sourcePage: 3,
       roles: { designLead: 0.5, designEngineerA: 1.0 }
     }
   ],

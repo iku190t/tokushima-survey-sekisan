@@ -13,20 +13,25 @@ const ids = new Set([...html.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1
 const referencedIds = new Set([...ui.matchAll(/\$\("([^"]+)"\)/g)].map((match) => match[1]));
 assert.deepStrictEqual([...referencedIds].filter((id) => !ids.has(id)), [], "consulting.jsから参照するHTML要素が揃う");
 
-for (const id of ["consultingView", "consultingFiscalYear", "consultingServiceType", "consultingTaskTemplate", "consultingTaskName", "consultingRole", "consultingDays", "consultingLineBody", "consultingSummaryList", "consultingPrintButton"]) {
+for (const id of ["consultingView", "consultingFiscalYear", "consultingServiceType", "consultingTaskTemplate", "consultingTaskName", "consultingRole", "consultingDays", "consultingPresetSearch", "consultingPreset", "consultingPresetMultiplier", "consultingPresetStatus", "consultingLineBody", "consultingSummaryList", "consultingPrintButton"]) {
   assert.ok(html.includes(`id="${id}"`), `${id}を表示する`);
 }
 for (const file of ["data/consulting-master.js", "consulting-engine.js", "consulting.js"]) {
   assert.ok(html.includes(`src="${file}?v=`), `${file}を読み込む`);
   assert.ok(fs.existsSync(path.join(root, file)), `${file}が存在する`);
 }
+assert.ok(html.includes('src="data/consulting-standard-walks.js?v='), "年度別の設計・調査計画・地質標準歩掛を読み込む");
+assert.ok(html.includes('src="data/official-source-catalog.js?v='), "国交省年度別8資料の台帳を読み込む");
 for (const type of ["土木設計業務", "調査・計画業務", "地質解析等調査業務", "地質一般調査業務"]) assert.ok(master.includes(type), `${type}を区分する`);
 for (const task of ["設計条件の確認", "施工計画", "資料整理とりまとめ", "孔内水平載荷試験", "地下水位観測", "土質・岩石試験"]) assert.ok(master.includes(task), `${task}を詳細項目として選べる`);
 assert.ok(html.includes("詳細項目（作業工程）") && ui.includes("consultingTaskTemplate"), "設計・地質で詳細項目を選んで内訳名称へ反映する");
 assert.ok(ui.includes('entry.id === "design"') && ui.includes('entry.id === "planning"') && ui.includes('["geologyAnalysis", "geologyGeneral"]'), "設計・調査計画・地質のタブで対象区分を分離する");
 assert.ok(ui.includes('ezsekisan:businessscope') && ui.includes("activeConsultingScope"), "業務タブ切替を設計・地質入力へ反映する");
 assert.ok(html.includes('data-consulting-scope="design-planning"') && html.includes('data-consulting-scope="geology"'), "タブに対応する積上費用だけを表示する");
-assert.ok(master.includes("designLead: 0.5") && master.includes("designEngineerA: 1.0"), "設計留意書の確認済み歩掛だけをプリセットする");
+assert.ok(master.includes('id: "design-note-r8"') && master.includes('id: "design-note-r7"') && master.includes('id: "design-note-r6"') && master.includes("designLead: 0.5") && master.includes("designEngineerA: 1.0"), "令和6～8年度の設計留意書歩掛をプリセットする");
+assert.ok(ui.includes("CONSULTING_STANDARD_WALKS") && ui.includes("preset.fiscalYear") && ui.includes("consultingPresetSearch"), "標準歩掛を年度・業務タブ・検索語で絞る");
+assert.ok(ui.includes("consultingPresetMultiplier") && ui.includes("standardUnit") && ui.includes("sourcePage"), "標準単位・適用倍率・出典ページを歩掛追加へ反映する");
+assert.ok(ui.includes("OFFICIAL_SOURCE_CATALOG") && ui.includes('source.jurisdictionCode === "mlit"') && ui.includes("fullBook.presetCount"), "選択年度の国交省8資料と標準歩掛全編を計算根拠に表示する");
 assert.ok(ui.includes("人工入力の行があります"), "未確認人工を提出前警告する");
 assert.ok(html.includes("未入力の0円"), "0円を不要と誤認しない注意を表示する");
 assert.ok(engine.includes("alpha / Math.max") && engine.includes("beta / Math.max"), "設計方式をその他原価と一般管理費に分ける");
