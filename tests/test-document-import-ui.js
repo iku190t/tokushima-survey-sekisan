@@ -44,6 +44,14 @@ assert.ok(ui.includes("surveyCategoryOptions") && ui.includes("populateManualSur
 assert.ok(html.includes('draggable="true"') || ui.includes('draggable="true"'), "PDF文字ブロックをドラッグ開始できる");
 assert.ok(!html.includes('id="pdfDragDock"') && !html.includes("PDFからドラッグして入力"), "別置きの重複したドラッグ入力欄を表示しない");
 assert.ok(html.includes('data-pdf-drop-target="item"') && html.includes('data-pdf-drop-target="quantity"') && html.includes('data-pdf-drop-target="unit"'), "実入力欄を項目・数量・単位のドラッグ先にする");
+const sidebarStart = html.indexOf('<aside class="pdf-click-sidebar">');
+const sidebarEnd = html.indexOf("</aside>", sidebarStart);
+const sidebarHtml = html.slice(sidebarStart, sidebarEnd);
+const mapperIndex = html.indexOf('id="pdfManualMapper"');
+const pendingPanelIndex = html.indexOf('class="pdf-pending-panel"');
+const pendingListIndex = html.indexOf('id="pdfClickSelectedList"');
+assert.ok(sidebarHtml.includes('id="pdfManualMapper"') && !sidebarHtml.includes('id="pdfClickSelectedList"'), "PDF右側には固定する入力エディターだけを置く");
+assert.ok(mapperIndex >= 0 && mapperIndex < pendingPanelIndex && pendingPanelIndex < pendingListIndex, "反映待ち一覧をPDFと入力エディターの下へ分離する");
 assert.ok(ui.includes("PDF_LINE_DRAG_TYPE") && ui.includes("applyDraggedPdfLine") && ui.includes("matchSurveyDrop") && ui.includes('addEventListener("dragstart"') && ui.includes('addEventListener("drop"'), "項目・数量を別々に右側へドロップして対応付ける");
 assert.ok(ui.includes("pointerPdfDrag") && ui.includes("finishPointerPdfDrag") && ui.includes('addEventListener("pointermove"') && ui.includes('addEventListener("pointerup"'), "標準ドラッグ非対応環境とタッチ・ペン操作でも移動先を判定する");
 assert.ok(ui.includes("manualSourceLineIds") && ui.includes("manualItemLineId") && ui.includes("manualQuantityLineId"), "別セルから取り込んだ項目と数量を同じ候補へ関連付ける");
@@ -69,5 +77,6 @@ assert.ok(!app.includes("sourceText: String(entry.sourceText") && !consulting.in
 assert.ok(css.includes(".import-review-dialog") && css.includes(".import-candidate[data-confidence=\"low\"]"), "確認画面と低確信度警告の表示がある");
 assert.ok(css.includes('.pdf-line-hotspot[data-mapped="false"]') && css.includes(".pdf-manual-mapper"), "未判定行と右側反映先エディターを視覚的に区別する");
 assert.ok(!css.includes(".pdf-drag-dock") && css.includes(".pdf-field-drop-target.drag-over"), "実入力欄だけをドラッグ先として視覚表示する");
+assert.ok(css.includes(".pdf-click-sidebar { position: sticky; top: 18px; align-self: start;") && css.includes(".pdf-pending-panel { display: grid;"), "入力エディターをPDF上端に固定し、反映待ちを独立配置する");
 
 console.log("OK: document import review UI and safe apply wiring checks passed");

@@ -7,7 +7,7 @@
   <meta name="description" content="設計、測量、航空・船舶、地質を年度別技術者単価と根拠表示付きで計算するWeb業務積算ソフト">
   <meta name="author" content="株式会社アイズ測量">
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="styles.css?v=20260823-3">
+  <link rel="stylesheet" href="styles.css?v=20260823-4">
 </head>
 <body data-business-scope="design">
   <header class="app-header">
@@ -308,8 +308,6 @@
         <div class="pdf-click-layout">
           <div id="pdfClickPages" class="pdf-click-pages" aria-label="読み込んだPDF"></div>
           <aside class="pdf-click-sidebar">
-            <div class="pdf-click-summary"><span>反映待ち</span><strong id="pdfClickSelectedCount">0件</strong><p id="pdfClickSelectionHint">PDF上の色付き枠をクリックしてください。</p></div>
-            <div id="pdfClickSelectedList" class="pdf-click-selected-list"></div>
             <section id="pdfManualMapper" class="pdf-manual-mapper" hidden>
               <div class="pdf-manual-heading"><strong id="pdfManualHeadingText">この行の反映先を指定</strong><button id="cancelPdfManualLineButton" type="button" aria-label="閉じる">×</button></div>
               <q id="pdfManualSourceText">—</q>
@@ -331,6 +329,12 @@
               </div>
               <div class="pdf-manual-actions"><button id="addPdfManualCandidateButton" class="button primary" type="button">反映待ちへ追加</button><button id="ignorePdfManualLineButton" class="button" type="button">この行は対象外</button></div>
             </section>
+          </aside>
+        </div>
+        <section class="pdf-pending-panel" aria-label="反映待ち項目">
+          <div class="pdf-click-summary"><span>反映待ち</span><strong id="pdfClickSelectedCount">0件</strong><p id="pdfClickSelectionHint">PDF上の色付き枠をクリックしてください。</p></div>
+          <div id="pdfClickSelectedList" class="pdf-click-selected-list"></div>
+          <div class="pdf-pending-controls">
             <div class="pdf-click-actions">
               <button id="selectDetectedPdfLinesButton" class="button" type="button">確信度の高い候補を選択</button>
               <button id="clearPdfLineSelectionButton" class="button" type="button">選択をすべて外す</button>
@@ -338,9 +342,9 @@
               <button id="openPdfSelectionReviewButton" class="button" type="button" disabled>一覧で詳しく修正</button>
               <button id="openPdfFullReviewButton" class="button" type="button">通常の一覧でも確認</button>
             </div>
-            <p class="pdf-click-note">緑・橙の枠は自動判定候補、青い破線は反映先が未判定の文字ブロックです。同じ横一行でも、離れた文字や表セルは個別にクリックまたは右側へドラッグできます。追加前に内容を確認してください。</p>
-          </aside>
-        </div>
+          </div>
+          <p class="pdf-click-note">緑・橙の枠は自動判定候補、青い破線は反映先が未判定の文字ブロックです。同じ横一行でも、離れた文字や表セルは個別にクリックまたは右側へドラッグできます。追加前に内容を確認してください。</p>
+        </section>
       </section>
     </section>
 
