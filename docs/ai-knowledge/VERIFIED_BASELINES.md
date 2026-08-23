@@ -1732,3 +1732,35 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `data/source-audits/mlit-effective-rule-pages.json` | `E240F1B97D7DDBB6F260579EDE00C219BD80F885C88EE202BC754291469AF100` |
 | `tests/test-consulting-condition-rules.js` | `1FECF683A32864E2AADFA2397E9516D433293312136092A4E0340DEB47FED5C8` |
 | `tools/build-mlit-effective-rule-inventory.py` | `02D71E5722718811031DA8898655A41A93A601DB2091656B20AA78517FE52141` |
+
+## B-2026-08-24-04
+
+- 状態: **ローカル検証済み・公開確認待ち**
+- 検証日: 2026-08-24
+- 実装コミット: `592ceb91aa15ff89cc3527558cb8fb5f16eb776a`
+- 内容: 県版由来の旧735候補を現行入力から外し、R6～R8の年度統合表を国交省本体・累積改定へ逆照合した1,393歩掛行、条件表、補正式、行別経費体系、地質市場単価方式へ置換した版。
+
+### 合格した試験
+
+- `tests/test-*.js` 全15本合格。
+- `node --check consulting-engine.js`、`consulting.js`、`data/consulting-condition-rules.js`、`data/consulting-rule-pack.js`合格。
+- `git diff --check`合格。
+- T-CONSULT-RULE-PACKで年度別461・462・470行、国交省URL・ページ、照合高・中のみ、職種・標準単位・経費体系を全件走査した。
+
+### 実ブラウザー確認
+
+- 道路詳細設計Aの2kmは`0.5×2+0.5=1.5倍`、丘陵地+10%で1.65倍となり、理事・技師長0.33人日・27,324円を含む6職種を展開した。
+- 水位流量曲線の測量技師1.6人日は直接費84,320円、R8測量諸経費95.8%で80,778円、測量方式業務価格165,098円となった。
+- 地質せん孔は数量20m・市場単価15,000円/mで対象額300,000円、地質諸経費82.5%で247,500円、業務価格547,500円となった。
+- 橋長補正式`y=2.541×L+87.30%`はL=10で1.1271倍を自動算定した。規格表は補正選択にならず、ブラウザー警告・エラー0件だった。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `consulting-engine.js` | `2DD429C0095A59240049C4EEC0D8505DFFC3E386227287137FBC977D8DA93958` |
+| `consulting.js` | `2F0AC5DB964B7EEA05106FD872FC2FABDD2B799F1AD445184964E5A4920B364E` |
+| `data/consulting-rule-pack.json` | `2A23F3923181E2C4C9FA572E8E2ED54A5DD10B6CD9F0123D8BF07F031304279B` |
+| `data/source-audits/consulting-fullbook-crosswalk.json` | `82B1C65BB970D4A6DAD00D13665246FAEA6F2782C0F2B455DE9B1291392B6AFE` |
+| `index.html` | `B8C2F4B38FAB84D2384F6C0AD0AA47EAAFADC3F19A72235CB1B0E0D17CDF0D1F` |
+| `tests/test-consulting-rule-pack.js` | `4022A6F0CDB5246B5761E664DC0D02429077F3D7FC1567F716DEB12FF55DFCD3` |

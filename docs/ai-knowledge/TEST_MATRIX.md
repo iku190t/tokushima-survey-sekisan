@@ -15,6 +15,7 @@
 | T-CONSULT-UI | `node tests/test-consulting-ui.js` | 4業務区分、基準書分類→業務条件→数量、手動人工の隔離、原表確認済み／条件規則実装済み／自動計算不可、提出前警告、保存、新規、総合帳票結線 | `consulting.js`、総合画面・帳票変更時は必須 | 合格 |
 | T-CONSULT-WALKS | `node tests/test-consulting-walks.js` | 国交省R6～R8各8資料、全国標準参考735表、全標準単位の数量欄化、条件未実装703表、編成人員等の参照専用32表、代表固定値 | 設計・調査計画・地質の参考歩掛、原資料台帳、完全性分類、年度出典変更時は必須 | 合格 |
 | T-CONSULT-CONDITIONS | `node tests/test-consulting-condition-rules.js` | 現行系列124文書・2,102ページの分離、旧版非混在、道路概略・予備・詳細設計の補正条件、必須条件、加減算、補正後人工 | 条件規則、現行資料監査台帳、補正UI・エンジン変更時は必須 | 合格 |
+| T-CONSULT-RULE-PACK | `node tests/test-consulting-rule-pack.js` | R6～R8の1,393歩掛行、年度別461・462・470件、国交省URL・ページ、照合確度、職種、標準単位、設計／測量／地質経費体系 | 設計・調査計画・地質の規則パック、ページ対応、生成処理変更時は必須 | 合格 |
 | T-AERIAL-DETAIL | `node tests/test-work-item-expansions.js` | 測量業務内の令和8年度UAVレーザ8工程、職種別人工合計、年度、公式出典 | UAV・レーザ等の詳細項目、年度展開変更時は必須 | 合格 |
 | T-STANDARD-SCOPE | `node tests/test-ui-static.js` | 国交省一般と港湾・航空局・用地・農林・上下水道等の別体系表示、航空測量／空港・深浅／港湾船舶の区別 | 業務タブ、マスター範囲、使い方・計算根拠変更時は必須 | 合格 |
 | T-DOC-IMPORT | `node tests/test-document-import.js` | PDF文字配置、同一行の5セル分割、隣接文字結合、OCRセル分割、行文脈、数量と縮尺の分離、資料単位換算（6.9×10,000m²＝69,000m²）、単位なしの非推定、業務基本情報、測量数量、設計・地質人工 | PDF/OCR解析、候補対応付け、単位換算、正規化変更時は必須 | 合格 |
@@ -35,7 +36,7 @@
 | 保存・読込み | T-UI, T-ENGINE | 旧JSONの移行と数量正規化を手動確認 |
 | 起動・自動保存復元 | T-UI | 新規起動、復元ボタン、未操作終了、JSON読込を実ブラウザーで確認 |
 | 公開表示・アクセス解析 | T-UI | フッター1ボタン・統合ダイアログ、HTTPS公開版で応援リンク、同意ポップアップなし、GAタグ常時読込み、GA着信を確認 |
-| 4業務タブ・設計地質積算 | T-CONSULT, T-CONSULT-UI, T-CONSULT-WALKS, T-CONSULT-CONDITIONS, T-AERIAL-DETAIL, T-STANDARD-SCOPE, T-RATES, T-UI, T-ENGINE | 指定順、初期設計画面、設計／調査計画の分離、測量の作業規程分類、第2～5編の全件対応、設計等735表の年度・業務・単位・出典、別積算基準との非混在、年度切替、総合計、実ブラウザー表示 |
+| 4業務タブ・設計地質積算 | T-CONSULT, T-CONSULT-UI, T-CONSULT-RULE-PACK, T-CONSULT-CONDITIONS, T-AERIAL-DETAIL, T-STANDARD-SCOPE, T-RATES, T-UI, T-ENGINE | 指定順、初期設計画面、設計／調査計画の分離、測量の作業規程分類、R6～R8の1,393歩掛行と国交省ページ対応、条件表・補正式、行別経費体系、地質市場単価、年度切替、総合計、実ブラウザー表示 |
 | PDF・写真取込 | T-DOC-IMPORT, T-DOC-UI, T-ENGINE, T-CONSULT | 文字入りPDFのセル・文字ブロック分割、設計・測量・調査計画・地質の区分別候補、測量の項目・数量・単位と設計等の詳細項目・職種・人工の個別ドラッグ、出典結合、ドロップ先の常時視認性、資料単位→積算単位の換算式・反映値、ドロップ後のPDF位置維持、PDFと入力欄の上端一致、反映待ち増加時の入力欄固定、作業領域幅、作業規程分類→測量詳細項目、未判定ブロックの手動対応付け、反映待ち項目の変更と件数非増加、同一画面での連続反映、画像OCR、提出先と年度単価セットの分離を実ブラウザー確認 |
 | 旧公式案件保存互換 | T-OFFICIAL-CASE, T-OFFICIAL-CASE-UI, T-DOC-UI, T-UI | 現行UI・スクリプトが非表示／非読込で、旧保存JSONの読込構造だけが維持されることを確認 |
 
