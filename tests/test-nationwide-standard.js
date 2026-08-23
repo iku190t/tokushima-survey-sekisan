@@ -14,7 +14,6 @@ vm.runInContext(fs.readFileSync(path.join(root, "data", "national-standard-maste
 
 const masters = JSON.parse(JSON.stringify(context.window.SEKISAN_NATIONAL_STANDARD_MASTERS));
 const rolePrices = JSON.parse(JSON.stringify(context.window.OFFICIAL_ROLE_PRICES));
-const audit = JSON.parse(fs.readFileSync(path.join(root, "data", "source-audits", "hiroshima-r6-r8-expense-rates.json"), "utf8"));
 
 const expected = {
   2024: { overhead: [91.2, 51.7, 371.23, -0.107], secondClass: [3073858, 307300, 3073000, 256634] },
@@ -34,10 +33,13 @@ for (const master of masters) {
   assert.strictEqual(master.walkYear, year);
   assert.strictEqual(master.rateYear, year);
   assert.strictEqual(master.workItems.length, 134, `${year}: 134作業項目`);
-  assert.strictEqual(master.audit.expenseRateRowsMatched, 108, `${year}: 直接経費率108行を照合済み`);
+  assert.ok(master.audit.method.includes("国土交通省"), `${year}: 国交省資料による全国標準参考として表示する`);
   assert.ok(master.audit.limitations.some((text) => text.includes("独自歩掛")), `${year}: 地域差分の限界を明記`);
+  assert.ok(master.audit.limitations.some((text) => text.includes("原表ページは未対応")), `${year}: 現行全編の項目別ページが未対応であることを明記する`);
   assert.ok(master.sourceLinks.some((source) => source.url.includes("mlit.go.jp/tec/content/")), `${year}: 国交省基準PDFを出典表示`);
   assert.ok(master.sourceLinks.some((source) => source.label.includes("技術者単価")), `${year}: 国交省技術者単価を出典表示`);
+  assert.ok(master.sourceLinks.every((source) => source.url.includes("mlit.go.jp")), `${year}: 出典を国交省公式資料だけにする`);
+  assert.ok(master.workItems.every((item) => !item.source?.standardPage && !item.source?.ratioPage), `${year}: 県版全編のページ番号を全国標準へ流用しない`);
 
   assert.deepStrictEqual(
     [master.overhead.lowerRate, master.overhead.upperRate, master.overhead.a, master.overhead.b],
@@ -47,16 +49,6 @@ for (const master of masters) {
   for (const [role, definition] of Object.entries(master.roles)) {
     assert.strictEqual(definition.price, rolePrices[year].roles[role], `${year}: ${role} の全国測量技術者単価`);
   }
-  for (const [code, rates] of Object.entries(audit.years[year])) {
-    const item = master.workItems.find((entry) => entry.code === code);
-    assert.ok(item, `${year}: ${code} が存在する`);
-    assert.deepStrictEqual(
-      [item.machineRate, item.communicationRate, item.materialRate],
-      [rates.machineRate, rates.communicationRate, rates.materialRate],
-      `${year}: ${code} の直接経費率`
-    );
-  }
-
   const item = master.workItems.find((entry) => entry.code === "2-2-1-1");
   const result = engine.calculateItem({ masterItem: item, quantity: 10, correctionRate: 0 }, master, {});
   assert.deepStrictEqual(

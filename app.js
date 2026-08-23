@@ -203,8 +203,6 @@
 
   function officialSourceUsage(source) {
     if (source.kind === "role-prices") return "技術者の日額単価に使用";
-    if (source.jurisdictionCode === "34" && source.kind === "standard") return "全国標準部分の歩掛・率・諸経費の年度照合元";
-    if (source.jurisdictionCode === "34" && source.kind === "reference") return "補正式・適用条件等の照合元";
     if (source.jurisdictionCode === "gsi") return "作業規程・測量分類の確認資料";
     if (source.kind === "design-standard") return "設計歩掛の年度改定監査・一部固定値歩掛に使用";
     if (source.kind === "measurement-standard") return "測量歩掛・率の年度改定監査";
@@ -215,7 +213,6 @@
 
   function officialSourceStatus(source) {
     if (source.kind === "role-prices") return ["計算採用", "verified"];
-    if (source.jurisdictionCode === "34" && source.kind === "standard") return ["原表照合元", "verified"];
     if (source.auditStatus === "indexed") return ["取得・索引済み", "indexed"];
     if (source.acquisitionStatus === "acquired") return ["取得済み", "acquired"];
     return ["要確認", "pending"];
@@ -224,7 +221,8 @@
   function surveySourceUsage(entry, source) {
     const label = String(entry?.label || "");
     if (label.includes("技術者単価") || source?.kind === "role-prices") return "測量技術者の日額単価";
-    if (label.includes("公開全編") || (source?.jurisdictionCode === "34" && source?.kind === "standard")) return "測量歩掛・直接経費率・諸経費率の原表";
+    if (label.includes("第1編") || source?.kind === "base-measurement-standard") return "全国標準の基準書本体（継続適用部分）";
+    if (label.includes("参考資料 第2編") || source?.kind === "base-reference-measurement") return "測量の補正式・適用条件の参考資料";
     if (label.includes("測量業務積算基準") || source?.kind === "measurement-standard") return "当該年度の測量積算基準・改定確認";
     if (label.includes("年度別")) return "国土交通省の年度別公式掲載ページ";
     return "測量マスターの出典・照合資料";
@@ -233,16 +231,16 @@
   function selectedSurveySourceRows(master, item) {
     const links = Array.isArray(master.sourceLinks) ? master.sourceLinks.filter((entry) => typeof entry === "object") : [];
     const findLink = (word) => links.find((entry) => String(entry.label || "").includes(word));
-    const fullBook = findLink("公開全編") || links[0];
+    const fullBook = findLink("第1編 測量業務") || links[0];
     const measurementStandard = findLink("測量業務積算基準");
     const rolePrices = findLink("技術者単価");
     const gsiRegulation = (officialSourceCatalog.sources || []).find((source) => source.jurisdictionCode === "gsi" && Number(source.fiscalYear) === Number(master.fiscalYear));
     const sourceLink = (entry, fallback) => entry?.url && /^https:\/\//i.test(entry.url)
       ? `<a href="${h(entry.url)}" target="_blank" rel="noopener noreferrer">${h(entry.label || fallback)}</a>`
       : h(entry?.label || fallback);
-    const sourcePage = item?.source?.standardPage ? `p.${h(item.source.standardPage)}${item.source.ratioPage ? `／直接経費率 p.${h(item.source.ratioPage)}` : ""}` : "ページ未登録";
+    const sourcePage = item?.source?.standardPage ? `p.${h(item.source.standardPage)}${item.source.ratioPage ? `／直接経費率 p.${h(item.source.ratioPage)}` : ""}` : "現行全編の項目別ページ未対応";
     const rows = [
-      ["歩掛・経費率の原表", sourceLink(fullBook, `${eraYear(master.fiscalYear)} 測量業務積算基準書`), sourcePage],
+      ["基準書本体・歩掛", sourceLink(fullBook, "国土交通省 標準積算基準書 第1編 測量業務"), sourcePage],
       ["年度の積算基準・改定確認", sourceLink(measurementStandard, `${eraYear(master.fiscalYear)} 国土交通省 測量業務積算基準`), "年度・適用内容を確認"],
       ["技術者単価", sourceLink(rolePrices, `${eraYear(master.fiscalYear)} 設計業務委託等技術者単価`), `${eraYear(master.rateYear || master.fiscalYear)}適用`]
     ];
@@ -623,7 +621,7 @@
         ${unitAudit}
         <p><b>直接作業費</b>${directFormula} ＝ ${yen.format(calculated.directWork)}</p>
         <p><b>精度管理費</b>(${yen.format(calculated.labor)}＋${yen.format(calculated.machine)}) × ${(calculated.precisionRate * 100).toFixed(0)}% ＝ ${yen.format(calculated.precision)}</p>
-        <p class="calc-source">${(() => { const source = (master.sourceLinks || []).find((entry) => typeof entry === "object" && String(entry.label || "").includes("公開全編")) || (master.sourceLinks || [])[0]; const label = source?.label || `${eraYear(master.fiscalYear)} 測量業務積算基準書`; const pageText = `p.${h(item.source.standardPage)}${item.source.ratioPage ? `／直接経費率 p.${h(item.source.ratioPage)}` : ""}`; return source?.url && /^https:\/\//i.test(source.url) ? `出典：<a href="${h(source.url)}" target="_blank" rel="noopener noreferrer">${h(label)}</a> ${pageText}` : `出典：${h(label)} ${pageText}`; })()}</p>
+        <p class="calc-source">${(() => { const source = (master.sourceLinks || []).find((entry) => typeof entry === "object" && String(entry.label || "").includes("第1編 測量業務")) || (master.sourceLinks || [])[0]; const label = source?.label || "国土交通省 標準積算基準書 第1編 測量業務"; const pageText = item.source?.standardPage ? `p.${h(item.source.standardPage)}${item.source.ratioPage ? `／直接経費率 p.${h(item.source.ratioPage)}` : ""}` : "現行全編の項目別ページ未対応"; return source?.url && /^https:\/\//i.test(source.url) ? `出典：<a href="${h(source.url)}" target="_blank" rel="noopener noreferrer">${h(label)}</a> ${pageText}` : `出典：${h(label)} ${pageText}`; })()}</p>
       </div></details>`;
       const importSource = line.importSource ? `<small>資料取込：${h(line.importSource.fileName || "貼付け原文")} p.${h(line.importSource.page || 1)}／${line.importSource.method === "ocr" ? "OCR" : "文字抽出"}／要原文照合</small>` : "";
       return `<tr data-line-id="${h(line.id)}">

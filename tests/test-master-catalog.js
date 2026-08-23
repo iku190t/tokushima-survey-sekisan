@@ -35,17 +35,16 @@ for (const entry of catalog.masters) {
   assert.strictEqual(master.verificationStatus, "standard-reference");
 }
 assert.deepStrictEqual(catalog.masters.map((entry) => entry.fiscalYear).sort(), [2024, 2025, 2026], "全国標準は令和6・7・8年度を配信する");
-assert.ok(catalog.masters.every((entry) => !entry.path.includes("tokushima") && !entry.path.includes("hiroshima")), "県別マスターを通常配信カタログへ混入させない");
+assert.ok(catalog.masters.every((entry) => entry.jurisdictionCode === "mlit"), "県別マスターを通常配信カタログへ混入させない");
 
 const sourceCatalog = JSON.parse(fs.readFileSync(path.join(root, "data", "official-source-catalog.json"), "utf8"));
 assert.strictEqual(sourceCatalog.schemaVersion, 1);
 assert.strictEqual(new Set(sourceCatalog.sources.map((entry) => entry.id)).size, sourceCatalog.sources.length, "公式原資料IDが重複しない");
 for (const year of [2024, 2025, 2026]) {
-  const hiroshima = sourceCatalog.sources.filter((entry) => entry.jurisdictionCode === "34" && entry.fiscalYear === year);
-  assert.deepStrictEqual(new Set(hiroshima.map((entry) => entry.kind)), new Set(["standard", "reference"]), `広島県${year}年度の基準書本体と参考資料を取得済み`);
-  assert.ok(hiroshima.every((entry) => entry.acquisitionStatus === "acquired" && /^https:\/\//.test(entry.url) && /^[0-9a-f]{64}$/.test(entry.sha256)), `広島県${year}年度原資料の取得証跡が完全`);
   assert.ok(sourceCatalog.sources.some((entry) => entry.jurisdictionCode === "mlit" && entry.fiscalYear === year && entry.kind === "role-prices"), `国交省${year}年度技術者単価原本を取得済み`);
 }
+assert.ok(sourceCatalog.sources.every((entry) => entry.jurisdictionCode !== "34"), "特定県だけの公式原資料を全国標準台帳へ混在させない");
+assert.ok(sourceCatalog.sources.every((entry) => !String(entry.url || "").includes("chotatsu.pref.")), "都道府県固有の調達URLを全国標準台帳へ残さない");
 for (const kind of ["base-measurement-standard", "base-geology-standard", "base-design-standard", "base-planning-standard", "base-reference-general", "base-reference-measurement", "base-reference-geology", "base-reference-design", "reference-amendment-general"]) {
   const source = sourceCatalog.sources.find((entry) => entry.jurisdictionCode === "mlit" && entry.kind === kind);
   assert.ok(source && source.acquisitionStatus === "acquired" && source.pages > 0 && /^[0-9a-f]{64}$/.test(source.sha256), `国交省の基準書本体・参考資料 ${kind} を取得・索引済み`);

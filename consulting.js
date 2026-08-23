@@ -108,12 +108,12 @@
       && (!query || `${preset.label} ${preset.standardUnit || ""} ${preset.source || ""}`.toLocaleLowerCase("ja").includes(query))
     );
     $("consultingPreset").innerHTML = visiblePresets.length
-      ? visiblePresets.map((preset) => `<option value="${h(preset.id)}">${h(preset.label)}｜${h(preset.standardUnit || "1業務当り")}｜p.${h(preset.sourcePage || "—")}</option>`).join("")
-      : '<option value="">この業務区分の確認済み歩掛は未収録</option>';
+      ? visiblePresets.map((preset) => `<option value="${h(preset.id)}">${h(preset.label)}｜${h(preset.standardUnit || "1業務当り")}｜原表ページ未対応</option>`).join("")
+      : '<option value="">この業務区分の全国標準参考歩掛は未収録</option>';
     $("addConsultingPresetButton").disabled = visiblePresets.length === 0;
     const audit = (standardWalks.audits || []).find((entry) => Number(entry.fiscalYear) === year);
     $("consultingPresetStatus").textContent = visiblePresets.length
-      ? `令和${year - 2018}年度：${visiblePresets.length}表を表示中（全区分 ${audit?.presetCount || visiblePresets.length}表）。標準単位・出典ページ・適用条件を確認し、原表で算定した補正係数を小数第2位まで入力してください。`
+      ? `令和${year - 2018}年度：全国標準参考 ${visiblePresets.length}表を表示中（全区分 ${audit?.presetCount || visiblePresets.length}表）。現行全編の原表ページは未対応です。公式基準書・案件条件を照合し、補正係数を小数第2位まで入力してください。`
       : `令和${year - 2018}年度：検索条件に一致する標準歩掛がありません。`;
   }
 
@@ -127,7 +127,7 @@
       const source = sourceLine?.verifiedSource;
       const imported = sourceLine?.importSource;
       return `<tr data-consulting-line="${h(line.id)}">
-        <td><strong>${h(line.taskName)}</strong><small>${h(line.serviceName)}${source ? `／確認済み：${h(source)}` : imported ? `／資料取込：${h(imported.fileName || "貼付け原文")} p.${h(imported.page || 1)}（要原文照合）` : "／人工入力"}</small></td>
+        <td><strong>${h(line.taskName)}</strong><small>${h(line.serviceName)}${source ? `／全国標準参考：${h(source)}` : imported ? `／資料取込：${h(imported.fileName || "貼付け原文")} p.${h(imported.page || 1)}（要原文照合）` : "／人工入力"}</small></td>
         <td>${h(role?.name || line.role)}</td>
         <td><input class="consulting-line-days" type="number" min="0" step="0.001" inputmode="decimal" data-decimals="3" value="${h(line.days)}"><span class="input-unit">人日</span><small>小数第3位まで</small></td>
         <td>${money(line.dailyRate)}</td><td><strong>${money(line.amount)}</strong></td>
@@ -198,7 +198,7 @@
       }));
     return [
       { label: yearSource.sourceLabel, url: yearSource.sourceUrl },
-      ...(fullBook ? [{ label: `${fullBook.source}（職種別標準歩掛 ${fullBook.presetCount}表の抽出元）`, url: fullBook.sourceUrl }] : []),
+      ...(fullBook ? [{ label: `${fullBook.source}（全国標準参考歩掛 ${fullBook.presetCount}表・原表ページ未対応）`, url: fullBook.sourceUrl }] : []),
       ...baseSources,
       ...mlitSources,
       { label: "国土交通省 設計業務等標準積算基準書（年度別一覧）", url: "https://www.mlit.go.jp/tec/gyoumu_sekisan.html" }
@@ -272,7 +272,7 @@
       role,
       days: engine.normalizeDays(Number(days) * multiplier),
       verifiedSource: `${preset.source}${preset.sourceUrl ? `／${preset.sourceUrl}` : ""}`,
-      standardWalk: { id: preset.id, fiscalYear: preset.fiscalYear || state().fiscalYear, standardUnit: preset.standardUnit || "標準表1式", multiplier }
+      standardWalk: { id: preset.id, fiscalYear: preset.fiscalYear || state().fiscalYear, standardUnit: preset.standardUnit || "標準表1式", multiplier, verificationStatus: preset.verificationStatus || "reference" }
     }));
     $("consultingPresetMultiplier").value = "";
     updateAndRender();

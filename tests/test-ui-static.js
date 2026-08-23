@@ -21,7 +21,7 @@ assert.ok(html.includes("<title>web積算｜") && html.includes("<h1>web積算</
 const businessTabs = [...html.matchAll(/<button class="view-tab(?: active)?" data-view="[^"]+" data-business-scope="([^"]+)"[^>]*>([^<]+)<\/button>/g)].map((match) => [match[1], match[2]]);
 assert.deepStrictEqual(businessTabs, [["design", "設計業務"], ["survey", "測量業務"], ["planning", "調査・計画業務"], ["geology", "地質業務"]], "積算基準の4業務区分を指定順で表示する");
 assert.ok(html.includes('id="consultingView" class="view active"') && !html.includes('id="estimateView" class="view active"'), "初期画面を設計業務にする");
-for (const source of ["data/prefectures.js", "data/master-catalog.json", "data/official-source-catalog.json", "data/master-r8.js", "data/national-standard-masters.js", "data/verified-masters.js", "data/official-role-prices.js", "data/verified-work-item-expansions.js", "engine.js", "app.js", "analytics.js", "styles.css", "DISCLAIMER.md"]) {
+for (const source of ["data/prefectures.js", "data/master-catalog.json", "data/official-source-catalog.json", "data/master-r8.js", "data/national-standard-masters.js", "data/official-role-prices.js", "data/verified-work-item-expansions.js", "engine.js", "app.js", "analytics.js", "styles.css", "DISCLAIMER.md"]) {
   assert.ok(fs.existsSync(path.join(root, source)), `${source} が存在する`);
 }
 assert.ok(html.includes('id="travelMode"'), "旅費交通費モード選択がある");
@@ -33,10 +33,10 @@ assert.ok(app.includes("line.correctionSelections = {}") && app.includes("line.m
 assert.ok(app.includes("calc-detail"), "項目ごとの計算根拠表示がある");
 for (const id of ["guideSourceYear", "guideSourceLedgerSummary", "guideSourceLedgerBody"]) assert.ok(html.includes(`id="${id}"`), `${id}で年度別公式PDF台帳を表示する`);
 assert.ok(app.includes("renderGuideSourceLedger") && app.includes("surveySourceUsage") && app.includes("surveyMaster.sourceLinks"), "測量マスターが実際に使用・照合するPDFだけを年度別表示する");
-assert.ok(app.includes('String(entry.label || "").includes("公開全編")') && app.includes("item.source.standardPage"), "測量明細から年度別全編PDFの原表ページへリンクする");
+assert.ok(app.includes('String(entry.label || "").includes("第1編 測量業務")') && app.includes("現行全編の項目別ページ未対応"), "測量明細は国交省基準書本体へリンクし、未対応の県版ページを流用しない");
 assert.ok(app.includes("公式PDF・計算根拠一覧") && app.includes("sourceTableHtml(master)"), "測量の積算条件書にもPDF名・用途・頁数・確認状態の一覧表を出す");
 assert.ok(html.includes('id="selectedItemSourceBody"') && html.includes("この測量項目で使用する規定書・PDF"), "測量項目の選択直下に規定書PDF一覧表を表示する");
-assert.ok(app.includes("selectedSurveySourceRows") && app.includes("歩掛・経費率の原表") && app.includes("作業規程上の分類"), "選択した測量項目を歩掛原表・年度積算基準・技術者単価・作業規程へ対応付ける");
+assert.ok(app.includes("selectedSurveySourceRows") && app.includes("基準書本体・歩掛") && app.includes("作業規程上の分類"), "選択した測量項目を国交省基準書本体・年度積算基準・技術者単価・作業規程へ対応付ける");
 assert.ok(html.includes("航空局の空港設計・調査とは別") && html.includes("港湾請負工事積算基準") && html.includes("船舶損料"), "航空測量・深浅測量と空港・港湾船舶の別基準を明示する");
 assert.ok(html.includes('id="validationPanel"'), "提出前チェックがある");
 assert.ok(html.includes('id="jurisdictionSelect"') && html.includes("見積提出先（任意）"), "見積提出先を計算条件と分けて選択できる");

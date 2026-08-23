@@ -240,7 +240,7 @@
             <p id="consultingRoleMeta" class="field-note"></p>
             <div class="verified-preset-row">
               <label class="field"><span>標準歩掛を検索</span><input id="consultingPresetSearch" type="search" placeholder="例：道路詳細、橋梁点検、地盤特性"></label>
-              <label class="field"><span>確認済み標準歩掛</span><select id="consultingPreset"></select></label>
+              <label class="field"><span>全国標準参考歩掛</span><select id="consultingPreset"></select></label>
               <label class="field compact-field"><span>原表で算定した補正係数</span><input id="consultingPresetMultiplier" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="例：1.00"></label>
               <button id="addConsultingPresetButton" class="button" type="button">年度別標準歩掛を追加</button>
               <small id="consultingPresetStatus">選択年度の公式表から、職種別人工を持つ標準歩掛だけを表示します。補正係数は原表の数量式・適用条件で算定し、小数第2位まで入力してください。</small>
@@ -335,7 +335,7 @@
                 <label class="field"><span>内訳名称（必要時のみ修正）</span><input id="pdfManualConsultingTask" type="text"></label>
                 <label class="field pdf-field-drop-target" data-pdf-drop-target="consulting-role"><span class="pdf-drop-title"><b aria-hidden="true">2</b>PDFの職種をドロップ</span><small class="pdf-drop-callout">例：主任技師、技師（A）</small><select id="pdfManualConsultingRole"></select></label>
                 <label class="field pdf-field-drop-target" data-pdf-drop-target="consulting-days"><span class="pdf-drop-title"><b aria-hidden="true">3</b>PDFの人工をドロップ</span><small class="pdf-drop-callout">例：1、2.5人日</small><input id="pdfManualConsultingDays" type="number" min="0" step="0.001" inputmode="decimal" placeholder="未入力"></label>
-                <small class="field-note">詳細項目は基準上の作業を整理するための選択肢です。確認済み標準歩掛がない項目は、原資料の職種・人工を入力してください。</small>
+                <small class="field-note">詳細項目は基準上の作業を整理するための選択肢です。全国標準参考歩掛は公式基準書・案件条件と照合し、該当しない項目は原資料の職種・人工を入力してください。</small>
               </div>
               <div id="pdfManualMetadataFields" class="pdf-manual-fields" hidden>
                 <label class="field"><span>基本情報の項目</span><select id="pdfManualMetadataKey"><option value="projectName">業務名</option><option value="orderingParty">発注者</option><option value="department">担当部署</option><option value="contactName">担当者</option><option value="workLocation">業務場所</option><option value="contractPeriod">履行期間</option><option value="documentNumber">文書・業務番号</option><option value="documentDate">公告・資料日</option></select></label>
@@ -593,18 +593,18 @@
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <script src="data/prefectures.js?v=20260823-1"></script>
-  <script src="data/national-standard-masters.js?v=20260822-1"></script>
+  <script src="data/national-standard-masters.js?v=20260824-1"></script>
   <script src="data/official-role-prices.js?v=20260822-1"></script>
-  <script src="data/official-source-catalog.js?v=20260823-2"></script>
+  <script src="data/official-source-catalog.js?v=20260824-1"></script>
   <script src="data/consulting-master.js?v=20260823-1"></script>
-  <script src="data/consulting-standard-walks.js?v=20260823-1"></script>
+  <script src="data/consulting-standard-walks.js?v=20260824-1"></script>
   <script src="data/verified-work-item-expansions.js?v=20260823-1"></script>
   <script src="engine.js?v=20260823-2"></script>
   <script src="consulting-engine.js?v=20260823-2"></script>
   <script src="document-import-engine.js?v=20260823-2"></script>
   <script src="document-reader.js?v=20260823-1"></script>
-  <script src="app.js?v=20260823-9"></script>
-  <script src="consulting.js?v=20260823-7"></script>
+  <script src="app.js?v=20260824-1"></script>
+  <script src="consulting.js?v=20260824-1"></script>
   <script src="document-import.js?v=20260823-9"></script>
   <script src="analytics.js?v=20260823-1"></script>
 </body>

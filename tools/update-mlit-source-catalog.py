@@ -161,7 +161,7 @@ def main() -> None:
                 "acquisitionStatus": "acquired",
                 "auditStatus": "indexed",
             }
-    data["auditedAt"] = "2026-08-23"
+    data["auditedAt"] = "2026-08-24"
     data["policy"] = "公式公開元、年度、SHA-256、ページ数を確認できた原資料だけを記録する。取得・索引済みは全表の計算実装済みを意味しない。"
     data["sources"] = sorted(existing.values(), key=lambda row: (str(row.get("jurisdictionCode")), int(row.get("fiscalYear", 0)), str(row.get("kind"))))
     CATALOG.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

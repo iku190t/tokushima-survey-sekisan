@@ -22,8 +22,10 @@ const serviceRoles = {
 for (const preset of data.presets) {
   assert.ok(serviceRoles[preset.serviceType], `業務区分が正しい: ${preset.id}`);
   assert.ok([2024, 2025, 2026].includes(preset.fiscalYear), `年度が正しい: ${preset.id}`);
-  assert.ok(preset.label && preset.standardUnit && preset.source && preset.sourcePage > 0, `表示根拠が揃う: ${preset.id}`);
-  assert.strictEqual(preset.verificationStatus, "source-table", `公式原表セル由来である: ${preset.id}`);
+  assert.ok(preset.label && preset.standardUnit && preset.source, `全国標準参考の表示情報が揃う: ${preset.id}`);
+  assert.strictEqual(preset.sourcePage, null, `県版全編のページ番号を流用しない: ${preset.id}`);
+  assert.strictEqual(preset.verificationStatus, "national-reference", `全国標準参考として区別する: ${preset.id}`);
+  assert.strictEqual(preset.sourceUrl, "https://www.mlit.go.jp/tec/gyoumu_sekisan.html", `国交省年度別ページを照合先にする: ${preset.id}`);
   for (const [role, days] of Object.entries(preset.roles)) {
     assert.ok(serviceRoles[preset.serviceType].has(role), `職種が業務区分に合う: ${preset.id}/${role}`);
     assert.ok(Number.isFinite(days) && days > 0, `人工が正数: ${preset.id}/${role}`);
@@ -48,4 +50,4 @@ for (const year of [2024, 2025, 2026]) {
   assert.ok(official.every((source) => source.acquisitionStatus === "acquired" && source.auditStatus === "indexed"), `${year}年度資料を取得・索引済みにする`);
 }
 
-console.log("OK: R6-R8 consulting/planning/geology source-table walks and MLIT source catalog checks passed");
+console.log("OK: R6-R8 nationwide reference walks and MLIT-only source catalog checks passed");

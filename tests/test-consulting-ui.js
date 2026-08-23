@@ -30,8 +30,8 @@ assert.ok(ui.includes('ezsekisan:businessscope') && ui.includes("activeConsultin
 assert.ok(html.includes('data-consulting-scope="design-planning"') && html.includes('data-consulting-scope="geology"'), "タブに対応する積上費用だけを表示する");
 assert.ok(master.includes('id: "design-note-r8"') && master.includes('id: "design-note-r7"') && master.includes('id: "design-note-r6"') && master.includes("designLead: 0.5") && master.includes("designEngineerA: 1.0"), "令和6～8年度の設計留意書歩掛をプリセットする");
 assert.ok(ui.includes("CONSULTING_STANDARD_WALKS") && ui.includes("preset.fiscalYear") && ui.includes("consultingPresetSearch"), "標準歩掛を年度・業務タブ・検索語で絞る");
-assert.ok(ui.includes("consultingPresetMultiplier") && ui.includes("standardUnit") && ui.includes("sourcePage"), "標準単位・適用倍率・出典ページを歩掛追加へ反映する");
-assert.ok(ui.includes("OFFICIAL_SOURCE_CATALOG") && ui.includes('source.jurisdictionCode === "mlit"') && ui.includes("fullBook.presetCount"), "選択年度の国交省8資料と標準歩掛全編を計算根拠に表示する");
+assert.ok(ui.includes("consultingPresetMultiplier") && ui.includes("standardUnit") && ui.includes("原表ページ未対応"), "標準単位・適用倍率を反映し、未対応の原表ページを明示する");
+assert.ok(ui.includes("OFFICIAL_SOURCE_CATALOG") && ui.includes('source.jurisdictionCode === "mlit"') && ui.includes("fullBook.presetCount"), "選択年度の国交省資料と全国標準参考歩掛を計算根拠に表示する");
 assert.ok(ui.includes("人工入力の行があります"), "未確認人工を提出前警告する");
 assert.ok(html.includes("未入力の0円"), "0円を不要と誤認しない注意を表示する");
 assert.ok(engine.includes("alpha / Math.max") && engine.includes("beta / Math.max"), "設計方式をその他原価と一般管理費に分ける");
