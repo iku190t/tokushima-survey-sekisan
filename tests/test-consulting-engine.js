@@ -68,4 +68,31 @@ assert.strictEqual(engine.normalizeCorrectionFactor(1.236), 1.24, "補正係数�
 assert.strictEqual(engine.overheadRate(1000001, master.geologyRules.overhead), 82.5, "地質諸経費の中間式は小数1位");
 assert.strictEqual(engine.electronicDeliverableCost(98050, master.designRules.electronic.detailed), 54000, "詳細設計の電子成果品作成費");
 
+let quantity = engine.calculateStandardQuantity("1km当り", { quantity1: 2.5 });
+assert.strictEqual(quantity.valid, true, "延長数量を受け付ける");
+assert.strictEqual(quantity.multiplier, 2.5, "1km標準歩掛を2.5kmへ比例する");
+assert.strictEqual(engine.standardQuantitySummary(quantity), "2.5 km ÷ 標準 1 km ＝ 2.5倍", "数量計算根拠を表示する");
+
+quantity = engine.calculateStandardQuantity("10箇所当り", { quantity1: 25 });
+assert.strictEqual(quantity.multiplier, 2.5, "10箇所標準歩掛を25箇所へ比例する");
+assert.strictEqual(engine.parseStandardQuantity("10箇所当り").dimensions[0].integer, true, "箇所数は整数入力にする");
+
+quantity = engine.calculateStandardQuantity("1孔当り1回当り", { quantity1: 3, quantity2: 4 });
+assert.strictEqual(quantity.multiplier, 12, "孔数と観測回数の複合数量を乗じる");
+assert.strictEqual(quantity.quantities.length, 2, "複合標準単位を個別入力に分ける");
+
+quantity = engine.calculateStandardQuantity("10,000m2当り", { quantity1: 69000 });
+assert.strictEqual(quantity.multiplier, 6.9, "面積を標準10,000m2単位へ換算する");
+assert.strictEqual(engine.calculateStandardQuantity("1橋当り", { quantity1: "" }).valid, false, "数量の空欄を1として補完しない");
+assert.strictEqual(engine.calculateStandardQuantity("1橋当り", { quantity1: 1.5 }).valid, false, "橋数の小数入力を拒否する");
+
+let coverage = engine.classifyPresetCoverage(master.verifiedPresets[0]);
+assert.strictEqual(coverage.status, "verified-complete", "原表確認済みプリセットを完全確認済みとして区別する");
+assert.strictEqual(coverage.canCalculate, true, "原表確認済みプリセットは自動計算できる");
+coverage = engine.classifyPresetCoverage({ label: "2-1-2 編成人員 人員", verificationStatus: "national-reference" });
+assert.strictEqual(coverage.status, "reference-only", "編成人員表を数量比例の歩掛として扱わない");
+assert.strictEqual(coverage.canCalculate, false, "関連する日当たり作業量がない編成人員表は自動計算しない");
+coverage = engine.classifyPresetCoverage({ label: "2-3-1 道路詳細設計（A）", verificationStatus: "national-reference" });
+assert.strictEqual(coverage.status, "proportional-reference", "補正未実装の全国標準候補は一次試算として区別する");
+
 console.log("OK: consulting/design/geology calculation checks passed");

@@ -139,8 +139,23 @@ input:focus, select:focus, textarea:focus { border-color: var(--green); box-shad
 .static-field strong { min-height: 40px; display: flex; align-items: center; padding: 7px 10px; color: #29453b; background: #f2f7f4; border: 1px solid var(--line); border-radius: 8px; font-size: 12px; }
 .consulting-picker-grid { display: grid; grid-template-columns: minmax(150px,.75fr) minmax(145px,.7fr) minmax(210px,1.15fr) minmax(145px,.7fr) 92px 76px; gap: 12px; align-items: end; }
 .scope-note { margin: -4px 0 14px; padding: 10px 12px; border-left: 3px solid var(--green); border-radius: 0 8px 8px 0; background: #edf6f1; color: var(--muted); line-height: 1.55; }
-.verified-preset-row { display: grid; grid-template-columns: minmax(180px,.7fr) minmax(320px,1.45fr) 150px auto; gap: 12px; align-items: end; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
+.verified-preset-row { display: grid; grid-template-columns: minmax(190px,.7fr) minmax(170px,.55fr) minmax(360px,1.5fr); gap: 12px; align-items: end; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
 .verified-preset-row small { grid-column: 1 / -1; align-self: center; color: var(--muted); line-height: 1.5; }
+.verified-preset-row .span-2 { grid-column: span 1; }
+.consulting-rule-basis { grid-column: 1 / -1; display: grid; gap: 6px; padding: 12px 14px; color: #173d2f; background: #f1f7f4; border: 1px solid #b8d2c6; border-radius: 10px; line-height: 1.55; }
+.consulting-rule-basis strong { font-size: 13px; }
+.consulting-rule-basis span, .consulting-rule-basis small { color: var(--muted); }
+.consulting-rule-basis.verified { background: #edf8f1; border-color: #76ad8e; }
+.consulting-rule-basis.reference { background: #fff8e6; border-color: #e2bd58; }
+.consulting-rule-basis.blocked { background: #fff0ed; border-color: #d8897c; }
+.consulting-quantity-fields { grid-column: 1 / span 2; display: grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap: 10px; }
+.consulting-quantity-fields .field { padding: 10px; background: #fff; border: 2px dashed #82ad9a; border-radius: 10px; }
+.consulting-quantity-fields .quantity-standard { color: var(--muted); font-size: 10px; }
+.consulting-condition-check { align-self: stretch; padding: 11px 12px; background: #fff8e6; border: 1px solid #e6c777; border-radius: 10px; }
+.consulting-manual-entry { margin-top: 16px; border-top: 1px solid var(--line); padding-top: 14px; }
+.consulting-manual-entry summary { color: var(--green-dark); font-weight: 700; cursor: pointer; }
+.consulting-manual-entry > p { margin: 8px 0 0; color: var(--muted); font-size: 11px; }
+.consulting-manual-entry .consulting-picker-grid { margin-top: 12px; }
 .add-button { height: 40px; }
 .field-note { min-height: 19px; margin: 10px 0 0; color: var(--muted); font-size: 12px; }
 

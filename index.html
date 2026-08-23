@@ -7,7 +7,7 @@
   <meta name="description" content="設計、測量、調査・計画、地質を年度別技術者単価と根拠表示付きで計算するWeb業務積算ソフト">
   <meta name="author" content="株式会社アイズ測量">
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="styles.css?v=20260823-8">
+  <link rel="stylesheet" href="styles.css?v=20260824-1">
 </head>
 <body data-business-scope="design">
   <header class="app-header">
@@ -228,30 +228,37 @@
       <div class="workspace-grid consulting-workspace">
         <div class="workspace-main">
           <section class="card add-card no-print">
-            <div class="card-title-row"><div><p class="section-kicker">SERVICE ITEM</p><h2 id="consultingAddHeading">設計業務の詳細項目・人工を追加</h2></div><span class="badge">数量・補正は総則の端数規定を適用</span></div>
-            <div class="consulting-picker-grid">
-              <label class="field"><span>業務区分</span><select id="consultingServiceType"></select></label>
-              <label class="field"><span>詳細項目（作業工程）</span><select id="consultingTaskTemplate"></select></label>
-              <label class="field consulting-task-name"><span>内訳名称（必要時のみ修正）</span><input id="consultingTaskName" type="text"></label>
-              <label class="field"><span>職種</span><select id="consultingRole"></select></label>
-              <label class="field small-field"><span>人工</span><input id="consultingDays" type="number" min="0" step="0.001" inputmode="decimal" placeholder="例：2.500"></label>
-              <button id="addConsultingLineButton" class="button primary add-button" type="button">追加</button>
-            </div>
-            <p id="consultingRoleMeta" class="field-note"></p>
+            <div class="card-title-row"><div><p class="section-kicker">RULE-BASED SERVICE ITEM</p><h2 id="consultingAddHeading">設計業務の条件・数量から積算</h2></div><span class="badge">数量→標準歩掛→職種別人工</span></div>
             <div class="verified-preset-row">
               <label class="field"><span>標準歩掛を検索</span><input id="consultingPresetSearch" type="search" placeholder="例：道路詳細、橋梁点検、地盤特性"></label>
-              <label class="field"><span>全国標準参考歩掛</span><select id="consultingPreset"></select></label>
-              <label class="field compact-field"><span>原表で算定した補正係数</span><input id="consultingPresetMultiplier" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="例：1.00"></label>
-              <button id="addConsultingPresetButton" class="button" type="button">年度別標準歩掛を追加</button>
-              <small id="consultingPresetStatus">選択年度の公式表から、職種別人工を持つ標準歩掛だけを表示します。補正係数は原表の数量式・適用条件で算定し、小数第2位まで入力してください。</small>
+              <label class="field compact-field"><span>基準書の項目分類</span><select id="consultingRuleGroup"></select></label>
+              <label class="field span-2"><span>業務種類・適用条件</span><select id="consultingPreset"></select></label>
+              <div id="consultingPresetBasis" class="consulting-rule-basis"></div>
+              <div id="consultingQuantityFields" class="consulting-quantity-fields"></div>
+              <label class="check consulting-condition-check"><input id="consultingConditionsConfirmed" type="checkbox"><span id="consultingConditionsLabel">選択した業務種類・適用範囲が特記仕様書と一致することを確認しました</span></label>
+              <button id="addConsultingPresetButton" class="button primary" type="button">条件・数量から積算へ追加</button>
+              <small id="consultingPresetStatus">業務種類を選ぶと、基準単位に応じた数量欄を表示します。人工を直接入力する必要はありません。</small>
             </div>
+            <details class="consulting-manual-entry">
+              <summary>基準書にない作業・見積項目を手動調整する</summary>
+              <p>標準歩掛を適用できない場合だけ使用します。通常の積算では上の条件・数量入力を使用してください。</p>
+              <div class="consulting-picker-grid">
+                <label class="field"><span>業務区分</span><select id="consultingServiceType"></select></label>
+                <label class="field"><span>詳細項目（作業工程）</span><select id="consultingTaskTemplate"></select></label>
+                <label class="field consulting-task-name"><span>内訳名称</span><input id="consultingTaskName" type="text"></label>
+                <label class="field"><span>職種</span><select id="consultingRole"></select></label>
+                <label class="field small-field"><span>人工</span><input id="consultingDays" type="number" min="0" step="0.001" inputmode="decimal" placeholder="未入力"></label>
+                <button id="addConsultingLineButton" class="button add-button" type="button">手動調整を追加</button>
+              </div>
+              <p id="consultingRoleMeta" class="field-note"></p>
+            </details>
           </section>
 
           <section class="card table-card">
             <div class="card-title-row"><div><p class="section-kicker">STAFFING DETAIL</p><h2 id="consultingDetailHeading">設計業務の職種別内訳</h2></div></div>
             <div class="table-scroll">
               <table class="estimate-table consulting-table">
-                <thead><tr><th>業務区分・作業</th><th>職種</th><th>人工</th><th>基準日額</th><th>直接人件費</th><th class="no-print"><span class="sr-only">操作</span></th></tr></thead>
+                <thead><tr><th>業務区分・作業</th><th>積算条件</th><th>職種</th><th>人工</th><th>基準日額</th><th>直接人件費</th><th class="no-print"><span class="sr-only">操作</span></th></tr></thead>
                 <tbody id="consultingLineBody"></tbody>
               </table>
               <div id="consultingEmptyState" class="empty-state"><span class="empty-icon">＋</span><p id="consultingEmptyText">設計業務の作業名、職種、人工を選んで追加します。</p></div>
@@ -600,11 +607,11 @@
   <script src="data/consulting-standard-walks.js?v=20260824-1"></script>
   <script src="data/verified-work-item-expansions.js?v=20260823-1"></script>
   <script src="engine.js?v=20260823-2"></script>
-  <script src="consulting-engine.js?v=20260823-2"></script>
+  <script src="consulting-engine.js?v=20260824-1"></script>
   <script src="document-import-engine.js?v=20260823-2"></script>
   <script src="document-reader.js?v=20260823-1"></script>
   <script src="app.js?v=20260824-1"></script>
-  <script src="consulting.js?v=20260824-1"></script>
+  <script src="consulting.js?v=20260824-2"></script>
   <script src="document-import.js?v=20260823-9"></script>
   <script src="analytics.js?v=20260823-1"></script>
 </body>

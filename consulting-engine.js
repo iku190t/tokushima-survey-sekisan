@@ -18,6 +18,99 @@
   const normalizeDays = (value) => roundHalfUp(Math.max(0, number(value)), 3);
   const normalizeCorrectionFactor = (value) => roundHalfUp(Math.max(0, number(value)), 2);
 
+  const quantityUnitLabels = {
+    km: "延長（km）", m: "延長（m）", m2: "面積（m²）", 箇所: "箇所数", 橋: "橋数",
+    基: "基数", トンネル: "トンネル数", 日: "日数", ケース: "ケース数", 断面: "断面数",
+    坑口: "坑口数", タイプ: "タイプ数", 業務: "業務数", 工法: "工法数", 機関: "機関数",
+    孔: "孔数", 回: "回数", 式: "数量"
+  };
+  const integerQuantityUnits = new Set(["箇所", "橋", "基", "トンネル", "日", "ケース", "断面", "坑口", "タイプ", "業務", "工法", "機関", "孔", "回", "式"]);
+  const referenceOnlyPatterns = [
+    /編成人員|編成人肩/,
+    /市場単価.*規格|規格区分/,
+    /日当り作業量/,
+    /架設.*撤去.*規格/,
+    /機械器具損料.*規格/
+  ];
+
+  function classifyPresetCoverage(preset) {
+    if (!preset) return { status: "unavailable", canCalculate: false, label: "利用不可", note: "業務種類を選択してください。" };
+    if (preset.verificationStatus !== "national-reference") {
+      return {
+        status: "verified-complete",
+        canCalculate: true,
+        label: "原表確認済み",
+        note: "表示した標準数量と人工を原資料の該当表で確認済みです。案件固有の特記条件は別途確認してください。"
+      };
+    }
+    if (referenceOnlyPatterns.some((pattern) => pattern.test(String(preset.label || "")))) {
+      return {
+        status: "reference-only",
+        canCalculate: false,
+        label: "参照専用・自動計算不可",
+        note: "作業班の編成、規格区分または日当たり作業量を示す表です。単独で数量に掛けて人工へ変換できないため、関連表との計算規則を実装するまで自動追加しません。"
+      };
+    }
+    return {
+      status: "proportional-reference",
+      canCalculate: true,
+      label: "基準数量による一次試算",
+      note: "標準数量に対する比例計算だけを行います。補正式、適用範囲、追加・控除歩掛、複数条件の組合せは未実装のため、公式基準書と特記仕様書で照合が必要です。"
+    };
+  }
+
+  function parseStandardQuantity(standardUnit) {
+    const source = String(standardUnit || "標準表1式")
+      .replace(/㎡/g, "m2").replace(/m²/g, "m2").replace(/ｍ/g, "m").replace(/ｋｍ/gi, "km")
+      .replace(/，/g, ",").replace(/あたり/g, "当り").replace(/\s+/g, "");
+    const pattern = /(\d[\d,]*(?:\.\d+)?)\s*(km|m2|m|箇所|橋|基|トンネル|日|ケース|断面|坑口|タイプ|業務|工法|機関|孔|回|式)(?=当り)/g;
+    const dimensions = [];
+    let match;
+    while ((match = pattern.exec(source))) {
+      const baseQuantity = Number(match[1].replace(/,/g, ""));
+      const unit = match[2];
+      if (!(baseQuantity > 0)) continue;
+      const prefixStart = dimensions.length ? dimensions[dimensions.length - 1]._end : 0;
+      const prefix = source.slice(prefixStart, match.index).replace(/^当り/, "").replace(/^単位[:：]?/, "");
+      dimensions.push({
+        key: `quantity${dimensions.length + 1}`,
+        label: prefix ? `${prefix}${quantityUnitLabels[unit] || `数量（${unit}）`}` : quantityUnitLabels[unit] || `数量（${unit}）`,
+        unit,
+        baseQuantity,
+        integer: integerQuantityUnits.has(unit),
+        decimals: integerQuantityUnits.has(unit) ? 0 : 3,
+        _end: pattern.lastIndex
+      });
+    }
+    if (!dimensions.length) dimensions.push({ key: "quantity1", label: "適用数", unit: "式", baseQuantity: 1, integer: true, decimals: 0, _end: 0 });
+    return { source, dimensions: dimensions.map(({ _end, ...dimension }) => dimension) };
+  }
+
+  function calculateStandardQuantity(standardUnit, values) {
+    const specification = parseStandardQuantity(standardUnit);
+    const normalized = [];
+    let multiplier = 1;
+    for (const dimension of specification.dimensions) {
+      const raw = values?.[dimension.key];
+      if (raw === "" || raw === null || raw === undefined) return { valid: false, reason: `${dimension.label}を入力してください`, specification, quantities: normalized, multiplier: 0 };
+      let quantity = number(raw, NaN);
+      if (!Number.isFinite(quantity) || quantity <= 0) return { valid: false, reason: `${dimension.label}を0より大きい値で入力してください`, specification, quantities: normalized, multiplier: 0 };
+      if (dimension.integer && !Number.isInteger(quantity)) return { valid: false, reason: `${dimension.label}は整数で入力してください`, specification, quantities: normalized, multiplier: 0 };
+      quantity = dimension.integer ? Math.floor(quantity) : roundHalfUp(quantity, dimension.decimals);
+      if (!(quantity > 0)) return { valid: false, reason: `${dimension.label}を0より大きい値で入力してください`, specification, quantities: normalized, multiplier: 0 };
+      normalized.push({ ...dimension, quantity });
+      multiplier *= quantity / dimension.baseQuantity;
+    }
+    return { valid: true, reason: "", specification, quantities: normalized, multiplier };
+  }
+
+  function standardQuantitySummary(calculation) {
+    if (!calculation?.valid) return "";
+    const quantityText = calculation.quantities.map((entry) => `${entry.quantity.toLocaleString("ja-JP")} ${entry.unit}`).join(" × ");
+    const standardText = calculation.quantities.map((entry) => `${entry.baseQuantity.toLocaleString("ja-JP")} ${entry.unit}`).join(" × ");
+    return `${quantityText} ÷ 標準 ${standardText} ＝ ${roundHalfUp(calculation.multiplier, 6).toLocaleString("ja-JP")}倍`;
+  }
+
   function overheadRate(base, rule) {
     const target = floorYen(base);
     if (!target) return 0;
@@ -116,5 +209,5 @@
     };
   }
 
-  return { floorYen, roundHalfUp, normalizeDays, normalizeCorrectionFactor, overheadRate, electronicDeliverableCost, calculateRoleLine, calculateEstimate };
+  return { floorYen, roundHalfUp, normalizeDays, normalizeCorrectionFactor, classifyPresetCoverage, parseStandardQuantity, calculateStandardQuantity, standardQuantitySummary, overheadRate, electronicDeliverableCost, calculateRoleLine, calculateEstimate };
 });

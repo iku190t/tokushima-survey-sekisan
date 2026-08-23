@@ -106,11 +106,12 @@ assert.ok(!app.includes("openSupportDialog") && !app.includes('$("supportDialog"
 assert.ok(html.includes("公式の積算ソフト、発注機関の認定製品または公式帳票ではありません"), "免責ダイアログで非公式性を説明する");
 assert.ok(app.includes("参考試算・公式資料要照合"), "印刷帳票にも照合注意を表示する");
 assert.ok(html.includes('id="consultingDays"') && !html.includes('id="consultingDays" type="number" min="0" step="0.001" value="1"'), "人工入力を1で初期化しない");
-assert.ok(html.includes('id="consultingPresetMultiplier"') && !html.includes('id="consultingPresetMultiplier" type="number" min="0.001" step="0.001" value="1"'), "補正係数を1で初期化しない");
+assert.ok(!html.includes('id="consultingPresetMultiplier"') && html.includes('id="consultingQuantityFields"'), "手入力補正係数を廃止して標準数量欄を表示する");
 assert.ok(!html.includes('id="pdfManualSurveyQuantity" type="number" aria-label="資料の数量" value="1"'), "PDF取込数量を1で初期化しない");
 assert.ok(documentImport.includes('$("pdfManualSurveyQuantity").value = "";') && documentImport.includes('$("pdfManualConsultingDays").value = "";'), "PDF取込の数量・人工を空欄へ戻す");
 assert.ok(documentImport.includes('return values.length ? values[values.length - 1][1] : "";'), "PDFに数値がなければ1を補わない");
-assert.ok(consulting.includes("normalizeCorrectionFactor") && consulting.includes("補正係数を入力してください"), "標準歩掛の補正係数を空欄のまま追加しない");
+assert.ok(consulting.includes("calculateStandardQuantity") && consulting.includes("業務種類・適用範囲が特記仕様書と一致"), "条件確認と標準数量なしに標準歩掛を追加しない");
+assert.ok(consulting.includes("一次試算・補正等未反映") && consulting.includes("参照専用（自動追加不可）"), "測量以外の未実装条件を完成積算と誤表示しない");
 assert.ok(!html.includes('id="analyticsConsent"') && !html.includes('id="analyticsAcceptButton"') && !html.includes('id="analyticsDeclineButton"'), "アクセス解析の同意ポップアップを表示しない");
 assert.ok(!html.includes('id="analyticsSettingsButton"') && !analytics.includes("readConsent") && !analytics.includes("writeConsent"), "アクセス解析の同意保存と設定変更UIを残さない");
 assert.ok(!html.includes("サイト改善のため") && !html.includes("利用状況の把握と改善のため"), "アクセス解析の目的説明を画面へ表示しない");

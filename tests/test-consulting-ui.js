@@ -13,7 +13,7 @@ const ids = new Set([...html.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1
 const referencedIds = new Set([...ui.matchAll(/\$\("([^"]+)"\)/g)].map((match) => match[1]));
 assert.deepStrictEqual([...referencedIds].filter((id) => !ids.has(id)), [], "consulting.jsから参照するHTML要素が揃う");
 
-for (const id of ["consultingView", "consultingFiscalYear", "consultingServiceType", "consultingTaskTemplate", "consultingTaskName", "consultingRole", "consultingDays", "consultingPresetSearch", "consultingPreset", "consultingPresetMultiplier", "consultingPresetStatus", "consultingLineBody", "consultingSummaryList", "consultingPrintButton"]) {
+for (const id of ["consultingView", "consultingFiscalYear", "consultingServiceType", "consultingTaskTemplate", "consultingTaskName", "consultingRole", "consultingDays", "consultingPresetSearch", "consultingRuleGroup", "consultingPreset", "consultingPresetBasis", "consultingQuantityFields", "consultingConditionsConfirmed", "consultingConditionsLabel", "consultingPresetStatus", "consultingLineBody", "consultingSummaryList", "consultingPrintButton"]) {
   assert.ok(html.includes(`id="${id}"`), `${id}を表示する`);
 }
 for (const file of ["data/consulting-master.js", "consulting-engine.js", "consulting.js"]) {
@@ -30,9 +30,15 @@ assert.ok(ui.includes('ezsekisan:businessscope') && ui.includes("activeConsultin
 assert.ok(html.includes('data-consulting-scope="design-planning"') && html.includes('data-consulting-scope="geology"'), "タブに対応する積上費用だけを表示する");
 assert.ok(master.includes('id: "design-note-r8"') && master.includes('id: "design-note-r7"') && master.includes('id: "design-note-r6"') && master.includes("designLead: 0.5") && master.includes("designEngineerA: 1.0"), "令和6～8年度の設計留意書歩掛をプリセットする");
 assert.ok(ui.includes("CONSULTING_STANDARD_WALKS") && ui.includes("preset.fiscalYear") && ui.includes("consultingPresetSearch"), "標準歩掛を年度・業務タブ・検索語で絞る");
-assert.ok(ui.includes("consultingPresetMultiplier") && ui.includes("standardUnit") && ui.includes("原表ページ未対応"), "標準単位・適用倍率を反映し、未対応の原表ページを明示する");
+assert.ok(ui.includes("parseStandardQuantity") && ui.includes("calculateStandardQuantity") && ui.includes("quantitySummary"), "標準単位から数量比と職種別人工を自動算出する");
+assert.ok(ui.includes("consultingConditionsConfirmed") && ui.includes("特記仕様書と一致"), "業務種類・適用条件の確認なしに追加しない");
+assert.ok(engine.includes("classifyPresetCoverage") && engine.includes('status: "reference-only"') && ui.includes("一次試算・補正等未反映"), "編成人員等の参照表と補正未実装の一次試算を区別する");
+assert.ok(ui.includes("参照専用（自動追加不可）") && ui.includes("coverage.canCalculate"), "関連計算規則のない参照表を自動追加しない");
+assert.ok(!html.includes('id="consultingPresetMultiplier"'), "利用者へ補正係数の手計算を要求しない");
+assert.ok(html.includes("基準書にない作業・見積項目を手動調整する"), "人工直接入力を基準外の手動調整へ分離する");
 assert.ok(ui.includes("OFFICIAL_SOURCE_CATALOG") && ui.includes('source.jurisdictionCode === "mlit"') && ui.includes("fullBook.presetCount"), "選択年度の国交省資料と全国標準参考歩掛を計算根拠に表示する");
 assert.ok(ui.includes("人工入力の行があります"), "未確認人工を提出前警告する");
+assert.ok(ui.includes("補正式、適用範囲、追加・控除歩掛"), "一次試算を正確な完成積算と表示しない");
 assert.ok(html.includes("未入力の0円"), "0円を不要と誤認しない注意を表示する");
 assert.ok(engine.includes("alpha / Math.max") && engine.includes("beta / Math.max"), "設計方式をその他原価と一般管理費に分ける");
 assert.ok(engine.includes("geologyTarget * geologyOverheadRate"), "地質一般方式を独立計算する");
