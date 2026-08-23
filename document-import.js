@@ -16,9 +16,15 @@
   const clickLineTargets = new Map();
   const clickLines = new Map();
   const ignoredPdfLines = new Set();
+  const manualSourceLineIds = new Set();
   let currentManualLineId = "";
+  let manualItemLineId = "";
+  let manualQuantityLineId = "";
   let manualCandidateSequence = 0;
   let running = false;
+  const PDF_LINE_DRAG_TYPE = "application/x-ezsekisan-pdf-line";
+  let pointerPdfDrag = null;
+  let suppressPdfClickLineId = "";
 
   const metadataLabels = {
     projectName: "業務名",
@@ -81,7 +87,24 @@
 
   function closeManualMapper() {
     currentManualLineId = "";
+    manualItemLineId = "";
+    manualQuantityLineId = "";
+    manualSourceLineIds.clear();
+    $("pdfDragItemValue").textContent = "ここへドロップ";
+    $("pdfDragQuantityValue").textContent = "ここへドロップ";
     $("pdfManualMapper").hidden = true;
+  }
+
+  function updateManualSourceSummary() {
+    const itemLine = clickLines.get(manualItemLineId);
+    const quantityLine = clickLines.get(manualQuantityLineId);
+    const fallback = clickLines.get(currentManualLineId);
+    const parts = [];
+    if (itemLine) parts.push(`項目：${itemLine.text}`);
+    if (quantityLine) parts.push(`数量：${quantityLine.text}`);
+    $("pdfManualSourceText").textContent = parts.length ? parts.join(" ／ ") : fallback?.text || "—";
+    $("pdfDragItemValue").textContent = itemLine?.text || "ここへドロップ";
+    $("pdfDragQuantityValue").textContent = quantityLine?.text || "ここへドロップ";
   }
 
   function updateManualSurveyRule() {
@@ -111,24 +134,97 @@
     $("pdfManualConsultingRole").innerHTML = roleOptions(serviceType, $("pdfManualConsultingRole").value);
   }
 
-  function openManualMapper(lineId) {
+  function openManualMapper(lineId, options = {}) {
     const line = clickLines.get(lineId);
     if (!line) return;
-    currentManualLineId = lineId;
-    $("pdfManualSourceText").textContent = line.text;
-    $("pdfManualSurveyCategory").innerHTML = surveyCategoryOptions();
-    $("pdfManualSurveyCategory").value = "";
-    populateManualSurveyItems();
-    $("pdfManualSurveyQuantity").value = quantityFromLine(line.contextText || line.text);
-    $("pdfManualConsultingService").innerHTML = serviceOptions("design");
-    $("pdfManualConsultingTask").value = line.text;
-    $("pdfManualConsultingDays").value = quantityFromLine(line.text);
-    $("pdfManualMetadataValue").value = line.text;
-    updateManualSurveyRule();
-    updateManualConsultingRoles();
-    updateManualKind();
+    const preserve = options.preserve === true && !$("pdfManualMapper").hidden;
+    if (!preserve) {
+      currentManualLineId = lineId;
+      manualItemLineId = "";
+      manualQuantityLineId = "";
+      manualSourceLineIds.clear();
+      manualSourceLineIds.add(lineId);
+      $("pdfManualSurveyCategory").innerHTML = surveyCategoryOptions();
+      $("pdfManualSurveyCategory").value = "";
+      populateManualSurveyItems();
+      $("pdfManualSurveyQuantity").value = quantityFromLine(line.contextText || line.text);
+      $("pdfManualConsultingService").innerHTML = serviceOptions("design");
+      $("pdfManualConsultingTask").value = line.text;
+      $("pdfManualConsultingDays").value = quantityFromLine(line.text);
+      $("pdfManualMetadataValue").value = line.text;
+      updateManualSurveyRule();
+      updateManualConsultingRoles();
+      updateManualKind();
+    } else {
+      manualSourceLineIds.add(lineId);
+    }
     $("pdfManualMapper").hidden = false;
-    $("pdfManualMapper").scrollIntoView({ behavior: "smooth", block: "nearest" });
+    updateManualSourceSummary();
+    if (options.scroll !== false) $("pdfManualMapper").scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  function matchSurveyDrop(text) {
+    const key = analyzer.compact(text);
+    if (!key) return { category: "", item: null, matches: [] };
+    const items = activeMaster().workItems;
+    const categories = [...new Set(items.map((item) => item.category).filter(Boolean))];
+    const category = categories.find((value) => {
+      const categoryKey = analyzer.compact(value);
+      return key === categoryKey || (categoryKey.length >= 3 && key.includes(categoryKey));
+    }) || "";
+    const matches = items.filter((item) => {
+      const nameKey = analyzer.compact(item.name);
+      return key === nameKey || (key.length >= 3 && nameKey.includes(key)) || (nameKey.length >= 5 && key.includes(nameKey));
+    });
+    const exact = matches.find((item) => analyzer.compact(item.name) === key);
+    return { category: exact?.category || (matches.length && matches.every((item) => item.category === matches[0].category) ? matches[0].category : category), item: exact || (matches.length === 1 ? matches[0] : null), matches };
+  }
+
+  function applyDraggedPdfLine(lineId, targetType) {
+    const line = clickLines.get(lineId);
+    if (!line) return;
+    const preserve = !$("pdfManualMapper").hidden;
+    openManualMapper(lineId, { preserve, scroll: false });
+    $("pdfManualKind").value = "survey";
+    updateManualKind();
+    manualSourceLineIds.add(lineId);
+    if (targetType === "quantity") {
+      manualQuantityLineId = lineId;
+      $("pdfManualSurveyQuantity").value = quantityFromLine(line.text);
+      const item = activeMaster().workItems.find((entry) => entry.code === $("pdfManualSurveyCode").value);
+      if (item) $("pdfManualSurveyQuantity").value = window.SekisanEngine.normalizeQuantity($("pdfManualSurveyQuantity").value, item, activeMaster());
+      app.notify(`数量「${line.text}」を右側へ入れました`);
+    } else {
+      currentManualLineId = lineId;
+      manualItemLineId = lineId;
+      const matched = matchSurveyDrop(line.text);
+      $("pdfManualSurveyCategory").value = matched.category || "";
+      populateManualSurveyItems();
+      if (matched.item) {
+        $("pdfManualSurveyCode").value = matched.item.code;
+        updateManualSurveyRule();
+        app.notify(`項目「${matched.item.name}」を選びました`);
+      } else if (matched.matches.length > 1) {
+        app.notify(`候補が${matched.matches.length}件あります。右側で詳細項目を選んでください`);
+      } else {
+        app.notify("一致する詳細項目を確定できません。右側で分類と詳細項目を選んでください");
+      }
+    }
+    updateManualSourceSummary();
+  }
+
+  function finishPointerPdfDrag(event) {
+    if (!pointerPdfDrag) return;
+    const drag = pointerPdfDrag;
+    pointerPdfDrag = null;
+    const button = document.querySelector(`[data-pdf-line-id="${drag.lineId}"]`);
+    if (button) button.dataset.dragging = "false";
+    if (!drag.moved) return;
+    const target = document.elementFromPoint(event.clientX, event.clientY)?.closest?.("[data-pdf-drop-target]");
+    if (!target) return;
+    suppressPdfClickLineId = drag.lineId;
+    event.preventDefault();
+    applyDraggedPdfLine(drag.lineId, target.dataset.pdfDropTarget);
   }
 
   function metadataHtml(field) {
@@ -228,7 +324,7 @@
         if (targets.length) mappedLines += 1;
         const confidence = !targets.length ? "unmapped" : targets.some((target) => target.item.confidence === "low") ? "low" : targets.some((target) => target.item.confidence === "medium") ? "medium" : "high";
         const labels = targets.length ? targets.map(clickTargetLabel).join("／") : `${line.text}：反映先を指定`;
-        return `<button class="pdf-line-hotspot" data-pdf-line-id="${h(lineId)}" data-confidence="${h(confidence)}" data-mapped="${targets.length ? "true" : "false"}" data-selected="false" data-applied="false" data-ignored="false" type="button" style="left:${(line.left * 100).toFixed(3)}%;top:${(line.top * 100).toFixed(3)}%;width:${(line.width * 100).toFixed(3)}%;height:${(line.height * 100).toFixed(3)}%" aria-label="${h(labels)}" title="${h(labels)}"></button>`;
+        return `<button class="pdf-line-hotspot" draggable="true" data-pdf-line-id="${h(lineId)}" data-confidence="${h(confidence)}" data-mapped="${targets.length ? "true" : "false"}" data-selected="false" data-applied="false" data-ignored="false" data-dragging="false" type="button" style="left:${(line.left * 100).toFixed(3)}%;top:${(line.top * 100).toFixed(3)}%;width:${(line.width * 100).toFixed(3)}%;height:${(line.height * 100).toFixed(3)}%" aria-label="${h(labels)}" title="${h(labels)}（クリックまたは右側へドラッグ）"></button>`;
       }).join("");
       const allLines = (preview.lines || []).length;
       return `<article class="pdf-click-page"><header><span>${h(page.pageNumber)}ページ／${h(methodLabel(page.method))}</span><span>選択可能 ${allLines}文字ブロック／自動判定 ${mappedLines}</span></header><div class="pdf-click-stage"><img src="${h(preview.imageDataUrl)}" alt="${h(page.pageNumber)}ページ"><div class="pdf-click-overlay">${buttons}</div></div></article>`;
@@ -241,7 +337,8 @@
   }
 
   function addManualCandidate() {
-    const line = clickLines.get(currentManualLineId);
+    const primaryLineId = manualItemLineId || currentManualLineId || manualQuantityLineId;
+    const line = clickLines.get(primaryLineId);
     if (!line || !currentAnalysis) return;
     const source = { page: line.page, method: line.method, confidence: "medium", sourceText: line.text, selected: true, applied: false, manual: true };
     let target;
@@ -270,10 +367,13 @@
       currentAnalysis.metadata.fields.push(field);
       target = { type: "metadata", item: field };
     }
-    const targets = clickLineTargets.get(currentManualLineId) || [];
-    targets.push(target);
-    clickLineTargets.set(currentManualLineId, targets);
-    ignoredPdfLines.delete(currentManualLineId);
+    const sourceLineIds = manualSourceLineIds.size ? [...manualSourceLineIds] : [primaryLineId];
+    sourceLineIds.forEach((lineId) => {
+      const targets = clickLineTargets.get(lineId) || [];
+      if (!targets.includes(target)) targets.push(target);
+      clickLineTargets.set(lineId, targets);
+      ignoredPdfLines.delete(lineId);
+    });
     closeManualMapper();
     updatePdfClickSelection();
   }
@@ -452,9 +552,59 @@
     ["dragenter", "dragover"].forEach((name) => zone.addEventListener(name, (event) => { event.preventDefault(); if (!running) zone.classList.add("drag-over"); }));
     ["dragleave", "drop"].forEach((name) => zone.addEventListener(name, (event) => { event.preventDefault(); zone.classList.remove("drag-over"); }));
     zone.addEventListener("drop", (event) => { if (!running && event.dataTransfer?.files?.[0]) analyzeFile(event.dataTransfer.files[0]); });
+    $("pdfClickPages").addEventListener("dragstart", (event) => {
+      const button = event.target.closest(".pdf-line-hotspot");
+      if (!button || button.dataset.applied === "true") { event.preventDefault(); return; }
+      const line = clickLines.get(button.dataset.pdfLineId);
+      if (!line || !event.dataTransfer) { event.preventDefault(); return; }
+      event.dataTransfer.effectAllowed = "copy";
+      event.dataTransfer.setData(PDF_LINE_DRAG_TYPE, button.dataset.pdfLineId);
+      event.dataTransfer.setData("text/plain", line.text);
+      button.dataset.dragging = "true";
+    });
+    $("pdfClickPages").addEventListener("dragend", (event) => {
+      const button = event.target.closest(".pdf-line-hotspot");
+      if (button) button.dataset.dragging = "false";
+      document.querySelectorAll(".pdf-manual-drop-target.drag-over, .pdf-field-drop-target.drag-over").forEach((target) => target.classList.remove("drag-over"));
+    });
+    $("pdfClickPages").addEventListener("pointerdown", (event) => {
+      const button = event.target.closest(".pdf-line-hotspot");
+      if (!button || button.dataset.applied === "true") return;
+      pointerPdfDrag = { lineId: button.dataset.pdfLineId, startX: event.clientX, startY: event.clientY, moved: false };
+    });
+    document.addEventListener("pointermove", (event) => {
+      if (!pointerPdfDrag) return;
+      const distance = Math.hypot(event.clientX - pointerPdfDrag.startX, event.clientY - pointerPdfDrag.startY);
+      if (distance < 7) return;
+      pointerPdfDrag.moved = true;
+      const button = document.querySelector(`[data-pdf-line-id="${pointerPdfDrag.lineId}"]`);
+      if (button) button.dataset.dragging = "true";
+      document.querySelectorAll(".pdf-manual-drop-target.drag-over, .pdf-field-drop-target.drag-over").forEach((target) => target.classList.remove("drag-over"));
+      document.elementFromPoint(event.clientX, event.clientY)?.closest?.("[data-pdf-drop-target]")?.classList.add("drag-over");
+    });
+    document.addEventListener("pointerup", finishPointerPdfDrag);
+    document.addEventListener("pointercancel", () => { pointerPdfDrag = null; });
+    document.querySelectorAll("[data-pdf-drop-target]").forEach((target) => {
+      ["dragenter", "dragover"].forEach((name) => target.addEventListener(name, (event) => {
+        if (!event.dataTransfer?.types?.includes(PDF_LINE_DRAG_TYPE)) return;
+        event.preventDefault();
+        event.dataTransfer.dropEffect = "copy";
+        target.classList.add("drag-over");
+      }));
+      target.addEventListener("dragleave", () => target.classList.remove("drag-over"));
+      target.addEventListener("drop", (event) => {
+        const lineId = event.dataTransfer?.getData(PDF_LINE_DRAG_TYPE);
+        if (!lineId) return;
+        event.preventDefault();
+        event.stopPropagation();
+        target.classList.remove("drag-over");
+        applyDraggedPdfLine(lineId, target.dataset.pdfDropTarget);
+      });
+    });
     $("pdfClickPages").addEventListener("click", (event) => {
       const button = event.target.closest(".pdf-line-hotspot");
       if (!button) return;
+      if (suppressPdfClickLineId === button.dataset.pdfLineId) { suppressPdfClickLineId = ""; return; }
       const targets = clickLineTargets.get(button.dataset.pdfLineId) || [];
       const available = targets.filter((target) => !target.item.applied);
       if (!available.length) {

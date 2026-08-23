@@ -304,20 +304,27 @@
       </div>
       <section id="pdfClickWorkbench" class="card pdf-click-workbench" hidden>
         <div class="card-title-row"><div><p class="section-kicker">CLICK PDF TO SELECT</p><h2>PDFをクリックして項目を選択</h2></div><span id="pdfClickFileName" class="badge">—</span></div>
-        <p class="import-lead">PDF内の文字行をクリックしてください。自動判定できた行は反映待ちへ入り、判定できない行は右側で反映先と数量を指定できます。この画面を閉じずに続けて追加できます。</p>
+        <p class="import-lead">PDF内の文字ブロックはクリックに加え、項目名と数量を右側へドラッグして対応付けできます。自動判定できた行は反映待ちへ入り、判定できない行もこの画面を閉じずに続けて追加できます。</p>
         <div class="pdf-click-layout">
           <div id="pdfClickPages" class="pdf-click-pages" aria-label="読み込んだPDF"></div>
           <aside class="pdf-click-sidebar">
             <div class="pdf-click-summary"><span>反映待ち</span><strong id="pdfClickSelectedCount">0件</strong><p id="pdfClickSelectionHint">PDF上の色付き枠をクリックしてください。</p></div>
             <div id="pdfClickSelectedList" class="pdf-click-selected-list"></div>
+            <section id="pdfDragDock" class="pdf-drag-dock" aria-label="PDF文字のドラッグ先">
+              <div><strong>PDFからドラッグして入力</strong><p>左の文字枠を、項目または数量へ持ってきてください。</p></div>
+              <div class="pdf-drag-targets">
+                <div id="pdfManualItemDrop" class="pdf-manual-drop-target" data-pdf-drop-target="item" tabindex="0"><span>項目</span><strong id="pdfDragItemValue">ここへドロップ</strong></div>
+                <div id="pdfManualQuantityDrop" class="pdf-manual-drop-target" data-pdf-drop-target="quantity" tabindex="0"><span>数量</span><strong id="pdfDragQuantityValue">ここへドロップ</strong></div>
+              </div>
+            </section>
             <section id="pdfManualMapper" class="pdf-manual-mapper" hidden>
               <div class="pdf-manual-heading"><strong>この行の反映先を指定</strong><button id="cancelPdfManualLineButton" type="button" aria-label="閉じる">×</button></div>
               <q id="pdfManualSourceText">—</q>
               <label class="field"><span>反映する種類</span><select id="pdfManualKind"><option value="survey">測量項目・数量</option><option value="consulting">設計・調査・地質の人工</option><option value="metadata">業務基本情報</option></select></label>
               <div id="pdfManualSurveyFields" class="pdf-manual-fields">
                 <label class="field"><span>分類</span><select id="pdfManualSurveyCategory"></select></label>
-                <label class="field"><span>詳細項目</span><select id="pdfManualSurveyCode"></select></label>
-                <label class="field"><span>数量</span><span class="pdf-manual-quantity"><input id="pdfManualSurveyQuantity" type="number"><b id="pdfManualSurveyUnit">—</b></span><small id="pdfManualSurveyRule">項目を選択してください。</small></label>
+                <label class="field pdf-field-drop-target" data-pdf-drop-target="item"><span>詳細項目（ここにもドロップできます）</span><select id="pdfManualSurveyCode"></select></label>
+                <label class="field pdf-field-drop-target" data-pdf-drop-target="quantity"><span>数量（ここにもドロップできます）</span><span class="pdf-manual-quantity"><input id="pdfManualSurveyQuantity" type="number"><b id="pdfManualSurveyUnit">—</b></span><small id="pdfManualSurveyRule">項目を選択してください。</small></label>
               </div>
               <div id="pdfManualConsultingFields" class="pdf-manual-fields" hidden>
                 <label class="field"><span>業務区分</span><select id="pdfManualConsultingService"></select></label>
@@ -338,7 +345,7 @@
               <button id="openPdfSelectionReviewButton" class="button" type="button" disabled>一覧で詳しく修正</button>
               <button id="openPdfFullReviewButton" class="button" type="button">通常の一覧でも確認</button>
             </div>
-            <p class="pdf-click-note">緑・橙の枠は自動判定候補、青い破線は反映先が未判定の文字ブロックです。同じ横一行でも、離れた文字や表セルは個別にクリックできます。追加前に右側の内容を確認してください。</p>
+            <p class="pdf-click-note">緑・橙の枠は自動判定候補、青い破線は反映先が未判定の文字ブロックです。同じ横一行でも、離れた文字や表セルは個別にクリックまたは右側へドラッグできます。追加前に内容を確認してください。</p>
           </aside>
         </div>
       </section>
@@ -564,7 +571,7 @@
   <script src="document-reader.js?v=20260823-1"></script>
   <script src="app.js?v=20260822-10"></script>
   <script src="consulting.js?v=20260822-2"></script>
-  <script src="document-import.js?v=20260823-1"></script>
+  <script src="document-import.js?v=20260823-2"></script>
   <script src="analytics.js?v=20260822-1"></script>
 </body>
 </html>

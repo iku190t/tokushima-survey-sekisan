@@ -302,7 +302,9 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
 .pdf-click-page > header { display: flex; justify-content: space-between; margin-bottom: 6px; color: #43564e; font-size: 10px; font-weight: 800; }
 .pdf-click-stage { position: relative; overflow: hidden; width: 100%; background: #fff; box-shadow: 0 4px 16px rgba(0,0,0,.13); }
 .pdf-click-stage img { display: block; width: 100%; height: auto; }
-.pdf-line-hotspot { position: absolute; min-width: 12px; min-height: 10px; padding: 0; color: transparent; background: rgba(225,164,47,.09); border: 2px solid rgba(196,126,17,.68); border-radius: 3px; cursor: pointer; transition: background .14s, border-color .14s, box-shadow .14s; }
+.pdf-line-hotspot { position: absolute; min-width: 12px; min-height: 10px; padding: 0; color: transparent; background: rgba(225,164,47,.09); border: 2px solid rgba(196,126,17,.68); border-radius: 3px; cursor: grab; transition: background .14s, border-color .14s, box-shadow .14s, opacity .14s; }
+.pdf-line-hotspot:active { cursor: grabbing; }
+.pdf-line-hotspot[data-dragging="true"] { opacity: .38; }
 .pdf-line-hotspot:hover, .pdf-line-hotspot:focus-visible { color: transparent; background: rgba(125,188,157,.22); border-color: #1d6c52; box-shadow: 0 0 0 2px rgba(29,108,82,.2); outline: 0; }
 .pdf-line-hotspot[data-selected="true"] { background: rgba(41,139,99,.2); border-color: #16704e; box-shadow: inset 0 0 0 1px rgba(255,255,255,.7); }
 .pdf-line-hotspot[data-confidence="low"] { background: rgba(199,78,61,.08); border-color: rgba(185,72,58,.7); border-style: dashed; }
@@ -323,6 +325,15 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
 .pdf-click-selected-item span { margin-top: 3px; color: var(--muted); font-size: 9px; line-height: 1.4; }
 .pdf-click-actions { display: grid; gap: 7px; }
 .pdf-click-note { margin: 0; color: var(--muted); font-size: 10px; line-height: 1.65; }
+.pdf-drag-dock { display: grid; gap: 8px; padding: 11px; background: #fff; border: 1px solid #bad2c7; border-radius: 10px; }
+.pdf-drag-dock > div:first-child > strong { color: var(--green-dark); font-size: 11px; }
+.pdf-drag-dock p { margin: 3px 0 0; color: var(--muted); font-size: 9px; line-height: 1.45; }
+.pdf-drag-targets { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+.pdf-manual-drop-target { min-width: 0; padding: 9px; background: #f4f8f6; border: 2px dashed #8eb5a4; border-radius: 8px; transition: .14s; }
+.pdf-manual-drop-target span, .pdf-manual-drop-target strong { display: block; }
+.pdf-manual-drop-target span { color: #527166; font-size: 8px; font-weight: 800; }
+.pdf-manual-drop-target strong { margin-top: 3px; overflow: hidden; color: var(--green-dark); font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.pdf-manual-drop-target.drag-over, .pdf-field-drop-target.drag-over { background: #dff2e9; border-color: #1d6c52; box-shadow: 0 0 0 3px rgba(29,108,82,.13); }
 .pdf-manual-mapper { display: grid; gap: 10px; padding: 12px; background: #f1f7f4; border: 1px solid #9dbdae; border-radius: 10px; box-shadow: 0 7px 22px rgba(24,75,58,.1); }
 .pdf-manual-mapper[hidden], .pdf-manual-fields[hidden] { display: none; }
 .pdf-manual-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
@@ -331,6 +342,7 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
 .pdf-manual-mapper > q { display: block; max-height: 70px; overflow: auto; padding: 8px; color: #243b31; background: #fff; border-left: 3px solid #367d63; font-size: 10px; line-height: 1.55; }
 .pdf-manual-fields { display: grid; gap: 8px; }
 .pdf-manual-mapper .field { gap: 4px; }
+.pdf-field-drop-target { padding: 6px; border: 2px dashed transparent; border-radius: 8px; transition: .14s; }
 .pdf-manual-mapper .field > span { font-size: 9px; }
 .pdf-manual-mapper input, .pdf-manual-mapper select { min-width: 0; padding: 8px 9px; font-size: 10px; }
 .pdf-manual-quantity { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 7px; }

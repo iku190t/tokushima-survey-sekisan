@@ -18,7 +18,7 @@ assert.deepStrictEqual([...referencedIds].filter((id) => !ids.has(id)), [], "資
 for (const file of ["document-import-engine.js", "document-reader.js", "document-import.js", "tests/test-document-import.js"]) {
   assert.ok(fs.existsSync(path.join(root, file)), `${file} が存在する`);
 }
-for (const id of ["importView", "documentDropZone", "documentFileInput", "pdfClickWorkbench", "pdfClickPages", "pdfClickSelectedList", "pdfManualMapper", "pdfManualKind", "pdfManualSurveyCategory", "pdfManualSurveyCode", "pdfManualSurveyQuantity", "pdfManualConsultingService", "pdfManualConsultingRole", "pdfManualConsultingDays", "pdfManualMetadataKey", "pdfManualMetadataValue", "addPdfManualCandidateButton", "ignorePdfManualLineButton", "selectDetectedPdfLinesButton", "clearPdfLineSelectionButton", "applyPdfSelectionNowButton", "openPdfSelectionReviewButton", "openPdfFullReviewButton", "documentImportDialog", "importMetadataPanel", "documentImportMetadataList", "toggleAllImportMetadata", "documentImportEmptyGuide", "importCandidateToolbar", "documentImportCandidateList", "applyDocumentImportButton"]) {
+for (const id of ["importView", "documentDropZone", "documentFileInput", "pdfClickWorkbench", "pdfClickPages", "pdfClickSelectedList", "pdfDragDock", "pdfManualItemDrop", "pdfManualQuantityDrop", "pdfDragItemValue", "pdfDragQuantityValue", "pdfManualMapper", "pdfManualKind", "pdfManualSurveyCategory", "pdfManualSurveyCode", "pdfManualSurveyQuantity", "pdfManualConsultingService", "pdfManualConsultingRole", "pdfManualConsultingDays", "pdfManualMetadataKey", "pdfManualMetadataValue", "addPdfManualCandidateButton", "ignorePdfManualLineButton", "selectDetectedPdfLinesButton", "clearPdfLineSelectionButton", "applyPdfSelectionNowButton", "openPdfSelectionReviewButton", "openPdfFullReviewButton", "documentImportDialog", "importMetadataPanel", "documentImportMetadataList", "toggleAllImportMetadata", "documentImportEmptyGuide", "importCandidateToolbar", "documentImportCandidateList", "applyDocumentImportButton"]) {
   assert.ok(ids.has(id), `${id} が存在する`);
 }
 assert.ok(html.includes("設計・測量・航空船舶・地質"), "資料取込の対象業務を4業務タブ順で明示する");
@@ -40,6 +40,11 @@ assert.ok(ui.includes("renderPdfClickWorkbench") && ui.includes("pdf-line-hotspo
 assert.ok(ui.includes("clickLines.set") && !ui.includes('if (!targets.length) return ""'), "自動判定の有無にかかわらずPDFの全抽出行をクリック対象にする");
 assert.ok(ui.includes("openManualMapper") && ui.includes("addManualCandidate") && ui.includes("metadataLabels"), "未判定行の反映先・数量・人工・基本情報を右側で指定できる");
 assert.ok(ui.includes("surveyCategoryOptions") && ui.includes("populateManualSurveyItems") && ui.includes("pdfManualSurveyCategory"), "長い測量項目を分類で絞り込んで詳細項目を選べる");
+assert.ok(html.includes('draggable="true"') || ui.includes('draggable="true"'), "PDF文字ブロックをドラッグ開始できる");
+assert.ok(html.includes('data-pdf-drop-target="item"') && html.includes('data-pdf-drop-target="quantity"'), "右側に項目と数量のドラッグ先がある");
+assert.ok(ui.includes("PDF_LINE_DRAG_TYPE") && ui.includes("applyDraggedPdfLine") && ui.includes("matchSurveyDrop") && ui.includes('addEventListener("dragstart"') && ui.includes('addEventListener("drop"'), "項目・数量を別々に右側へドロップして対応付ける");
+assert.ok(ui.includes("pointerPdfDrag") && ui.includes("finishPointerPdfDrag") && ui.includes('addEventListener("pointermove"') && ui.includes('addEventListener("pointerup"'), "標準ドラッグ非対応環境とタッチ・ペン操作でも移動先を判定する");
+assert.ok(ui.includes("manualSourceLineIds") && ui.includes("manualItemLineId") && ui.includes("manualQuantityLineId"), "別セルから取り込んだ項目と数量を同じ候補へ関連付ける");
 assert.ok(ui.includes("applyPdfClickSelection") && ui.includes("target.item.applied = true"), "PDF画面から直接追加し、追加済み行を二重反映から保護する");
 const directApply = ui.slice(ui.indexOf("function applyPdfClickSelection"), ui.indexOf("function updateSelectionState"));
 assert.ok(!directApply.includes(".view-tab") && !directApply.includes("documentImportDialog"), "PDFからの直接追加は画面を切り替えず確認ダイアログも要求しない");
@@ -58,5 +63,6 @@ assert.ok(consulting.includes("ezsekisan:consultingimport") && consulting.includ
 assert.ok(!app.includes("sourceText: String(entry.sourceText") && !consulting.includes("sourceText: String(entry.sourceText"), "抽出原文を保存JSONへ残さない");
 assert.ok(css.includes(".import-review-dialog") && css.includes(".import-candidate[data-confidence=\"low\"]"), "確認画面と低確信度警告の表示がある");
 assert.ok(css.includes('.pdf-line-hotspot[data-mapped="false"]') && css.includes(".pdf-manual-mapper"), "未判定行と右側反映先エディターを視覚的に区別する");
+assert.ok(css.includes(".pdf-manual-drop-target") && css.includes(".pdf-field-drop-target.drag-over"), "ドラッグ先を通常時とドロップ中で視覚表示する");
 
 console.log("OK: document import review UI and safe apply wiring checks passed");
