@@ -268,6 +268,21 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
 .warning-box { margin-top: 24px; padding: 18px; background: #fff9ed; border: 1px solid #f0d9a7; border-radius: 12px; }
 .warning-box strong { color: #8a5316; }
 .warning-box p { margin: 6px 0 0; color: #735d3e; line-height: 1.7; }
+.standards-audit { margin-top: 24px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #fff; }
+.standards-audit > summary { cursor: pointer; padding: 18px 20px; color: var(--green-dark); font-weight: 800; list-style-position: inside; background: #f4f8f6; }
+.standards-audit[open] > summary { border-bottom: 1px solid var(--line); }
+.standards-audit-body { padding: 18px 20px 20px; }
+.standards-audit-body > p { margin: 0 0 14px; color: var(--muted); line-height: 1.7; }
+.standards-table-wrap { overflow-x: auto; }
+.standards-table { width: 100%; min-width: 760px; border-collapse: collapse; font-size: 13px; }
+.standards-table th, .standards-table td { padding: 12px; border: 1px solid var(--line); text-align: left; vertical-align: top; line-height: 1.55; }
+.standards-table th { background: #edf4f0; color: var(--green-dark); }
+.standards-table a { color: var(--green); font-weight: 700; }
+.scope-status { display: inline-block; margin: 0 7px 3px 0; padding: 2px 8px; border-radius: 999px; white-space: nowrap; font-size: 11px; font-weight: 800; }
+.scope-status.partial { color: #69440a; background: #fff0c9; }
+.scope-status.pending { color: #5b6460; background: #edf0ee; }
+.scope-distinction { display: grid; gap: 5px; margin-top: 14px; padding: 14px 16px; color: #294c40; background: #edf6f2; border-left: 4px solid var(--green); border-radius: 8px; line-height: 1.65; }
+.scope-distinction span { color: #4d625b; }
 .compact-warning { margin-top: 18px; padding: 14px; }
 .consulting-source-card a { color: var(--green); font-weight: 700; overflow-wrap: anywhere; }
 

@@ -7,7 +7,7 @@
   <meta name="description" content="設計、測量、航空・船舶、地質を年度別技術者単価と根拠表示付きで計算するWeb業務積算ソフト">
   <meta name="author" content="株式会社アイズ測量">
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="styles.css?v=20260823-6">
+  <link rel="stylesheet" href="styles.css?v=20260823-7">
 </head>
 <body data-business-scope="design">
   <header class="app-header">
@@ -483,6 +483,27 @@
           <strong>数量の読み方（2級基準点測量の例）</strong>
           <p>「新点10点」は標準歩掛のまとまりです。令和8年度単価では、標準10点の直接費3,448,507円 ÷ 10点 → 1点当り344,800円（有効4桁止め）。10点を積算すると直接作業費は3,448,000円です。34万4,800円を10点総額として扱いません。</p>
         </div>
+        <details class="standards-audit">
+          <summary>積算基準体系と現在の対応範囲を確認</summary>
+          <div class="standards-audit-body">
+            <p>発注機関や地域だけでなく、適用する積算基準そのものを区別する必要があります。別体系の歩掛・率・端数処理・単価を、国交省一般基準の年度マスターへ混ぜません。</p>
+            <div class="standards-table-wrap">
+              <table class="standards-table">
+                <thead><tr><th>積算基準体系</th><th>主な対象</th><th>現在の対応</th></tr></thead>
+                <tbody>
+                  <tr><td><a href="https://www.mlit.go.jp/tec/gyoumu_sekisan.html" target="_blank" rel="noopener noreferrer">国土交通省・設計業務等標準積算基準</a></td><td>測量、土木設計、調査計画、地質</td><td><span class="scope-status partial">一部自動計算</span>測量R6～R8を中心に収録。設計・地質歩掛は未網羅</td></tr>
+                  <tr><td><a href="https://www.mlit.go.jp/kowan/kowan_fr5_000019.html" target="_blank" rel="noopener noreferrer">国土交通省・港湾請負工事積算基準</a></td><td>港湾の測量・調査、船舶・機械損料、水中部調査</td><td><span class="scope-status pending">別体系・未収録</span></td></tr>
+                  <tr><td><a href="https://www-2.kkr.mlit.go.jp/land/sekisannkijunn1.html" target="_blank" rel="noopener noreferrer">用地調査等業務費積算基準</a></td><td>権利、建物、営業、土地評価、補償説明等</td><td><span class="scope-status pending">別体系・未収録</span></td></tr>
+                  <tr><td><a href="https://www.maff.go.jp/j/nousin/sekkei/sekisan_kijun/index.html" target="_blank" rel="noopener noreferrer">農林水産省・土地改良工事積算基準</a></td><td>農業農村の調査・測量・設計</td><td><span class="scope-status pending">別体系・未収録</span></td></tr>
+                  <tr><td><a href="https://www.mlit.go.jp/mizukokudo/sewerage/mizukokudo_sewerage_tk_001075.html" target="_blank" rel="noopener noreferrer">下水道用設計標準歩掛表</a></td><td>下水道計画、管路、処理場・ポンプ場設計</td><td><span class="scope-status pending">別体系・未収録</span></td></tr>
+                  <tr><td><a href="https://www.mlit.go.jp/mizukokudo/watersupply/stf_seisakunitsuite_bunya_topics_bukyoku_kenkou_suido_yosan_01_00001.html" target="_blank" rel="noopener noreferrer">水道関係基準</a></td><td>水道施設・管路等</td><td><span class="scope-status pending">別体系・未収録</span></td></tr>
+                  <tr><td>森林、地籍、土地区画整理、NEXCO、防衛省等</td><td>各機関・事業固有の業務</td><td><span class="scope-status pending">個別体系・未収録</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="scope-distinction"><strong>名称が似ていても同じ基準ではありません。</strong><span>「航空測量」は測量手法です。航空局の空港設計・調査とは別です。「深浅測量」を収録していても、港湾基準の船舶損料・潜水・水中部調査まで対応したことにはなりません。</span></div>
+          </div>
+        </details>
       </article>
     </section>
   </main>
@@ -564,7 +585,7 @@
   <script src="consulting-engine.js?v=20260822-1"></script>
   <script src="document-import-engine.js?v=20260823-1"></script>
   <script src="document-reader.js?v=20260823-1"></script>
-  <script src="app.js?v=20260823-4"></script>
+  <script src="app.js?v=20260823-5"></script>
   <script src="consulting.js?v=20260823-1"></script>
   <script src="document-import.js?v=20260823-6"></script>
   <script src="analytics.js?v=20260823-1"></script>

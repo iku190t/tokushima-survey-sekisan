@@ -29,6 +29,7 @@ assert.ok(app.includes("line-manual-price"), "個別単価入力が結線され�
 assert.ok(app.includes('class="line-code table-item-select"') && app.includes('classList.contains("line-code")'), "追加済み作業項目をクリックして変更できる");
 assert.ok(app.includes("line.correctionSelections = {}") && app.includes("line.manualUnitPrice = 0"), "作業項目変更時に旧項目固有の補正と手動単価を引き継がない");
 assert.ok(app.includes("calc-detail"), "項目ごとの計算根拠表示がある");
+assert.ok(app.includes("航空局の空港業務") && app.includes("港湾請負工事積算基準") && app.includes("船舶損料"), "航空測量・深浅測量と空港・港湾船舶の別基準を明示する");
 assert.ok(html.includes('id="validationPanel"'), "提出前チェックがある");
 assert.ok(html.includes('id="jurisdictionSelect"'), "積算地域を選択できる");
 assert.ok(html.includes('id="fiscalYearSelect"'), "積算年度を選択できる");
@@ -85,6 +86,8 @@ assert.ok(html.includes('id="publisherInfoButton"'), "フッターのEz積算か
 assert.ok(app.includes('["aboutToolButton", "publisherInfoButton"]'), "ナビの免責ボタンとフッターを同じ案内へ結線する");
 assert.ok(!html.includes('class="reference-notice') && !css.includes(".reference-notice"), "大きな参考試算注意帯を表示しない");
 assert.ok(html.includes('>使い方・計算根拠</button>\n      <button id="aboutToolButton"') && html.includes("参考試算・免責</button>"), "使い方・計算根拠の右側に小さな免責ボタンを置く");
+for (const standardName of ["積算基準体系と現在の対応範囲", "国土交通省・港湾請負工事積算基準", "用地調査等業務費積算基準", "農林水産省・土地改良工事積算基準", "下水道用設計標準歩掛表", "水道関係基準"]) assert.ok(html.includes(standardName), `${standardName}を別基準体系として表示する`);
+assert.ok(html.includes("航空測量") && html.includes("航空局の空港設計・調査とは別") && html.includes("深浅測量") && html.includes("港湾基準の船舶損料"), "航空・船舶の名称上の混同を防ぐ説明がある");
 assert.ok(html.includes("ゲストとして送信"), "OFUSEのゲスト送信方法を案内する");
 assert.ok(html.includes('id="aboutToolDialog"'), "免責・利用条件を画面で確認できる");
 assert.ok(html.includes("応援のご案内") && html.includes("利用条件・免責事項") && html.includes("プライバシー・アクセス解析"), "制作・応援・免責・プライバシーを1画面に統合する");
