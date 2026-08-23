@@ -1692,3 +1692,43 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `tests/test-consulting-ui.js` | `347598E2045943BA866B69D14552816435AB5F5783A822A34CCB3A7ECC540893` |
 | `tests/test-consulting-walks.js` | `9F7C240C0516697196C2872DC04765D7D05AB5C2CE8F0AFEC468557C3185AAD5` |
 | `tests/test-ui-static.js` | `1EEA8B310784E0D5C52207880C1109C4FA1AC4E147503CFD91A1A616FF2A4646` |
+
+## B-2026-08-24-03
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-24
+- 実装コミット: `7157e17d54b2b9d7624496cecbd7e4e8c5e830b4`
+- GitHub Pagesビルド: `1170548604`（`built`）
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: 国交省の現行系列を平成23年度版＋令和8年度までの累積改定としてページ監査し、未構造化表の自動計算を止め、道路設計3規則群を出典付き条件入力へした版。
+
+### 確認済みの実装
+
+- 現行系列124文書・2,102ページを索引化し、旧平成14年度版を現行系列から除外した。
+- 標準歩掛989、補正586、適用範囲706、式385、数量306、市場単価・規格69、編成人員63、端数273ページを別分類した（重複分類あり）。
+- 道路概略設計、道路予備・予備修正設計、道路詳細設計の3補正規則群を、適用年度、条件、率、加減算方法、出典ページ付きで構造化した。
+- 道路詳細設計Aは、丘陵地+10%、1～2車線-5%、複断面+20%、規定内付帯設計なし-10%を加減算し、補正+15%・係数1.15になる。
+- 条件規則未実装703表と参照専用32表は自動追加不可とし、数量比例だけの金額を作らない。
+
+### 合格した試験
+
+- `tests/test-*.js` 全14本合格。
+- `node --check consulting-engine.js`、`node --check consulting.js`、`node --check data/consulting-condition-rules.js`合格。
+- `git diff --check`合格。
+
+### 実ブラウザー確認
+
+- ローカル版で未実装の打合せ表が「条件規則未実装・自動計算不可」となり、追加ボタンが無効であることを確認した。
+- ローカル版で道路詳細設計Aの全11条件、必須条件なしの追加禁止、補正+15%・係数1.15、6職種展開、出典p.19・20および改定p.4を確認した。
+- 公開版で道路詳細設計Aの条件欄、出典ページ、補正追加ボタンを確認し、ブラウザーエラー0件だった。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `consulting-engine.js` | `2AFD2AB0BC2FCCD2B689EE764EC5262428BE0B5DAE7A68D0D3129C280BA3B979` |
+| `consulting.js` | `CFC71CB75AC1FCE9355EC4E6A9CB45FF87ADCAE5703A394F26895E07989DC690` |
+| `data/consulting-condition-rules.js` | `847957C745AA420C814F5508AF26B852682D7C449A5BD7FF4F96738C6E3597FC` |
+| `data/source-audits/mlit-effective-rule-pages.json` | `E240F1B97D7DDBB6F260579EDE00C219BD80F885C88EE202BC754291469AF100` |
+| `tests/test-consulting-condition-rules.js` | `1FECF683A32864E2AADFA2397E9516D433293312136092A4E0340DEB47FED5C8` |
+| `tools/build-mlit-effective-rule-inventory.py` | `02D71E5722718811031DA8898655A41A93A601DB2091656B20AA78517FE52141` |
