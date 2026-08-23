@@ -1468,3 +1468,50 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `tests/test-consulting-walks.js` | `888BCE2AF68CD0068E648DD5949C29E9D7E1DD9A857D5A78528371B378657FEB` |
 | `tools/generate-consulting-walks.py` | `A0ABBF475A46A184C338EE1436C500AE317A6C3514AC0D231C18F22001DCC1FA` |
 | `tools/update-mlit-source-catalog.py` | `13862E2F17B53DA9010B31E8247AC2C1BBF70474ED57AF7849B59EEC3BF1A0B6` |
+
+## B-2026-08-23-12
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-23
+- アプリコミット: `972e9ff862d5ceb07b4c70675760d73cfbeac9f0`
+- GitHub Pagesビルド: `1169236470`（`built`）
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: 計算根拠をリンク箇条書きから、採用した歩掛→根拠PDF・原表ページ対応表と年度別公式PDF台帳へ拡張した版。測量明細は年度別公開全編の該当ページへリンクし、測量の積算条件書と設計等の総合帳票にも資料名・用途・頁数・確認状態の表を出す。取得・索引済みと計算採用を区別する。
+
+### 合格した試験
+
+```text
+OK: regulation audit checks passed (master mapping, precision, quantity formulas, travel, rounding, overhead)
+OK: MLIT official role price presets R4-R8 and consulting roles R6-R8
+OK: UI static wiring checks passed
+OK: nationwide submission destinations and standard master catalog checks passed
+OK: Hiroshima R6-R8 complete annual master audit checks passed
+OK: nationwide R6-R8 standard reference master checks passed
+OK: consulting/design/geology calculation checks passed
+OK: consulting UI and report wiring checks passed
+OK: R6-R8 consulting/planning/geology source-table walks and MLIT source catalog checks passed
+OK: R8 UAV laser detailed work item expansion checks passed
+OK: document PDF/OCR extraction and review candidate checks passed
+OK: document import review UI and safe apply wiring checks passed
+OK: official procurement case matching, XML parsing, and source ledger candidates passed
+OK: official case search UI is removed while saved-data compatibility remains
+```
+
+追加検査: `node --check app.js`、`node --check consulting.js`、`git diff --check`合格。
+
+### 実ブラウザー確認
+
+- ローカル版で令和8年度「道路詳細設計（A）」1km当りが、令和8年度公開全編p.151へ対応することを確認した。
+- 「使い方・計算根拠」の令和7年度台帳は11件へ切り替わり、令和8年度資料が混在しないことを確認した。
+- 公開版は`app.js?v=20260823-8`、`consulting.js?v=20260823-5`を読み込み、令和8年度台帳12件、技術者単価7頁・計算採用の表示、ブラウザー警告・エラー0件を確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `app.js` | `AE38B9F5E47D318F448D1B2AA46233E293A3B8021C839522924A7BBC07CC4EAC` |
+| `consulting.js` | `468D090F2B5F838A5FF44D8372B746AEF8A8FFFF23A7629CC5371693B0889697` |
+| `index.html` | `6AFD3BFA0351B3D92293C40425782303CAFD0068EE9D39F83DA88FCD5CB124B8` |
+| `styles.css` | `879E7E86300618F7671A36795A2671F5CE4DDAC574028DB5A04990CA23F006FF` |
+| `tests/test-ui-static.js` | `EE7046D3FFB6AFC3247C09E4BD38CFC0B5AC41307327A256239731DBEB50C7F7` |
+| `tests/test-consulting-ui.js` | `E648962CFB2E1C5C05CE6DBECB6478DF66A61656A006D15A7A36C20B22720B5D` |
