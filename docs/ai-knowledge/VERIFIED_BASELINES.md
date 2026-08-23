@@ -1735,9 +1735,12 @@ OK: official case search UI is removed while saved-data compatibility remains
 
 ## B-2026-08-24-04
 
-- 状態: **ローカル検証済み・公開確認待ち**
+- 状態: **検証済み・GitHub Pages公開済み**
 - 検証日: 2026-08-24
 - 実装コミット: `592ceb91aa15ff89cc3527558cb8fb5f16eb776a`
+- 外部知能コミット: `7f16c6d43b4efede536236b2e565fc3d5cfc2cef`
+- GitHub Pagesビルド: `1170683023`（`built`）
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
 - 内容: 県版由来の旧735候補を現行入力から外し、R6～R8の年度統合表を国交省本体・累積改定へ逆照合した1,393歩掛行、条件表、補正式、行別経費体系、地質市場単価方式へ置換した版。
 
 ### 合格した試験
