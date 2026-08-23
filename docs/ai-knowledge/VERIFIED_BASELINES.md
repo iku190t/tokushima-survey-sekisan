@@ -1137,3 +1137,45 @@ OK: UI static wiring checks passed
 | `styles.css` | `8E8EAFEB34A9C61EFDFBD6A7A186CCEE64D08364C9C5F730891B357AC4AE3F3A` |
 | `tests/test-document-import.js` | `C228343DA3E4433678934EF652B5265080EB7D36886D30C70A763B61E3A9F9A0` |
 | `tests/test-document-import-ui.js` | `209A5F41F978F4E186C10E63BFD020356DF99E505AB35EB1D9F65579066BAED7` |
+
+## B-2026-08-23-05
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-23
+- アプリコミット: `a0d3c7b11b32e74af5f2112cab34432729ebf20f`
+- GitHub Pagesビルド: `1168990713`（`built`）
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: B-2026-08-23-04へ、PDF右側入力欄の上端固定と、反映待ち件数・候補一覧・反映操作のPDF下部への分離を追加した版。
+
+### 合格した試験
+
+```text
+OK: consulting/design/geology calculation checks passed
+OK: consulting UI and report wiring checks passed
+OK: document import review UI and safe apply wiring checks passed
+OK: document PDF/OCR extraction and review candidate checks passed
+OK: regulation audit checks passed (master mapping, precision, quantity formulas, travel, rounding, overhead)
+OK: Hiroshima R6-R8 complete annual master audit checks passed
+OK: nationwide jurisdiction and verified master catalog checks passed
+OK: nationwide R6-R8 standard reference master checks passed
+OK: official procurement case matching, XML parsing, and source ledger candidates passed
+OK: official case search UI is removed while saved-data compatibility remains
+OK: MLIT official role price presets R4-R8 and consulting roles R6-R8
+OK: UI static wiring checks passed
+```
+
+追加検査: `git diff --check`合格。
+
+### 実ブラウザー確認
+
+- 国土地理院公開PDFをローカルHTTP画面へ読み込み、PDFと右側入力欄の上端差が0pxであることを確認した。
+- 反映待ちを1件から4件まで増やした後も上端差0pxを維持し、反映待ち領域はPDF左右レイアウトの14px下に表示された。ブラウザー警告・エラー0件。
+- GitHub Pages公開版で右側に入力欄だけ、反映待ち一覧が右側列外にあること、`styles.css?v=20260823-4`、ブラウザー警告・エラー0件を確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `5A6D813FD80EBA1380CD217B6EE50BA2822FA3F28CB4923D8318814FEBD1A2FA` |
+| `styles.css` | `DEC9952BE3FBA82BDCF7350DC4DC51D49AE5A6616272EA8CBBC64F79CA4A9A02` |
+| `tests/test-document-import-ui.js` | `09534AFB698D332BA01EC8781815C85462C1135D02367A9F82DEDA7C895F4276` |
