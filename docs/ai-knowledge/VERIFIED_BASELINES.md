@@ -1465,6 +1465,7 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `data/official-source-catalog.js` | `5ED19F6A1ACCF8C4EE6333C27D0917425144526F0E71CE014DA4F51866312130` |
 | `styles.css` | `19B0FD94655B67D9B3AA3723B5439A9D062E8B747A6AF4DCFDAF80A8E08D6E53` |
 | `tests/test-consulting-ui.js` | `E436796D8109B8EA9B6C73C4ECCCD30E63871C13FB4C377CD9A538502D4E7EBE` |
+
 | `tests/test-consulting-walks.js` | `888BCE2AF68CD0068E648DD5949C29E9D7E1DD9A857D5A78528371B378657FEB` |
 | `tools/generate-consulting-walks.py` | `A0ABBF475A46A184C338EE1436C500AE317A6C3514AC0D231C18F22001DCC1FA` |
 | `tools/update-mlit-source-catalog.py` | `13862E2F17B53DA9010B31E8247AC2C1BBF70474ED57AF7849B59EEC3BF1A0B6` |
@@ -1562,3 +1563,45 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `styles.css` | `C526A3B74351D7A2B3DA18503D6ADBF00568CC7E44EA72AEDE88A892BB90DFD2` |
 | `tests/test-ui-static.js` | `E8AA6C8BB656D795E8E0D9EB2FD7FB4C7308490589A42DB329A1287AB41EB5CB` |
 | `tests/test-consulting-ui.js` | `E436796D8109B8EA9B6C73C4ECCCD30E63871C13FB4C377CD9A538502D4E7EBE` |
+
+## B-2026-08-23-14
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-23
+- 実装コミット: `bc9896d30ef23f10df937d6372e3a22dcf426ac6`
+- GitHub Pagesビルド: `1169934550`（`built`）
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: 国交省年度別ページの基準書本体・参考資料・年度改定を全リンク監査し、人工・補正係数・PDF取込数量の桁数と空欄初期値を安全側へ修正した版。
+
+### 原資料監査
+
+- ページ内171リンク、PDFリンク155件、重複除外PDF152件を目録化した。
+- 152件すべて取得成功、合計3,054ページ、176,433,922バイト。各PDFのURL、リンク名、頁数、容量、SHA-256を記録した。
+- 平成23年度の標準積算基準書第1～4編と参考資料、平成26年度参考資料改定、令和8年度改定を基準書本体・継続適用部分・年度改定として区別した。
+- 取得・索引済みと全計算式実装済みを同一状態にしないことをD-031へ記録した。
+
+### 合格した試験
+
+- `tests/test-*.js` 全14本合格。
+- `node --check` は `consulting.js`、`document-import.js`、`consulting-engine.js`、`document-import-engine.js`で合格。
+- `python -m py_compile` は公式資料台帳2スクリプトで合格。
+- `git diff --check` 合格。
+
+### 実ブラウザー確認
+
+- 新規画面で人工、補正係数、PDF数量、PDF人工、PDF単位がすべて空欄であることを確認した。
+- 人工1.2345は1.235、補正係数1.236は1.24へ補正された。
+- 補正係数が空欄の場合、標準歩掛は追加されず、入力要求を表示した。
+- 設計業務の出典に第3編、参考資料第4編、参考資料第1編、平成26年度端数規定改定を表示した。ブラウザーエラー0件。
+- 公開版が`engine.js?v=20260823-2`、`consulting-engine.js?v=20260823-2`、`document-import-engine.js?v=20260823-2`、`consulting.js?v=20260823-7`、`document-import.js?v=20260823-9`を読み込み、同じ空欄初期値とブラウザーエラー0件を確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `FCBADE3589BCDC58007F0C24C46BC376387CC4DA533B06F8F11961116C25BFB6` |
+| `consulting.js` | `7021592A6C01034EC71520AF11F207E6298B81F6ABF1D122F97B38401805CD58` |
+| `document-import.js` | `2BFD5D0F07D1584755B7D4D5D84C8AAF8CB93531A8F3857498B153CE3EA0D220` |
+| `engine.js` | `0CCCF76F84D647A8150DCDC3870B39AC89660DBEDCD9AEE7B521C0A5FA82CC48` |
+| `mlit-gyoumu-sekisan-documents.json` | `7AD1BB7EE0C2048EACEEF95683B50AADA5394C23A22ABB75198A1EF9728C07C0` |
+| `tests/test-master-catalog.js` | `CA03A0C302CF2931D743F5B700CEF66F9A2C3DDDF1CF391614146CB3B8F90E79` |
