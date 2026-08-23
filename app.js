@@ -14,26 +14,48 @@
   const clone = (value) => JSON.parse(JSON.stringify(value));
   const h = (value) => String(value ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
   const num = (value, fallback = 0) => Number.isFinite(Number(value)) ? Number(value) : fallback;
-  const aerialShipCategories = new Set(["深浅測量", "空中写真測量", "航空レーザ測量", "UAV写真点群測量", "地上レーザ測量", "UAVレーザ測量"]);
-  let activeSurveyScope = "survey";
+  const surveyRegulationGroups = [
+    { id: "common", label: "積算共通（作業規程の測量種別外）", categories: ["共通"] },
+    { id: "control", label: "第2編 基準点測量", categories: ["基準点測量", "水準測量"] },
+    { id: "terrain-map", label: "第3編 地形測量及び写真測量", categories: ["現地測量", "空中写真測量"] },
+    { id: "terrain-pointcloud", label: "第4編 地形測量及び写真測量（三次元点群測量）", categories: ["地上レーザ測量", "UAV写真点群測量", "UAVレーザ測量", "航空レーザ測量"] },
+    { id: "applied", label: "第5編 応用測量", categories: ["路線測量", "河川測量", "深浅測量", "用地測量"] }
+  ];
 
-  function isAerialShipItem(item) {
-    return aerialShipCategories.has(item?.category);
+  const surveyRegulationPaths = {
+    "共通": "積算基準 第2章 第1節 共通（作業規程の測量種別外）",
+    "基準点測量": "作業規程 第2編 第2章 基準点測量",
+    "水準測量": "作業規程 第2編 第3章 レベル等による水準測量",
+    "現地測量": "作業規程 第3編 第2章 現地測量",
+    "空中写真測量": "作業規程 第3編 第4章 空中写真測量",
+    "地上レーザ測量": "作業規程 第4編 第2章 地上レーザ点群測量",
+    "UAV写真点群測量": "作業規程 第4編 第3章 UAV写真点群測量",
+    "UAVレーザ測量": "作業規程 第4編 第4章 UAVレーザ測量",
+    "航空レーザ測量": "作業規程 第4編 第6章 航空レーザ測量",
+    "路線測量": "作業規程 第5編 第2章 路線測量",
+    "河川測量": "作業規程 第5編 第3章 河川測量",
+    "深浅測量": "作業規程 第5編 第3章 第7節 深浅測量",
+    "用地測量": "作業規程 第5編 第4章 用地測量"
+  };
+
+  function regulationGroupForItem(item) {
+    return surveyRegulationGroups.find((group) => group.categories.includes(item?.category)) || null;
   }
 
-  function surveyItemsForScope(master = activeMaster(), scope = activeSurveyScope) {
-    return master.workItems.filter((item) => scope === "aerial" ? isAerialShipItem(item) : !isAerialShipItem(item));
+  function regulationPathForItem(item) {
+    return surveyRegulationPaths[item?.category] || "積算基準の作業区分（作業規程との対応要確認）";
+  }
+
+  function surveyItemsForScope(master = activeMaster()) {
+    return master.workItems;
   }
 
   function renderSurveyScopeLabels() {
-    const aerial = activeSurveyScope === "aerial";
-    $("surveyWorkItemHeading").textContent = aerial ? "航空・船舶関係の作業項目を追加" : "測量作業項目を追加";
-    $("surveyDetailHeading").textContent = aerial ? "航空・船舶関係の積算内訳" : "測量業務の積算内訳";
-    $("surveyEmptyText").textContent = aerial ? "上の「航空・船舶関係の作業項目を追加」から積算を始めます。" : "上の「測量作業項目を追加」から積算を始めます。";
-    $("surveySummaryHeading").textContent = aerial ? "案件全体の測量・航空船舶積算結果" : "案件全体の測量積算結果";
-    $("surveyScopeNote").textContent = aerial
-      ? "収録範囲は国交省一般基準の深浅測量、空中写真測量、航空レーザ測量、UAV写真点群測量、地上レーザ測量、UAVレーザ測量です。航空局の空港業務、港湾請負工事積算基準、船舶損料を一括収録した意味ではありません。運航・滞留・基地・成果検定などの案件条件も確認してください。"
-      : "共通、基準点、水準、路線、河川、用地、現地測量を分類して収録しています。分類を選ぶと詳細項目を絞り込めます。";
+    $("surveyWorkItemHeading").textContent = "測量作業項目を追加";
+    $("surveyDetailHeading").textContent = "測量業務の積算内訳";
+    $("surveyEmptyText").textContent = "上の「測量作業項目を追加」から積算を始めます。";
+    $("surveySummaryHeading").textContent = "案件全体の測量積算結果";
+    $("surveyScopeNote").textContent = "作業規程の第2編～第5編に沿って測量種別を分け、その下で積算基準の作業区分を選びます。空中写真、航空・UAV・地上レーザ、深浅測量も測量業務内の該当編へ収録しています。";
   }
 
   function quantityRule(item, master = activeMaster()) {
@@ -401,9 +423,15 @@
   function populateCategories() {
     const master = activeMaster();
     const scopedItems = surveyItemsForScope(master);
-    const categories = [...new Set(scopedItems.map((item) => item.category))];
+    const previousGroup = $("regulationGroupSelect").value;
+    const availableGroups = surveyRegulationGroups.filter((group) => scopedItems.some((item) => group.categories.includes(item.category)));
+    $("regulationGroupSelect").innerHTML = `<option value="">すべての作業規程分類</option>` + availableGroups.map((group) => `<option value="${h(group.id)}">${h(group.label)}</option>`).join("");
+    $("regulationGroupSelect").value = availableGroups.some((group) => group.id === previousGroup) ? previousGroup : "";
+    const group = surveyRegulationGroups.find((entry) => entry.id === $("regulationGroupSelect").value);
+    const groupItems = scopedItems.filter((item) => !group || group.categories.includes(item.category));
+    const categories = [...new Set(groupItems.map((item) => item.category))];
     const previous = $("categorySelect").value;
-    $("categorySelect").innerHTML = `<option value="">すべての分類</option>` + categories.map((category) => `<option>${h(category)}</option>`).join("");
+    $("categorySelect").innerHTML = `<option value="">すべての作業区分</option>` + categories.map((category) => `<option>${h(category)}</option>`).join("");
     $("categorySelect").value = categories.includes(previous) ? previous : "";
     populateItems();
     $("itemCountBadge").textContent = `${scopedItems.length}項目収録`;
@@ -412,9 +440,10 @@
 
   function populateItems() {
     const master = activeMaster();
+    const group = surveyRegulationGroups.find((entry) => entry.id === $("regulationGroupSelect").value);
     const category = $("categorySelect").value;
     const previous = $("itemSelect").value;
-    const filtered = surveyItemsForScope(master).filter((item) => !category || item.category === category);
+    const filtered = surveyItemsForScope(master).filter((item) => (!group || group.categories.includes(item.category)) && (!category || item.category === category));
     $("itemSelect").innerHTML = filtered.map((item) => `<option value="${h(item.code)}">${h(item.code)}｜${h(item.name)}</option>`).join("");
     if (filtered.some((item) => item.code === previous)) $("itemSelect").value = previous;
     updateSelectedItemMeta();
@@ -431,7 +460,7 @@
     const condition = item.conditionFormula ? ` ｜ 標準条件：${item.conditionFormula.label}${numberFormat.format(item.conditionFormula.default)}${item.conditionFormula.unit}` : "";
     const ratioSource = item.source.ratioPage ? `・直接経費率 p.${item.source.ratioPage}` : "・直接経費は個別規定";
     const manualNote = item.manualCostNote ? ` ｜ 要確認：${item.manualCostNote}` : "";
-    $("selectedItemMeta").textContent = `数量入力：${quantityLabel(qRule)}。標準歩掛は ${numberFormat.format(item.standardQuantity)} ${item.unit} 一式です。標準直接費 ${yen.format(standard.standardDirect)} ÷ ${numberFormat.format(item.standardQuantity)} ${item.unit} → 1${item.unit}当り ${yen.format(standard.standardUnitPrice)}。${condition}${limit}${manualNote} ｜ 出典：基準書 p.${item.source.standardPage}${ratioSource}`;
+    $("selectedItemMeta").textContent = `${regulationPathForItem(item)} ｜ 数量入力：${quantityLabel(qRule)}。標準歩掛は ${numberFormat.format(item.standardQuantity)} ${item.unit} 一式です。標準直接費 ${yen.format(standard.standardDirect)} ÷ ${numberFormat.format(item.standardQuantity)} ${item.unit} → 1${item.unit}当り ${yen.format(standard.standardUnitPrice)}。${condition}${limit}${manualNote} ｜ 出典：基準書 p.${item.source.standardPage}${ratioSource}`;
   }
 
   function populateSafetyRates() {
@@ -453,10 +482,7 @@
 
   function renderLines(result) {
     const master = activeMaster();
-    const visibleLines = result.lines.filter((calculated) => {
-      const item = master.workItems.find((entry) => entry.code === calculated.code);
-      return activeSurveyScope === "aerial" ? isAerialShipItem(item) : !isAerialShipItem(item);
-    });
+    const visibleLines = result.lines;
     $("lineTableBody").innerHTML = visibleLines.map((calculated) => {
       const line = estimate.lines.find((entry) => entry.id === calculated.id);
       const item = master.workItems.find((entry) => entry.code === calculated.code);
@@ -1227,8 +1253,7 @@
       $(`${button.dataset.view}View`).classList.add("active");
       const businessScope = button.dataset.businessScope || "";
       document.body.dataset.businessScope = businessScope;
-      if (businessScope === "survey" || businessScope === "aerial") {
-        activeSurveyScope = businessScope;
+      if (businessScope === "survey") {
         populateCategories();
         renderEstimate();
       }
@@ -1237,6 +1262,7 @@
       if (button.dataset.view === "report") renderReportSettings();
       if (button.dataset.view === "consulting") document.dispatchEvent(new CustomEvent("ezsekisan:estimatechange"));
     }));
+    $("regulationGroupSelect").addEventListener("change", populateCategories);
     $("categorySelect").addEventListener("change", populateItems);
     $("itemSelect").addEventListener("change", updateSelectedItemMeta);
     $("newItemQuantity").addEventListener("keydown", blockInvalidQuantityKey);
@@ -1344,6 +1370,9 @@
     getSubmissionJurisdictionCode: () => estimate.submissionJurisdictionCode || "",
     getSubmissionJurisdictionName: () => estimate.submissionJurisdictionCode ? jurisdictionName(estimate.submissionJurisdictionCode) : "",
     getSurveyItemsForScope: (scope, master = activeMaster()) => surveyItemsForScope(master, scope),
+    getSurveyRegulationGroups: () => clone(surveyRegulationGroups),
+    getSurveyRegulationGroup: (item) => clone(regulationGroupForItem(item)),
+    getSurveyRegulationPath: regulationPathForItem,
     saveDraft: scheduleSave,
     notify: showToast,
     importSurveyLines,

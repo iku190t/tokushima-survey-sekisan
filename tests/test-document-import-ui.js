@@ -18,14 +18,14 @@ assert.deepStrictEqual([...referencedIds].filter((id) => !ids.has(id)), [], "資
 for (const file of ["document-import-engine.js", "document-reader.js", "document-import.js", "tests/test-document-import.js"]) {
   assert.ok(fs.existsSync(path.join(root, file)), `${file} が存在する`);
 }
-for (const id of ["importView", "documentDropZone", "documentFileInput", "pdfClickWorkbench", "pdfClickPages", "pdfClickSelectedList", "pdfManualMapper", "pdfManualHeadingText", "pdfManualKind", "pdfManualSurveyCategory", "pdfManualSurveyCode", "pdfManualSurveyQuantity", "pdfManualSurveySourceUnit", "pdfManualSurveyConversion", "pdfManualConsultingService", "pdfManualConsultingTaskTemplate", "pdfManualConsultingTask", "pdfManualConsultingRole", "pdfManualConsultingDays", "pdfManualMetadataKey", "pdfManualMetadataValue", "addPdfManualCandidateButton", "ignorePdfManualLineButton", "selectDetectedPdfLinesButton", "clearPdfLineSelectionButton", "applyPdfSelectionNowButton", "openPdfSelectionReviewButton", "openPdfFullReviewButton", "documentImportDialog", "importMetadataPanel", "documentImportMetadataList", "toggleAllImportMetadata", "documentImportEmptyGuide", "importCandidateToolbar", "documentImportCandidateList", "applyDocumentImportButton"]) {
+for (const id of ["importView", "documentDropZone", "documentFileInput", "pdfClickWorkbench", "pdfClickPages", "pdfClickSelectedList", "pdfManualMapper", "pdfManualHeadingText", "pdfManualKind", "pdfManualSurveyRegulationGroup", "pdfManualSurveyCategory", "pdfManualSurveyCode", "pdfManualSurveyQuantity", "pdfManualSurveySourceUnit", "pdfManualSurveyConversion", "pdfManualConsultingService", "pdfManualConsultingTaskTemplate", "pdfManualConsultingTask", "pdfManualConsultingRole", "pdfManualConsultingDays", "pdfManualMetadataKey", "pdfManualMetadataValue", "addPdfManualCandidateButton", "ignorePdfManualLineButton", "selectDetectedPdfLinesButton", "clearPdfLineSelectionButton", "applyPdfSelectionNowButton", "openPdfSelectionReviewButton", "openPdfFullReviewButton", "documentImportDialog", "importMetadataPanel", "documentImportMetadataList", "toggleAllImportMetadata", "documentImportEmptyGuide", "importCandidateToolbar", "documentImportCandidateList", "applyDocumentImportButton"]) {
   assert.ok(ids.has(id), `${id} が存在する`);
 }
-assert.ok(html.includes("設計・測量・航空船舶・地質"), "資料取込の対象業務を4業務タブ順で明示する");
+assert.ok(html.includes("設計・測量・調査計画・地質"), "資料取込の対象業務を積算基準の4業務区分順で明示する");
 assert.ok(html.includes(">PDF・写真から取込み<"), "資料取込の表示名をPDF・写真から取込みに統一する");
-const kindOptions = ['value="design">設計業務', 'value="survey">測量業務', 'value="aerial">航空・船舶関係', 'value="geology">地質業務', 'value="metadata">業務基本情報'];
+const kindOptions = ['value="design">設計業務', 'value="survey">測量業務', 'value="planning">調査・計画業務', 'value="geology">地質業務', 'value="metadata">業務基本情報'];
 assert.ok(kindOptions.every((option) => html.includes(option)), "PDF反映先を4業務区分と基本情報へ分ける");
-assert.deepStrictEqual(kindOptions.map((option) => html.indexOf(option)), [...kindOptions.map((option) => html.indexOf(option))].sort((a, b) => a - b), "PDF反映先を設計・測量・航空船舶・地質・基本情報の順にする");
+assert.deepStrictEqual(kindOptions.map((option) => html.indexOf(option)), [...kindOptions.map((option) => html.indexOf(option))].sort((a, b) => a - b), "PDF反映先を設計・測量・調査計画・地質・基本情報の順にする");
 assert.ok(!html.includes("設計・調査・地質の人工"), "異なる積算基準の設計・調査・地質を1つの選択肢へまとめない");
 assert.ok(html.includes("資料内容は外部送信しません"), "ブラウザー内処理を明示する");
 assert.ok(html.includes('accept="application/pdf,image/png,image/jpeg,image/webp'), "PDFと写真を選択できる");
@@ -46,10 +46,12 @@ assert.ok(ui.includes("clickLines.set") && !ui.includes('if (!targets.length) re
 assert.ok(ui.includes("openManualMapper") && ui.includes("addManualCandidate") && ui.includes("metadataLabels"), "未判定行の反映先・数量・人工・基本情報を右側で指定できる");
 assert.ok(ui.includes("surveyCategoryOptions") && ui.includes("populateManualSurveyItems") && ui.includes("pdfManualSurveyCategory"), "長い測量項目を分類で絞り込んで詳細項目を選べる");
 assert.ok(ui.includes("taskOptions") && ui.includes("updateManualConsultingTasks") && ui.includes("pdfManualConsultingTaskTemplate"), "設計・地質も業務区分ごとの詳細項目から選べる");
-assert.ok(app.includes("getSurveyItemsForScope") && ui.includes("consultingServiceIdsByKind") && ui.includes("businessKindForSurveyItem") && ui.includes("businessKindForService"), "PDF取込も本体と同じ4業務区分で項目・人工を絞る");
+assert.ok(app.includes("getSurveyRegulationGroups") && ui.includes("surveyRegulationGroupOptions") && ui.includes("pdfManualSurveyRegulationGroup"), "PDF取込も作業規程上の分類から測量項目を絞る");
+assert.ok(ui.includes("consultingServiceIdsByKind") && ui.includes('planning: new Set(["planning"])') && ui.includes("businessKindForService"), "PDF取込も設計・調査計画・地質を別々に絞る");
 assert.ok(html.includes('draggable="true"') || ui.includes('draggable="true"'), "PDF文字ブロックをドラッグ開始できる");
 assert.ok(!html.includes('id="pdfDragDock"') && !html.includes("PDFからドラッグして入力"), "別置きの重複したドラッグ入力欄を表示しない");
 assert.ok(html.includes('data-pdf-drop-target="item"') && html.includes('data-pdf-drop-target="quantity"') && html.includes('data-pdf-drop-target="unit"'), "実入力欄を項目・数量・単位のドラッグ先にする");
+assert.ok(html.includes('data-pdf-drop-target="consulting-task"') && html.includes('data-pdf-drop-target="consulting-role"') && html.includes('data-pdf-drop-target="consulting-days"'), "設計・調査計画・地質も詳細項目・職種・人工を個別にドラッグできる");
 const sidebarStart = html.indexOf('<aside class="pdf-click-sidebar">');
 const sidebarEnd = html.indexOf("</aside>", sidebarStart);
 const sidebarHtml = html.slice(sidebarStart, sidebarEnd);
@@ -59,8 +61,9 @@ const pendingListIndex = html.indexOf('id="pdfClickSelectedList"');
 assert.ok(sidebarHtml.includes('id="pdfManualMapper"') && !sidebarHtml.includes('id="pdfClickSelectedList"'), "PDF右側には固定する入力エディターだけを置く");
 assert.ok(mapperIndex >= 0 && mapperIndex < pendingPanelIndex && pendingPanelIndex < pendingListIndex, "反映待ち一覧をPDFと入力エディターの下へ分離する");
 assert.ok(ui.includes("PDF_LINE_DRAG_TYPE") && ui.includes("applyDraggedPdfLine") && ui.includes("matchSurveyDrop") && ui.includes('addEventListener("dragstart"') && ui.includes('addEventListener("drop"'), "項目・数量を別々に右側へドロップして対応付ける");
+assert.ok(ui.includes("matchConsultingTaskDrop") && ui.includes("matchConsultingRoleDrop") && ui.includes('targetType === "consulting-days"'), "設計等のドラッグを詳細項目・職種・人工へ振り分ける");
 assert.ok(ui.includes("pointerPdfDrag") && ui.includes("finishPointerPdfDrag") && ui.includes('addEventListener("pointermove"') && ui.includes('addEventListener("pointerup"'), "標準ドラッグ非対応環境とタッチ・ペン操作でも移動先を判定する");
-assert.ok(ui.includes("manualSourceLineIds") && ui.includes("manualItemLineId") && ui.includes("manualQuantityLineId"), "別セルから取り込んだ項目と数量を同じ候補へ関連付ける");
+assert.ok(ui.includes("manualSourceLineIds") && ui.includes("manualItemLineId") && ui.includes("manualQuantityLineId") && ui.includes("manualConsultingTaskLineId") && ui.includes("manualConsultingDaysLineId"), "測量・設計等の別セルを同じ候補へ関連付ける");
 assert.ok(ui.includes("manualUnitLineId") && ui.includes("convertSurveyQuantity") && ui.includes("sourceUnitLabel"), "単位セルを別に対応付けて資料数量を積算数量へ換算する");
 assert.ok(ui.includes("applyPdfClickSelection") && ui.includes("target.item.applied = true"), "PDF画面から直接追加し、追加済み行を二重反映から保護する");
 assert.ok(ui.includes("editablePdfTargets") && ui.includes("openSelectedTargetEditor") && ui.includes('data-pdf-edit-target='), "反映待ちへ追加した項目をクリックして変更画面を開ける");

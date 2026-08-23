@@ -17,7 +17,7 @@ const missing = [...referenced].filter((id) => !ids.has(id));
 assert.deepStrictEqual(missing, [], `app.jsから参照されるHTML要素が不足: ${missing.join(", ")}`);
 assert.ok(html.includes("<title>web積算｜") && html.includes("<h1>web積算</h1>"), "アプリタイトルをweb積算に統一する");
 const businessTabs = [...html.matchAll(/<button class="view-tab(?: active)?" data-view="[^"]+" data-business-scope="([^"]+)"[^>]*>([^<]+)<\/button>/g)].map((match) => [match[1], match[2]]);
-assert.deepStrictEqual(businessTabs, [["design", "設計業務"], ["survey", "測量業務"], ["aerial", "航空・船舶関係"], ["geology", "地質業務"]], "4業務タブを指定順で表示する");
+assert.deepStrictEqual(businessTabs, [["design", "設計業務"], ["survey", "測量業務"], ["planning", "調査・計画業務"], ["geology", "地質業務"]], "積算基準の4業務区分を指定順で表示する");
 assert.ok(html.includes('id="consultingView" class="view active"') && !html.includes('id="estimateView" class="view active"'), "初期画面を設計業務にする");
 for (const source of ["data/prefectures.js", "data/master-catalog.json", "data/official-source-catalog.json", "data/master-r8.js", "data/national-standard-masters.js", "data/verified-masters.js", "data/official-role-prices.js", "data/verified-work-item-expansions.js", "engine.js", "app.js", "analytics.js", "styles.css", "DISCLAIMER.md"]) {
   assert.ok(fs.existsSync(path.join(root, source)), `${source} が存在する`);
@@ -29,7 +29,7 @@ assert.ok(app.includes("line-manual-price"), "個別単価入力が結線され�
 assert.ok(app.includes('class="line-code table-item-select"') && app.includes('classList.contains("line-code")'), "追加済み作業項目をクリックして変更できる");
 assert.ok(app.includes("line.correctionSelections = {}") && app.includes("line.manualUnitPrice = 0"), "作業項目変更時に旧項目固有の補正と手動単価を引き継がない");
 assert.ok(app.includes("calc-detail"), "項目ごとの計算根拠表示がある");
-assert.ok(app.includes("航空局の空港業務") && app.includes("港湾請負工事積算基準") && app.includes("船舶損料"), "航空測量・深浅測量と空港・港湾船舶の別基準を明示する");
+assert.ok(html.includes("航空局の空港設計・調査とは別") && html.includes("港湾請負工事積算基準") && html.includes("船舶損料"), "航空測量・深浅測量と空港・港湾船舶の別基準を明示する");
 assert.ok(html.includes('id="validationPanel"'), "提出前チェックがある");
 assert.ok(html.includes('id="jurisdictionSelect"') && html.includes("見積提出先（任意）"), "見積提出先を計算条件と分けて選択できる");
 assert.ok(html.includes('id="fiscalYearSelect"') && html.includes("標準単価セット"), "全国標準単価セットの年度を選択できる");
@@ -53,8 +53,10 @@ assert.ok(html.includes("見積提出先") && html.includes("基準区分"), "�
 assert.ok(app.includes("blockInvalidQuantityKey"), "整数数量への小数キー入力を防止する");
 assert.ok(app.includes("blockInvalidQuantityPaste"), "不正な桁数の貼り付けを防止する");
 assert.ok(app.includes("normalizeQuantityInput"), "数量を単位別規則に正規化する");
-assert.ok(app.includes("aerialShipCategories") && app.includes("surveyItemsForScope"), "測量と航空・船舶の作業項目をタブ別に分ける");
-assert.ok(html.includes('id="surveyScopeNote"') && app.includes("深浅測量、空中写真測量、航空レーザ測量、UAV写真点群測量、地上レーザ測量、UAVレーザ測量"), "航空・船舶の収録分類と案件条件を画面で明示する");
+assert.ok(html.includes('id="regulationGroupSelect"') && html.includes("作業規程上の分類") && app.includes("surveyRegulationGroups"), "測量項目を作業規程上の分類から選べる");
+for (const group of ["第2編 基準点測量", "第3編 地形測量及び写真測量", "第4編 地形測量及び写真測量（三次元点群測量）", "第5編 応用測量"]) assert.ok(app.includes(group), `${group}を独立して表示する`);
+assert.ok(app.includes('"深浅測量": "作業規程 第5編 第3章 第7節 深浅測量"'), "深浅測量を応用測量の河川測量内へ位置付ける");
+assert.ok(!app.includes("aerialShipCategories") && !html.includes('data-business-scope="aerial"'), "航空・船舶を測量と並列の業務タブにしない");
 assert.ok(app.includes("applyVerifiedWorkItemExpansions") && html.includes("data/verified-work-item-expansions.js?v="), "令和8年度UAVレーザの公式詳細工程を年度マスターへ展開する");
 assert.ok(html.includes('id="reportView"'), "提出用帳票の設定画面がある");
 assert.ok(html.includes('id="printDocument"'), "画面とは独立した印刷専用文書がある");

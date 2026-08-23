@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>web積算｜設計・測量・航空船舶・地質 業務積算</title>
-  <meta name="description" content="設計、測量、航空・船舶、地質を年度別技術者単価と根拠表示付きで計算するWeb業務積算ソフト">
+  <title>web積算｜設計・測量・調査計画・地質 業務積算</title>
+  <meta name="description" content="設計、測量、調査・計画、地質を年度別技術者単価と根拠表示付きで計算するWeb業務積算ソフト">
   <meta name="author" content="株式会社アイズ測量">
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="styles.css?v=20260823-7">
+  <link rel="stylesheet" href="styles.css?v=20260823-8">
 </head>
 <body data-business-scope="design">
   <header class="app-header">
@@ -31,7 +31,7 @@
     <div class="view-tab-group business-view-tabs" role="group" aria-label="業務区分">
       <button class="view-tab active" data-view="consulting" data-business-scope="design" type="button">設計業務</button>
       <button class="view-tab" data-view="estimate" data-business-scope="survey" type="button">測量業務</button>
-      <button class="view-tab" data-view="estimate" data-business-scope="aerial" type="button">航空・船舶関係</button>
+      <button class="view-tab" data-view="consulting" data-business-scope="planning" type="button">調査・計画業務</button>
       <button class="view-tab" data-view="consulting" data-business-scope="geology" type="button">地質業務</button>
     </div>
     <div class="view-tab-group utility-view-tabs" role="group" aria-label="共通機能">
@@ -114,7 +114,11 @@
             <p id="surveyScopeNote" class="scope-note"></p>
             <div class="picker-grid">
               <label class="field">
-                <span>分類</span>
+                <span>作業規程上の分類</span>
+                <select id="regulationGroupSelect"></select>
+              </label>
+              <label class="field">
+                <span>積算基準の作業区分</span>
                 <select id="categorySelect"></select>
               </label>
               <label class="field item-picker">
@@ -251,13 +255,13 @@
           <section class="card no-print">
             <div class="card-title-row"><div><p class="section-kicker">DIRECT COSTS</p><h2>積上げ費用・計算条件</h2></div></div>
             <div class="cost-grid consulting-cost-grid">
-              <label class="field" data-consulting-scope="design"><span>設計・調査計画の積上直接経費</span><input class="consulting-cost" data-cost="designDirectExpenses" type="number" min="0" step="1"></label>
+              <label class="field" data-consulting-scope="design-planning"><span>設計・調査計画の積上直接経費</span><input class="consulting-cost" data-cost="designDirectExpenses" type="number" min="0" step="1"></label>
               <label class="field" data-consulting-scope="geology"><span>地質一般：直接調査費（人件費以外）</span><input class="consulting-cost" data-cost="geologyDirectNonLabor" type="number" min="0" step="1"></label>
               <label class="field" data-consulting-scope="geology"><span>地質一般：間接調査費</span><input class="consulting-cost" data-cost="geologyIndirect" type="number" min="0" step="1"></label>
               <label class="field" data-consulting-scope="geology"><span>地質一般：諸経費対象外費用</span><input class="consulting-cost" data-cost="geologyExcluded" type="number" min="0" step="1"></label>
             </div>
             <div class="option-row consulting-options">
-              <label class="field inline-select" data-consulting-scope="design"><span>電子成果品作成費</span><select id="consultingElectronicMode"><option value="none">計上しない</option><option value="detailed">概略・予備・詳細設計</option><option value="other">その他の設計業務</option></select></label>
+              <label class="field inline-select" data-consulting-scope="design-planning"><span>電子成果品作成費</span><select id="consultingElectronicMode"><option value="none">計上しない</option><option value="detailed">概略・予備・詳細設計</option><option value="other">その他の設計業務</option></select></label>
               <label class="check"><input id="consultingIncludeSurvey" type="checkbox"><span>現在の測量積算を合算</span></label>
               <label class="check"><input id="consultingAdjustBusinessPrice" type="checkbox"><span>総合業務価格を千円止め</span></label>
               <label class="field inline-select"><span>消費税率</span><input id="consultingTaxRate" type="number" min="0" max="100" step="0.1"></label>
@@ -285,7 +289,7 @@
     <section id="importView" class="view">
       <div class="import-layout">
         <section class="card import-hero-card">
-          <div class="card-title-row"><div><p class="section-kicker">DOCUMENT TO ESTIMATE</p><h2>PDF・写真から取込み</h2></div><span class="badge">設計・測量・航空船舶・地質</span></div>
+          <div class="card-title-row"><div><p class="section-kicker">DOCUMENT TO ESTIMATE</p><h2>PDF・写真から取込み</h2></div><span class="badge">設計・測量・調査計画・地質</span></div>
           <p class="import-lead">発注仕様書、数量表、設計書などから、業務基本情報と積算候補を作ります。文字情報を持つPDFは直接抽出し、画像PDFと写真だけ日本語OCRを使用します。</p>
           <button id="documentDropZone" class="document-drop-zone" type="button">
             <span class="drop-zone-icon" aria-hidden="true">↓</span>
@@ -305,25 +309,26 @@
       </div>
       <section id="pdfClickWorkbench" class="card pdf-click-workbench" hidden>
         <div class="card-title-row"><div><p class="section-kicker">CLICK PDF TO SELECT</p><h2>PDFをクリックして項目を選択</h2></div><span id="pdfClickFileName" class="badge">—</span></div>
-        <p class="import-lead">PDF内の文字ブロックはクリックに加え、項目名と数量を右側へドラッグして対応付けできます。自動判定できた行は反映待ちへ入り、判定できない行もこの画面を閉じずに続けて追加できます。</p>
+        <p class="import-lead">PDF内の文字ブロックはクリックに加え、測量の項目・数量・単位、または設計等の詳細項目・職種・人工へ個別にドラッグして対応付けできます。自動判定できた行は反映待ちへ入り、判定できない行もこの画面を閉じずに続けて追加できます。</p>
         <div class="pdf-click-layout">
           <div id="pdfClickPages" class="pdf-click-pages" aria-label="読み込んだPDF"></div>
           <aside class="pdf-click-sidebar">
             <section id="pdfManualMapper" class="pdf-manual-mapper" hidden>
               <div class="pdf-manual-heading"><strong id="pdfManualHeadingText">この行の反映先を指定</strong><button id="cancelPdfManualLineButton" type="button" aria-label="閉じる">×</button></div>
               <q id="pdfManualSourceText">—</q>
-              <label class="field"><span>反映する業務区分</span><select id="pdfManualKind"><option value="design">設計業務（詳細項目・職種・人工）</option><option value="survey">測量業務（項目・数量・単位）</option><option value="aerial">航空・船舶関係（項目・数量・単位）</option><option value="geology">地質業務（詳細項目・職種・人工）</option><option value="metadata">業務基本情報</option></select></label>
+              <label class="field"><span>反映する業務区分</span><select id="pdfManualKind"><option value="design">設計業務（詳細項目・職種・人工）</option><option value="survey">測量業務（項目・数量・単位）</option><option value="planning">調査・計画業務（詳細項目・職種・人工）</option><option value="geology">地質業務（詳細項目・職種・人工）</option><option value="metadata">業務基本情報</option></select></label>
               <div id="pdfManualSurveyFields" class="pdf-manual-fields">
-                <label class="field"><span>分類</span><select id="pdfManualSurveyCategory"></select></label>
+                <label class="field"><span>作業規程上の分類</span><select id="pdfManualSurveyRegulationGroup"></select></label>
+                <label class="field"><span>積算基準の作業区分</span><select id="pdfManualSurveyCategory"></select></label>
                 <label class="field pdf-field-drop-target" data-pdf-drop-target="item"><span class="pdf-drop-title"><b aria-hidden="true">1</b>PDFの項目名をドロップ</span><small class="pdf-drop-callout">左のPDFから項目名の文字枠をつかんで、ここへ移動</small><select id="pdfManualSurveyCode" aria-label="積算する詳細項目"></select></label>
                 <div class="field pdf-survey-quantity-field"><span>資料の数量・単位</span><div class="pdf-manual-quantity"><label class="pdf-field-drop-target" data-pdf-drop-target="quantity"><span class="pdf-drop-title"><b aria-hidden="true">2</b>PDFの数量をドロップ</span><small class="pdf-drop-callout">例：6.9、11</small><input id="pdfManualSurveyQuantity" type="number" aria-label="資料の数量"></label><label class="pdf-field-drop-target" data-pdf-drop-target="unit"><span class="pdf-drop-title"><b aria-hidden="true">3</b>PDFの単位をドロップ</span><small class="pdf-drop-callout">例：10,000m²、回</small><select id="pdfManualSurveySourceUnit" aria-label="資料の単位"></select></label></div><strong id="pdfManualSurveyConversion">項目を選択してください。</strong><small id="pdfManualSurveyRule">項目を選択してください。</small></div>
               </div>
               <div id="pdfManualConsultingFields" class="pdf-manual-fields" hidden>
                 <label class="field"><span>業務区分</span><select id="pdfManualConsultingService"></select></label>
-                <label class="field"><span>詳細項目（作業工程）</span><select id="pdfManualConsultingTaskTemplate"></select></label>
+                <label class="field pdf-field-drop-target" data-pdf-drop-target="consulting-task"><span class="pdf-drop-title"><b aria-hidden="true">1</b>PDFの詳細項目をドロップ</span><small class="pdf-drop-callout">作業名・作業工程の文字枠をここへ移動</small><select id="pdfManualConsultingTaskTemplate"></select></label>
                 <label class="field"><span>内訳名称（必要時のみ修正）</span><input id="pdfManualConsultingTask" type="text"></label>
-                <label class="field"><span>職種</span><select id="pdfManualConsultingRole"></select></label>
-                <label class="field"><span>人工</span><input id="pdfManualConsultingDays" type="number" min="0" step="0.001"></label>
+                <label class="field pdf-field-drop-target" data-pdf-drop-target="consulting-role"><span class="pdf-drop-title"><b aria-hidden="true">2</b>PDFの職種をドロップ</span><small class="pdf-drop-callout">例：主任技師、技師（A）</small><select id="pdfManualConsultingRole"></select></label>
+                <label class="field pdf-field-drop-target" data-pdf-drop-target="consulting-days"><span class="pdf-drop-title"><b aria-hidden="true">3</b>PDFの人工をドロップ</span><small class="pdf-drop-callout">例：1、2.5人日</small><input id="pdfManualConsultingDays" type="number" min="0" step="0.001"></label>
                 <small class="field-note">詳細項目は基準上の作業を整理するための選択肢です。確認済み標準歩掛がない項目は、原資料の職種・人工を入力してください。</small>
               </div>
               <div id="pdfManualMetadataFields" class="pdf-manual-fields" hidden>
@@ -469,6 +474,7 @@
         </ol>
         <div class="callout"><strong>PDF・写真から始める場合</strong><br>「PDF・写真から取込み」で資料を読み取り、確認・修正画面で業務名、発注者、担当部署、場所、期間、元の文章、ページ、単位、数量、職種、人工を確認します。低確信度候補、金額、年度・見積提出先は初期選択しません。確認ボタンを押すまで積算データは変更されません。</div>
         <div class="callout"><strong>数量の入力桁</strong><br>点・回・箇所・業務・測線・本・枚・日・m²などは整数だけ入力できます。km・km²・時間などの連続量は小数第3位までです。画面入力、貼り付け、保存済みJSONの読込みでも同じ規則を適用します。</div>
+        <div class="callout"><strong>測量の作業規程上の分類</strong><br>第2編「基準点測量」、第3編「地形測量及び写真測量」、第4編「地形測量及び写真測量（三次元点群測量）」、第5編「応用測量」に分けています。空中写真・航空レーザ・UAV・地上レーザは第3編／第4編、深浅測量は第5編の河川測量内です。「共通」は積算基準の共通費目で、作業規程の測量種別とは別に表示します。</div>
         <div class="formula-grid">
           <div><span>諸経費率</span><code>Z = 288.50 × X<sup>-0.084</sup></code><small>50万円以下95.8%、1億円超61.4%、中間は小数1位四捨五入</small></div>
           <div><span>電子成果品作成費</span><code>2.3 × x<sup>0.44</sup></code><small>x＝直接人件費（千円）、1万円以上17万円以下、千円未満切捨て</small></div>
@@ -583,9 +589,9 @@
   <script src="consulting-engine.js?v=20260822-1"></script>
   <script src="document-import-engine.js?v=20260823-1"></script>
   <script src="document-reader.js?v=20260823-1"></script>
-  <script src="app.js?v=20260823-6"></script>
-  <script src="consulting.js?v=20260823-2"></script>
-  <script src="document-import.js?v=20260823-7"></script>
+  <script src="app.js?v=20260823-7"></script>
+  <script src="consulting.js?v=20260823-3"></script>
+  <script src="document-import.js?v=20260823-8"></script>
   <script src="analytics.js?v=20260823-1"></script>
 </body>
 </html>

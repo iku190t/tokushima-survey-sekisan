@@ -23,9 +23,9 @@ for (const file of ["data/consulting-master.js", "consulting-engine.js", "consul
 for (const type of ["土木設計業務", "調査・計画業務", "地質解析等調査業務", "地質一般調査業務"]) assert.ok(master.includes(type), `${type}を区分する`);
 for (const task of ["設計条件の確認", "施工計画", "資料整理とりまとめ", "孔内水平載荷試験", "地下水位観測", "土質・岩石試験"]) assert.ok(master.includes(task), `${task}を詳細項目として選べる`);
 assert.ok(html.includes("詳細項目（作業工程）") && ui.includes("consultingTaskTemplate"), "設計・地質で詳細項目を選んで内訳名称へ反映する");
-assert.ok(ui.includes('["design", "planning"]') && ui.includes('["geologyAnalysis", "geologyGeneral"]'), "設計業務と地質業務のタブで対象区分を分離する");
+assert.ok(ui.includes('entry.id === "design"') && ui.includes('entry.id === "planning"') && ui.includes('["geologyAnalysis", "geologyGeneral"]'), "設計・調査計画・地質のタブで対象区分を分離する");
 assert.ok(ui.includes('ezsekisan:businessscope') && ui.includes("activeConsultingScope"), "業務タブ切替を設計・地質入力へ反映する");
-assert.ok(html.includes('data-consulting-scope="design"') && html.includes('data-consulting-scope="geology"'), "タブに対応する積上費用だけを表示する");
+assert.ok(html.includes('data-consulting-scope="design-planning"') && html.includes('data-consulting-scope="geology"'), "タブに対応する積上費用だけを表示する");
 assert.ok(master.includes("designLead: 0.5") && master.includes("designEngineerA: 1.0"), "設計留意書の確認済み歩掛だけをプリセットする");
 assert.ok(ui.includes("人工入力の行があります"), "未確認人工を提出前警告する");
 assert.ok(html.includes("未入力の0円"), "0円を不要と誤認しない注意を表示する");

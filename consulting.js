@@ -15,9 +15,9 @@
   let activeConsultingScope = "design";
 
   function serviceInScope(entry) {
-    return activeConsultingScope === "geology"
-      ? ["geologyAnalysis", "geologyGeneral"].includes(entry.id)
-      : ["design", "planning"].includes(entry.id);
+    if (activeConsultingScope === "geology") return ["geologyAnalysis", "geologyGeneral"].includes(entry.id);
+    if (activeConsultingScope === "planning") return entry.id === "planning";
+    return entry.id === "design";
   }
 
   function scopedServices() {
@@ -26,13 +26,17 @@
 
   function renderScopeLabels() {
     const geology = activeConsultingScope === "geology";
-    $("consultingScopeTitle").textContent = geology ? "地質業務の年度別技術者単価と計算方式" : "設計業務の年度別技術者単価と計算方式";
+    const planning = activeConsultingScope === "planning";
+    const label = geology ? "地質業務" : planning ? "調査・計画業務" : "設計業務";
+    $("consultingScopeTitle").textContent = `${label}の年度別技術者単価と計算方式`;
     $("consultingScopeDescription").textContent = geology
       ? "地質解析は設計方式、地質一般調査は地質調査方式で別計算します。機械・材料・運搬・仮設等は案件条件を確認してください。"
-      : "土木設計・調査計画を設計方式で計算します。歩掛を確認できない作業の人工は自動推定しません。";
-    $("consultingAddHeading").textContent = geology ? "地質業務の詳細項目・人工を追加" : "設計業務の詳細項目・人工を追加";
-    $("consultingDetailHeading").textContent = geology ? "地質業務の職種別内訳" : "設計業務の職種別内訳";
-    $("consultingEmptyText").textContent = geology ? "地質業務の業務区分、詳細項目、職種、人工を選んで追加します。" : "設計業務の業務区分、詳細項目、職種、人工を選んで追加します。";
+      : planning
+        ? "調査・計画業務を土木設計業務等の積算方式で計算します。歩掛を確認できない作業の人工は自動推定しません。"
+        : "土木設計業務を設計方式で計算します。歩掛を確認できない作業の人工は自動推定しません。";
+    $("consultingAddHeading").textContent = `${label}の詳細項目・人工を追加`;
+    $("consultingDetailHeading").textContent = `${label}の職種別内訳`;
+    $("consultingEmptyText").textContent = `${label}の業務区分、詳細項目、職種、人工を選んで追加します。`;
   }
 
   function state() {
@@ -193,7 +197,7 @@
     if (!days) { app.notify("人工を0より大きい値で入力してください"); return; }
     current.lines.push({ id: `consult-${Date.now()}-${Math.random().toString(16).slice(2)}`, serviceType: selectedService.id, taskName: $("consultingTaskName").value.trim() || $("consultingTaskTemplate").value, role, days });
     updateAndRender();
-    app.notify(`${activeConsultingScope === "geology" ? "地質" : "設計"}業務の人工を追加しました`);
+    app.notify(`${activeConsultingScope === "geology" ? "地質" : activeConsultingScope === "planning" ? "調査・計画" : "設計"}業務の人工を追加しました`);
   }
 
   function addPreset() {
@@ -297,7 +301,7 @@
     $("consultingPrintButton").addEventListener("click", printCombined);
     document.addEventListener("ezsekisan:estimatechange", renderAll);
     document.addEventListener("ezsekisan:businessscope", (event) => {
-      if (!["design", "geology"].includes(event.detail?.scope)) return;
+      if (!["design", "planning", "geology"].includes(event.detail?.scope)) return;
       activeConsultingScope = event.detail.scope;
       renderAll();
     });
