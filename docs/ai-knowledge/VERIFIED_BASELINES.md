@@ -1515,3 +1515,50 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `styles.css` | `879E7E86300618F7671A36795A2671F5CE4DDAC574028DB5A04990CA23F006FF` |
 | `tests/test-ui-static.js` | `EE7046D3FFB6AFC3247C09E4BD38CFC0B5AC41307327A256239731DBEB50C7F7` |
 | `tests/test-consulting-ui.js` | `E648962CFB2E1C5C05CE6DBECB6478DF66A61656A006D15A7A36C20B22720B5D` |
+
+## B-2026-08-23-13
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-23
+- アプリコミット: `df9e55b044d3631bdeee7ca5ac64aa9a48ac4879`
+- GitHub Pagesビルド: `1169284830`（`built`）
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: B-12の全業務資料台帳という誤った範囲拡張を撤回し、測量項目の選択直下だけに使用規定書・原PDF・該当ページ表を追加した版。年度一覧も全国標準測量マスターが使用・照合する4資料だけを表示する。
+
+### 合格した試験
+
+```text
+OK: regulation audit checks passed (master mapping, precision, quantity formulas, travel, rounding, overhead)
+OK: MLIT official role price presets R4-R8 and consulting roles R6-R8
+OK: UI static wiring checks passed
+OK: nationwide submission destinations and standard master catalog checks passed
+OK: Hiroshima R6-R8 complete annual master audit checks passed
+OK: nationwide R6-R8 standard reference master checks passed
+OK: consulting/design/geology calculation checks passed
+OK: consulting UI and report wiring checks passed
+OK: R6-R8 consulting/planning/geology source-table walks and MLIT source catalog checks passed
+OK: R8 UAV laser detailed work item expansion checks passed
+OK: document PDF/OCR extraction and review candidate checks passed
+OK: document import review UI and safe apply wiring checks passed
+OK: official procurement case matching, XML parsing, and source ledger candidates passed
+OK: official case search UI is removed while saved-data compatibility remains
+```
+
+追加検査: `node --check app.js`、`node --check consulting.js`、`git diff --check`合格。
+
+### 実ブラウザー確認
+
+- 令和8年度「2級基準点測量 新点10点 伐採有り」で、歩掛原表p.23、直接経費率p.105、国交省測量業務積算基準、国交省技術者単価、国土地理院作業規程資料の4リンクを確認した。
+- 作業規程上の分類は「第2編 第2章 基準点測量」、年度一覧は測量マスターの4資料だけだった。
+- 公開版は`app.js?v=20260823-9`、`consulting.js?v=20260823-6`を読み込み、設計等へ追加した資料表がないこと、ブラウザー警告・エラー0件を確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `app.js` | `3A812AD5DC3F0FAB4A2EC6BECF9BC5AB9606BEB435756181D9F04F411249BF42` |
+| `consulting.js` | `939BB018AB688883461E275333EAF9BC5106CAD9B070060AE4D586F55EA79C85` |
+| `index.html` | `1732AD9F859B97B0401E889DAAF1326D21BF05774E2FA74C1664A2CD8D1C2039` |
+| `styles.css` | `C526A3B74351D7A2B3DA18503D6ADBF00568CC7E44EA72AEDE88A892BB90DFD2` |
+| `tests/test-ui-static.js` | `E8AA6C8BB656D795E8E0D9EB2FD7FB4C7308490589A42DB329A1287AB41EB5CB` |
+| `tests/test-consulting-ui.js` | `E436796D8109B8EA9B6C73C4ECCCD30E63871C13FB4C377CD9A538502D4E7EBE` |
