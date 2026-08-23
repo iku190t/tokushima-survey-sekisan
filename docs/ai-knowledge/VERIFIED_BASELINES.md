@@ -1605,3 +1605,44 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `engine.js` | `0CCCF76F84D647A8150DCDC3870B39AC89660DBEDCD9AEE7B521C0A5FA82CC48` |
 | `mlit-gyoumu-sekisan-documents.json` | `7AD1BB7EE0C2048EACEEF95683B50AADA5394C23A22ABB75198A1EF9728C07C0` |
 | `tests/test-master-catalog.js` | `CA03A0C302CF2931D743F5B700CEF66F9A2C3DDDF1CF391614146CB3B8F90E79` |
+
+## B-2026-08-24-01
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-24
+- 実装コミット: `c8f23c337aa84e775a6c0472cafe8b5029eb3a55`
+- GitHub Pagesビルド: `1169965717`（`built`）
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: 全国対応画面に混在していた広島県専用マスター、専用出典、監査データ、生成ツール、専用テストを削除し、国交省の全国資料だけを参照する構成へ整理した版。
+
+### 確認済みの境界
+
+- 計算マスターと出典台帳に広島県専用データは0件。
+- 全国47都道府県の提出先一覧には、全国対応に必要な選択肢として広島県を残す。
+- 全国標準歩掛の数値候補は残すが、現行全編の原表ページを照合できていない項目を「検証済み」と表示しない。
+- 過去の判断・障害記録は履歴として保持し、現行データと区別する。
+
+### 合格した試験
+
+- `tests/test-*.js` 全13本合格。
+- `node --check` は `app.js`、`consulting.js`、`data/national-standard-masters.js`、`data/official-source-catalog.js`、`data/consulting-standard-walks.js`で合格。
+- 実行時ファイル、テスト、ツールに県専用URL・県専用マスター参照がないことを検索検査で確認した。
+- `git diff --check`合格。
+
+### 実ブラウザー確認
+
+- 公開版の出典台帳に管轄コード34または県調達URLを持つ資料が0件。
+- 公開版の全国標準マスターに県専用出典リンクが0件。
+- 「全国標準参考歩掛」「原表ページ未対応」の表示を確認した。
+- ブラウザー警告・エラー0件。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `app.js` | `988100ECBD9EE4E2D89FF1AA3828559653A09E2720DF98C805A837167A182A2C` |
+| `consulting.js` | `0BE5BFCB2018F5176887F019081567EE8162CF680994C2EE9E61C01B214D1A20` |
+| `index.html` | `6A06FCA00F0B879CA9C9EA77BF45555AFD1A04889F8A68E0B1BDAED39985B469` |
+| `official-source-catalog.json` | `77391507F81B03A2C88C93D0B24CBB032C89228520128395D0E27286510C8DD1` |
+| `master-standard-r8.json` | `D329A3698F8AADE986E0FA73D9A70215A67E9668E6DCFD36EBEAF0482B557897` |
+| `test-nationwide-standard.js` | `3DCF394B30C164000A94E55AE929A30AF1722223B9ADBB9E1CE0E5D6AA71EC04` |
