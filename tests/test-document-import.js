@@ -85,6 +85,17 @@ assert.ok(cost, "地質の間接調査費を候補化する");
 assert.strictEqual(cost.amount, 200000);
 assert.strictEqual(cost.selected, false, "金額候補は誤計上防止のため初期選択しない");
 
+const areaItem = surveyMaster.workItems.find((item) => item.code === "7-1-2-1");
+const areaConversion = engine.convertSurveyQuantity(6.9, "standard", areaItem);
+assert.strictEqual(areaConversion.sourceUnitLabel, "10,000m²", "用地測量の資料単位を標準10,000m²で表示する");
+assert.strictEqual(areaConversion.quantity, 69000, "6.9×10,000m²を69,000m²へ換算する");
+const scaledAreaResult = engine.analyze([{ pageNumber: 1, method: "text", text: "用地測量 資料調査 公図等の転写 (地積測量図以外の公図等の転写) 10,000m² 6.9" }], surveyMaster, consultingMaster, jurisdictions);
+const scaledArea = scaledAreaResult.candidates.find((candidate) => candidate.kind === "survey" && candidate.code === "7-1-2-1");
+assert.ok(scaledArea, "10,000m²単位の用地測量行を候補化する");
+assert.strictEqual(scaledArea.sourceQuantity, 6.9, "資料上の数量6.9を保持する");
+assert.strictEqual(scaledArea.sourceUnitLabel, "10,000m²", "資料上の単位を保持する");
+assert.strictEqual(scaledArea.quantity, 69000, "自動候補も実面積69,000m²へ換算する");
+
 const ocrResult = engine.analyze([{ ...pages[0], method: "ocr" }], surveyMaster, consultingMaster, jurisdictions);
 assert.ok(ocrResult.warnings.some((warning) => warning.includes("OCR")), "OCRページは原文照合警告を出す");
 

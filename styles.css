@@ -328,15 +328,7 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
 .pdf-click-selected-item span { margin-top: 3px; color: var(--muted); font-size: 9px; line-height: 1.4; }
 .pdf-click-actions { display: grid; gap: 7px; }
 .pdf-click-note { margin: 0; color: var(--muted); font-size: 10px; line-height: 1.65; }
-.pdf-drag-dock { display: grid; gap: 8px; padding: 11px; background: #fff; border: 1px solid #bad2c7; border-radius: 10px; }
-.pdf-drag-dock > div:first-child > strong { color: var(--green-dark); font-size: 11px; }
-.pdf-drag-dock p { margin: 3px 0 0; color: var(--muted); font-size: 9px; line-height: 1.45; }
-.pdf-drag-targets { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
-.pdf-manual-drop-target { min-width: 0; padding: 9px; background: #f4f8f6; border: 2px dashed #8eb5a4; border-radius: 8px; transition: .14s; }
-.pdf-manual-drop-target span, .pdf-manual-drop-target strong { display: block; }
-.pdf-manual-drop-target span { color: #527166; font-size: 8px; font-weight: 800; }
-.pdf-manual-drop-target strong { margin-top: 3px; overflow: hidden; color: var(--green-dark); font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
-.pdf-manual-drop-target.drag-over, .pdf-field-drop-target.drag-over { background: #dff2e9; border-color: #1d6c52; box-shadow: 0 0 0 3px rgba(29,108,82,.13); }
+.pdf-field-drop-target.drag-over { background: #dff2e9; border-color: #1d6c52; box-shadow: 0 0 0 3px rgba(29,108,82,.13); }
 .pdf-manual-mapper { display: grid; gap: 10px; padding: 12px; background: #f1f7f4; border: 1px solid #9dbdae; border-radius: 10px; box-shadow: 0 7px 22px rgba(24,75,58,.1); }
 .pdf-manual-mapper[hidden], .pdf-manual-fields[hidden] { display: none; }
 .pdf-manual-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
@@ -348,8 +340,10 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
 .pdf-field-drop-target { padding: 6px; border: 2px dashed transparent; border-radius: 8px; transition: .14s; }
 .pdf-manual-mapper .field > span { font-size: 9px; }
 .pdf-manual-mapper input, .pdf-manual-mapper select { min-width: 0; padding: 8px 9px; font-size: 10px; }
-.pdf-manual-quantity { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 7px; }
-.pdf-manual-quantity b { min-width: 32px; color: var(--green-dark); font-size: 10px; }
+.pdf-manual-quantity { display: grid; grid-template-columns: minmax(0,1fr) minmax(105px,.7fr); align-items: stretch; gap: 7px; }
+.pdf-manual-quantity > label { display: grid; align-content: start; gap: 4px; margin: 0; background: #fff; border: 2px dashed #8eb5a4; }
+.pdf-manual-quantity > label > span { color: #456c5d; font-size: 8px; font-weight: 800; }
+.pdf-survey-quantity-field > strong { padding: 8px 9px; color: #124d3a; background: #e3f2ea; border-radius: 7px; font-size: 10px; line-height: 1.5; }
 .pdf-manual-fields small { color: var(--muted); font-size: 9px; line-height: 1.45; }
 .pdf-manual-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 

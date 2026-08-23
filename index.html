@@ -7,7 +7,7 @@
   <meta name="description" content="設計、測量、航空・船舶、地質を年度別技術者単価と根拠表示付きで計算するWeb業務積算ソフト">
   <meta name="author" content="株式会社アイズ測量">
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="styles.css?v=20260823-2">
+  <link rel="stylesheet" href="styles.css?v=20260823-3">
 </head>
 <body data-business-scope="design">
   <header class="app-header">
@@ -310,21 +310,14 @@
           <aside class="pdf-click-sidebar">
             <div class="pdf-click-summary"><span>反映待ち</span><strong id="pdfClickSelectedCount">0件</strong><p id="pdfClickSelectionHint">PDF上の色付き枠をクリックしてください。</p></div>
             <div id="pdfClickSelectedList" class="pdf-click-selected-list"></div>
-            <section id="pdfDragDock" class="pdf-drag-dock" aria-label="PDF文字のドラッグ先">
-              <div><strong>PDFからドラッグして入力</strong><p>左の文字枠を、項目または数量へ持ってきてください。</p></div>
-              <div class="pdf-drag-targets">
-                <div id="pdfManualItemDrop" class="pdf-manual-drop-target" data-pdf-drop-target="item" tabindex="0"><span>項目</span><strong id="pdfDragItemValue">ここへドロップ</strong></div>
-                <div id="pdfManualQuantityDrop" class="pdf-manual-drop-target" data-pdf-drop-target="quantity" tabindex="0"><span>数量</span><strong id="pdfDragQuantityValue">ここへドロップ</strong></div>
-              </div>
-            </section>
             <section id="pdfManualMapper" class="pdf-manual-mapper" hidden>
               <div class="pdf-manual-heading"><strong id="pdfManualHeadingText">この行の反映先を指定</strong><button id="cancelPdfManualLineButton" type="button" aria-label="閉じる">×</button></div>
               <q id="pdfManualSourceText">—</q>
               <label class="field"><span>反映する種類</span><select id="pdfManualKind"><option value="survey">測量項目・数量</option><option value="consulting">設計・調査・地質の人工</option><option value="metadata">業務基本情報</option></select></label>
               <div id="pdfManualSurveyFields" class="pdf-manual-fields">
                 <label class="field"><span>分類</span><select id="pdfManualSurveyCategory"></select></label>
-                <label class="field pdf-field-drop-target" data-pdf-drop-target="item"><span>詳細項目（ここにもドロップできます）</span><select id="pdfManualSurveyCode"></select></label>
-                <label class="field pdf-field-drop-target" data-pdf-drop-target="quantity"><span>数量（ここにもドロップできます）</span><span class="pdf-manual-quantity"><input id="pdfManualSurveyQuantity" type="number"><b id="pdfManualSurveyUnit">—</b></span><small id="pdfManualSurveyRule">項目を選択してください。</small></label>
+                <label class="field pdf-field-drop-target" data-pdf-drop-target="item"><span>積算する詳細項目</span><small>PDFの項目名をここへドロップ</small><select id="pdfManualSurveyCode"></select></label>
+                <div class="field pdf-survey-quantity-field"><span>資料の数量・単位</span><div class="pdf-manual-quantity"><label class="pdf-field-drop-target" data-pdf-drop-target="quantity"><span>数量をここへドロップ</span><input id="pdfManualSurveyQuantity" type="number"></label><label class="pdf-field-drop-target" data-pdf-drop-target="unit"><span>単位をここへドロップ</span><select id="pdfManualSurveySourceUnit"></select></label></div><strong id="pdfManualSurveyConversion">項目を選択してください。</strong><small id="pdfManualSurveyRule">項目を選択してください。</small></div>
               </div>
               <div id="pdfManualConsultingFields" class="pdf-manual-fields" hidden>
                 <label class="field"><span>業務区分</span><select id="pdfManualConsultingService"></select></label>
@@ -561,11 +554,11 @@
   <script src="data/consulting-master.js?v=20260822-1"></script>
   <script src="engine.js?v=20260822-1"></script>
   <script src="consulting-engine.js?v=20260822-1"></script>
-  <script src="document-import-engine.js?v=20260822-3"></script>
+  <script src="document-import-engine.js?v=20260823-1"></script>
   <script src="document-reader.js?v=20260823-1"></script>
   <script src="app.js?v=20260823-1"></script>
   <script src="consulting.js?v=20260822-2"></script>
-  <script src="document-import.js?v=20260823-3"></script>
+  <script src="document-import.js?v=20260823-4"></script>
   <script src="analytics.js?v=20260823-1"></script>
 </body>
 </html>

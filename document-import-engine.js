@@ -47,6 +47,66 @@
     return [visibleLine(unit)];
   }
 
+  function canonicalUnit(unit) {
+    const value = compact(unit).replace(/㎡/g, "m2").replace(/m²/gi, "m2");
+    if (value === "平方メートル" || value === "平方m") return "m2";
+    if (value === "平方キロメートル" || value === "平方km" || value === "平方キロ") return "km2";
+    return value;
+  }
+
+  function surveyUnitOptions(item) {
+    const targetUnit = item?.unit || "式";
+    const target = canonicalUnit(targetUnit);
+    const standardQuantity = Number(item?.standardQuantity);
+    const options = [];
+    if (["m2", "km2", "m", "km"].includes(target) && Number.isFinite(standardQuantity) && standardQuantity > 0 && standardQuantity !== 1) {
+      options.push({ id: "standard", label: `${standardQuantity.toLocaleString("ja-JP", { maximumFractionDigits: 6 })}${targetUnit}`, factor: standardQuantity });
+    }
+    options.push({ id: "base", label: targetUnit, factor: 1 });
+    if (target === "m2") options.push({ id: "ha", label: "ha", factor: 10000 }, { id: "km2", label: "km²", factor: 1000000 });
+    if (target === "km2") options.push({ id: "ha", label: "ha", factor: 0.01 }, { id: "m2", label: "m²", factor: 0.000001 });
+    if (target === "m") options.push({ id: "km", label: "km", factor: 1000 });
+    if (target === "km") options.push({ id: "m", label: "m", factor: 0.001 });
+    return options;
+  }
+
+  function detectSurveyUnitId(text, item) {
+    const source = canonicalUnit(normalizeCharacters(text).replace(/[\s,，]/g, ""));
+    const options = surveyUnitOptions(item);
+    const standard = options.find((option) => option.id === "standard");
+    if (standard) {
+      const standardToken = canonicalUnit(`${item.standardQuantity}${item.unit}`);
+      if (source.includes(standardToken)) return "standard";
+    }
+    if (/(?:^|[^a-z])ha(?:$|[^a-z])/.test(source)) return options.some((option) => option.id === "ha") ? "ha" : "base";
+    if (source.includes("km2")) return options.some((option) => option.id === "km2") ? "km2" : "base";
+    if (source.includes("m2")) return options.some((option) => option.id === "m2") ? "m2" : "base";
+    if (source.includes("km")) return options.some((option) => option.id === "km") ? "km" : "base";
+    if (/(?:^|[^a-z])m(?:$|[^a-z])/.test(source)) return options.some((option) => option.id === "m") ? "m" : "base";
+    return "base";
+  }
+
+  function convertSurveyQuantity(value, sourceUnitId, item) {
+    const rawQuantity = Math.max(0, Number(String(value).replace(/,/g, "")) || 0);
+    const options = surveyUnitOptions(item);
+    const sourceUnit = options.find((option) => option.id === sourceUnitId) || options.find((option) => option.id === "base") || options[0];
+    const quantity = Math.round(rawQuantity * sourceUnit.factor * 1000000) / 1000000;
+    return { rawQuantity, sourceUnitId: sourceUnit.id, sourceUnitLabel: sourceUnit.label, factor: sourceUnit.factor, quantity, unit: item?.unit || "式" };
+  }
+
+  function scaledSurveyQuantity(line, item) {
+    const sourceUnitId = detectSurveyUnitId(line, item);
+    const option = surveyUnitOptions(item).find((entry) => entry.id === sourceUnitId);
+    if (!option || option.id === "base") return null;
+    const normalized = canonicalUnit(normalizeCharacters(line).replace(/,/g, ""));
+    const token = option.id === "standard" ? canonicalUnit(`${item.standardQuantity}${item.unit}`) : canonicalUnit(option.label);
+    const index = normalized.indexOf(token);
+    if (index < 0) return null;
+    const trailing = normalized.slice(index + token.length).replace(/^当り/, "");
+    const match = trailing.match(/^\s*([0-9]+(?:\.[0-9]+)?)(?!\s*\/)/);
+    return match ? convertSurveyQuantity(match[1], sourceUnitId, item) : null;
+  }
+
   function numericMatches(line, aliases) {
     const source = normalizeCharacters(line).replace(/,/g, "");
     const unitPattern = aliases.map(escapeRegExp).join("|");
@@ -83,9 +143,10 @@
         .sort((a, b) => b.score - a.score);
       if (!ranked.length) return;
       const best = ranked[0];
-      const values = numericMatches(line, unitAliases(best.item.unit));
-      if (!values.length) return;
-      const quantity = values[values.length - 1].value;
+      const scaled = scaledSurveyQuantity(line, best.item);
+      const values = scaled ? [] : numericMatches(line, unitAliases(best.item.unit));
+      if (!scaled && !values.length) return;
+      const quantity = scaled?.quantity ?? values[values.length - 1].value;
       const ambiguous = Boolean(ranked[1] && ranked[1].score >= best.score - 5);
       const confidence = best.score >= 100 && !ambiguous ? "high" : best.score >= 60 && !ambiguous ? "medium" : "low";
       found.push({
@@ -94,6 +155,9 @@
         selected: confidence !== "low",
         code: best.item.code,
         quantity,
+        sourceQuantity: scaled?.rawQuantity,
+        sourceUnitId: scaled?.sourceUnitId,
+        sourceUnitLabel: scaled?.sourceUnitLabel,
         unit: best.item.unit,
         label: best.item.name,
         page: page.pageNumber,
@@ -341,5 +405,5 @@
     return { metadata: detectMetadata(safePages, jurisdictions), pages: safePages, candidates, warnings };
   }
 
-  return { normalizeCharacters, compact, numericMatches, detectMetadata, analyze };
+  return { normalizeCharacters, compact, numericMatches, surveyUnitOptions, detectSurveyUnitId, convertSurveyQuantity, detectMetadata, analyze };
 });
