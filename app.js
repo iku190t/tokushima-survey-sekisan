@@ -10,6 +10,7 @@
   const yen = new Intl.NumberFormat("ja-JP", { style: "currency", currency: "JPY", maximumFractionDigits: 0 });
   const numberFormat = new Intl.NumberFormat("ja-JP", { maximumFractionDigits: 3 });
   const defaultDocumentTitle = document.title;
+  const officialSourceCatalog = window.OFFICIAL_SOURCE_CATALOG || { sources: [] };
   const $ = (id) => document.getElementById(id);
   const clone = (value) => JSON.parse(JSON.stringify(value));
   const h = (value) => String(value ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
@@ -160,6 +161,87 @@
       if (!/^https:\/\//i.test(url)) return `<li>${label}</li>`;
       return `<li><a href="${h(url)}" target="_blank" rel="noopener noreferrer">${label}</a></li>`;
     }).join("");
+  }
+
+  function sourceTableHtml(master) {
+    const entries = Array.isArray(master.sourceLinks) && master.sourceLinks.length ? master.sourceLinks : (master.sources || []);
+    return entries.map((entry) => {
+      const normalized = typeof entry === "string" ? { label: entry, url: "" } : entry;
+      const label = normalized.label || normalized.note || "出典";
+      const url = String(normalized.url || "");
+      const catalogSource = (officialSourceCatalog.sources || []).find((source) => source.url === url);
+      const link = /^https:\/\//i.test(url) ? `<a href="${h(url)}" target="_blank" rel="noopener noreferrer">${h(label)}</a>` : h(label);
+      const usage = catalogSource ? officialSourceUsage(catalogSource) : "選択マスターの出典・照合資料";
+      const pages = catalogSource?.pages ? `${h(catalogSource.pages)}頁` : "—";
+      const [status] = catalogSource ? officialSourceStatus(catalogSource) : ["マスター記載"];
+      return `<tr><td>${link}</td><td>${h(usage)}</td><td>${pages}</td><td>${h(status)}</td></tr>`;
+    }).join("") || '<tr><td colspan="4">出典資料が登録されていません。</td></tr>';
+  }
+
+  const sourceKindLabels = {
+    standard: "積算基準書全編",
+    reference: "積算基準参考資料",
+    "measurement-material": "測量関係資料",
+    "measurement-standard": "測量業務積算基準",
+    "design-standard": "土木設計業務等積算基準",
+    "geology-standard": "地質調査積算基準",
+    "reference-amendment": "参考資料改定内容",
+    "standard-amendment-1": "標準積算基準書改定内容（1）",
+    "standard-amendment-2": "標準積算基準書改定内容（2）",
+    "standard-amendment-3": "標準積算基準書改定内容（3）",
+    "standard-amendment-4": "標準積算基準書改定内容（4）",
+    "role-prices": "設計業務委託等技術者単価"
+  };
+
+  function eraYear(year) {
+    return `令和${Number(year) - 2018}年度`;
+  }
+
+  function officialSourceTitle(source) {
+    return source.title || `${eraYear(source.fiscalYear)} ${source.jurisdictionName || "公式公開元"} ${sourceKindLabels[source.kind] || source.kind || "資料"}`;
+  }
+
+  function officialSourceUsage(source) {
+    if (source.kind === "role-prices") return "技術者の日額単価に使用";
+    if (source.jurisdictionCode === "34" && source.kind === "standard") return "全国標準部分の歩掛・率・諸経費の年度照合元";
+    if (source.jurisdictionCode === "34" && source.kind === "reference") return "補正式・適用条件等の照合元";
+    if (source.jurisdictionCode === "gsi") return "作業規程・測量分類の確認資料";
+    if (source.kind === "design-standard") return "設計歩掛の年度改定監査・一部固定値歩掛に使用";
+    if (source.kind === "measurement-standard") return "測量歩掛・率の年度改定監査";
+    if (source.kind === "geology-standard") return "地質歩掛・諸経費の年度改定監査";
+    if (String(source.kind || "").includes("amendment")) return "年度改定差分の監査資料";
+    return "原資料台帳・照合資料";
+  }
+
+  function officialSourceStatus(source) {
+    if (source.kind === "role-prices") return ["計算採用", "verified"];
+    if (source.jurisdictionCode === "34" && source.kind === "standard") return ["原表照合元", "verified"];
+    if (source.auditStatus === "indexed") return ["取得・索引済み", "indexed"];
+    if (source.acquisitionStatus === "acquired") return ["取得済み", "acquired"];
+    return ["要確認", "pending"];
+  }
+
+  function renderGuideSourceLedger(resetYear = false) {
+    const yearSelect = $("guideSourceYear");
+    const body = $("guideSourceLedgerBody");
+    if (!yearSelect || !body) return;
+    const preferredYear = Number(estimate.consulting?.fiscalYear || activeMaster().fiscalYear || 2026);
+    if (resetYear || !yearSelect.value) yearSelect.value = String(preferredYear);
+    const fiscalYear = Number(yearSelect.value || preferredYear);
+    const rows = (officialSourceCatalog.sources || [])
+      .filter((source) => Number(source.fiscalYear) === fiscalYear)
+      .sort((a, b) => {
+        const weight = (source) => source.kind === "role-prices" ? 0 : source.kind === "standard" ? 1 : source.kind === "reference" ? 2 : source.kind === "measurement-standard" ? 3 : source.kind === "design-standard" ? 4 : source.kind === "geology-standard" ? 5 : 10;
+        return weight(a) - weight(b) || officialSourceTitle(a).localeCompare(officialSourceTitle(b), "ja");
+      });
+    body.innerHTML = rows.map((source) => {
+      const [status, statusClass] = officialSourceStatus(source);
+      const sha = source.sha256 ? `<small>SHA-256 ${h(source.sha256.slice(0, 12))}…</small>` : "";
+      const title = officialSourceTitle(source);
+      const link = /^https:\/\//i.test(source.url || "") ? `<a href="${h(source.url)}" target="_blank" rel="noopener noreferrer">${h(title)}</a>` : h(title);
+      return `<tr><td>${h(source.jurisdictionName || "—")}</td><td>${link}${sha}</td><td class="source-use-status">${h(officialSourceUsage(source))}</td><td class="source-page">${source.pages ? `${h(source.pages)}頁` : "—"}</td><td><span class="scope-status ${h(statusClass)}">${h(status)}</span></td></tr>`;
+    }).join("") || '<tr><td colspan="5">この年度の公式資料台帳は未収録です。</td></tr>';
+    $("guideSourceLedgerSummary").textContent = `${eraYear(fiscalYear)}：公式PDF・資料 ${rows.length}件。資料の取得状態と、実際の計算への使用状況を分けて表示しています。`;
   }
 
   function jurisdictionName(code) {
@@ -510,7 +592,7 @@
         ${unitAudit}
         <p><b>直接作業費</b>${directFormula} ＝ ${yen.format(calculated.directWork)}</p>
         <p><b>精度管理費</b>(${yen.format(calculated.labor)}＋${yen.format(calculated.machine)}) × ${(calculated.precisionRate * 100).toFixed(0)}% ＝ ${yen.format(calculated.precision)}</p>
-        <p class="calc-source">出典：基準書 p.${h(item.source.standardPage)}${item.source.ratioPage ? `／直接経費率 p.${h(item.source.ratioPage)}` : ""}</p>
+        <p class="calc-source">${(() => { const source = (master.sourceLinks || []).find((entry) => typeof entry === "object" && String(entry.label || "").includes("公開全編")) || (master.sourceLinks || [])[0]; const label = source?.label || `${eraYear(master.fiscalYear)} 測量業務積算基準書`; const pageText = `p.${h(item.source.standardPage)}${item.source.ratioPage ? `／直接経費率 p.${h(item.source.ratioPage)}` : ""}`; return source?.url && /^https:\/\//i.test(source.url) ? `出典：<a href="${h(source.url)}" target="_blank" rel="noopener noreferrer">${h(label)}</a> ${pageText}` : `出典：${h(label)} ${pageText}`; })()}</p>
       </div></details>`;
       const importSource = line.importSource ? `<small>資料取込：${h(line.importSource.fileName || "貼付け原文")} p.${h(line.importSource.page || 1)}／${line.importSource.method === "ocr" ? "OCR" : "文字抽出"}／要原文照合</small>` : "";
       return `<tr data-line-id="${h(line.id)}">
@@ -739,7 +821,7 @@
     return `<section class="report-page">${reportHeader("積 算 条 件 書", master.label)}
       <table class="report-table conditions-table"><tbody>${conditionRows.map(([label, value]) => `<tr><th>${h(label)}</th><td>${h(value)}</td></tr>`).join("")}</tbody></table>
       <section class="report-note-block"><h2>提出前の確認事項</h2><ul>${issues.length ? issues.map((issue) => `<li>${h(issue.text)}</li>`).join("") : "<li>案件の特記仕様書、成果検定費、旅費条件を最終照合すること。</li>"}</ul></section>
-      <section class="report-note-block source-note"><h2>マスター収録出典</h2><ul>${sourceListHtml(master)}</ul></section>
+      <section class="report-note-block source-note"><h2>公式PDF・計算根拠一覧</h2><p>資料の取得状態と、実際の計算への使用状況を分けて記載しています。</p><table class="report-table source-report-table"><thead><tr><th>PDF・資料名</th><th>計算での用途</th><th>頁数</th><th>確認状態</th></tr></thead><tbody>${sourceTableHtml(master)}</tbody></table></section>
       <p class="report-disclaimer"><strong>参考試算用・公式帳票ではありません。</strong> 本書は選択中の年度マスターと入力条件に基づく積算条件を記録したものです。計算結果等を保証するものではありません。実務利用時は、最新の公式基準、案件固有の特記仕様、貸与資料、現場条件、発注機関の運用および検証済みの正解積算を優先し、利用者の責任で照合してください。</p>
       ${reportFooter("積算条件書")}</section>`;
   }
@@ -809,6 +891,7 @@
     renderMasterEditor();
     renderMasterStatus();
     renderReportSettings();
+    renderGuideSourceLedger(false);
     document.dispatchEvent(new CustomEvent("ezsekisan:estimatechange"));
   }
 
@@ -1259,9 +1342,11 @@
       }
       document.dispatchEvent(new CustomEvent("ezsekisan:businessscope", { detail: { scope: businessScope } }));
       if (button.dataset.view === "master") { editorMasterId = estimate.masterId; populateMasterSelects(); renderMasterEditor(); }
+      if (button.dataset.view === "guide") renderGuideSourceLedger(true);
       if (button.dataset.view === "report") renderReportSettings();
       if (button.dataset.view === "consulting") document.dispatchEvent(new CustomEvent("ezsekisan:estimatechange"));
     }));
+    $("guideSourceYear").addEventListener("change", () => renderGuideSourceLedger(false));
     $("regulationGroupSelect").addEventListener("change", populateCategories);
     $("categorySelect").addEventListener("change", populateItems);
     $("itemSelect").addEventListener("change", updateSelectedItemMeta);

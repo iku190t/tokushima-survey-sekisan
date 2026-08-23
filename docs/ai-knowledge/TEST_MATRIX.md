@@ -8,12 +8,12 @@
 |---|---|---|---|---|
 | T-ENGINE | `node tests/test-engine.js` | 歩掛、精度、数量式、旅費、丸め、諸経費 | `engine.js`、マスター、計算UI変更時は必須 | 合格 |
 | T-RATES | `node tests/test-role-prices.js` | 令和4～8年度の公式技術者単価 | 単価プリセット、年度切替変更時は必須 | 合格 |
-| T-UI | `node tests/test-ui-static.js` | HTML要素の結線、数量制限、追加済み測量項目の変更、5帳票、A4印刷CSS、Ez積算の統合案内・免責・公開HTTPS版Analytics常時計測 | `index.html`、`app.js`、`analytics.js`、`styles.css`変更時は必須 | 合格 |
+| T-UI | `node tests/test-ui-static.js` | HTML要素の結線、数量制限、追加済み測量項目の変更、5帳票、年度別公式PDF台帳、測量明細の原表ページリンク、積算条件書の根拠一覧表、A4印刷CSS、Ez積算の統合案内・免責・公開HTTPS版Analytics常時計測 | `index.html`、`app.js`、`analytics.js`、`styles.css`変更時は必須 | 合格 |
 | T-CATALOG | `node tests/test-master-catalog.js` | 見積提出先47都道府県、全国標準R6～R8配信カタログ、年度メタデータ、SHA-256、県別マスター非配信 | 提出先一覧、年度単価セット、配信処理変更時は必須 | 合格 |
 | T-HIROSHIMA | `node tests/test-hiroshima-masters.js` | 広島県令和6～8年度の134項目、直接経費率108行、単価、諸経費、旅費、安全費、電子成果品、UAVレーザ、代表固定金額 | 広島県年度マスター・生成処理変更時は必須 | 合格 |
 | T-NATIONAL | `node tests/test-nationwide-standard.js` | 全国標準参考R6～R8の134項目、直接経費率108行、技術者単価、諸経費、代表固定金額、検証状態・出典・限界表示 | 全国標準参考マスター、年度・地域切替変更時は必須 | 合格 |
 | T-CONSULT | `node tests/test-consulting-engine.js` | 設計その他原価・一般管理費、電子成果品、地質諸経費、年度別職種単価、測量との税抜合算、人工桁 | 設計・調査計算、職種単価、総合計変更時は必須 | 合格 |
-| T-CONSULT-UI | `node tests/test-consulting-ui.js` | 設計・測量・調査計画・地質の4業務区分、設計・調査計画・地質の詳細項目、人工入力、確認済み歩掛、警告、保存、新規、総合帳票結線 | `consulting.js`、総合画面・帳票変更時は必須 | 合格 |
+| T-CONSULT-UI | `node tests/test-consulting-ui.js` | 設計・測量・調査計画・地質の4業務区分、設計・調査計画・地質の詳細項目、人工入力、確認済み歩掛、採用歩掛→PDF原表ページ対応表、年度別PDF台帳、警告、保存、新規、総合帳票結線 | `consulting.js`、総合画面・帳票変更時は必須 | 合格 |
 | T-CONSULT-WALKS | `node tests/test-consulting-walks.js` | 国交省R6～R8各8資料の年度・SHA、職種別標準歩掛735表、業務区分、単位、出典ページ、代表固定値 | 設計・調査計画・地質の標準歩掛、原資料台帳、年度出典変更時は必須 | 合格 |
 | T-AERIAL-DETAIL | `node tests/test-work-item-expansions.js` | 測量業務内の令和8年度UAVレーザ8工程、職種別人工合計、年度、公式出典 | UAV・レーザ等の詳細項目、年度展開変更時は必須 | 合格 |
 | T-STANDARD-SCOPE | `node tests/test-ui-static.js` | 国交省一般と港湾・航空局・用地・農林・上下水道等の別体系表示、航空測量／空港・深浅／港湾船舶の区別 | 業務タブ、マスター範囲、使い方・計算根拠変更時は必須 | 合格 |

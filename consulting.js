@@ -17,6 +17,14 @@
   let activeConsultingScope = "design";
   let visiblePresets = [];
 
+  function allPresets() {
+    return [...master.verifiedPresets, ...(Array.isArray(standardWalks.presets) ? standardWalks.presets : [])];
+  }
+
+  function presetById(id) {
+    return allPresets().find((preset) => preset.id === id);
+  }
+
   function serviceInScope(entry) {
     if (activeConsultingScope === "geology") return ["geologyAnalysis", "geologyGeneral"].includes(entry.id);
     if (activeConsultingScope === "planning") return entry.id === "planning";
@@ -100,8 +108,7 @@
   function renderPresets() {
     const query = String($("consultingPresetSearch").value || "").trim().toLocaleLowerCase("ja");
     const year = Number(state().fiscalYear);
-    const allPresets = [...master.verifiedPresets, ...(Array.isArray(standardWalks.presets) ? standardWalks.presets : [])];
-    visiblePresets = allPresets.filter((preset) =>
+    visiblePresets = allPresets().filter((preset) =>
       scopedServices().some((entry) => entry.id === preset.serviceType)
       && (!preset.fiscalYear || Number(preset.fiscalYear) === year)
       && (!query || `${preset.label} ${preset.standardUnit || ""} ${preset.source || ""}`.toLocaleLowerCase("ja").includes(query))
@@ -124,9 +131,13 @@
       const role = roleDefinition(line.serviceType, line.role);
       const sourceLine = current.lines.find((entry) => entry.id === line.id);
       const source = sourceLine?.verifiedSource;
+      const sourcePreset = presetById(sourceLine?.standardWalk?.id);
       const imported = sourceLine?.importSource;
+      const sourceReference = sourcePreset
+        ? `／根拠：<a href="${h(sourcePreset.sourceUrl)}" target="_blank" rel="noopener noreferrer">${h(String(sourcePreset.source || "").replace(/\s+p\.\d+$/, ""))}</a> p.${h(sourcePreset.sourcePage || "—")}`
+        : source ? `／確認済み：${h(source)}` : imported ? `／資料取込：${h(imported.fileName || "貼付け原文")} p.${h(imported.page || 1)}（要原文照合）` : "／人工入力・根拠未登録";
       return `<tr data-consulting-line="${h(line.id)}">
-        <td><strong>${h(line.taskName)}</strong><small>${h(line.serviceName)}${source ? `／確認済み：${h(source)}` : imported ? `／資料取込：${h(imported.fileName || "貼付け原文")} p.${h(imported.page || 1)}（要原文照合）` : "／人工入力"}</small></td>
+        <td><strong>${h(line.taskName)}</strong><small>${h(line.serviceName)}${sourceReference}</small></td>
         <td>${h(role?.name || line.role)}</td>
         <td><input class="consulting-line-days" type="number" min="0" step="0.001" value="${h(line.days)}"><span class="input-unit">人日</span></td>
         <td>${money(line.dailyRate)}</td><td><strong>${money(line.amount)}</strong></td>
@@ -180,21 +191,50 @@
   function currentSources() {
     const yearSource = pricesByYear[state().fiscalYear];
     const fiscalYear = Number(state().fiscalYear);
-    const mlitSources = (officialSourceCatalog.sources || [])
+    const catalogSources = officialSourceCatalog.sources || [];
+    const roleSource = catalogSources.find((source) => source.jurisdictionCode === "mlit" && Number(source.fiscalYear) === fiscalYear && source.kind === "role-prices");
+    const mlitSources = catalogSources
       .filter((source) => source.jurisdictionCode === "mlit" && Number(source.fiscalYear) === fiscalYear && !String(source.kind).startsWith("role"))
-      .map((source) => ({ label: source.title || source.kind, url: source.url }));
+      .map((source) => ({ label: source.title || source.kind, url: source.url, use: "年度改定・基準内容の監査", pages: source.pages, status: source.auditStatus === "indexed" ? "取得・索引済み" : "取得済み" }));
     const fullBook = (standardWalks.audits || []).find((entry) => Number(entry.fiscalYear) === fiscalYear);
+    const fullBookCatalog = catalogSources.find((source) => source.sha256 === fullBook?.sha256);
     return [
-      { label: yearSource.sourceLabel, url: yearSource.sourceUrl },
-      ...(fullBook ? [{ label: `${fullBook.source}（職種別標準歩掛 ${fullBook.presetCount}表の抽出元）`, url: fullBook.sourceUrl }] : []),
+      { label: yearSource.sourceLabel, url: yearSource.sourceUrl, use: "職種別の日額単価に使用", pages: roleSource?.pages, status: "計算採用" },
+      ...(fullBook ? [{ label: `${fullBook.source}（職種別標準歩掛 ${fullBook.presetCount}表の抽出元）`, url: fullBook.sourceUrl, use: "設計・調査計画・地質の職種別歩掛を原表抽出", pages: fullBookCatalog?.pages, status: "原表抽出済み" }] : []),
       ...mlitSources,
-      { label: "国土交通省 設計業務等標準積算基準書（年度別一覧）", url: "https://www.mlit.go.jp/tec/gyoumu_sekisan.html" }
+      { label: "国土交通省 設計業務等標準積算基準書（年度別一覧）", url: "https://www.mlit.go.jp/tec/gyoumu_sekisan.html", use: "年度別公開資料の掲載元", pages: null, status: "公式掲載ページ" }
     ];
+  }
+
+  function usedCalculationSources() {
+    const grouped = new Map();
+    state().lines.forEach((line) => {
+      const walk = line.standardWalk;
+      const preset = presetById(walk?.id);
+      if (preset) {
+        const multiplier = Number(walk.multiplier || 1);
+        const key = `${preset.id}:${multiplier}`;
+        if (!grouped.has(key)) grouped.set(key, {
+          task: preset.label,
+          unit: `${preset.standardUnit || "標準表1式"} × ${multiplier}`,
+          source: String(preset.source || "").replace(/\s+p\.\d+$/, ""),
+          url: preset.sourceUrl,
+          page: preset.sourcePage,
+          status: preset.verificationStatus === "source-table" ? "原表抽出済み" : "固定値確認済み"
+        });
+        return;
+      }
+      const key = `manual:${line.serviceType}:${line.taskName}`;
+      if (!grouped.has(key)) grouped.set(key, { task: line.taskName, unit: "人工を個別入力", source: "根拠PDF未登録", url: "", page: null, status: "要照合" });
+    });
+    return [...grouped.values()];
   }
 
   function renderSources() {
     const sources = currentSources();
-    $("consultingSourceList").innerHTML = sources.map((source) => `<li><a href="${h(source.url)}" target="_blank" rel="noopener noreferrer">${h(source.label)}</a></li>`).join("");
+    const used = usedCalculationSources();
+    $("consultingUsedSourceBody").innerHTML = used.length ? used.map((entry) => `<tr><td>${h(entry.task)}</td><td>${h(entry.unit)}</td><td>${entry.url ? `<a href="${h(entry.url)}" target="_blank" rel="noopener noreferrer">${h(entry.source)}</a>` : `<span class="source-missing">${h(entry.source)}</span>`}</td><td class="source-page">${entry.page ? `p.${h(entry.page)}／` : ""}${h(entry.status)}</td></tr>`).join("") : '<tr><td colspan="4">まだ積算項目がありません。標準歩掛を追加すると、根拠PDFとページがここに表示されます。</td></tr>';
+    $("consultingSourceTableBody").innerHTML = sources.map((source) => `<tr><td><a href="${h(source.url)}" target="_blank" rel="noopener noreferrer">${h(source.label)}</a></td><td class="source-use-status">${h(source.use)}</td><td class="source-page">${source.pages ? `${h(source.pages)}頁` : "—"}</td><td>${h(source.status)}</td></tr>`).join("");
   }
 
   function renderAll() {
@@ -214,6 +254,7 @@
     const result = currentResult();
     renderLines(result);
     renderSummary(result);
+    renderSources();
     renderRoleMeta();
   }
 
@@ -285,7 +326,8 @@
     const issueDate = estimate.date ? estimate.date.replace(/-/g, "/") : "—";
     const authority = app.getSubmissionJurisdictionName?.() || "—";
     const rows = result.lines.map((line, index) => `<tr><td>${index + 1}</td><td>${h(line.serviceName)}</td><td>${h(line.taskName)}</td><td>${h(roleDefinition(line.serviceType, line.role)?.name || line.role)}</td><td>${h(line.days)}</td><td>${money(line.dailyRate)}</td><td>${money(line.amount)}</td></tr>`).join("");
-    const sourceRows = currentSources().map((source) => `<li>${h(source.label)}<br><small>${h(source.url)}</small></li>`).join("");
+    const sourceRows = currentSources().map((source) => `<tr><td>${h(source.label)}<br><small>${h(source.url)}</small></td><td>${h(source.use)}</td><td>${source.pages ? `${h(source.pages)}頁` : "—"}</td><td>${h(source.status)}</td></tr>`).join("");
+    const usedSourceRows = usedCalculationSources().map((entry) => `<tr><td>${h(entry.task)}</td><td>${h(entry.unit)}</td><td>${h(entry.source)}</td><td>${entry.page ? `p.${h(entry.page)}／` : ""}${h(entry.status)}</td></tr>`).join("");
     const header = (title) => `<header class="report-page-header"><div><p>測量・調査・設計業務 提出用帳票</p><h1>${h(title)}</h1><span>令和${current.fiscalYear - 2018}年度／${h(authority)}</span></div><div class="report-header-meta"><span>${h(issueDate)}</span></div></header>`;
     const footer = (label) => `<footer class="report-page-footer"><span>${h(estimate.projectName || "総合業務積算")}</span><span>参考試算・公式資料要照合 ／ ${h(label)}</span></footer>`;
     const info = estimate.projectInfo || {};
@@ -295,7 +337,7 @@
       ["測量業務価格", t.surveyBusinessPrice], ["設計・調査計画・解析業務価格", t.designBusinessPrice], ["地質一般調査業務価格", t.geologyBusinessPrice], ["総合業務価格", t.businessPrice], ["消費税", t.tax], ["税込合計", t.total]
     ].map(([label, value], index) => `<tr${index >= 3 ? ' class="total-row"' : ""}><td>${h(label)}</td><td>${money(value)}</td></tr>`).join("");
     const pages = `<section class="report-page">${header("総 合 積 算 総 括 表")}<dl class="report-project-meta">${projectRows}</dl><table class="report-table summary-report-table"><thead><tr><th>業務区分</th><th>金額</th></tr></thead><tbody>${summaryRows}</tbody></table><p class="report-caption">地質一般調査諸経費率：${t.geologyTarget ? `${t.geologyOverheadRate.toFixed(1)}%` : "—"} ／ 総合業務価格調整：${money(t.adjustment)}</p>${footer("総合積算総括表")}</section>
-      <section class="report-page report-long-table">${header("業 務 費 内 訳 書")}<table class="report-table breakdown-report-table"><thead><tr><th>No.</th><th>業務区分</th><th>作業</th><th>職種</th><th>人工</th><th>日額</th><th>人件費</th></tr></thead><tbody>${rows || '<tr><td colspan="7" class="empty-report-cell">人工内訳がありません</td></tr>'}</tbody></table><section class="report-note-block"><h2>積上げ費用</h2><p>設計等直接経費 ${money(t.designDirectExpenses)}／電子成果品 ${money(t.electronic)}／地質直接調査費（人件費以外） ${money(t.geologyDirectNonLabor)}／地質間接調査費 ${money(t.geologyIndirect)}／諸経費対象外 ${money(t.geologyExcluded)}</p></section><section class="report-note-block source-note"><h2>出典</h2><ul>${sourceRows}</ul></section><p class="report-disclaimer"><strong>参考試算用・公式帳票ではありません。</strong> 人工入力行、市場単価、機械・材料、運搬・仮設、旅費、特記仕様、発注機関の端数運用を最新の公式資料と照合してください。</p>${footer("業務費内訳書")}</section>`;
+      <section class="report-page report-long-table">${header("業 務 費 内 訳 書")}<table class="report-table breakdown-report-table"><thead><tr><th>No.</th><th>業務区分</th><th>作業</th><th>職種</th><th>人工</th><th>日額</th><th>人件費</th></tr></thead><tbody>${rows || '<tr><td colspan="7" class="empty-report-cell">人工内訳がありません</td></tr>'}</tbody></table><section class="report-note-block"><h2>積上げ費用</h2><p>設計等直接経費 ${money(t.designDirectExpenses)}／電子成果品 ${money(t.electronic)}／地質直接調査費（人件費以外） ${money(t.geologyDirectNonLabor)}／地質間接調査費 ${money(t.geologyIndirect)}／諸経費対象外 ${money(t.geologyExcluded)}</p></section><section class="report-note-block source-note"><h2>採用歩掛と原表ページ</h2><table class="report-table"><thead><tr><th>積算項目</th><th>標準単位・倍率</th><th>根拠PDF</th><th>掲載箇所・状態</th></tr></thead><tbody>${usedSourceRows || '<tr><td colspan="4">人工内訳がありません</td></tr>'}</tbody></table></section><section class="report-note-block source-note"><h2>年度別公式PDF一覧</h2><table class="report-table"><thead><tr><th>資料名・URL</th><th>用途</th><th>頁数</th><th>状態</th></tr></thead><tbody>${sourceRows}</tbody></table></section><p class="report-disclaimer"><strong>参考試算用・公式帳票ではありません。</strong> 人工入力行、市場単価、機械・材料、運搬・仮設、旅費、特記仕様、発注機関の端数運用を最新の公式資料と照合してください。</p>${footer("業務費内訳書")}</section>`;
     const printDocument = $("printDocument");
     printDocument.dataset.mode = "consulting";
     printDocument.innerHTML = pages;

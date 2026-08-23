@@ -272,7 +272,13 @@
           </section>
 
           <section class="card source-card consulting-source-card">
-            <p class="section-kicker">OFFICIAL SOURCES</p><h2>計算根拠</h2><ul id="consultingSourceList" class="source-list"></ul>
+            <p class="section-kicker">OFFICIAL SOURCES</p><h2>計算根拠・原表ページ</h2>
+            <p class="source-ledger-lead">積算に追加した標準歩掛と、その根拠PDF・原表ページを対応付けて表示します。人工入力行は根拠未登録として区別します。</p>
+            <h3>この積算で採用した歩掛</h3>
+            <div class="standards-table-wrap"><table class="standards-table source-ledger-table used-source-table"><thead><tr><th>積算項目</th><th>標準単位・倍率</th><th>根拠PDF</th><th>掲載箇所・状態</th></tr></thead><tbody id="consultingUsedSourceBody"></tbody></table></div>
+            <h3>選択年度の公式PDF一覧</h3>
+            <div class="standards-table-wrap"><table class="standards-table source-ledger-table"><thead><tr><th>資料名</th><th>この積算での用途</th><th>頁数</th><th>確認状態</th></tr></thead><tbody id="consultingSourceTableBody"></tbody></table></div>
+            <p class="source-ledger-note">「取得・索引済み」は、そのPDF全体が計算へ自動実装済みという意味ではありません。実際に採用した歩掛は上の対応表で確認してください。</p>
           </section>
         </div>
 
@@ -491,6 +497,12 @@
           <strong>数量の読み方（2級基準点測量の例）</strong>
           <p>「新点10点」は標準歩掛のまとまりです。令和8年度単価では、標準10点の直接費3,448,507円 ÷ 10点 → 1点当り344,800円（有効4桁止め）。10点を積算すると直接作業費は3,448,000円です。34万4,800円を10点総額として扱いません。</p>
         </div>
+        <section class="guide-source-ledger" aria-labelledby="guideSourceLedgerTitle">
+          <div class="card-title-row source-ledger-heading"><div><p class="section-kicker">OFFICIAL PDF LEDGER</p><h3 id="guideSourceLedgerTitle">年度別・公式PDFと計算への使用状況</h3></div><label class="field inline-select"><span>表示年度</span><select id="guideSourceYear"><option value="2026">令和8年度</option><option value="2025">令和7年度</option><option value="2024">令和6年度</option></select></label></div>
+          <p id="guideSourceLedgerSummary" class="source-ledger-lead"></p>
+          <div class="standards-table-wrap"><table class="standards-table source-ledger-table guide-source-table"><thead><tr><th>公開元</th><th>PDF・資料名</th><th>計算への使用状況</th><th>頁数</th><th>確認状態</th></tr></thead><tbody id="guideSourceLedgerBody"></tbody></table></div>
+          <p class="source-ledger-note">PDFを台帳へ登録しただけの資料と、職種別歩掛・単価・率を実際の計算へ使用している資料を区別しています。資料名を押すと原PDFを確認できます。</p>
+        </section>
         <details class="standards-audit">
           <summary>積算基準体系と現在の対応範囲を確認</summary>
           <div class="standards-audit-body">
@@ -593,8 +605,8 @@
   <script src="consulting-engine.js?v=20260822-1"></script>
   <script src="document-import-engine.js?v=20260823-1"></script>
   <script src="document-reader.js?v=20260823-1"></script>
-  <script src="app.js?v=20260823-7"></script>
-  <script src="consulting.js?v=20260823-4"></script>
+  <script src="app.js?v=20260823-8"></script>
+  <script src="consulting.js?v=20260823-5"></script>
   <script src="document-import.js?v=20260823-8"></script>
   <script src="analytics.js?v=20260823-1"></script>
 </body>

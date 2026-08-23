@@ -230,6 +230,17 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
 .metric-row strong { color: var(--green); font-size: 24px; }
 .metric-row span { margin-top: 3px; color: var(--muted); font-size: 11px; }
 .source-list { margin: 0; padding-left: 20px; color: var(--muted); line-height: 1.9; }
+.source-ledger-lead { margin: 4px 0 16px; color: var(--muted); line-height: 1.7; }
+.source-ledger-heading { align-items: end; margin-bottom: 4px; }
+.source-ledger-heading .inline-select { min-width: 180px; }
+.source-ledger-note { margin: 12px 0 0; padding: 10px 12px; color: #4d5e57; background: #f2f6f4; border-left: 4px solid #7b9e91; border-radius: 6px; font-size: 12px; line-height: 1.65; }
+.guide-source-ledger { margin: 26px 0; padding-top: 22px; border-top: 1px solid var(--line); }
+.guide-source-ledger h3, .consulting-source-card h3 { margin: 18px 0 10px; color: var(--green-dark); font-size: 16px; }
+.source-ledger-table { min-width: 880px; }
+.source-ledger-table td small { display: block; margin-top: 4px; color: var(--muted); overflow-wrap: anywhere; }
+.source-ledger-table .source-use-status { font-weight: 700; color: var(--green-dark); }
+.source-ledger-table .source-missing { color: #8c2f18; font-weight: 700; }
+.source-ledger-table .source-page { white-space: nowrap; }
 
 .report-builder { max-width: 1120px; margin: 0 auto; }
 .report-settings-card { padding: clamp(22px, 3vw, 36px); }
@@ -281,6 +292,9 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
 .standards-table a { color: var(--green); font-weight: 700; }
 .scope-status { display: inline-block; margin: 0 7px 3px 0; padding: 2px 8px; border-radius: 999px; white-space: nowrap; font-size: 11px; font-weight: 800; }
 .scope-status.partial { color: #69440a; background: #fff0c9; }
+.scope-status.verified { color: #174f3d; background: #dcefe7; }
+.scope-status.indexed { color: #355175; background: #e5edf8; }
+.scope-status.acquired { color: #5f4b16; background: #f6edcf; }
 .scope-status.pending { color: #5b6460; background: #edf0ee; }
 .scope-distinction { display: grid; gap: 5px; margin-top: 14px; padding: 14px 16px; color: #294c40; background: #edf6f2; border-left: 4px solid var(--green); border-radius: 8px; line-height: 1.65; }
 .scope-distinction span { color: #4d625b; }
@@ -591,6 +605,12 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
   .report-table td:last-child, .report-table th:last-child { text-align: right; }
   .report-table td small, .report-table th small { display: block; margin-top: .6mm; color: #555; font-size: 6.7pt; line-height: 1.35; }
   .report-table .strong-cell { font-weight: 800; }
+  .source-report-table { margin-top: 2mm; font-size: 7pt; }
+  .source-report-table th:nth-child(1) { width: 70mm; }
+  .source-report-table th:nth-child(2) { width: auto; }
+  .source-report-table th:nth-child(3) { width: 16mm; }
+  .source-report-table th:nth-child(4) { width: 24mm; }
+  .source-report-table td:nth-child(3), .source-report-table th:nth-child(3) { text-align: center; }
   .quote-summary-table { margin: 4mm 0; }
   .quote-summary-table th, .quote-summary-table td { text-align: right; }
   .quote-summary-table td { font-size: 11pt; }
