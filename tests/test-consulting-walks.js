@@ -46,7 +46,7 @@ const coverageCounts = data.presets.reduce((countsByStatus, preset) => {
   countsByStatus[status] = (countsByStatus[status] || 0) + 1;
   return countsByStatus;
 }, {});
-assert.deepStrictEqual(coverageCounts, { "proportional-reference": 703, "reference-only": 32 }, "全国標準候補を一次試算703表と参照専用32表へ監査分類する");
+assert.deepStrictEqual(coverageCounts, { "incomplete-rule": 703, "reference-only": 32 }, "全国標準候補を条件未実装703表と参照専用32表へ監査分類する");
 for (const year of [2024, 2025, 2026]) assert.ok(data.presets.some((preset) => preset.fiscalYear === year && engine.classifyPresetCoverage(preset).status === "reference-only"), `${year}年度の編成人員等を参照専用にする`);
 
 const road = data.presets.find((preset) => preset.fiscalYear === 2026 && preset.label === "2-3-1 道路詳細設計（A）");

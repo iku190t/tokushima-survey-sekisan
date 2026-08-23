@@ -151,6 +151,15 @@ input:focus, select:focus, textarea:focus { border-color: var(--green); box-shad
 .consulting-quantity-fields { grid-column: 1 / span 2; display: grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap: 10px; }
 .consulting-quantity-fields .field { padding: 10px; background: #fff; border: 2px dashed #82ad9a; border-radius: 10px; }
 .consulting-quantity-fields .quantity-standard { color: var(--muted); font-size: 10px; }
+.consulting-condition-fields { grid-column: 1 / -1; }
+.consulting-condition-fields fieldset { display: grid; grid-template-columns: repeat(auto-fit,minmax(240px,1fr)); gap: 10px; margin: 0; padding: 14px; background: #f4f8f6; border: 1px solid #a8c7b9; border-radius: 12px; }
+.consulting-condition-fields legend { padding: 0 8px; color: #184d3e; font-weight: 800; }
+.consulting-rate-check { align-items: flex-start; min-height: 58px; padding: 10px; background: #fff; border: 1px solid #d4e1dc; border-radius: 9px; }
+.consulting-rate-check small { display: block; margin-top: 4px; color: var(--muted); line-height: 1.45; }
+.condition-calculation-note, .condition-source-list, .consulting-incomplete-rule { grid-column: 1 / -1; margin: 0; }
+.condition-calculation-note { padding: 9px 11px; color: #244e3f; background: #e4f1eb; border-radius: 8px; font-size: 12px; }
+.condition-source-list { padding-left: 22px; font-size: 11px; line-height: 1.6; }
+.consulting-incomplete-rule { padding: 10px 12px; color: #6c5314; background: #fff8e6; border: 1px solid #e2bd58; border-radius: 9px; }
 .consulting-condition-check { align-self: stretch; padding: 11px 12px; background: #fff8e6; border: 1px solid #e6c777; border-radius: 10px; }
 .consulting-manual-entry { margin-top: 16px; border-top: 1px solid var(--line); padding-top: 14px; }
 .consulting-manual-entry summary { color: var(--green-dark); font-weight: 700; cursor: pointer; }

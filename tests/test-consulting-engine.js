@@ -93,6 +93,7 @@ coverage = engine.classifyPresetCoverage({ label: "2-1-2 編成人員 人員", v
 assert.strictEqual(coverage.status, "reference-only", "編成人員表を数量比例の歩掛として扱わない");
 assert.strictEqual(coverage.canCalculate, false, "関連する日当たり作業量がない編成人員表は自動計算しない");
 coverage = engine.classifyPresetCoverage({ label: "2-3-1 道路詳細設計（A）", verificationStatus: "national-reference" });
-assert.strictEqual(coverage.status, "proportional-reference", "補正未実装の全国標準候補は一次試算として区別する");
+assert.strictEqual(coverage.status, "incomplete-rule", "補正未実装の全国標準候補は自動計算不可として区別する");
+assert.strictEqual(coverage.canCalculate, false, "条件規則のない候補を数量比例だけで追加しない");
 
 console.log("OK: consulting/design/geology calculation checks passed");

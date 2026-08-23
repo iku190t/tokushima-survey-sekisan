@@ -33,7 +33,7 @@
     /機械器具損料.*規格/
   ];
 
-  function classifyPresetCoverage(preset) {
+  function classifyPresetCoverage(preset, conditionRule = null) {
     if (!preset) return { status: "unavailable", canCalculate: false, label: "利用不可", note: "業務種類を選択してください。" };
     if (preset.verificationStatus !== "national-reference") {
       return {
@@ -41,6 +41,14 @@
         canCalculate: true,
         label: "原表確認済み",
         note: "表示した標準数量と人工を原資料の該当表で確認済みです。案件固有の特記条件は別途確認してください。"
+      };
+    }
+    if (conditionRule?.status === "verified-rule") {
+      return {
+        status: "verified-rule",
+        canCalculate: true,
+        label: "出典付き条件規則を反映",
+        note: "表示した補正・控除条件を数量比と標準歩掛へ反映します。案件固有の特記条件は別途照合してください。"
       };
     }
     if (referenceOnlyPatterns.some((pattern) => pattern.test(String(preset.label || "")))) {
@@ -52,10 +60,10 @@
       };
     }
     return {
-      status: "proportional-reference",
-      canCalculate: true,
-      label: "基準数量による一次試算",
-      note: "標準数量に対する比例計算だけを行います。補正式、適用範囲、追加・控除歩掛、複数条件の組合せは未実装のため、公式基準書と特記仕様書で照合が必要です。"
+      status: "incomplete-rule",
+      canCalculate: false,
+      label: "条件規則未実装・自動計算不可",
+      note: "職種別人工表は収録済みですが、補正式、適用範囲、追加・控除、参照表との関係が未構造化です。出典付き条件規則を実装するまで自動追加しません。"
     };
   }
 
@@ -109,6 +117,41 @@
     const quantityText = calculation.quantities.map((entry) => `${entry.quantity.toLocaleString("ja-JP")} ${entry.unit}`).join(" × ");
     const standardText = calculation.quantities.map((entry) => `${entry.baseQuantity.toLocaleString("ja-JP")} ${entry.unit}`).join(" × ");
     return `${quantityText} ÷ 標準 ${standardText} ＝ ${roundHalfUp(calculation.multiplier, 6).toLocaleString("ja-JP")}倍`;
+  }
+
+  function findConditionRule(preset, conditionRules, fiscalYear) {
+    return (conditionRules?.rules || []).find((rule) => {
+      if (rule.serviceType && rule.serviceType !== preset?.serviceType) return false;
+      if (number(fiscalYear) < number(rule.fiscalYearFrom, 0)) return false;
+      if (rule.fiscalYearTo && number(fiscalYear) > number(rule.fiscalYearTo)) return false;
+      try { return new RegExp(rule.presetLabelPattern).test(String(preset?.label || "")); }
+      catch (_error) { return false; }
+    }) || null;
+  }
+
+  function calculateConditionCorrection(rule, values) {
+    if (!rule) return { valid: true, factor: 1, rate: 0, entries: [], summary: "補正規則なし" };
+    const entries = [];
+    let rate = 0;
+    for (const input of rule.inputs || []) {
+      if (input.type === "select-rate") {
+        const selected = (input.options || []).find((option) => option.value === values?.[input.id]);
+        if (!selected && input.required) return { valid: false, reason: `${input.label}を選択してください`, factor: 0, rate: 0, entries };
+        if (!selected) continue;
+        const selectedRate = number(selected.rate);
+        rate += selectedRate;
+        entries.push({ id: input.id, label: input.label, selection: selected.label, rate: selectedRate });
+      } else if (input.type === "boolean-rate" && Boolean(values?.[input.id])) {
+        const selectedRate = number(input.rate);
+        rate += selectedRate;
+        entries.push({ id: input.id, label: input.label, selection: "該当", rate: selectedRate });
+      }
+    }
+    rate = roundHalfUp(rate, 4);
+    const factor = normalizeCorrectionFactor(1 + rate);
+    if (!(factor > 0)) return { valid: false, reason: "補正後の係数が0以下です。条件の組合せを確認してください", factor: 0, rate, entries };
+    const rateText = `${rate >= 0 ? "+" : ""}${roundHalfUp(rate * 100, 2)}%`;
+    return { valid: true, reason: "", factor, rate, entries, summary: `補正 ${rateText} → ${factor}倍` };
   }
 
   function overheadRate(base, rule) {
@@ -209,5 +252,5 @@
     };
   }
 
-  return { floorYen, roundHalfUp, normalizeDays, normalizeCorrectionFactor, classifyPresetCoverage, parseStandardQuantity, calculateStandardQuantity, standardQuantitySummary, overheadRate, electronicDeliverableCost, calculateRoleLine, calculateEstimate };
+  return { floorYen, roundHalfUp, normalizeDays, normalizeCorrectionFactor, classifyPresetCoverage, parseStandardQuantity, calculateStandardQuantity, standardQuantitySummary, findConditionRule, calculateConditionCorrection, overheadRate, electronicDeliverableCost, calculateRoleLine, calculateEstimate };
 });

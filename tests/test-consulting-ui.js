@@ -21,6 +21,7 @@ for (const file of ["data/consulting-master.js", "consulting-engine.js", "consul
   assert.ok(fs.existsSync(path.join(root, file)), `${file}が存在する`);
 }
 assert.ok(html.includes('src="data/consulting-standard-walks.js?v='), "年度別の設計・調査計画・地質標準歩掛を読み込む");
+assert.ok(html.includes('src="data/consulting-condition-rules.js?v=') && html.includes('id="consultingConditionFields"'), "補正・適用条件データと動的入力欄を読み込む");
 assert.ok(html.includes('src="data/official-source-catalog.js?v='), "国交省年度別8資料の台帳を読み込む");
 for (const type of ["土木設計業務", "調査・計画業務", "地質解析等調査業務", "地質一般調査業務"]) assert.ok(master.includes(type), `${type}を区分する`);
 for (const task of ["設計条件の確認", "施工計画", "資料整理とりまとめ", "孔内水平載荷試験", "地下水位観測", "土質・岩石試験"]) assert.ok(master.includes(task), `${task}を詳細項目として選べる`);
@@ -32,7 +33,7 @@ assert.ok(master.includes('id: "design-note-r8"') && master.includes('id: "desig
 assert.ok(ui.includes("CONSULTING_STANDARD_WALKS") && ui.includes("preset.fiscalYear") && ui.includes("consultingPresetSearch"), "標準歩掛を年度・業務タブ・検索語で絞る");
 assert.ok(ui.includes("parseStandardQuantity") && ui.includes("calculateStandardQuantity") && ui.includes("quantitySummary"), "標準単位から数量比と職種別人工を自動算出する");
 assert.ok(ui.includes("consultingConditionsConfirmed") && ui.includes("特記仕様書と一致"), "業務種類・適用条件の確認なしに追加しない");
-assert.ok(engine.includes("classifyPresetCoverage") && engine.includes('status: "reference-only"') && ui.includes("一次試算・補正等未反映"), "編成人員等の参照表と補正未実装の一次試算を区別する");
+assert.ok(engine.includes("classifyPresetCoverage") && engine.includes('status: "reference-only"') && engine.includes('status: "incomplete-rule"') && ui.includes("一次試算・補正等未反映"), "編成人員等の参照表と条件未実装で追加禁止の候補を区別する");
 assert.ok(ui.includes("参照専用（自動追加不可）") && ui.includes("coverage.canCalculate"), "関連計算規則のない参照表を自動追加しない");
 assert.ok(!html.includes('id="consultingPresetMultiplier"'), "利用者へ補正係数の手計算を要求しない");
 assert.ok(html.includes("基準書にない作業・見積項目を手動調整する"), "人工直接入力を基準外の手動調整へ分離する");

@@ -6,6 +6,7 @@
   const engine = window.ConsultingEngine;
   const pricesByYear = window.OFFICIAL_ROLE_PRICES;
   const standardWalks = window.CONSULTING_STANDARD_WALKS || { presets: [], audits: [] };
+  const conditionRules = window.CONSULTING_CONDITION_RULES || { rules: [] };
   const officialSourceCatalog = window.OFFICIAL_SOURCE_CATALOG || { sources: [] };
   if (!app || !master || !engine || !pricesByYear) return;
 
@@ -154,25 +155,35 @@
     if (!preset) {
       $("consultingPresetBasis").innerHTML = "<strong>適用できる標準歩掛がありません。</strong>";
       $("consultingQuantityFields").innerHTML = "";
+      $("consultingConditionFields").innerHTML = "";
       $("addConsultingPresetButton").disabled = true;
       return;
     }
     const quantityRule = engine.parseStandardQuantity(preset.standardUnit);
-    const coverage = engine.classifyPresetCoverage(preset);
-    $("consultingPresetBasis").classList.add(coverage.status === "verified-complete" ? "verified" : coverage.canCalculate ? "reference" : "blocked");
+    const conditionRule = engine.findConditionRule(preset, conditionRules, state().fiscalYear);
+    const coverage = engine.classifyPresetCoverage(preset, conditionRule);
+    $("consultingPresetBasis").classList.add(["verified-complete", "verified-rule"].includes(coverage.status) ? "verified" : coverage.canCalculate ? "reference" : "blocked");
     const geologyWarning = preset.serviceType === "geologyGeneral"
       ? "<small>この表は職種別人工だけを展開します。市場単価、材料、機械、運搬、足場等は下の積上げ費用へ別途計上が必要です。</small>"
       : "";
-    $("consultingPresetBasis").innerHTML = `<strong>${h(preset.label)}</strong><span>標準単位：${h(preset.standardUnit || "標準表1式")}／${h(coverage.label)}</span><small>${h(coverage.note)}</small><small>収録人工：${h(presetRoleSummary(preset))}</small>${geologyWarning}`;
+    const coverageNote = conditionRule
+      ? "表示した補正・控除規則を数量比へ反映します。人工表の原表ページと、ここに表示されない案件固有条件は公式資料で照合してください。"
+      : coverage.note;
+    $("consultingPresetBasis").innerHTML = `<strong>${h(preset.label)}</strong><span>標準単位：${h(preset.standardUnit || "標準表1式")}／${h(conditionRule ? "選択補正規則を反映" : coverage.label)}</span><small>${h(coverageNote)}</small><small>収録人工：${h(presetRoleSummary(preset))}</small>${geologyWarning}`;
     $("consultingQuantityFields").innerHTML = quantityRule.dimensions.map((dimension) => `<label class="field"><span>${h(dimension.label)}</span><input class="consulting-rule-quantity" data-quantity-key="${h(dimension.key)}" type="number" min="${dimension.integer ? 1 : 0.001}" step="${dimension.integer ? 1 : 0.001}" inputmode="${dimension.integer ? "numeric" : "decimal"}" placeholder="未入力"${coverage.canCalculate ? "" : " disabled"}><small class="quantity-standard">標準 ${h(dimension.baseQuantity.toLocaleString("ja-JP"))} ${h(dimension.unit)}当り</small></label>`).join("");
+    $("consultingConditionFields").innerHTML = conditionRule ? `<fieldset><legend>${h(conditionRule.title)}</legend>${(conditionRule.inputs || []).map((input) => input.type === "select-rate"
+      ? `<label class="field"><span>${h(input.label)}</span><select class="consulting-rule-condition" data-condition-id="${h(input.id)}"><option value="">選択してください</option>${(input.options || []).map((option) => `<option value="${h(option.value)}">${h(option.label)}（${option.rate >= 0 ? "+" : ""}${h(option.rate * 100)}%）</option>`).join("")}</select>${input.help ? `<small>${h(input.help)}</small>` : ""}</label>`
+      : `<label class="check consulting-rate-check"><input class="consulting-rule-condition" data-condition-id="${h(input.id)}" type="checkbox"><span>${h(input.label)}（${input.rate >= 0 ? "+" : ""}${h(input.rate * 100)}%）${input.help ? `<small>${h(input.help)}</small>` : ""}</span></label>`).join("")}<p class="condition-calculation-note">${h(conditionRule.calculationNote)}</p><p id="consultingConditionSummary" class="quantity-standard">必須条件を選択すると補正率を表示します。</p><ul class="condition-source-list">${(conditionRule.sources || []).map((source) => `<li><a href="${h(source.url)}" target="_blank" rel="noopener noreferrer">${h(source.label)} p.${h(source.pages.join("・"))}</a></li>`).join("")}</ul></fieldset>` : `<p class="consulting-incomplete-rule">この項目の補正・適用条件はまだ構造化されていません。数量比例だけの一次試算です。</p>`;
     $("consultingConditionsConfirmed").disabled = !coverage.canCalculate;
-    $("consultingConditionsLabel").textContent = coverage.status === "verified-complete"
+    $("consultingConditionsLabel").textContent = conditionRule
+      ? "表示した適用条件を全て確認し、選択した補正・控除を反映します"
+      : coverage.status === "verified-complete"
       ? "選択した業務種類・適用範囲が特記仕様書と一致することを確認しました"
       : coverage.canCalculate
         ? "比例計算だけの一次試算であり、補正・加算控除は公式基準書との照合が必要と確認しました"
         : "関連する規格・日当たり作業量の計算規則が未実装のため自動計算できません";
     $("addConsultingPresetButton").disabled = !coverage.canCalculate;
-    $("addConsultingPresetButton").textContent = coverage.status === "verified-complete" ? "条件・数量から積算へ追加" : coverage.canCalculate ? "一次試算として積算へ追加" : "参照専用（自動追加不可）";
+    $("addConsultingPresetButton").textContent = conditionRule ? "補正・数量を積算へ追加" : coverage.status === "verified-complete" ? "条件・数量から積算へ追加" : coverage.canCalculate ? "一次試算として積算へ追加" : "参照専用（自動追加不可）";
   }
 
   function renderLines(result) {
@@ -191,7 +202,7 @@
       const sourceType = standard?.coverageStatus === "verified-complete" ? "原表確認済み" : "全国標準参考";
       return `<tr data-consulting-line="${h(line.id)}">
         <td><strong>${h(line.taskName)}</strong><small>${h(line.serviceName)}${source ? `／${h(sourceType)}：${h(source)}` : imported ? `／資料取込：${h(imported.fileName || "貼付け原文")} p.${h(imported.page || 1)}（要原文照合）` : "／人工入力"}</small></td>
-        <td><strong>${h(basis)}</strong><small>${standard ? incomplete ? "一次試算・補正等未反映" : "原表確認済み条件から自動算出" : "人工を直接入力"}</small></td>
+        <td><strong>${h(basis)}</strong><small>${standard ? incomplete ? standard.conditionRuleId ? "選択した補正規則を反映・人工表原ページは要照合" : "一次試算・補正等未反映" : "原表確認済み条件から自動算出" : "人工を直接入力"}</small></td>
         <td>${h(role?.name || line.role)}</td>
         <td><input class="consulting-line-days" type="number" min="0" step="0.001" inputmode="decimal" data-decimals="3" value="${h(line.days)}"${readonly}><span class="input-unit">人日</span><small>${standard ? "標準歩掛から算出" : "小数第3位まで"}</small></td>
         <td>${money(line.dailyRate)}</td><td><strong>${money(line.amount)}</strong></td>
@@ -327,22 +338,27 @@
   function addPreset() {
     const preset = visiblePresets.find((entry) => entry.id === $("consultingPreset").value);
     if (!preset) return;
-    const coverage = engine.classifyPresetCoverage(preset);
+    const conditionRule = engine.findConditionRule(preset, conditionRules, state().fiscalYear);
+    const coverage = engine.classifyPresetCoverage(preset, conditionRule);
     if (!coverage.canCalculate) { app.notify(coverage.note); return; }
     if (!$("consultingConditionsConfirmed").checked) { app.notify("業務種類・適用範囲が特記仕様書と一致することを確認してください"); return; }
     const quantityValues = {};
     document.querySelectorAll(".consulting-rule-quantity").forEach((input) => { quantityValues[input.dataset.quantityKey] = input.value; });
     const calculation = engine.calculateStandardQuantity(preset.standardUnit, quantityValues);
     if (!calculation.valid) { app.notify(calculation.reason); return; }
-    const multiplier = calculation.multiplier;
-    const quantitySummary = engine.standardQuantitySummary(calculation);
+    const conditionValues = {};
+    document.querySelectorAll(".consulting-rule-condition").forEach((input) => { conditionValues[input.dataset.conditionId] = input.type === "checkbox" ? input.checked : input.value; });
+    const correction = engine.calculateConditionCorrection(conditionRule, conditionValues);
+    if (!correction.valid) { app.notify(correction.reason); return; }
+    const multiplier = calculation.multiplier * correction.factor;
+    const quantitySummary = `${engine.standardQuantitySummary(calculation)}${conditionRule ? `／${correction.summary}` : ""}`;
     Object.entries(preset.roles).forEach(([role, days]) => state().lines.push({
       id: `consult-${Date.now()}-${role}-${Math.random().toString(16).slice(2)}`,
       serviceType: preset.serviceType,
       taskName: preset.label,
       role,
       days: engine.normalizeDays(Number(days) * multiplier),
-      verifiedSource: `${preset.source}${preset.sourceUrl ? `／${preset.sourceUrl}` : ""}`,
+      verifiedSource: `${preset.source}${preset.sourceUrl ? `／${preset.sourceUrl}` : ""}${conditionRule ? `／補正出典：${conditionRule.sources.map((source) => `${source.label} ${source.url}`).join("、")}` : ""}`,
       standardWalk: {
         id: preset.id,
         fiscalYear: preset.fiscalYear || state().fiscalYear,
@@ -350,6 +366,10 @@
         quantities: calculation.quantities.map(({ key, label, unit, baseQuantity, quantity }) => ({ key, label, unit, baseQuantity, quantity })),
         quantitySummary,
         multiplier,
+        quantityMultiplier: calculation.multiplier,
+        correctionFactor: correction.factor,
+        conditionRuleId: conditionRule?.id || null,
+        conditionEntries: correction.entries,
         conditionsConfirmed: true,
         verificationStatus: preset.verificationStatus || "reference",
         coverageStatus: coverage.status,
@@ -358,7 +378,18 @@
     }));
     renderPresetRule();
     updateAndRender();
-    app.notify(`${quantitySummary}で${coverage.status === "verified-complete" ? "標準歩掛" : "一次試算"}を追加しました`);
+    app.notify(`${quantitySummary}で${conditionRule ? "選択補正済み歩掛" : coverage.status === "verified-complete" ? "標準歩掛" : "一次試算"}を追加しました`);
+  }
+
+  function updateConditionSummary() {
+    const preset = visiblePresets.find((entry) => entry.id === $("consultingPreset").value);
+    const rule = engine.findConditionRule(preset, conditionRules, state().fiscalYear);
+    const target = document.querySelector("#consultingConditionSummary");
+    if (!rule || !target) return;
+    const values = {};
+    document.querySelectorAll(".consulting-rule-condition").forEach((input) => { values[input.dataset.conditionId] = input.type === "checkbox" ? input.checked : input.value; });
+    const result = engine.calculateConditionCorrection(rule, values);
+    target.textContent = result.valid ? `${result.summary}（${result.entries.map((entry) => `${entry.selection} ${entry.rate >= 0 ? "+" : ""}${entry.rate * 100}%`).join("、")}）` : result.reason;
   }
 
   function importCandidates(detail) {
@@ -404,7 +435,7 @@
       const sourceLine = current.lines.find((entry) => entry.id === line.id);
       const standard = sourceLine?.standardWalk;
       const basisBase = standard?.quantitySummary || (sourceLine?.importSource ? "資料記載人工・要照合" : "基準外・手動調整");
-      const basis = standard && standard.coverageStatus !== "verified-complete" ? `${basisBase}（一次試算・補正等未反映）` : basisBase;
+      const basis = standard && standard.coverageStatus !== "verified-complete" ? `${basisBase}（${standard.conditionRuleId ? "選択補正反映・未構造化条件は要照合" : "一次試算・補正等未反映"}）` : basisBase;
       return `<tr><td>${index + 1}</td><td>${h(line.serviceName)}</td><td>${h(line.taskName)}</td><td>${h(basis)}</td><td>${h(roleDefinition(line.serviceType, line.role)?.name || line.role)}</td><td>${h(line.days)}</td><td>${money(line.dailyRate)}</td><td>${money(line.amount)}</td></tr>`;
     }).join("");
     const sourceRows = currentSources().map((source) => `<li>${h(source.label)}<br><small>${h(source.url)}</small></li>`).join("");
@@ -443,6 +474,8 @@
       const integer = event.target.step === "1";
       enforceDecimalInput(event.target, integer ? 0 : 3, (value) => integer ? Math.max(0, Math.floor(Number(value) || 0)) : engine.roundHalfUp(Math.max(0, Number(value) || 0), 3), true);
     });
+    $("consultingConditionFields").addEventListener("input", updateConditionSummary);
+    $("consultingConditionFields").addEventListener("change", updateConditionSummary);
     $("consultingFiscalYear").addEventListener("change", (event) => { state().fiscalYear = Number(event.target.value); renderAll(); app.saveDraft(); });
     $("consultingProjectName").addEventListener("input", (event) => { app.getEstimate().projectName = event.target.value; $("projectName").value = event.target.value; app.saveDraft(); });
     $("projectName").addEventListener("input", () => { $("consultingProjectName").value = $("projectName").value; });
