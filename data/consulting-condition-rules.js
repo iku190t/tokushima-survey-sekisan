@@ -41,6 +41,7 @@ window.CONSULTING_CONDITION_RULES = {
       title: "道路予備・予備修正設計の標準歩掛補正",
       aggregation: "additive",
       status: "verified-rule",
+      quantityFormula: { type: "linear", input: "quantity1", a: 0.8, b: 0.2, label: "0.8×設計延長(km)+0.2" },
       inputs: [
         {
           id: "terrain",
@@ -89,6 +90,7 @@ window.CONSULTING_CONDITION_RULES = {
       title: "道路詳細設計の標準歩掛補正",
       aggregation: "additive",
       status: "verified-rule",
+      quantityFormula: { type: "linear", input: "quantity1", a: 0.5, b: 0.5, label: "0.5×設計延長(km)+0.5" },
       inputs: [
         {
           id: "terrain",

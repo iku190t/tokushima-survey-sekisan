@@ -22,6 +22,7 @@ for (const file of ["data/consulting-master.js", "consulting-engine.js", "consul
 }
 assert.ok(html.includes('src="data/consulting-standard-walks.js?v='), "年度別の設計・調査計画・地質標準歩掛を読み込む");
 assert.ok(html.includes('src="data/consulting-condition-rules.js?v=') && html.includes('id="consultingConditionFields"'), "補正・適用条件データと動的入力欄を読み込む");
+assert.ok(html.includes('src="data/consulting-rule-pack.js?v='), "国交省ページ照合済み規則パックを読み込む");
 assert.ok(html.includes('src="data/official-source-catalog.js?v='), "国交省年度別8資料の台帳を読み込む");
 for (const type of ["土木設計業務", "調査・計画業務", "地質解析等調査業務", "地質一般調査業務"]) assert.ok(master.includes(type), `${type}を区分する`);
 for (const task of ["設計条件の確認", "施工計画", "資料整理とりまとめ", "孔内水平載荷試験", "地下水位観測", "土質・岩石試験"]) assert.ok(master.includes(task), `${task}を詳細項目として選べる`);
@@ -30,19 +31,19 @@ assert.ok(ui.includes('entry.id === "design"') && ui.includes('entry.id === "pla
 assert.ok(ui.includes('ezsekisan:businessscope') && ui.includes("activeConsultingScope"), "業務タブ切替を設計・地質入力へ反映する");
 assert.ok(html.includes('data-consulting-scope="design-planning"') && html.includes('data-consulting-scope="geology"'), "タブに対応する積上費用だけを表示する");
 assert.ok(master.includes('id: "design-note-r8"') && master.includes('id: "design-note-r7"') && master.includes('id: "design-note-r6"') && master.includes("designLead: 0.5") && master.includes("designEngineerA: 1.0"), "令和6～8年度の設計留意書歩掛をプリセットする");
-assert.ok(ui.includes("CONSULTING_STANDARD_WALKS") && ui.includes("preset.fiscalYear") && ui.includes("consultingPresetSearch"), "標準歩掛を年度・業務タブ・検索語で絞る");
+assert.ok(ui.includes("CONSULTING_RULE_PACK") && ui.includes("preset.fiscalYear") && ui.includes("consultingPresetSearch"), "照合済み標準歩掛を年度・業務タブ・検索語で絞る");
 assert.ok(ui.includes("parseStandardQuantity") && ui.includes("calculateStandardQuantity") && ui.includes("quantitySummary"), "標準単位から数量比と職種別人工を自動算出する");
 assert.ok(ui.includes("consultingConditionsConfirmed") && ui.includes("特記仕様書と一致"), "業務種類・適用条件の確認なしに追加しない");
-assert.ok(engine.includes("classifyPresetCoverage") && engine.includes('status: "reference-only"') && engine.includes('status: "incomplete-rule"') && ui.includes("一次試算・補正等未反映"), "編成人員等の参照表と条件未実装で追加禁止の候補を区別する");
-assert.ok(ui.includes("参照専用（自動追加不可）") && ui.includes("coverage.canCalculate"), "関連計算規則のない参照表を自動追加しない");
+assert.ok(ui.includes("familyForPreset") && ui.includes("consulting-parameter-value") && ui.includes("consultingFormulaModel") && ui.includes("compileFormula"), "適用条件表と補正式を歩掛へ結び付ける");
 assert.ok(!html.includes('id="consultingPresetMultiplier"'), "利用者へ補正係数の手計算を要求しない");
 assert.ok(html.includes("基準書にない作業・見積項目を手動調整する"), "人工直接入力を基準外の手動調整へ分離する");
-assert.ok(ui.includes("OFFICIAL_SOURCE_CATALOG") && ui.includes('source.jurisdictionCode === "mlit"') && ui.includes("fullBook.presetCount"), "選択年度の国交省資料と全国標準参考歩掛を計算根拠に表示する");
+assert.ok(ui.includes("OFFICIAL_SOURCE_CATALOG") && ui.includes('source.jurisdictionCode === "mlit"') && ui.includes("fullBook.ruleCount"), "選択年度の国交省資料と照合済み歩掛を計算根拠に表示する");
 assert.ok(ui.includes("人工入力の行があります"), "未確認人工を提出前警告する");
-assert.ok(ui.includes("補正式、適用範囲、追加・控除歩掛"), "一次試算を正確な完成積算と表示しない");
+assert.ok(ui.includes("市場単価による積算") && ui.includes("consultingMarketUnitPrice"), "地質一般を人工比例にせず市場単価で計算する");
 assert.ok(html.includes("未入力の0円"), "0円を不要と誤認しない注意を表示する");
 assert.ok(engine.includes("alpha / Math.max") && engine.includes("beta / Math.max"), "設計方式をその他原価と一般管理費に分ける");
 assert.ok(engine.includes("geologyTarget * geologyOverheadRate"), "地質一般方式を独立計算する");
+assert.ok(engine.includes("surveyPlanningBusinessPrice") && engine.includes("surveyRulesByYear"), "測量職種の調査計画を年度別測量経費方式で計算する");
 assert.ok(app.includes("draft.consulting?.lines?.length"), "設計・調査だけの案件も新規作成時に確認する");
 assert.ok(app.includes('dataset.mode !== "consulting"'), "総合帳票を測量帳票で上書きしない");
 assert.ok(ui.includes("t.surveyBusinessPrice") && ui.includes("t.designBusinessPrice") && ui.includes("t.geologyBusinessPrice"), "3区分を総合帳票へ合算する");

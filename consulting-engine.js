@@ -22,9 +22,9 @@
     km: "延長（km）", m: "延長（m）", m2: "面積（m²）", 箇所: "箇所数", 橋: "橋数",
     基: "基数", トンネル: "トンネル数", 日: "日数", ケース: "ケース数", 断面: "断面数",
     坑口: "坑口数", タイプ: "タイプ数", 業務: "業務数", 工法: "工法数", 機関: "機関数",
-    孔: "孔数", 回: "回数", 式: "数量"
+    孔: "孔数", 回: "回数", 台: "台数", 本: "本数", 観測所: "観測所数", 計器: "計器数", 式: "数量"
   };
-  const integerQuantityUnits = new Set(["箇所", "橋", "基", "トンネル", "日", "ケース", "断面", "坑口", "タイプ", "業務", "工法", "機関", "孔", "回", "式"]);
+  const integerQuantityUnits = new Set(["箇所", "橋", "基", "トンネル", "日", "ケース", "断面", "坑口", "タイプ", "業務", "工法", "機関", "孔", "回", "台", "本", "観測所", "計器", "式"]);
   const referenceOnlyPatterns = [
     /編成人員|編成人肩/,
     /市場単価.*規格|規格区分/,
@@ -35,7 +35,7 @@
 
   function classifyPresetCoverage(preset, conditionRule = null) {
     if (!preset) return { status: "unavailable", canCalculate: false, label: "利用不可", note: "業務種類を選択してください。" };
-    if (preset.verificationStatus !== "national-reference") {
+    if (["source-table-crosschecked", "verified"].includes(preset.verificationStatus) || preset.verificationStatus !== "national-reference") {
       return {
         status: "verified-complete",
         canCalculate: true,
@@ -71,7 +71,7 @@
     const source = String(standardUnit || "標準表1式")
       .replace(/㎡/g, "m2").replace(/m²/g, "m2").replace(/ｍ/g, "m").replace(/ｋｍ/gi, "km")
       .replace(/，/g, ",").replace(/あたり/g, "当り").replace(/\s+/g, "");
-    const pattern = /(\d[\d,]*(?:\.\d+)?)\s*(km|m2|m|箇所|橋|基|トンネル|日|ケース|断面|坑口|タイプ|業務|工法|機関|孔|回|式)(?=当り)/g;
+    const pattern = /(\d[\d,]*(?:\.\d+)?)\s*(km|m2|m|箇所|橋|基|トンネル|日|ケース|断面|坑口|タイプ|業務|工法|機関|孔|回|台|本|観測所|計器|式)(?=当り)/g;
     const dimensions = [];
     let match;
     while ((match = pattern.exec(source))) {
@@ -124,7 +124,10 @@
       if (rule.serviceType && rule.serviceType !== preset?.serviceType) return false;
       if (number(fiscalYear) < number(rule.fiscalYearFrom, 0)) return false;
       if (rule.fiscalYearTo && number(fiscalYear) > number(rule.fiscalYearTo)) return false;
-      try { return new RegExp(rule.presetLabelPattern).test(String(preset?.label || "")); }
+      try {
+        const pattern = String(rule.presetLabelPattern || "").replace(/（/g, "\\(").replace(/）/g, "\\)").normalize("NFKC");
+        return new RegExp(pattern).test(String(preset?.label || "").normalize("NFKC"));
+      }
       catch (_error) { return false; }
     }) || null;
   }
@@ -154,6 +157,15 @@
     return { valid: true, reason: "", factor, rate, entries, summary: `補正 ${rateText} → ${factor}倍` };
   }
 
+  function calculateRuleQuantityMultiplier(calculation, rule) {
+    if (!calculation?.valid || !rule?.quantityFormula) return { multiplier: calculation?.multiplier || 0, summary: standardQuantitySummary(calculation) };
+    const formula = rule.quantityFormula;
+    const quantity = calculation.quantities.find((entry) => entry.key === formula.input)?.quantity;
+    if (formula.type !== "linear" || !Number.isFinite(quantity)) return { multiplier: calculation.multiplier, summary: standardQuantitySummary(calculation) };
+    const multiplier = number(formula.a) * quantity + number(formula.b);
+    return { multiplier, summary: `${formula.label} ＝ ${roundHalfUp(multiplier, 6)}倍` };
+  }
+
   function overheadRate(base, rule) {
     const target = floorYen(base);
     if (!target) return 0;
@@ -172,12 +184,30 @@
 
   function calculateRoleLine(line, rolePrices, serviceTypes) {
     const service = (serviceTypes || []).find((entry) => entry.id === line.serviceType);
+    if (line.lineType === "amount") {
+      return {
+        id: line.id,
+        lineType: "amount",
+        serviceType: line.serviceType,
+        calculationSystem: line.costSystem || service?.calculationSystem || "design",
+        serviceName: service?.name || line.serviceType || "未分類",
+        taskName: String(line.taskName || "市場単価項目").trim() || "市場単価項目",
+        role: "marketUnit",
+        days: number(line.quantity),
+        dailyRate: floorYen(line.unitPrice),
+        amount: floorYen(number(line.quantity) * number(line.unitPrice) * number(line.correctionFactor, 1)),
+        quantity: number(line.quantity),
+        unitPrice: floorYen(line.unitPrice),
+        correctionFactor: number(line.correctionFactor, 1),
+        unit: String(line.unit || "式")
+      };
+    }
     const days = normalizeDays(line.days);
     const dailyRate = floorYen(rolePrices?.[line.role]);
     return {
       id: line.id,
       serviceType: line.serviceType,
-      calculationSystem: service?.calculationSystem || "design",
+      calculationSystem: line.costSystem || service?.calculationSystem || "design",
       serviceName: service?.name || line.serviceType || "未分類",
       taskName: String(line.taskName || "任意作業").trim() || "任意作業",
       role: line.role,
@@ -190,6 +220,7 @@
   function calculateEstimate(state, master, rolePrices, surveyBusinessPrice = 0) {
     const lines = (state?.lines || []).map((line) => calculateRoleLine(line, rolePrices, master?.serviceTypes));
     const designLines = lines.filter((line) => line.calculationSystem === "design");
+    const surveyLines = lines.filter((line) => line.calculationSystem === "survey");
     const geologyLines = lines.filter((line) => line.calculationSystem === "geology");
     const sumAmount = (entries) => entries.reduce((sum, line) => sum + line.amount, 0);
 
@@ -206,6 +237,14 @@
     const generalManagement = floorYen(designBusinessCost * beta / Math.max(1e-9, 1 - beta));
     const designBusinessPrice = designBusinessCost + generalManagement;
 
+    const surveyPlanningLabor = sumAmount(surveyLines);
+    const surveyPlanningDirectExpenses = floorYen(state?.costs?.surveyPlanningDirectExpenses);
+    const surveyPlanningDirect = surveyPlanningLabor + surveyPlanningDirectExpenses;
+    const surveyRule = master?.surveyRulesByYear?.[number(state?.fiscalYear)];
+    const surveyPlanningOverheadRate = overheadRate(surveyPlanningDirect, surveyRule?.overhead);
+    const surveyPlanningOverhead = floorYen(surveyPlanningDirect * surveyPlanningOverheadRate / 100);
+    const surveyPlanningBusinessPrice = surveyPlanningDirect + surveyPlanningOverhead;
+
     const geologyLabor = sumAmount(geologyLines);
     const geologyDirectNonLabor = floorYen(state?.costs?.geologyDirectNonLabor);
     const geologyIndirect = floorYen(state?.costs?.geologyIndirect);
@@ -216,7 +255,7 @@
     const geologyBusinessPrice = geologyTarget + geologyOverhead + geologyExcluded;
 
     const includedSurveyBusinessPrice = state?.options?.includeSurvey ? floorYen(surveyBusinessPrice) : 0;
-    const rawBusinessPrice = includedSurveyBusinessPrice + designBusinessPrice + geologyBusinessPrice;
+    const rawBusinessPrice = includedSurveyBusinessPrice + surveyPlanningBusinessPrice + designBusinessPrice + geologyBusinessPrice;
     const adjustmentUnit = state?.options?.adjustBusinessPrice ? 1000 : 1;
     const businessPrice = Math.floor(rawBusinessPrice / adjustmentUnit) * adjustmentUnit;
     const adjustment = rawBusinessPrice - businessPrice;
@@ -234,6 +273,12 @@
         designBusinessCost,
         generalManagement,
         designBusinessPrice,
+        surveyPlanningLabor,
+        surveyPlanningDirectExpenses,
+        surveyPlanningDirect,
+        surveyPlanningOverheadRate,
+        surveyPlanningOverhead,
+        surveyPlanningBusinessPrice,
         geologyLabor,
         geologyDirectNonLabor,
         geologyIndirect,
@@ -252,5 +297,5 @@
     };
   }
 
-  return { floorYen, roundHalfUp, normalizeDays, normalizeCorrectionFactor, classifyPresetCoverage, parseStandardQuantity, calculateStandardQuantity, standardQuantitySummary, findConditionRule, calculateConditionCorrection, overheadRate, electronicDeliverableCost, calculateRoleLine, calculateEstimate };
+  return { floorYen, roundHalfUp, normalizeDays, normalizeCorrectionFactor, classifyPresetCoverage, parseStandardQuantity, calculateStandardQuantity, standardQuantitySummary, findConditionRule, calculateConditionCorrection, calculateRuleQuantityMultiplier, overheadRate, electronicDeliverableCost, calculateRoleLine, calculateEstimate };
 });

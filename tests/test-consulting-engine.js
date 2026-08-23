@@ -17,7 +17,7 @@ const master = loadBrowserData("data/consulting-master.js", "CONSULTING_MASTER")
 const baseState = () => ({
   fiscalYear: 2026,
   lines: [],
-  costs: { designDirectExpenses: 0, geologyDirectNonLabor: 0, geologyIndirect: 0, geologyExcluded: 0 },
+  costs: { designDirectExpenses: 0, surveyPlanningDirectExpenses: 0, geologyDirectNonLabor: 0, geologyIndirect: 0, geologyExcluded: 0 },
   options: { includeSurvey: false, electronicMode: "none", adjustBusinessPrice: false, taxRate: 0.1 }
 });
 
@@ -53,6 +53,19 @@ assert.strictEqual(result.totals.geologyTarget, 358300, "地質一般の諸経�
 assert.strictEqual(result.totals.geologyOverheadRate, 82.5, "100万円以下の地質諸経費率");
 assert.strictEqual(result.totals.geologyOverhead, 295597, "地質諸経費");
 assert.strictEqual(result.totals.geologyBusinessPrice, 663897, "対象外費用を加えた地質業務価格");
+
+const surveyPlanning = baseState();
+surveyPlanning.lines = [{ id: "s1", serviceType: "planning", costSystem: "survey", taskName: "水文観測", role: "surveyEngineer", days: 2 }];
+result = engine.calculateEstimate(surveyPlanning, master, prices[2026].roles, 0);
+assert.strictEqual(result.totals.surveyPlanningLabor, 105400, "測量職種の調査計画直接人件費");
+assert.strictEqual(result.totals.surveyPlanningOverheadRate, 95.8, "R8測量方式の下限諸経費率");
+assert.strictEqual(result.totals.surveyPlanningBusinessPrice, 206373, "調査計画を設計方式でなく測量方式で計算する");
+
+const market = baseState();
+market.lines = [{ id: "m1", lineType: "amount", serviceType: "geologyGeneral", costSystem: "geology", taskName: "機械ボーリング", quantity: 20, unit: "m", unitPrice: 15000, correctionFactor: 1.2 }];
+result = engine.calculateEstimate(market, master, prices[2026].roles, 0);
+assert.strictEqual(result.lines[0].amount, 360000, "地質一般の市場単価×数量×補正係数");
+assert.strictEqual(result.totals.geologyLabor, 360000, "市場単価項目を地質一般の諸経費対象へ計上する");
 
 const combined = baseState();
 combined.options.includeSurvey = true;

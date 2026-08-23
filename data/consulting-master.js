@@ -21,6 +21,13 @@ window.CONSULTING_MASTER = {
       { id: "geologyEngineer", name: "地質調査技師" },
       { id: "geologyChiefOperator", name: "主任地質調査員" },
       { id: "geologyOperator", name: "地質調査員" }
+    ],
+    survey: [
+      { id: "surveyChief", name: "測量主任技師" },
+      { id: "surveyEngineer", name: "測量技師" },
+      { id: "surveyAssistantEngineer", name: "測量技師補" },
+      { id: "surveyAssistant", name: "測量助手" },
+      { id: "surveyWorker", name: "測量補助員" }
     ]
   },
   taskNames: {
@@ -71,6 +78,11 @@ window.CONSULTING_MASTER = {
       detailed: { coefficient: 6.9, exponent: 0.45, minimum: 20000, maximum: 700000 },
       other: { coefficient: 5.1, exponent: 0.38, minimum: 20000, maximum: 250000 }
     }
+  },
+  surveyRulesByYear: {
+    2024: { overhead: { lowerLimit: 500000, upperLimit: 100000000, lowerRate: 91.2, upperRate: 51.7, a: 371.23, b: -0.107, rateDecimals: 1 } },
+    2025: { overhead: { lowerLimit: 500000, upperLimit: 100000000, lowerRate: 95.8, upperRate: 61.4, a: 288.5, b: -0.084, rateDecimals: 1 } },
+    2026: { overhead: { lowerLimit: 500000, upperLimit: 100000000, lowerRate: 95.8, upperRate: 61.4, a: 288.5, b: -0.084, rateDecimals: 1 } }
   },
   geologyRules: {
     overhead: { lowerLimit: 1000000, upperLimit: 30000000, lowerRate: 82.5, upperRate: 60.6, a: 290.2, b: -0.091, rateDecimals: 1 }

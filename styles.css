@@ -154,6 +154,18 @@ input:focus, select:focus, textarea:focus { border-color: var(--green); box-shad
 .consulting-condition-fields { grid-column: 1 / -1; }
 .consulting-condition-fields fieldset { display: grid; grid-template-columns: repeat(auto-fit,minmax(240px,1fr)); gap: 10px; margin: 0; padding: 14px; background: #f4f8f6; border: 1px solid #a8c7b9; border-radius: 12px; }
 .consulting-condition-fields legend { padding: 0 8px; color: #184d3e; font-weight: 800; }
+.consulting-condition-fields fieldset + fieldset { margin-top: 12px; }
+.consulting-parameter-table, .consulting-formula-list, .consulting-applicability { grid-column: 1 / -1; padding: 9px 11px; background: #fff; border: 1px solid var(--line); border-radius: 9px; }
+.consulting-parameter-table summary, .consulting-formula-list summary, .consulting-applicability summary { cursor: pointer; color: #174d3e; font-weight: 800; }
+.parameter-table-scroll { margin-top: 8px; overflow: auto; max-height: 260px; }
+.parameter-table-scroll table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.parameter-table-scroll td { padding: 6px; border: 1px solid #cad9d2; vertical-align: top; }
+.consulting-parameter-value { width: 100%; padding: 5px 7px; color: #174d3e; background: #edf7f2; border: 1px solid #7eae99; border-radius: 6px; font-weight: 800; cursor: pointer; }
+.consulting-parameter-value:hover, .consulting-parameter-value.selected { color: #fff; background: #236b56; }
+.selected-parameter { grid-column: 1 / -1; padding: 9px 11px; color: #174d3e; background: #e6f5ed; border-left: 4px solid #2e8268; border-radius: 7px; font-weight: 700; }
+.consulting-formula-list ol, .consulting-applicability ol { margin: 10px 0 0; padding-left: 22px; line-height: 1.65; }
+.consulting-formula-list .field { margin-top: 10px; }
+.consulting-market-fields { grid-column: 1 / -1; }
 .consulting-rate-check { align-items: flex-start; min-height: 58px; padding: 10px; background: #fff; border: 1px solid #d4e1dc; border-radius: 9px; }
 .consulting-rate-check small { display: block; margin-top: 4px; color: var(--muted); line-height: 1.45; }
 .condition-calculation-note, .condition-source-list, .consulting-incomplete-rule { grid-column: 1 / -1; margin: 0; }

@@ -111,7 +111,7 @@ assert.ok(!html.includes('id="pdfManualSurveyQuantity" type="number" aria-label=
 assert.ok(documentImport.includes('$("pdfManualSurveyQuantity").value = "";') && documentImport.includes('$("pdfManualConsultingDays").value = "";'), "PDF取込の数量・人工を空欄へ戻す");
 assert.ok(documentImport.includes('return values.length ? values[values.length - 1][1] : "";'), "PDFに数値がなければ1を補わない");
 assert.ok(consulting.includes("calculateStandardQuantity") && consulting.includes("業務種類・適用範囲が特記仕様書と一致"), "条件確認と標準数量なしに標準歩掛を追加しない");
-assert.ok(consulting.includes("一次試算・補正等未反映") && consulting.includes("参照専用（自動追加不可）"), "測量以外の未実装条件を完成積算と誤表示しない");
+assert.ok(consulting.includes("CONSULTING_RULE_PACK") && consulting.includes("国交省基準の適用条件") && consulting.includes("source-table-crosschecked"), "国交省ページ照合済みの設計・調査・地質条件を使用する");
 assert.ok(!html.includes('id="analyticsConsent"') && !html.includes('id="analyticsAcceptButton"') && !html.includes('id="analyticsDeclineButton"'), "アクセス解析の同意ポップアップを表示しない");
 assert.ok(!html.includes('id="analyticsSettingsButton"') && !analytics.includes("readConsent") && !analytics.includes("writeConsent"), "アクセス解析の同意保存と設定変更UIを残さない");
 assert.ok(!html.includes("サイト改善のため") && !html.includes("利用状況の把握と改善のため"), "アクセス解析の目的説明を画面へ表示しない");

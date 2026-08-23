@@ -7,7 +7,7 @@
   <meta name="description" content="設計、測量、調査・計画、地質を年度別技術者単価と根拠表示付きで計算するWeb業務積算ソフト">
   <meta name="author" content="株式会社アイズ測量">
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="styles.css?v=20260824-1">
+  <link rel="stylesheet" href="styles.css?v=20260824-2">
 </head>
 <body data-business-scope="design">
   <header class="app-header">
@@ -270,6 +270,7 @@
             <div class="card-title-row"><div><p class="section-kicker">DIRECT COSTS</p><h2>積上げ費用・計算条件</h2></div></div>
             <div class="cost-grid consulting-cost-grid">
               <label class="field" data-consulting-scope="design-planning"><span>設計・調査計画の積上直接経費</span><input class="consulting-cost" data-cost="designDirectExpenses" type="number" min="0" step="1"></label>
+              <label class="field" data-consulting-scope="design-planning"><span>調査計画（測量方式）の積上直接経費</span><input class="consulting-cost" data-cost="surveyPlanningDirectExpenses" type="number" min="0" step="1"></label>
               <label class="field" data-consulting-scope="geology"><span>地質一般：直接調査費（人件費以外）</span><input class="consulting-cost" data-cost="geologyDirectNonLabor" type="number" min="0" step="1"></label>
               <label class="field" data-consulting-scope="geology"><span>地質一般：間接調査費</span><input class="consulting-cost" data-cost="geologyIndirect" type="number" min="0" step="1"></label>
               <label class="field" data-consulting-scope="geology"><span>地質一般：諸経費対象外費用</span><input class="consulting-cost" data-cost="geologyExcluded" type="number" min="0" step="1"></label>
@@ -606,14 +607,15 @@
   <script src="data/official-source-catalog.js?v=20260824-1"></script>
   <script src="data/consulting-master.js?v=20260823-1"></script>
   <script src="data/consulting-standard-walks.js?v=20260824-1"></script>
-  <script src="data/consulting-condition-rules.js?v=20260824-1"></script>
+  <script src="data/consulting-condition-rules.js?v=20260824-2"></script>
+  <script src="data/consulting-rule-pack.js?v=20260824-2"></script>
   <script src="data/verified-work-item-expansions.js?v=20260823-1"></script>
   <script src="engine.js?v=20260823-2"></script>
-  <script src="consulting-engine.js?v=20260824-1"></script>
+  <script src="consulting-engine.js?v=20260824-2"></script>
   <script src="document-import-engine.js?v=20260823-2"></script>
   <script src="document-reader.js?v=20260823-1"></script>
   <script src="app.js?v=20260824-1"></script>
-  <script src="consulting.js?v=20260824-2"></script>
+  <script src="consulting.js?v=20260824-5"></script>
   <script src="document-import.js?v=20260823-9"></script>
   <script src="analytics.js?v=20260823-1"></script>
 </body>

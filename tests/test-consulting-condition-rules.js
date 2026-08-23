@@ -47,6 +47,9 @@ assert.strictEqual(corrected.valid, true);
 assert.strictEqual(corrected.rate, 0.15, "補正係数は+10%-5%+20%-10%=+15%と加減算する");
 assert.strictEqual(corrected.factor, 1.15, "標準歩掛へ1.15を乗じる");
 assert.strictEqual(engine.normalizeDays(28.2 * corrected.factor), 32.43, "職種別人工を補正後に小数第3位へ丸める");
+const detailedQuantity = engine.calculateStandardQuantity("1km当り", { quantity1: 2 });
+assert.deepStrictEqual(engine.calculateRuleQuantityMultiplier(detailedQuantity, rule), { multiplier: 1.5, summary: "0.5×設計延長(km)+0.5 ＝ 1.5倍" }, "道路詳細設計の延長式を単純比例にしない");
+assert.strictEqual(engine.calculateRuleQuantityMultiplier(detailedQuantity, preliminaryRule).multiplier, 1.8, "道路予備設計の延長式を反映する");
 
 const inventory = JSON.parse(fs.readFileSync(path.join(root, "data", "source-audits", "mlit-effective-rule-pages.json"), "utf8"));
 assert.strictEqual(inventory.effectiveEdition, 2011, "現行系列は平成23年度版を基礎とする");
