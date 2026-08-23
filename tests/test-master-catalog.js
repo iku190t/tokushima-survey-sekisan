@@ -46,5 +46,16 @@ for (const year of [2024, 2025, 2026]) {
   assert.ok(hiroshima.every((entry) => entry.acquisitionStatus === "acquired" && /^https:\/\//.test(entry.url) && /^[0-9a-f]{64}$/.test(entry.sha256)), `広島県${year}年度原資料の取得証跡が完全`);
   assert.ok(sourceCatalog.sources.some((entry) => entry.jurisdictionCode === "mlit" && entry.fiscalYear === year && entry.kind === "role-prices"), `国交省${year}年度技術者単価原本を取得済み`);
 }
+for (const kind of ["base-measurement-standard", "base-geology-standard", "base-design-standard", "base-planning-standard", "base-reference-general", "base-reference-measurement", "base-reference-geology", "base-reference-design", "reference-amendment-general"]) {
+  const source = sourceCatalog.sources.find((entry) => entry.jurisdictionCode === "mlit" && entry.kind === kind);
+  assert.ok(source && source.acquisitionStatus === "acquired" && source.pages > 0 && /^[0-9a-f]{64}$/.test(source.sha256), `国交省の基準書本体・参考資料 ${kind} を取得・索引済み`);
+}
+const linkAudit = JSON.parse(fs.readFileSync(path.join(root, "data", "source-audits", "mlit-gyoumu-sekisan-links.json"), "utf8"));
+assert.deepStrictEqual({ all: linkAudit.allLinkCount, pdf: linkAudit.pdfLinkCount, uniquePdf: linkAudit.uniquePdfLinkCount }, { all: 171, pdf: 155, uniquePdf: 152 }, "国交省掲載ページの全リンクを重複込みで目録化");
+assert.strictEqual(linkAudit.pdfLinks.length, 152, "国交省PDFリンク目録を全件保持する");
+const documentAudit = JSON.parse(fs.readFileSync(path.join(root, "data", "source-audits", "mlit-gyoumu-sekisan-documents.json"), "utf8"));
+assert.deepStrictEqual({ unique: documentAudit.uniquePdfLinkCount, acquired: documentAudit.acquiredCount, failed: documentAudit.failedCount }, { unique: 152, acquired: 152, failed: 0 }, "国交省掲載PDFを全件取得・索引する");
+assert.deepStrictEqual({ pages: documentAudit.totalPages, bytes: documentAudit.totalBytes }, { pages: 3054, bytes: 176433922 }, "国交省掲載PDF152件の合計ページ数と取得容量を記録する");
+assert.ok(documentAudit.documents.every((entry) => entry.status === "acquired" && entry.pages > 0 && entry.bytes > 0 && /^[0-9a-f]{64}$/.test(entry.sha256)), "国交省全PDFのページ数・容量・SHA-256を保持する");
 
 console.log("OK: nationwide submission destinations and standard master catalog checks passed");

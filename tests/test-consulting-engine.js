@@ -64,6 +64,7 @@ assert.strictEqual(result.totals.businessPrice, 1466000, "総合業務価格の�
 assert.strictEqual(result.totals.tax, 146600, "合算後に消費税を一度だけ計算");
 
 assert.strictEqual(engine.normalizeDays(1.23456), 1.235, "人工は小数第3位まで");
+assert.strictEqual(engine.normalizeCorrectionFactor(1.236), 1.24, "補正係数・変化率は小数第2位まで");
 assert.strictEqual(engine.overheadRate(1000001, master.geologyRules.overhead), 82.5, "地質諸経費の中間式は小数1位");
 assert.strictEqual(engine.electronicDeliverableCost(98050, master.designRules.electronic.detailed), 54000, "詳細設計の電子成果品作成費");
 

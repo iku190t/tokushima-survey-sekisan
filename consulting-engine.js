@@ -14,7 +14,9 @@
     const factor = 10 ** decimals;
     return Math.floor(number(value) * factor + 0.5 + 1e-10) / factor;
   };
+  // 参考資料（総則）の端数規定：補正後数量は小数第3位、補正係数・変化率は小数第2位。
   const normalizeDays = (value) => roundHalfUp(Math.max(0, number(value)), 3);
+  const normalizeCorrectionFactor = (value) => roundHalfUp(Math.max(0, number(value)), 2);
 
   function overheadRate(base, rule) {
     const target = floorYen(base);
@@ -114,5 +116,5 @@
     };
   }
 
-  return { floorYen, roundHalfUp, normalizeDays, overheadRate, electronicDeliverableCost, calculateRoleLine, calculateEstimate };
+  return { floorYen, roundHalfUp, normalizeDays, normalizeCorrectionFactor, overheadRate, electronicDeliverableCost, calculateRoleLine, calculateEstimate };
 });

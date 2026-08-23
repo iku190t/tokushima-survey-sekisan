@@ -11,7 +11,7 @@
   const h = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
   const confidenceLabel = (value) => value === "high" ? "確信度：高" : value === "medium" ? "確信度：要確認" : "確信度：低";
   const methodLabel = (value) => value === "ocr" ? "OCR" : "PDF文字抽出";
-  const quantityFormat = new Intl.NumberFormat("ja-JP", { maximumFractionDigits: 6 });
+  const quantityFormat = new Intl.NumberFormat("ja-JP", { maximumFractionDigits: 3 });
   let currentAnalysis = null;
   let currentFileName = "";
   const clickLineTargets = new Map();
@@ -140,7 +140,29 @@
 
   function quantityFromLine(text) {
     const values = [...String(text || "").replace(/,/g, "").matchAll(/(?:^|\s)(\d+(?:\.\d+)?)(?=\s|$|点|km|m|ha|業務|式|回|人日)/g)];
-    return values.length ? values[values.length - 1][1] : "1";
+    return values.length ? values[values.length - 1][1] : "";
+  }
+
+  function decimalsFromStep(step) {
+    const text = Number(step).toFixed(8).replace(/0+$/, "");
+    return text.includes(".") ? text.split(".")[1].length : 0;
+  }
+
+  function enforceDecimalInput(input, decimals, normalizer) {
+    if (!input || input.value === "") return null;
+    const raw = input.value;
+    if (["e", "E", "+", "-"].some((token) => raw.includes(token))) {
+      input.value = "";
+      app.notify(`0以上、小数第${decimals}位までで入力してください`);
+      return null;
+    }
+    const fraction = raw.split(".")[1] || "";
+    const value = normalizer(raw);
+    if (fraction.length > decimals) {
+      input.value = String(value);
+      app.notify(decimals ? `小数第${decimals}位までに補正しました` : "整数に補正しました");
+    }
+    return value;
   }
 
   function closeManualMapper() {
@@ -184,6 +206,10 @@
       $("pdfManualSurveyConversion").textContent = "項目を選択してください。";
       return null;
     }
+    if ($("pdfManualSurveyQuantity").value === "" || !$("pdfManualSurveySourceUnit").value) {
+      $("pdfManualSurveyConversion").textContent = "数量と単位を確認して入力してください。";
+      return null;
+    }
     const converted = analyzer.convertSurveyQuantity($("pdfManualSurveyQuantity").value, $("pdfManualSurveySourceUnit").value, item);
     const raw = quantityFormat.format(converted.rawQuantity);
     const result = quantityFormat.format(window.SekisanEngine.normalizeQuantity(converted.quantity, item, activeMaster()));
@@ -196,7 +222,7 @@
   function updateManualSurveyRule(preferredUnitId = "") {
     const item = activeMaster().workItems.find((entry) => entry.code === $("pdfManualSurveyCode").value);
     if (!item) {
-      $("pdfManualSurveySourceUnit").innerHTML = '<option value="base">—</option>';
+      $("pdfManualSurveySourceUnit").innerHTML = '<option value="">単位を選択してください</option>';
       $("pdfManualSurveyConversion").textContent = "項目を選択してください。";
       $("pdfManualSurveyRule").textContent = "項目を選択してください。";
       return;
@@ -208,9 +234,9 @@
     const previous = preferredUnitId || $("pdfManualSurveySourceUnit").value;
     const detected = analyzer.detectSurveyUnitId(sourceText, item);
     const selected = options.some((option) => option.id === previous) ? previous : detected;
-    $("pdfManualSurveySourceUnit").innerHTML = options.map((option) => `<option value="${h(option.id)}" ${option.id === selected ? "selected" : ""}>${h(option.label)}</option>`).join("");
+    $("pdfManualSurveySourceUnit").innerHTML = '<option value="">単位を選択してください</option>' + options.map((option) => `<option value="${h(option.id)}" ${option.id === selected ? "selected" : ""}>${h(option.label)}</option>`).join("");
     const input = $("pdfManualSurveyQuantity");
-    const selectedOption = options.find((option) => option.id === $("pdfManualSurveySourceUnit").value) || options[0];
+    const selectedOption = options.find((option) => option.id === $("pdfManualSurveySourceUnit").value) || options.find((option) => option.id === "base") || options[0];
     input.min = Math.max(0, rule.min / selectedOption.factor);
     input.step = Math.max(0.000001, rule.step / selectedOption.factor);
     $("pdfManualSurveyRule").textContent = `資料の数量を${selectedOption.label}で入力します。換算後の${item.unit}は${rule.integer ? "整数" : `小数第${rule.decimals}位まで`}に補正します。`;
@@ -247,7 +273,8 @@
     $("pdfManualSurveyCategory").innerHTML = surveyCategoryOptions("", "survey", "");
     $("pdfManualSurveyCategory").value = "";
     populateManualSurveyItems();
-    $("pdfManualSurveyQuantity").value = "1";
+    $("pdfManualSurveyQuantity").value = "";
+    $("pdfManualConsultingDays").value = "";
     $("addPdfManualCandidateButton").textContent = "反映待ちへ追加";
     $("addPdfManualCandidateButton").disabled = true;
     $("ignorePdfManualLineButton").disabled = true;
@@ -407,8 +434,13 @@
       const item = activeMaster().workItems.find((entry) => entry.code === $("pdfManualSurveyCode").value);
       if (item) {
         const unitId = analyzer.detectSurveyUnitId(line.text, item);
-        updateManualSurveyRule(unitId);
-        app.notify(`単位「${line.text}」を右側へ入れました`);
+        if (unitId) {
+          updateManualSurveyRule(unitId);
+          app.notify(`単位「${line.text}」を右側へ入れました`);
+        } else {
+          updateManualSurveyRule("");
+          app.notify("単位を判定できません。右側で選択してください");
+        }
       } else {
         app.notify("先に積算する詳細項目を選んでください");
       }
@@ -642,6 +674,8 @@
     if (isSurveyBusinessKind($("pdfManualKind").value)) {
       const item = activeMaster().workItems.find((entry) => entry.code === $("pdfManualSurveyCode").value);
       if (!item) { app.notify("反映する測量項目を選択してください"); return; }
+      if ($("pdfManualSurveyQuantity").value === "") { app.notify("資料の数量を入力してください"); return; }
+      if (!$("pdfManualSurveySourceUnit").value) { app.notify("資料の単位を選択してください"); return; }
       const converted = analyzer.convertSurveyQuantity($("pdfManualSurveyQuantity").value, $("pdfManualSurveySourceUnit").value, item);
       const quantity = window.SekisanEngine.normalizeQuantity(converted.quantity, item, activeMaster());
       if (!(quantity > 0)) { app.notify("換算後の積算数量は0より大きい値を入力してください"); return; }
@@ -953,7 +987,12 @@
       updateManualSurveyRule();
     });
     $("pdfManualSurveySourceUnit").addEventListener("change", () => updateManualSurveyRule($("pdfManualSurveySourceUnit").value));
-    $("pdfManualSurveyQuantity").addEventListener("input", updateManualSurveyConversion);
+    $("pdfManualSurveyQuantity").addEventListener("input", (event) => {
+      const decimals = decimalsFromStep(event.target.step || 1);
+      enforceDecimalInput(event.target, decimals, (value) => analyzer.roundHalfUp ? analyzer.roundHalfUp(Number(value), decimals) : Math.round(Number(value) * 10 ** decimals) / 10 ** decimals);
+      updateManualSurveyConversion();
+    });
+    $("pdfManualConsultingDays").addEventListener("input", (event) => enforceDecimalInput(event.target, 3, (value) => Math.round(Math.max(0, Number(value) || 0) * 1000) / 1000));
     $("pdfManualConsultingService").addEventListener("change", () => {
       updateManualConsultingTasks();
       updateManualConsultingRoles();
@@ -996,6 +1035,17 @@
         row.querySelector(".import-survey-unit").textContent = item.unit;
       }
       if (event.target.classList.contains("import-consulting-service")) row.querySelector(".import-consulting-role").innerHTML = roleOptions(event.target.value, "");
+    });
+    $("documentImportCandidateList").addEventListener("input", (event) => {
+      const row = event.target.closest(".import-candidate");
+      if (event.target.classList.contains("import-survey-quantity")) {
+        const item = activeMaster().workItems.find((entry) => entry.code === row.querySelector(".import-survey-code").value);
+        const rule = window.SekisanEngine.quantityRule(item, activeMaster());
+        enforceDecimalInput(event.target, rule.decimals, (value) => window.SekisanEngine.normalizeQuantity(value, item, activeMaster()));
+      }
+      if (event.target.classList.contains("import-consulting-days")) {
+        enforceDecimalInput(event.target, 3, (value) => Math.round(Math.max(0, Number(value) || 0) * 1000) / 1000);
+      }
     });
     $("applyDocumentImportButton").addEventListener("click", applyImport);
   }

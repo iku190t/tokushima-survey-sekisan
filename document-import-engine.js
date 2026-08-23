@@ -83,7 +83,9 @@
     if (source.includes("m2")) return options.some((option) => option.id === "m2") ? "m2" : "base";
     if (source.includes("km")) return options.some((option) => option.id === "km") ? "km" : "base";
     if (/(?:^|[^a-z])m(?:$|[^a-z])/.test(source)) return options.some((option) => option.id === "m") ? "m" : "base";
-    return "base";
+    const target = canonicalUnit(item?.unit || "");
+    if (target && source.includes(target)) return "base";
+    return "";
   }
 
   function convertSurveyQuantity(value, sourceUnitId, item) {

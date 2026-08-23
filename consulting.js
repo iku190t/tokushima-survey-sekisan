@@ -12,6 +12,7 @@
   const $ = (id) => document.getElementById(id);
   const h = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
   const money = (value) => `¥${Math.floor(Number(value) || 0).toLocaleString("ja-JP")}`;
+  const decimalLabel = (decimals) => `小数第${decimals}位まで`;
   const service = (id) => master.serviceTypes.find((entry) => entry.id === id) || master.serviceTypes[0];
   const roleDefinition = (serviceType, roleId) => master.roleGroups[service(serviceType).roleGroup].find((entry) => entry.id === roleId);
   let activeConsultingScope = "design";
@@ -94,7 +95,7 @@
   function renderRoleMeta() {
     const role = roleDefinition($("consultingServiceType").value, $("consultingRole").value);
     const price = rolePrices()[$("consultingRole").value] || 0;
-    $("consultingRoleMeta").textContent = `${role?.name || "職種未選択"}：基準日額 ${money(price)}／人日。人工は合計所要人日を小数第3位まで入力します。`;
+    $("consultingRoleMeta").textContent = `${role?.name || "職種未選択"}：基準日額 ${money(price)}／人日。人工（補正後数量）は総則に従い小数第3位まで入力します。`;
   }
 
   function renderPresets() {
@@ -112,7 +113,7 @@
     $("addConsultingPresetButton").disabled = visiblePresets.length === 0;
     const audit = (standardWalks.audits || []).find((entry) => Number(entry.fiscalYear) === year);
     $("consultingPresetStatus").textContent = visiblePresets.length
-      ? `令和${year - 2018}年度：${visiblePresets.length}表を表示中（全区分 ${audit?.presetCount || visiblePresets.length}表）。標準単位と出典ページを確認し、数量補正後の倍率を入力してください。`
+      ? `令和${year - 2018}年度：${visiblePresets.length}表を表示中（全区分 ${audit?.presetCount || visiblePresets.length}表）。標準単位・出典ページ・適用条件を確認し、原表で算定した補正係数を小数第2位まで入力してください。`
       : `令和${year - 2018}年度：検索条件に一致する標準歩掛がありません。`;
   }
 
@@ -128,7 +129,7 @@
       return `<tr data-consulting-line="${h(line.id)}">
         <td><strong>${h(line.taskName)}</strong><small>${h(line.serviceName)}${source ? `／確認済み：${h(source)}` : imported ? `／資料取込：${h(imported.fileName || "貼付け原文")} p.${h(imported.page || 1)}（要原文照合）` : "／人工入力"}</small></td>
         <td>${h(role?.name || line.role)}</td>
-        <td><input class="consulting-line-days" type="number" min="0" step="0.001" value="${h(line.days)}"><span class="input-unit">人日</span></td>
+        <td><input class="consulting-line-days" type="number" min="0" step="0.001" inputmode="decimal" data-decimals="3" value="${h(line.days)}"><span class="input-unit">人日</span><small>小数第3位まで</small></td>
         <td>${money(line.dailyRate)}</td><td><strong>${money(line.amount)}</strong></td>
         <td class="no-print"><button class="icon-button danger-text delete-consulting-line" type="button" aria-label="削除">×</button></td>
       </tr>`;
@@ -184,9 +185,21 @@
       .filter((source) => source.jurisdictionCode === "mlit" && Number(source.fiscalYear) === fiscalYear && !String(source.kind).startsWith("role"))
       .map((source) => ({ label: source.title || source.kind, url: source.url }));
     const fullBook = (standardWalks.audits || []).find((entry) => Number(entry.fiscalYear) === fiscalYear);
+    const baseKinds = activeConsultingScope === "geology"
+      ? new Set(["base-geology-standard", "base-reference-geology", "base-reference-general", "reference-amendment-general"])
+      : activeConsultingScope === "planning"
+        ? new Set(["base-planning-standard", "base-reference-general", "reference-amendment-general"])
+        : new Set(["base-design-standard", "base-reference-design", "base-reference-general", "reference-amendment-general"]);
+    const baseSources = (officialSourceCatalog.sources || [])
+      .filter((source) => source.jurisdictionCode === "mlit" && baseKinds.has(source.kind))
+      .map((source) => ({
+        label: `${source.title}${source.kind === "reference-amendment-general" ? "（端数規定の改正資料）" : "（基準書本体・継続適用部分）"}`,
+        url: source.url
+      }));
     return [
       { label: yearSource.sourceLabel, url: yearSource.sourceUrl },
       ...(fullBook ? [{ label: `${fullBook.source}（職種別標準歩掛 ${fullBook.presetCount}表の抽出元）`, url: fullBook.sourceUrl }] : []),
+      ...baseSources,
       ...mlitSources,
       { label: "国土交通省 設計業務等標準積算基準書（年度別一覧）", url: "https://www.mlit.go.jp/tec/gyoumu_sekisan.html" }
     ];
@@ -217,6 +230,23 @@
     renderRoleMeta();
   }
 
+  function enforceDecimalInput(input, decimals, normalizer, announce = false) {
+    if (!input || input.value === "") return null;
+    const raw = input.value;
+    if (["e", "E", "+", "-"].some((token) => raw.includes(token))) {
+      input.value = "";
+      if (announce) app.notify(`0以上、${decimalLabel(decimals)}で入力してください`);
+      return null;
+    }
+    const fraction = raw.split(".")[1] || "";
+    const value = normalizer(raw);
+    if (fraction.length > decimals) {
+      input.value = String(value);
+      if (announce) app.notify(`${decimalLabel(decimals)}に補正しました`);
+    }
+    return value;
+  }
+
   function addLine() {
     const current = state();
     const selectedService = service($("consultingServiceType").value);
@@ -224,6 +254,7 @@
     const days = engine.normalizeDays($("consultingDays").value);
     if (!days) { app.notify("人工を0より大きい値で入力してください"); return; }
     current.lines.push({ id: `consult-${Date.now()}-${Math.random().toString(16).slice(2)}`, serviceType: selectedService.id, taskName: $("consultingTaskName").value.trim() || $("consultingTaskTemplate").value, role, days });
+    $("consultingDays").value = "";
     updateAndRender();
     app.notify(`${activeConsultingScope === "geology" ? "地質" : activeConsultingScope === "planning" ? "調査・計画" : "設計"}業務の人工を追加しました`);
   }
@@ -231,7 +262,9 @@
   function addPreset() {
     const preset = visiblePresets.find((entry) => entry.id === $("consultingPreset").value);
     if (!preset) return;
-    const multiplier = Math.max(0.001, engine.normalizeDays($("consultingPresetMultiplier").value || 1));
+    if ($("consultingPresetMultiplier").value === "") { app.notify("原表の数量式・適用条件から算定した補正係数を入力してください"); return; }
+    const multiplier = engine.normalizeCorrectionFactor($("consultingPresetMultiplier").value);
+    if (!(multiplier > 0)) { app.notify("補正係数を0より大きい値で入力してください"); return; }
     Object.entries(preset.roles).forEach(([role, days]) => state().lines.push({
       id: `consult-${Date.now()}-${role}-${Math.random().toString(16).slice(2)}`,
       serviceType: preset.serviceType,
@@ -241,6 +274,7 @@
       verifiedSource: `${preset.source}${preset.sourceUrl ? `／${preset.sourceUrl}` : ""}`,
       standardWalk: { id: preset.id, fiscalYear: preset.fiscalYear || state().fiscalYear, standardUnit: preset.standardUnit || "標準表1式", multiplier }
     }));
+    $("consultingPresetMultiplier").value = "";
     updateAndRender();
     app.notify(`令和${state().fiscalYear - 2018}年度の標準歩掛を追加しました`);
   }
@@ -313,6 +347,8 @@
     $("consultingTaskTemplate").addEventListener("change", () => { $("consultingTaskName").value = $("consultingTaskTemplate").value; });
     $("consultingPresetSearch").addEventListener("input", renderPresets);
     $("consultingRole").addEventListener("change", renderRoleMeta);
+    $("consultingDays").addEventListener("input", (event) => enforceDecimalInput(event.target, 3, engine.normalizeDays, true));
+    $("consultingPresetMultiplier").addEventListener("input", (event) => enforceDecimalInput(event.target, 2, engine.normalizeCorrectionFactor, true));
     $("consultingFiscalYear").addEventListener("change", (event) => { state().fiscalYear = Number(event.target.value); renderAll(); app.saveDraft(); });
     $("consultingProjectName").addEventListener("input", (event) => { app.getEstimate().projectName = event.target.value; $("projectName").value = event.target.value; app.saveDraft(); });
     $("projectName").addEventListener("input", () => { $("consultingProjectName").value = $("projectName").value; });
@@ -328,6 +364,10 @@
       const line = state().lines.find((entry) => entry.id === row?.dataset.consultingLine);
       if (line && event.target.classList.contains("consulting-line-days")) line.days = engine.normalizeDays(event.target.value);
       updateAndRender();
+    });
+    $("consultingLineBody").addEventListener("input", (event) => {
+      if (!event.target.classList.contains("consulting-line-days")) return;
+      enforceDecimalInput(event.target, 3, engine.normalizeDays, true);
     });
     $("consultingLineBody").addEventListener("click", (event) => {
       const button = event.target.closest(".delete-consulting-line");

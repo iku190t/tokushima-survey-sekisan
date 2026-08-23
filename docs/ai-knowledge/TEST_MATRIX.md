@@ -9,15 +9,15 @@
 | T-ENGINE | `node tests/test-engine.js` | 歩掛、精度、数量式、旅費、丸め、諸経費 | `engine.js`、マスター、計算UI変更時は必須 | 合格 |
 | T-RATES | `node tests/test-role-prices.js` | 令和4～8年度の公式技術者単価 | 単価プリセット、年度切替変更時は必須 | 合格 |
 | T-UI | `node tests/test-ui-static.js` | HTML要素の結線、数量制限、追加済み測量項目の変更、選択中測量項目の規定書PDF・原表ページ対応表、測量資料だけの年度一覧、5帳票、測量明細の原表ページリンク、積算条件書の根拠一覧表、A4印刷CSS、Ez積算の統合案内・免責・公開HTTPS版Analytics常時計測 | `index.html`、`app.js`、`analytics.js`、`styles.css`変更時は必須 | 合格 |
-| T-CATALOG | `node tests/test-master-catalog.js` | 見積提出先47都道府県、全国標準R6～R8配信カタログ、年度メタデータ、SHA-256、県別マスター非配信 | 提出先一覧、年度単価セット、配信処理変更時は必須 | 合格 |
+| T-CATALOG | `node tests/test-master-catalog.js` | 見積提出先47都道府県、全国標準R6～R8配信カタログ、年度メタデータ、国交省ページ171リンク・重複除外PDF152件の取得監査、SHA-256、県別マスター非配信 | 提出先一覧、年度単価セット、公式資料台帳、配信処理変更時は必須 | 合格 |
 | T-HIROSHIMA | `node tests/test-hiroshima-masters.js` | 広島県令和6～8年度の134項目、直接経費率108行、単価、諸経費、旅費、安全費、電子成果品、UAVレーザ、代表固定金額 | 広島県年度マスター・生成処理変更時は必須 | 合格 |
 | T-NATIONAL | `node tests/test-nationwide-standard.js` | 全国標準参考R6～R8の134項目、直接経費率108行、技術者単価、諸経費、代表固定金額、検証状態・出典・限界表示 | 全国標準参考マスター、年度・地域切替変更時は必須 | 合格 |
-| T-CONSULT | `node tests/test-consulting-engine.js` | 設計その他原価・一般管理費、電子成果品、地質諸経費、年度別職種単価、測量との税抜合算、人工桁 | 設計・調査計算、職種単価、総合計変更時は必須 | 合格 |
+| T-CONSULT | `node tests/test-consulting-engine.js` | 設計その他原価・一般管理費、電子成果品、地質諸経費、年度別職種単価、測量との税抜合算、補正後人工3桁・補正係数2桁 | 設計・調査計算、職種単価、総合計変更時は必須 | 合格 |
 | T-CONSULT-UI | `node tests/test-consulting-ui.js` | 設計・測量・調査計画・地質の4業務区分、設計・調査計画・地質の詳細項目、人工入力、確認済み歩掛、警告、保存、新規、総合帳票結線 | `consulting.js`、総合画面・帳票変更時は必須 | 合格 |
 | T-CONSULT-WALKS | `node tests/test-consulting-walks.js` | 国交省R6～R8各8資料の年度・SHA、職種別標準歩掛735表、業務区分、単位、出典ページ、代表固定値 | 設計・調査計画・地質の標準歩掛、原資料台帳、年度出典変更時は必須 | 合格 |
 | T-AERIAL-DETAIL | `node tests/test-work-item-expansions.js` | 測量業務内の令和8年度UAVレーザ8工程、職種別人工合計、年度、公式出典 | UAV・レーザ等の詳細項目、年度展開変更時は必須 | 合格 |
 | T-STANDARD-SCOPE | `node tests/test-ui-static.js` | 国交省一般と港湾・航空局・用地・農林・上下水道等の別体系表示、航空測量／空港・深浅／港湾船舶の区別 | 業務タブ、マスター範囲、使い方・計算根拠変更時は必須 | 合格 |
-| T-DOC-IMPORT | `node tests/test-document-import.js` | PDF文字配置、同一行の5セル分割、隣接文字結合、OCRセル分割、行文脈、数量と縮尺の分離、資料単位換算（6.9×10,000m²＝69,000m²）、業務基本情報、測量数量、設計・地質人工 | PDF/OCR解析、候補対応付け、単位換算、正規化変更時は必須 | 合格 |
+| T-DOC-IMPORT | `node tests/test-document-import.js` | PDF文字配置、同一行の5セル分割、隣接文字結合、OCRセル分割、行文脈、数量と縮尺の分離、資料単位換算（6.9×10,000m²＝69,000m²）、単位なしの非推定、業務基本情報、測量数量、設計・地質人工 | PDF/OCR解析、候補対応付け、単位換算、正規化変更時は必須 | 合格 |
 | T-DOC-UI | `node tests/test-document-import-ui.js` | 小型ファイル投下、直接抽出/OCR切替、4業務区分の分離と順序、作業規程分類→測量詳細項目、設計等の詳細項目・職種・人工、文字ブロックのクリック、実入力欄への個別ドラッグ、作業領域の重複余白廃止、入力欄のPDF上端固定、反映待ち一覧の下部分離、HTMLドラッグとポインター経路、反映待ち項目のクリック変更・非重複保存、同一画面での連続反映、不要UI非表示、ファイル非送信 | 資料取込画面、反映API、読取ライブラリ変更時は必須 | 合格 |
 | T-OFFICIAL-CASE | `node tests/test-official-case-engine.js` | 官公需API XML解析、案件一致度、資料分類、検索URL、安全なURLスキーム | 公式案件検索、XML解析、資料台帳候補変更時は必須 | 合格 |
 | T-OFFICIAL-CASE-UI | `node tests/test-official-case-ui.js` | 公式案件検索・台帳UIと関連スクリプトの非読込、旧保存データ構造の互換維持 | 資料取込UI、旧案件保存API変更時は必須 | 合格 |

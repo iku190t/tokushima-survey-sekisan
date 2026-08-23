@@ -89,6 +89,8 @@ const areaItem = surveyMaster.workItems.find((item) => item.code === "7-1-2-1");
 const areaConversion = engine.convertSurveyQuantity(6.9, "standard", areaItem);
 assert.strictEqual(areaConversion.sourceUnitLabel, "10,000m²", "用地測量の資料単位を標準10,000m²で表示する");
 assert.strictEqual(areaConversion.quantity, 69000, "6.9×10,000m²を69,000m²へ換算する");
+assert.strictEqual(engine.detectSurveyUnitId("数量 6.9", areaItem), "", "資料に単位がない場合は勝手に基準単位を補わない");
+assert.strictEqual(engine.detectSurveyUnitId("数量 6.9 10,000m²", areaItem), "standard", "資料に明記された標準単位だけを検出する");
 const scaledAreaResult = engine.analyze([{ pageNumber: 1, method: "text", text: "用地測量 資料調査 公図等の転写 (地積測量図以外の公図等の転写) 10,000m² 6.9" }], surveyMaster, consultingMaster, jurisdictions);
 const scaledArea = scaledAreaResult.candidates.find((candidate) => candidate.kind === "survey" && candidate.code === "7-1-2-1");
 assert.ok(scaledArea, "10,000m²単位の用地測量行を候補化する");

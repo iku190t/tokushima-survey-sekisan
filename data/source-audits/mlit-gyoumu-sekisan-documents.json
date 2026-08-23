@@ -1,0 +1,1533 @@
+{
+  "sourcePage": "https://www.mlit.go.jp/tec/gyoumu_sekisan.html",
+  "auditedAt": "2026-08-23",
+  "pdfLinkCount": 155,
+  "uniquePdfLinkCount": 152,
+  "acquiredCount": 152,
+  "failedCount": 0,
+  "totalPages": 3054,
+  "totalBytes": 176433922,
+  "scope": "全掲載PDFの取得可否・ページ数・容量・SHA-256監査。取得・索引済みは全表の計算実装済みを意味しない。",
+  "documents": [
+    {
+      "url": "https://www.mlit.go.jp/common/001068059.pdf",
+      "labels": [
+        "第１編 総則"
+      ],
+      "status": "acquired",
+      "bytes": 222667,
+      "pages": 14,
+      "sha256": "af6218990c5df97104dd9ce2a75cc7a3d258de1fac51e7094c3f7e3908a730fd"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068061.pdf",
+      "labels": [
+        "第２編 測量業務"
+      ],
+      "status": "acquired",
+      "bytes": 8853528,
+      "pages": 41,
+      "sha256": "0cfe1b763f9ff23f2b33f374be7a1936e8447099ff62ef788571513cd24fcbde"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068062.pdf",
+      "labels": [
+        "第３編 地質調査業務"
+      ],
+      "status": "acquired",
+      "bytes": 1207144,
+      "pages": 12,
+      "sha256": "29047f48fbb17a1a68257fe6c72ca33a0c245f576fd19b9d5db0ce3d1f9bba4f"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068063.pdf",
+      "labels": [
+        "第４編 設計業務等"
+      ],
+      "status": "acquired",
+      "bytes": 3902678,
+      "pages": 70,
+      "sha256": "1c0899280f386f40632dc6c15a4275846b9bd646423db2c20b40fe0c5c291c4a"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068064.pdf",
+      "labels": [
+        "第５編 その他調査、設計業務"
+      ],
+      "status": "acquired",
+      "bytes": 25971,
+      "pages": 2,
+      "sha256": "7887c63fa7a01e99f0c7be7619252d9db1bbf16dfe4cf7fe96a9cc8127b9f1ce"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068065.pdf",
+      "labels": [
+        "目次"
+      ],
+      "status": "acquired",
+      "bytes": 34645,
+      "pages": 17,
+      "sha256": "ff89dda5525299ccfe8f9ddb4812d4aac5f4d44aaa1c75b1b06ab0093b8c84ed"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068066.pdf",
+      "labels": [
+        "第１編 測量業務"
+      ],
+      "status": "acquired",
+      "bytes": 1189346,
+      "pages": 176,
+      "sha256": "7868724ae8cb45ff53276dc73bc423c1ae4c92ded1f22f630e07fbf7653325bc"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068067.pdf",
+      "labels": [
+        "第２編 地質調査業務"
+      ],
+      "status": "acquired",
+      "bytes": 493242,
+      "pages": 51,
+      "sha256": "39d40d68b70cd5af79419dde63b53c445e72e0e1e2b9ca91f0497d4e506e6170"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068068.pdf",
+      "labels": [
+        "第３編 設計業務等"
+      ],
+      "status": "acquired",
+      "bytes": 3092305,
+      "pages": 157,
+      "sha256": "44c7579e7ad6afb9b3c0e41aeb4b1bf461a743f9321bc572b558f963d4aefa12"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068069.pdf",
+      "labels": [
+        "第４編 調査・計画業務"
+      ],
+      "status": "acquired",
+      "bytes": 1773675,
+      "pages": 80,
+      "sha256": "5cff3b9c038588e111611a759d9ab2fb163809173cb39ec49f079b470e2f325d"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068070.pdf",
+      "labels": [
+        "総目次"
+      ],
+      "status": "acquired",
+      "bytes": 16446,
+      "pages": 4,
+      "sha256": "7eff7455afecda23b2d9a8a46714e379d9fab12fbc7afbc29f827c6144ff2485"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068071.pdf",
+      "labels": [
+        "積算基準書改正内容"
+      ],
+      "status": "acquired",
+      "bytes": 9901507,
+      "pages": 70,
+      "sha256": "822b54d10c2ca4650fedcbeb4d750d8b413c8777af3c038f84b336d8a5b42452"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068073.pdf",
+      "labels": [
+        "（１）"
+      ],
+      "status": "acquired",
+      "bytes": 10610135,
+      "pages": 15,
+      "sha256": "fdf3127087976b90237b5b4a41ac0f90ffac0539e3e3c46f9a2b13365628946e"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068074.pdf",
+      "labels": [
+        "（２）"
+      ],
+      "status": "acquired",
+      "bytes": 7758587,
+      "pages": 14,
+      "sha256": "ee8a8a09e07daf212dc178e21d3c4642536b1e83e69334931dc72f04c126b838"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068075.pdf",
+      "labels": [
+        "積算基準書改正内容"
+      ],
+      "status": "acquired",
+      "bytes": 11715021,
+      "pages": 62,
+      "sha256": "e83dfe58de38a721b68eaa8a3ae282c48a36debb651758f018cf71a28d2861eb"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068076.pdf",
+      "labels": [
+        "参考資料改正内容"
+      ],
+      "status": "acquired",
+      "bytes": 9888507,
+      "pages": 19,
+      "sha256": "0f629f006bb533ccbbd01e4ec38398f6363b12770269eda630a3b197841fcba6"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068077.pdf",
+      "labels": [
+        "積算基準書改正内容"
+      ],
+      "status": "acquired",
+      "bytes": 1000556,
+      "pages": 3,
+      "sha256": "53515bfe35adb23a5bbeb9b3e27c172ce80694cc0aa0ba8b66db5da68325fccc"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068078.pdf",
+      "labels": [
+        "参考資料改正内容"
+      ],
+      "status": "acquired",
+      "bytes": 1532377,
+      "pages": 13,
+      "sha256": "a0d89fba5f7b92bf4a71900c1cfb041600e2223e5d5696bbff97d15f3a34a6cc"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068079.pdf",
+      "labels": [
+        "積算基準書改正内容"
+      ],
+      "status": "acquired",
+      "bytes": 2960616,
+      "pages": 48,
+      "sha256": "6a4bed71a8367abfaf185cef1a21d1ab55a025c8d7347d7c1435c8558588eddc"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068080.pdf",
+      "labels": [
+        "参考資料改正内容"
+      ],
+      "status": "acquired",
+      "bytes": 986517,
+      "pages": 9,
+      "sha256": "cb3e19718168c7b5e2b2e17c92920b6cd0037f70f08722d70c020e0efb568160"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068081.pdf",
+      "labels": [
+        "積算基準書改正内容"
+      ],
+      "status": "acquired",
+      "bytes": 762305,
+      "pages": 3,
+      "sha256": "c6b19eb7a66e141ac21df8841ee39248d5126c51e8963bb40943e09151161a6b"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068082.pdf",
+      "labels": [
+        "参考資料改正内容"
+      ],
+      "status": "acquired",
+      "bytes": 5745627,
+      "pages": 12,
+      "sha256": "8348ba6b1e072f02459734a4ca1fc48bd31638b750fd93fecfee0e120dd1a4bd"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068083.pdf",
+      "labels": [
+        "積算基準書改正内容"
+      ],
+      "status": "acquired",
+      "bytes": 2128506,
+      "pages": 27,
+      "sha256": "2dc98e26a93dc1cf5e22b1ca20737da77dac3117460e94d4ba66529bbb024466"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068084.pdf",
+      "labels": [
+        "参考資料改正内容"
+      ],
+      "status": "acquired",
+      "bytes": 8488799,
+      "pages": 16,
+      "sha256": "71a745fa9f33c7125b7038a14441004340c1507ff836b2d662fc85fbfd4ce29d"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068085.pdf",
+      "labels": [
+        "積算基準書改正内容"
+      ],
+      "status": "acquired",
+      "bytes": 1661433,
+      "pages": 6,
+      "sha256": "688a4ab74dd9d64551912bbf1e24c22e766f95d448a7e26d6900aa8f717675c7"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068087.pdf",
+      "labels": [
+        "参考資料改正内容"
+      ],
+      "status": "acquired",
+      "bytes": 2327895,
+      "pages": 2,
+      "sha256": "6b0f3566f92e51e92f4913fc94b5d0ab965eadd3b3eade60fcf92e7dfa67293f"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068088.pdf",
+      "labels": [
+        "積算基準書改正内容"
+      ],
+      "status": "acquired",
+      "bytes": 278075,
+      "pages": 8,
+      "sha256": "b6781eb1691cdcdce09e3cffea0da6565ca3f6c3f3a44bdc3edc9afff96b268d"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068089.pdf",
+      "labels": [
+        "参考資料改正内容"
+      ],
+      "status": "acquired",
+      "bytes": 88436,
+      "pages": 1,
+      "sha256": "080d3706a3c5844833569c079d7a6b16dd51b978b5e875a031d01b3991dc12ad"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068091.pdf",
+      "labels": [
+        "第１編 総則"
+      ],
+      "status": "acquired",
+      "bytes": 625977,
+      "pages": 16,
+      "sha256": "c144cc244d0f700cc77a60fc3f83166098a62f8bed0e44c59257da063338db26"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068092.pdf",
+      "labels": [
+        "第２編 測量業務"
+      ],
+      "status": "acquired",
+      "bytes": 2297536,
+      "pages": 41,
+      "sha256": "2f2b0122d8b8118d7e1d9f87a54fffb84d516193fcfc189f30a1373e9d8158d5"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068093.pdf",
+      "labels": [
+        "第３編 地質調査業務"
+      ],
+      "status": "acquired",
+      "bytes": 1482253,
+      "pages": 15,
+      "sha256": "a16a9ae0678a68543f6e9f1a3bede980360b238a562dcafe009cc5cff219f1bb"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068094.pdf",
+      "labels": [
+        "第４編 設計業務等"
+      ],
+      "status": "acquired",
+      "bytes": 4917830,
+      "pages": 75,
+      "sha256": "20ce70ff633961bce61ae3050f1284605e4c2c432771749534921691aad80a16"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068095.pdf",
+      "labels": [
+        "目次"
+      ],
+      "status": "acquired",
+      "bytes": 148453,
+      "pages": 7,
+      "sha256": "d99464f9242bd5682cd585715b935990e006653d05e0c5b51482c4667c8be358"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068098.pdf",
+      "labels": [
+        "第１編 測量業務"
+      ],
+      "status": "acquired",
+      "bytes": 2468622,
+      "pages": 160,
+      "sha256": "89d7cfb9d8736c437ecf3a488c41388afca5a0afba9517265a03cd8590696965"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068099.pdf",
+      "labels": [
+        "第２編 地質調査業務"
+      ],
+      "status": "acquired",
+      "bytes": 1170967,
+      "pages": 48,
+      "sha256": "828b7759194dd1079d9f1cbe10b2f3b5dec9392218e8ee56cdad22c64026d9c8"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068100.pdf",
+      "labels": [
+        "第３編 設計業務等"
+      ],
+      "status": "acquired",
+      "bytes": 4442972,
+      "pages": 157,
+      "sha256": "24d3c265f06801f3db7864f19d5c23335e8ef09b597e3dcce12c3bc8ee77c8c1"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068101.pdf",
+      "labels": [
+        "第４編 調査・計画業務"
+      ],
+      "status": "acquired",
+      "bytes": 772358,
+      "pages": 20,
+      "sha256": "93fdc00e336d479869bea4beb1fc71cdb7ded3e23f869132cee99e5486080593"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068102.pdf",
+      "labels": [
+        "総目次"
+      ],
+      "status": "acquired",
+      "bytes": 174806,
+      "pages": 12,
+      "sha256": "fab1aa82b88d8717f10421ae26a1a7820315fbeb5633597d6c41e2471733b7c7"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068103.pdf",
+      "labels": [
+        "『（参考資料） 第１編 総則』の修正のお知らせ"
+      ],
+      "status": "acquired",
+      "bytes": 62999,
+      "pages": 1,
+      "sha256": "a9c7ea34c7e7d55e7c46c717caa60b4e36daf738e2442b16e275926fd31a1641"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068104.pdf",
+      "labels": [
+        "積算基準書改正内容"
+      ],
+      "status": "acquired",
+      "bytes": 982019,
+      "pages": 35,
+      "sha256": "c05d7a97f3d4867ac1b6af7fa82de52890660b6a7eebb0379cd697335397c885"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068105.pdf",
+      "labels": [
+        "参考資料改正内容"
+      ],
+      "status": "acquired",
+      "bytes": 200036,
+      "pages": 5,
+      "sha256": "8ed25169debd65811c1ac46b242a50b673b57416826ab4442d1fc65c1ae62db0"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068106.pdf",
+      "labels": [
+        "測量業務標準歩掛における各費目の直接人件費に対する割合について"
+      ],
+      "status": "acquired",
+      "bytes": 70651,
+      "pages": 4,
+      "sha256": "1ab9de62b4fd6439516a93d06fcec8525925ac7ddd10031e9325a0fcfe582d5e"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068107.pdf",
+      "labels": [
+        "積算基準書改正内容"
+      ],
+      "status": "acquired",
+      "bytes": 7788465,
+      "pages": 103,
+      "sha256": "e320636150f570968c6ef1cf73e2d7907b609396dcb56370072389051ed790b9"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068108.pdf",
+      "labels": [
+        "参考資料改正内容"
+      ],
+      "status": "acquired",
+      "bytes": 6762290,
+      "pages": 47,
+      "sha256": "ff543bba2dd5db0a8579414c38799229294f6251763c5d0d6ab8aed506732dd6"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068109.pdf",
+      "labels": [
+        "測量業務標準歩掛における各費目の直接人件費に対する割合について"
+      ],
+      "status": "acquired",
+      "bytes": 99320,
+      "pages": 4,
+      "sha256": "55b3be750575b19a8b5b169318ea1facd7571edc5b8686ef0bdd6ff2b62ade9f"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068110.pdf",
+      "labels": [
+        "積算基準書改正内容"
+      ],
+      "status": "acquired",
+      "bytes": 1998594,
+      "pages": 19,
+      "sha256": "25496910c98ea9cf4c9a4d0531aa6c8e820f03ce81e49b4e245baa86b8ee05d7"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068111.pdf",
+      "labels": [
+        "参考資料改正内容"
+      ],
+      "status": "acquired",
+      "bytes": 1807465,
+      "pages": 9,
+      "sha256": "3aa9088b992949a9e574d121de41f7a03f3cd6e4dc26d31e494dd0ec159eba7d"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068112.pdf",
+      "labels": [
+        "測量業務標準歩掛における各費目の直接人件費に対する割合について"
+      ],
+      "status": "acquired",
+      "bytes": 98832,
+      "pages": 3,
+      "sha256": "3e82a19d3ccedffa51cf4d0c49b3fd3d5af531fb92fe0bf8b4bd032e777d06cc"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001082351.pdf",
+      "labels": [
+        "地質調査積算基準"
+      ],
+      "status": "acquired",
+      "bytes": 126400,
+      "pages": 5,
+      "sha256": "315dbc5e809d5c1b23922bddc4b6b26cfe9f19409ede9a8feb9ce273a232ca45"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001082356.pdf",
+      "labels": [
+        "（４）"
+      ],
+      "status": "acquired",
+      "bytes": 352248,
+      "pages": 21,
+      "sha256": "00cc77b13f0c522ee414a1b524a4b5907e93cb81bac990930a404d318c29103a"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001082359.pdf",
+      "labels": [
+        "参考資料改正内容"
+      ],
+      "status": "acquired",
+      "bytes": 1100068,
+      "pages": 34,
+      "sha256": "bcf83cea0550b2694625935a53ed64a20093975ff5680d8749c7a2bbd87b4cc6"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001082827.pdf",
+      "labels": [
+        "測量業務積算基準"
+      ],
+      "status": "acquired",
+      "bytes": 184664,
+      "pages": 9,
+      "sha256": "a510fce9613bf4fdb9d9079dcd3ce4299536774d0c15518cf91cf8e7f659700a"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001082828.pdf",
+      "labels": [
+        "土木設計業務等積算基準"
+      ],
+      "status": "acquired",
+      "bytes": 98566,
+      "pages": 4,
+      "sha256": "f3a08ea5bd55cee2ba6abbf4ae3de2a1bdda0146bdabf98a10453fa83bd9bae2"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001082829.pdf",
+      "labels": [
+        "（１）"
+      ],
+      "status": "acquired",
+      "bytes": 2895242,
+      "pages": 130,
+      "sha256": "90a6b49e2a64674ac5f176bf9f9cf069d32f6272f0fd94071ffb9cb11185f534"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001082830.pdf",
+      "labels": [
+        "（２）"
+      ],
+      "status": "acquired",
+      "bytes": 1224677,
+      "pages": 36,
+      "sha256": "ebbbeb0f5d98796f4d8787d3c251f7f79f891481952a36210724f6c27614b2e2"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001082831.pdf",
+      "labels": [
+        "（３）"
+      ],
+      "status": "acquired",
+      "bytes": 1877929,
+      "pages": 123,
+      "sha256": "6908cbfd50fc4682f1cc1823391ceed5035187117f0aa691a9100517627d9f8c"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001084187.pdf",
+      "labels": [
+        "「標準歩掛等改正内容」の修正のお知らせ"
+      ],
+      "status": "acquired",
+      "bytes": 88389,
+      "pages": 2,
+      "sha256": "4471c433c60ce5eeeca3be32fd43f5a551f57fb19d5587450e47df84c36addc9"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001085684.pdf",
+      "labels": [
+        "測量業務標準歩掛における各費目の直接人件費に対する割合について"
+      ],
+      "status": "acquired",
+      "bytes": 103236,
+      "pages": 3,
+      "sha256": "74b4a0c35d625d8d093647f3c6a38ad5bf1e24f1c7c8d469384622e97b4e1a0b"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001089522.pdf",
+      "labels": [
+        "「標準歩掛等改正内容」の修正のお知らせ（２）"
+      ],
+      "status": "acquired",
+      "bytes": 60273,
+      "pages": 2,
+      "sha256": "2106558c1ee070d54bc14a1455c8ff0f16b99d2f0da68853a2b0e35dedeb84a6"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001122920.pdf",
+      "labels": [
+        "測量業務積算基準"
+      ],
+      "status": "acquired",
+      "bytes": 184525,
+      "pages": 9,
+      "sha256": "d01dd60ff28aafac9c348943417f984324d483fdc4c85611819735b3561e5a46"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001122921.pdf",
+      "labels": [
+        "地質調査積算基準"
+      ],
+      "status": "acquired",
+      "bytes": 126651,
+      "pages": 5,
+      "sha256": "8dfe817d331969dd6b86ff3a87a599b17ef849555817cc7a243b5c9a9360dda4"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001122922.pdf",
+      "labels": [
+        "土木設計業務等積算基準"
+      ],
+      "status": "acquired",
+      "bytes": 98505,
+      "pages": 4,
+      "sha256": "bd6adf8f23a6a7c37a220ea7be9ea1fe33eb8c09f0fe0baad056d4dc657cc7c1"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001122923.pdf",
+      "labels": [
+        "（１）"
+      ],
+      "status": "acquired",
+      "bytes": 3062966,
+      "pages": 135,
+      "sha256": "1a3e67cb73a3c8b36f7365f0e80cf9a80ee8eada1c6d7477a91d4d91a8073251"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001122924.pdf",
+      "labels": [
+        "（２）"
+      ],
+      "status": "acquired",
+      "bytes": 1065116,
+      "pages": 35,
+      "sha256": "11feba48cdd7300d20b635d0f5ed5df2a48722dfe31fa9c73862d75294ad4beb"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001122927.pdf",
+      "labels": [
+        "（３）"
+      ],
+      "status": "acquired",
+      "bytes": 1387793,
+      "pages": 93,
+      "sha256": "d6876f8f09bd7922633e418504911a38f5b48364b38ad6db1c780a7840c1eedf"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001122928.pdf",
+      "labels": [
+        "（４）"
+      ],
+      "status": "acquired",
+      "bytes": 243693,
+      "pages": 11,
+      "sha256": "dcd930a40340d68251ed22f6294754739efb79358efca68453a6d045af372a3b"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001122930.pdf",
+      "labels": [
+        "参考資料等改定内容"
+      ],
+      "status": "acquired",
+      "bytes": 2257671,
+      "pages": 58,
+      "sha256": "cae801a50e85cb2cee91c7c9ac1b795f190ba13da3f0cc255131995dce846b57"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001125015.pdf",
+      "labels": [
+        "「標準歩掛等改定内容」の修正のお知らせ"
+      ],
+      "status": "acquired",
+      "bytes": 106643,
+      "pages": 3,
+      "sha256": "d27232e2e3841b5d71b69a6eb2c794f3406e892b2a00cb152dfe82ae2ff9b00a"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001176452.pdf",
+      "labels": [
+        "測量業務積算基準"
+      ],
+      "status": "acquired",
+      "bytes": 376823,
+      "pages": 9,
+      "sha256": "8e1fadc0c5f82dc0296a316c3f21fa99af5e445e5f2710ca2aac30743cbee5bf"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001176453.pdf",
+      "labels": [
+        "地質調査積算基準"
+      ],
+      "status": "acquired",
+      "bytes": 212053,
+      "pages": 5,
+      "sha256": "1dce966cddedde326ccc916c96de8a2ede11c3a7180e213f8f8d1c4f81af5977"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001176454.pdf",
+      "labels": [
+        "土木設計業務等積算基準"
+      ],
+      "status": "acquired",
+      "bytes": 180530,
+      "pages": 3,
+      "sha256": "034c9160c3eb29f1ed50aa599d648978748726e948499ffef7d5d2ae1a4169c1"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001176456.pdf",
+      "labels": [
+        "（２）"
+      ],
+      "status": "acquired",
+      "bytes": 227056,
+      "pages": 4,
+      "sha256": "5d91bd591227d47f669b906fac2303718e59a3aa9116a8f0aa2ab8a87398529f"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001176459.pdf",
+      "labels": [
+        "参考資料等改定内容"
+      ],
+      "status": "acquired",
+      "bytes": 759660,
+      "pages": 7,
+      "sha256": "40e75d76a61903938d40e894cc5957a3a16d2c75951ed9b417c2039c7cae46bd"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001177726.pdf",
+      "labels": [
+        "（３）"
+      ],
+      "status": "acquired",
+      "bytes": 552497,
+      "pages": 11,
+      "sha256": "51e58637ebbdd521abfa22282cbefb2ccba28ce286d39fa85d46734117961cd0"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001177727.pdf",
+      "labels": [
+        "（４）"
+      ],
+      "status": "acquired",
+      "bytes": 411067,
+      "pages": 9,
+      "sha256": "a7f53dcdc658c5fd71c84450a1515bd01412cd162dabcdd816fff437d465d3aa"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001180026.pdf",
+      "labels": [
+        "「標準歩掛等改定内容」の修正のお知らせ"
+      ],
+      "status": "acquired",
+      "bytes": 286666,
+      "pages": 4,
+      "sha256": "7ad45c85b2dc624833135642f8db6e3e64d28f3f0083827bf2cbe30a1585637a"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001180027.pdf",
+      "labels": [
+        "（１）"
+      ],
+      "status": "acquired",
+      "bytes": 563190,
+      "pages": 8,
+      "sha256": "83bf7d01b83f6ca7d9d7d9bb48d4d284fb891cf611bf9facbe3d739317f19235"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001197836.pdf",
+      "labels": [
+        "「測量業務成果検定料金」に関するお知らせ"
+      ],
+      "status": "acquired",
+      "bytes": 131166,
+      "pages": 2,
+      "sha256": "2a1c22028947d8f98ba02771a864f565b8fafc3fbb91bb68d68e54a5f308c089"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001226636.pdf",
+      "labels": [
+        "測量業務積算基準"
+      ],
+      "status": "acquired",
+      "bytes": 378796,
+      "pages": 9,
+      "sha256": "34eabe20767aef2c5ac87966c40c8db153e7c655ada1fb0d6d36261410332954"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001226639.pdf",
+      "labels": [
+        "土木設計業務等積算基準"
+      ],
+      "status": "acquired",
+      "bytes": 180516,
+      "pages": 3,
+      "sha256": "be530f4f827439c664d3be0cd12fe81bf743bfdac303a5c8312d997c2902dd79"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001226640.pdf",
+      "labels": [
+        "（１）"
+      ],
+      "status": "acquired",
+      "bytes": 829686,
+      "pages": 13,
+      "sha256": "795f83cfb270e372dfa118dd742821fa21ac59a3ca96b2b443bcf85436124ae9"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001226642.pdf",
+      "labels": [
+        "（３）"
+      ],
+      "status": "acquired",
+      "bytes": 225365,
+      "pages": 3,
+      "sha256": "439ab64373b78a8bd51f77f08b6b8366d5f08034479c8b5f09a06c6e87da7b20"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001226643.pdf",
+      "labels": [
+        "参考資料等改定内容"
+      ],
+      "status": "acquired",
+      "bytes": 544059,
+      "pages": 6,
+      "sha256": "804fcb813d432bb51a75433df43012caf0e41835636851995c65719d72c72b7d"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001227016.pdf",
+      "labels": [
+        "（２）"
+      ],
+      "status": "acquired",
+      "bytes": 377846,
+      "pages": 8,
+      "sha256": "f2d54bcc35904164edb1d101b2f5034bdb7bc467b0ec0970b95b82d8351e76dc"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001229781.pdf",
+      "labels": [
+        "「標準歩掛等改定内容」の補足追記のお知らせ"
+      ],
+      "status": "acquired",
+      "bytes": 108417,
+      "pages": 1,
+      "sha256": "ce6abf39d8e33e4a97809fcdd7f4c88a8201038ef498386cbab2482eb59a9d90"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001230185.pdf",
+      "labels": [
+        "地質調査積算基準"
+      ],
+      "status": "acquired",
+      "bytes": 212098,
+      "pages": 5,
+      "sha256": "d159752d2cb5be4d3dd411025529dc4ed0c1e91708109767a4df98c4902e429a"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001234722.pdf",
+      "labels": [
+        "「標準歩掛改定内容」の修正のお知らせ"
+      ],
+      "status": "acquired",
+      "bytes": 275013,
+      "pages": 10,
+      "sha256": "6b6a74efdf09c3fb62e06678eaedc9333a33b9829f987966f7de1dcb893ebda6"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001234723.pdf",
+      "labels": [
+        "（４）"
+      ],
+      "status": "acquired",
+      "bytes": 1021922,
+      "pages": 34,
+      "sha256": "f0e3fa3efa37c54232184a4fb06b4d02ddd831d14cc9649c97e41d6141fa1cbd"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001268187.pdf",
+      "labels": [
+        "「設計業務等標準積算基準書（参考資料）」訂正のお知らせ"
+      ],
+      "status": "acquired",
+      "bytes": 72441,
+      "pages": 1,
+      "sha256": "111204706295e156e6542b4a28c712c10afe1a683f0c413e28bef0d307ff69c5"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001279050.pdf",
+      "labels": [
+        "（２）"
+      ],
+      "status": "acquired",
+      "bytes": 112954,
+      "pages": 3,
+      "sha256": "022c11e216c0422c04e5582588b552f55566fc8714dc33be4a44c9fefdf3d0b6"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001279051.pdf",
+      "labels": [
+        "（３）"
+      ],
+      "status": "acquired",
+      "bytes": 178517,
+      "pages": 7,
+      "sha256": "d6c0072f31c698d6def5eca38e38890dcdc18acffe804dd109a1c077e2932825"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001279053.pdf",
+      "labels": [
+        "参考資料等改定内容"
+      ],
+      "status": "acquired",
+      "bytes": 230344,
+      "pages": 6,
+      "sha256": "f544d32bb4ee12321ee3193fbecbf71a51e4b65ab2f5c5c5748c5e94c13ecac8"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001279071.pdf",
+      "labels": [
+        "測量業務積算基準"
+      ],
+      "status": "acquired",
+      "bytes": 183314,
+      "pages": 9,
+      "sha256": "10431b07da2856caa67eba2ec9fd9cd7722a71a0c59b7db72640474ea427d922"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001279072.pdf",
+      "labels": [
+        "地質調査積算基準"
+      ],
+      "status": "acquired",
+      "bytes": 129912,
+      "pages": 6,
+      "sha256": "07f690de1ca88e3037a2fd6a1a5c45e63e8dd1e369739a3d7fb473955f83db8d"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001279073.pdf",
+      "labels": [
+        "土木設計業務等積算基準"
+      ],
+      "status": "acquired",
+      "bytes": 99970,
+      "pages": 3,
+      "sha256": "5b76a5acf100ff52a66543926ae0ba9fae7f42324c63cfb2a1d31b5104251b7b"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001281589.pdf",
+      "labels": [
+        "（１）"
+      ],
+      "status": "acquired",
+      "bytes": 208538,
+      "pages": 11,
+      "sha256": "f6a77486f0d634d822d985027eeabb1d02c96dcbf1aaecb7618a7a164140c042"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001281590.pdf",
+      "labels": [
+        "正誤表"
+      ],
+      "status": "acquired",
+      "bytes": 126652,
+      "pages": 4,
+      "sha256": "478b320c51f958d3017d7a82c0675e8b2a92f86f19f9cb56f599d3cda18c4335"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001289376.pdf",
+      "labels": [
+        "（４）"
+      ],
+      "status": "acquired",
+      "bytes": 154316,
+      "pages": 6,
+      "sha256": "edb50c0aafb51f8e5555fb57a8789c2f3f93460a74082fce3eca505307f57aae"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001289378.pdf",
+      "labels": [
+        "追加箇所"
+      ],
+      "status": "acquired",
+      "bytes": 82491,
+      "pages": 2,
+      "sha256": "5ce160235961a77f66dc901ade03b77df2bdb35c9bd29bc7ce81ca500c736dc8"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001329014.pdf",
+      "labels": [
+        "測量業務積算基準"
+      ],
+      "status": "acquired",
+      "bytes": 187827,
+      "pages": 9,
+      "sha256": "8e06100980a60683179e269c46e764e24d332ee1134df8e62935f939589989fd"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001329015.pdf",
+      "labels": [
+        "地質調査積算基準"
+      ],
+      "status": "acquired",
+      "bytes": 132564,
+      "pages": 5,
+      "sha256": "4cd9e0e59ea95f806bf1f953ec2dbe13a818192e7f439bfcacb4ef27f2d7a476"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001329016.pdf",
+      "labels": [
+        "土木設計業務等積算基準"
+      ],
+      "status": "acquired",
+      "bytes": 102869,
+      "pages": 3,
+      "sha256": "e4ac68dbb10a7f74bea3406aa698e57aac5faf19888ccc27d765ac6cee0d11ac"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001329020.pdf",
+      "labels": [
+        "（４）"
+      ],
+      "status": "acquired",
+      "bytes": 40813,
+      "pages": 1,
+      "sha256": "e7380b98bf65a63299a11aa13e704ce5c93811f11f60d86bf9becab474cb1442"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001329021.pdf",
+      "labels": [
+        "参考資料等改定内容"
+      ],
+      "status": "acquired",
+      "bytes": 239304,
+      "pages": 9,
+      "sha256": "ec6684cfc429bb97bfd60df23b0ae25c3682b283c3b19cf6ac236178ac6d6640"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001331109.pdf",
+      "labels": [
+        "（２）"
+      ],
+      "status": "acquired",
+      "bytes": 166564,
+      "pages": 6,
+      "sha256": "6351a2b261d489f6b315c64c3d88a29f4f4ddd9fba368e144ba82b58dc4b9ad1"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001331747.pdf",
+      "labels": [
+        "（１）"
+      ],
+      "status": "acquired",
+      "bytes": 292437,
+      "pages": 15,
+      "sha256": "e9d53c4721e8f34793079837de6952965272b5f4e66307c3d30c6ec6b84677ee"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001331748.pdf",
+      "labels": [
+        "（３）"
+      ],
+      "status": "acquired",
+      "bytes": 204249,
+      "pages": 8,
+      "sha256": "fcd6fc5f8cf86d670fb77ab4779c1190e8b60c7eb6b09f3a2d59a94148cd94ac"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001387356.pdf",
+      "labels": [
+        "（１）"
+      ],
+      "status": "acquired",
+      "bytes": 307035,
+      "pages": 11,
+      "sha256": "925bceee7a727073dc866cc3cc70165a5e4c83c344d24873b5ce24426877844b"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001387357.pdf",
+      "labels": [
+        "（２）"
+      ],
+      "status": "acquired",
+      "bytes": 180960,
+      "pages": 7,
+      "sha256": "3a0a4cdc86e143a9d40c90e082ef8509d9efac418356b951ba662bc20cbdd268"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001387358.pdf",
+      "labels": [
+        "（３）"
+      ],
+      "status": "acquired",
+      "bytes": 60282,
+      "pages": 1,
+      "sha256": "4cf12dd31c6fff29caa4d86e6096d842448ac8cac5aa49e40002837fbb99b524"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001387359.pdf",
+      "labels": [
+        "（４）"
+      ],
+      "status": "acquired",
+      "bytes": 174259,
+      "pages": 5,
+      "sha256": "4601c805d3198bc78dfc908e9fa733a1b0a6747641aef8a85061e17d3307ebeb"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001387560.pdf",
+      "labels": [
+        "測量業務積算基準"
+      ],
+      "status": "acquired",
+      "bytes": 187967,
+      "pages": 9,
+      "sha256": "7939947e9488fb572e27c83d3d0243c266a979837308d10fd34a415fa7dfde1d"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001387562.pdf",
+      "labels": [
+        "土木設計業務等積算基準"
+      ],
+      "status": "acquired",
+      "bytes": 102933,
+      "pages": 3,
+      "sha256": "84c2aeb177ab79828e6a3ac02265093db033983f02604b1184a4edf1a9f616e6"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001388671.pdf",
+      "labels": [
+        "参考資料等改定内容"
+      ],
+      "status": "acquired",
+      "bytes": 371375,
+      "pages": 14,
+      "sha256": "595a63dcd3ca566ecbc481fbf1086b14594a3b7b8cc252272210eb2b63c94d0e"
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001397952.pdf",
+      "labels": [
+        "地質調査積算基準"
+      ],
+      "status": "acquired",
+      "bytes": 142588,
+      "pages": 6,
+      "sha256": "417c3003ec2d0ca615f3e2e0306a5ef74f99fd7d3dd43697c8758866d73924ce"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001465953.pdf",
+      "labels": [
+        "参考資料等改定内容"
+      ],
+      "status": "acquired",
+      "bytes": 143503,
+      "pages": 4,
+      "sha256": "88413640b8fed394dec9d16cf34e3dc7e64077a7e47e890b4bc1ed80c226885d"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001465957.pdf",
+      "labels": [
+        "（４）"
+      ],
+      "status": "acquired",
+      "bytes": 99686,
+      "pages": 3,
+      "sha256": "c64f8418988beb2bf353a44c80a465c3f275d4f7d541bf80b94ceea1aad64fab"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001466853.pdf",
+      "labels": [
+        "（３）"
+      ],
+      "status": "acquired",
+      "bytes": 126097,
+      "pages": 4,
+      "sha256": "c8d71d0df9604eb45407127748d819e20ee7ec13cd657483acf9d74717dfe31c"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001469667.pdf",
+      "labels": [
+        "測量業務積算基準"
+      ],
+      "status": "acquired",
+      "bytes": 188176,
+      "pages": 9,
+      "sha256": "cff5b5ce63507e85cc811dac6400d522842438b3e36dfa92718c30a5d57dd812"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001469668.pdf",
+      "labels": [
+        "地質調査積算基準"
+      ],
+      "status": "acquired",
+      "bytes": 143643,
+      "pages": 5,
+      "sha256": "1a74db8fc393479c89e8c694f75f924425035b04c3a618c4fef83f10c8824787"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001469669.pdf",
+      "labels": [
+        "土木設計業務等積算基準"
+      ],
+      "status": "acquired",
+      "bytes": 102945,
+      "pages": 3,
+      "sha256": "4159b5e84048d43bb7c2a83d6a40c16f5214348ad7dab32ac2b2141c24ca491a"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001476735.pdf",
+      "labels": [
+        "（１）"
+      ],
+      "status": "acquired",
+      "bytes": 212829,
+      "pages": 9,
+      "sha256": "fb48e94fb6766fbfc14aea60c623b6bf9980abd95543267cf5afd5695f9e6500"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001476736.pdf",
+      "labels": [
+        "（２）"
+      ],
+      "status": "acquired",
+      "bytes": 270541,
+      "pages": 9,
+      "sha256": "29fb4b01aac7acb9748c0adf05f1c33f7f23ade494bd928a78de2613cb1c5926"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001589929.pdf",
+      "labels": [
+        "（１）"
+      ],
+      "status": "acquired",
+      "bytes": 409955,
+      "pages": 19,
+      "sha256": "0cde420a13954a07cde4e6fb4cfe1f6a1e9a962d21b39b8d82feaf950b8331af"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001589930.pdf",
+      "labels": [
+        "（２）"
+      ],
+      "status": "acquired",
+      "bytes": 117010,
+      "pages": 3,
+      "sha256": "5089dec0d86cc6ed927b31cccaf67897c010f6c0bf6366666249d43c181aa0c3"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001589931.pdf",
+      "labels": [
+        "（３）"
+      ],
+      "status": "acquired",
+      "bytes": 128612,
+      "pages": 4,
+      "sha256": "150bc509ae53d9082ee2e0d69a4fcd315e377490ca54791ca9efdde0ea9d2169"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001589932.pdf",
+      "labels": [
+        "（４）"
+      ],
+      "status": "acquired",
+      "bytes": 119165,
+      "pages": 3,
+      "sha256": "59b63b7e88bf48073f410726b65b99693d03e05fe58bf0a42d2ad6e32ea777cd"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001589933.pdf",
+      "labels": [
+        "参考資料等改定内容"
+      ],
+      "status": "acquired",
+      "bytes": 848600,
+      "pages": 28,
+      "sha256": "3b70c893dcc102ef5170575c2371e39a71e5fb78bc6b295711081ee259341554"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001867424.pdf",
+      "labels": [
+        "測量業務積算基準"
+      ],
+      "status": "acquired",
+      "bytes": 346009,
+      "pages": 9,
+      "sha256": "91b18dec532710e34093483ce38464faf556283a04a37b615f773918890f150c"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001867425.pdf",
+      "labels": [
+        "地質調査積算基準"
+      ],
+      "status": "acquired",
+      "bytes": 220560,
+      "pages": 5,
+      "sha256": "3312cf4a1a226076ee83dde6229c251a66d2a1dc4d71c911da9fc6188ba18a23"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001867426.pdf",
+      "labels": [
+        "土木設計業務等積算基準"
+      ],
+      "status": "acquired",
+      "bytes": 178611,
+      "pages": 4,
+      "sha256": "c68b011bd547c1fae62761917988f9b5f68ab3b8730a67cdabe4dccf670e219b"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001867427.pdf",
+      "labels": [
+        "（１）"
+      ],
+      "status": "acquired",
+      "bytes": 766907,
+      "pages": 18,
+      "sha256": "998237a02471917ad44106f99f0f0023d921ad12e015616ea4390c831dbbf560"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001867428.pdf",
+      "labels": [
+        "（２）"
+      ],
+      "status": "acquired",
+      "bytes": 167385,
+      "pages": 6,
+      "sha256": "ebd90fbb80acaaf37bbf551e92fb9d0391e69a648be75131633421259f5e6d11"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001867429.pdf",
+      "labels": [
+        "（３）"
+      ],
+      "status": "acquired",
+      "bytes": 169666,
+      "pages": 6,
+      "sha256": "10f2d72cd7d6f6aa870d9c3944dc37d5bb01ba6817155fe2ac9e1288d048ef8d"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001867431.pdf",
+      "labels": [
+        "参考資料等改定内容"
+      ],
+      "status": "acquired",
+      "bytes": 384083,
+      "pages": 8,
+      "sha256": "c4159d183027fcc0691e3e72733ddb549b21c978ee93448d0522e25b4a87c5a1"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001984378.pdf",
+      "labels": [
+        "測量業務積算基準"
+      ],
+      "status": "acquired",
+      "bytes": 177012,
+      "pages": 9,
+      "sha256": "5d8a192a569b72b226ff75757c5277e247e31eabad11433e26fb1745bb5d8047"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001984379.pdf",
+      "labels": [
+        "地質調査積算基準"
+      ],
+      "status": "acquired",
+      "bytes": 137328,
+      "pages": 5,
+      "sha256": "97fbf9c964a7f93c3ff5915405368ce9e7731bcf48bee681dc739f9048459860"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001984380.pdf",
+      "labels": [
+        "土木設計業務等積算基準"
+      ],
+      "status": "acquired",
+      "bytes": 98844,
+      "pages": 3,
+      "sha256": "95682e4de0103d202366320d4bb8cffda6815e634650426ce791d4a073cfefba"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001984381.pdf",
+      "labels": [
+        "（１）"
+      ],
+      "status": "acquired",
+      "bytes": 284676,
+      "pages": 12,
+      "sha256": "85c748841cc9653618fd79b95ff1eca47a2baa873a5b7cf7dec4b30b9e94f50a"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001984382.pdf",
+      "labels": [
+        "（２）"
+      ],
+      "status": "acquired",
+      "bytes": 121813,
+      "pages": 3,
+      "sha256": "018ecd69542cece4df47d63cd4e18503d4432243d9419746a539709dac145c60"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001984383.pdf",
+      "labels": [
+        "（３）"
+      ],
+      "status": "acquired",
+      "bytes": 206496,
+      "pages": 11,
+      "sha256": "d385f3b6b4373b25c50592d6abdaf8e669f3892dd785a8d9cb68a9bde2fad57c"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001984384.pdf",
+      "labels": [
+        "（４）"
+      ],
+      "status": "acquired",
+      "bytes": 48403,
+      "pages": 1,
+      "sha256": "284553bfbb3558e819dfb016a7c37e3f8b0ff010d1307e2d3ea928bc38e20525"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001984385.pdf",
+      "labels": [
+        "参考資料等改定内容"
+      ],
+      "status": "acquired",
+      "bytes": 641797,
+      "pages": 9,
+      "sha256": "5d564b33007fa039590706ef19d51f00890101ebf3c3e3c50b8866953075400b"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001984386.pdf",
+      "labels": [
+        "測量業務積算基準"
+      ],
+      "status": "acquired",
+      "bytes": 177932,
+      "pages": 9,
+      "sha256": "4379cf9bba7be36af6f7964a34ac61155a52c7bf51c18e024a077e0b0f39fc40"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001984387.pdf",
+      "labels": [
+        "地質調査積算基準"
+      ],
+      "status": "acquired",
+      "bytes": 138053,
+      "pages": 5,
+      "sha256": "33fa5db494522e96e30718d08a4fcb332d71bee73b34c968a8fd943d92d4c376"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001984388.pdf",
+      "labels": [
+        "土木設計業務等積算基準"
+      ],
+      "status": "acquired",
+      "bytes": 99115,
+      "pages": 3,
+      "sha256": "b88319e3425d9ce2139125788a923d996896b6ac6c1c7bbf80f8b8df7d12e965"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001984389.pdf",
+      "labels": [
+        "（１）"
+      ],
+      "status": "acquired",
+      "bytes": 394933,
+      "pages": 7,
+      "sha256": "db374bcfcdcbec2d070ed66647ca30c5d605204ea378c15a5d1f729715ed70ba"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001984390.pdf",
+      "labels": [
+        "（２）"
+      ],
+      "status": "acquired",
+      "bytes": 264123,
+      "pages": 4,
+      "sha256": "db89a92879d9daa1cafc0b4ee02864e88f32223d55aa0bdda64f9e31440fe03b"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001984391.pdf",
+      "labels": [
+        "（３）"
+      ],
+      "status": "acquired",
+      "bytes": 158153,
+      "pages": 2,
+      "sha256": "409e65bfddf5572670c54d3561c9eab250a56faa46ff5eb868d8db816df9f43a"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001984392.pdf",
+      "labels": [
+        "（４）"
+      ],
+      "status": "acquired",
+      "bytes": 361568,
+      "pages": 5,
+      "sha256": "b7c28cf2560645229874a8c6432f31bc6422a16c91b3558fc017641a9e5f548e"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001984393.pdf",
+      "labels": [
+        "参考資料等改定内容"
+      ],
+      "status": "acquired",
+      "bytes": 1611889,
+      "pages": 11,
+      "sha256": "55a5ecc9ee039594bc195ce3c43c901ec425255dd0b7f17e0b557334ef9e0d50"
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001989908.pdf",
+      "labels": [
+        "（４）"
+      ],
+      "status": "acquired",
+      "bytes": 375657,
+      "pages": 17,
+      "sha256": "9abbb4c3d374e219341dda9eb4fd5d344ad3af75ba477b1bd5365704fda5fba4"
+    }
+  ]
+}

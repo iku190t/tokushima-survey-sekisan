@@ -1,0 +1,1074 @@
+{
+  "sourcePage": "https://www.mlit.go.jp/tec/gyoumu_sekisan.html",
+  "auditedAt": "2026-08-23",
+  "allLinkCount": 171,
+  "pdfLinkCount": 155,
+  "uniquePdfLinkCount": 152,
+  "scope": "掲載リンクの存在目録。各PDFの全計算表実装済みを意味しない。",
+  "pdfLinks": [
+    {
+      "url": "https://www.mlit.go.jp/common/001068102.pdf",
+      "labels": [
+        "総目次"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068098.pdf",
+      "labels": [
+        "第１編 測量業務"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068099.pdf",
+      "labels": [
+        "第２編 地質調査業務"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068100.pdf",
+      "labels": [
+        "第３編 設計業務等"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068101.pdf",
+      "labels": [
+        "第４編 調査・計画業務"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068095.pdf",
+      "labels": [
+        "目次"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068091.pdf",
+      "labels": [
+        "第１編 総則"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068092.pdf",
+      "labels": [
+        "第２編 測量業務"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068093.pdf",
+      "labels": [
+        "第３編 地質調査業務"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068094.pdf",
+      "labels": [
+        "第４編 設計業務等"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068103.pdf",
+      "labels": [
+        "『（参考資料） 第１編 総則』の修正のお知らせ"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068104.pdf",
+      "labels": [
+        "積算基準書改正内容"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068105.pdf",
+      "labels": [
+        "参考資料改正内容"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068106.pdf",
+      "labels": [
+        "測量業務標準歩掛における各費目の直接人件費に対する割合について"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068107.pdf",
+      "labels": [
+        "積算基準書改正内容"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068108.pdf",
+      "labels": [
+        "参考資料改正内容"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068109.pdf",
+      "labels": [
+        "測量業務標準歩掛における各費目の直接人件費に対する割合について"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068110.pdf",
+      "labels": [
+        "積算基準書改正内容"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068111.pdf",
+      "labels": [
+        "参考資料改正内容"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068112.pdf",
+      "labels": [
+        "測量業務標準歩掛における各費目の直接人件費に対する割合について"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001082827.pdf",
+      "labels": [
+        "測量業務積算基準"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001082351.pdf",
+      "labels": [
+        "地質調査積算基準"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001082828.pdf",
+      "labels": [
+        "土木設計業務等積算基準"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001082829.pdf",
+      "labels": [
+        "（１）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001082830.pdf",
+      "labels": [
+        "（２）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001082831.pdf",
+      "labels": [
+        "（３）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001082356.pdf",
+      "labels": [
+        "（４）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001082359.pdf",
+      "labels": [
+        "参考資料改正内容"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001085684.pdf",
+      "labels": [
+        "測量業務標準歩掛における各費目の直接人件費に対する割合について"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001084187.pdf",
+      "labels": [
+        "「標準歩掛等改正内容」の修正のお知らせ"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001089522.pdf",
+      "labels": [
+        "「標準歩掛等改正内容」の修正のお知らせ（２）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001122920.pdf",
+      "labels": [
+        "測量業務積算基準"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001122921.pdf",
+      "labels": [
+        "地質調査積算基準"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001122922.pdf",
+      "labels": [
+        "土木設計業務等積算基準"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001122923.pdf",
+      "labels": [
+        "（１）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001122924.pdf",
+      "labels": [
+        "（２）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001122927.pdf",
+      "labels": [
+        "（３）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001122928.pdf",
+      "labels": [
+        "（４）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001122930.pdf",
+      "labels": [
+        "参考資料等改定内容"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001125015.pdf",
+      "labels": [
+        "「標準歩掛等改定内容」の修正のお知らせ"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001176452.pdf",
+      "labels": [
+        "測量業務積算基準"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001176453.pdf",
+      "labels": [
+        "地質調査積算基準"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001176454.pdf",
+      "labels": [
+        "土木設計業務等積算基準"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001180027.pdf",
+      "labels": [
+        "（１）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001176456.pdf",
+      "labels": [
+        "（２）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001177726.pdf",
+      "labels": [
+        "（３）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001177727.pdf",
+      "labels": [
+        "（４）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001176459.pdf",
+      "labels": [
+        "参考資料等改定内容"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001180026.pdf",
+      "labels": [
+        "「標準歩掛等改定内容」の修正のお知らせ"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001197836.pdf",
+      "labels": [
+        "「測量業務成果検定料金」に関するお知らせ"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001226636.pdf",
+      "labels": [
+        "測量業務積算基準"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001230185.pdf",
+      "labels": [
+        "地質調査積算基準"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001226639.pdf",
+      "labels": [
+        "土木設計業務等積算基準"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001226640.pdf",
+      "labels": [
+        "（１）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001227016.pdf",
+      "labels": [
+        "（２）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001226642.pdf",
+      "labels": [
+        "（３）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001234723.pdf",
+      "labels": [
+        "（４）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001226643.pdf",
+      "labels": [
+        "参考資料等改定内容"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001229781.pdf",
+      "labels": [
+        "「標準歩掛等改定内容」の補足追記のお知らせ"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001234722.pdf",
+      "labels": [
+        "「標準歩掛改定内容」の修正のお知らせ"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001268187.pdf",
+      "labels": [
+        "「設計業務等標準積算基準書（参考資料）」訂正のお知らせ"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001279071.pdf",
+      "labels": [
+        "測量業務積算基準"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001279072.pdf",
+      "labels": [
+        "地質調査積算基準"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001279073.pdf",
+      "labels": [
+        "土木設計業務等積算基準"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001281589.pdf",
+      "labels": [
+        "（１）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001279050.pdf",
+      "labels": [
+        "（２）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001279051.pdf",
+      "labels": [
+        "（３）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001289376.pdf",
+      "labels": [
+        "（４）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001279053.pdf",
+      "labels": [
+        "参考資料等改定内容"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001281590.pdf",
+      "labels": [
+        "正誤表"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001289378.pdf",
+      "labels": [
+        "追加箇所"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001329014.pdf",
+      "labels": [
+        "測量業務積算基準"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001329015.pdf",
+      "labels": [
+        "地質調査積算基準"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001329016.pdf",
+      "labels": [
+        "土木設計業務等積算基準"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001331747.pdf",
+      "labels": [
+        "（１）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001331109.pdf",
+      "labels": [
+        "（２）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001331748.pdf",
+      "labels": [
+        "（３）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001329020.pdf",
+      "labels": [
+        "（４）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001329021.pdf",
+      "labels": [
+        "参考資料等改定内容"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001387560.pdf",
+      "labels": [
+        "測量業務積算基準"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001397952.pdf",
+      "labels": [
+        "地質調査積算基準"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001387562.pdf",
+      "labels": [
+        "土木設計業務等積算基準"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001387356.pdf",
+      "labels": [
+        "（１）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001387357.pdf",
+      "labels": [
+        "（２）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001387358.pdf",
+      "labels": [
+        "（３）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001387359.pdf",
+      "labels": [
+        "（４）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001388671.pdf",
+      "labels": [
+        "参考資料等改定内容"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001469667.pdf",
+      "labels": [
+        "測量業務積算基準"
+      ],
+      "occurrences": 2
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001469668.pdf",
+      "labels": [
+        "地質調査積算基準"
+      ],
+      "occurrences": 2
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001469669.pdf",
+      "labels": [
+        "土木設計業務等積算基準"
+      ],
+      "occurrences": 2
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001476735.pdf",
+      "labels": [
+        "（１）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001476736.pdf",
+      "labels": [
+        "（２）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001466853.pdf",
+      "labels": [
+        "（３）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001465957.pdf",
+      "labels": [
+        "（４）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001465953.pdf",
+      "labels": [
+        "参考資料等改定内容"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001589929.pdf",
+      "labels": [
+        "（１）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001589930.pdf",
+      "labels": [
+        "（２）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001589931.pdf",
+      "labels": [
+        "（３）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001589932.pdf",
+      "labels": [
+        "（４）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001589933.pdf",
+      "labels": [
+        "参考資料等改定内容"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001984386.pdf",
+      "labels": [
+        "測量業務積算基準"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001984387.pdf",
+      "labels": [
+        "地質調査積算基準"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001984388.pdf",
+      "labels": [
+        "土木設計業務等積算基準"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001984389.pdf",
+      "labels": [
+        "（１）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001984390.pdf",
+      "labels": [
+        "（２）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001984391.pdf",
+      "labels": [
+        "（３）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001984392.pdf",
+      "labels": [
+        "（４）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001984393.pdf",
+      "labels": [
+        "参考資料等改定内容"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001984378.pdf",
+      "labels": [
+        "測量業務積算基準"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001984379.pdf",
+      "labels": [
+        "地質調査積算基準"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001984380.pdf",
+      "labels": [
+        "土木設計業務等積算基準"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001984381.pdf",
+      "labels": [
+        "（１）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001984382.pdf",
+      "labels": [
+        "（２）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001984383.pdf",
+      "labels": [
+        "（３）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001984384.pdf",
+      "labels": [
+        "（４）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001984385.pdf",
+      "labels": [
+        "参考資料等改定内容"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001867424.pdf",
+      "labels": [
+        "測量業務積算基準"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001867425.pdf",
+      "labels": [
+        "地質調査積算基準"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001867426.pdf",
+      "labels": [
+        "土木設計業務等積算基準"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001867427.pdf",
+      "labels": [
+        "（１）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001867428.pdf",
+      "labels": [
+        "（２）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001867429.pdf",
+      "labels": [
+        "（３）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001989908.pdf",
+      "labels": [
+        "（４）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/tec/content/001867431.pdf",
+      "labels": [
+        "参考資料等改定内容"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068070.pdf",
+      "labels": [
+        "総目次"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068066.pdf",
+      "labels": [
+        "第１編 測量業務"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068067.pdf",
+      "labels": [
+        "第２編 地質調査業務"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068068.pdf",
+      "labels": [
+        "第３編 設計業務等"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068069.pdf",
+      "labels": [
+        "第４編 調査・計画業務"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068065.pdf",
+      "labels": [
+        "目次"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068059.pdf",
+      "labels": [
+        "第１編 総則"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068061.pdf",
+      "labels": [
+        "第２編 測量業務"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068062.pdf",
+      "labels": [
+        "第３編 地質調査業務"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068063.pdf",
+      "labels": [
+        "第４編 設計業務等"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068064.pdf",
+      "labels": [
+        "第５編 その他調査、設計業務"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068071.pdf",
+      "labels": [
+        "積算基準書改正内容"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068073.pdf",
+      "labels": [
+        "（１）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068074.pdf",
+      "labels": [
+        "（２）"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068075.pdf",
+      "labels": [
+        "積算基準書改正内容"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068076.pdf",
+      "labels": [
+        "参考資料改正内容"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068077.pdf",
+      "labels": [
+        "積算基準書改正内容"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068078.pdf",
+      "labels": [
+        "参考資料改正内容"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068079.pdf",
+      "labels": [
+        "積算基準書改正内容"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068080.pdf",
+      "labels": [
+        "参考資料改正内容"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068081.pdf",
+      "labels": [
+        "積算基準書改正内容"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068082.pdf",
+      "labels": [
+        "参考資料改正内容"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068083.pdf",
+      "labels": [
+        "積算基準書改正内容"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068084.pdf",
+      "labels": [
+        "参考資料改正内容"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068085.pdf",
+      "labels": [
+        "積算基準書改正内容"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068087.pdf",
+      "labels": [
+        "参考資料改正内容"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068088.pdf",
+      "labels": [
+        "積算基準書改正内容"
+      ],
+      "occurrences": 1
+    },
+    {
+      "url": "https://www.mlit.go.jp/common/001068089.pdf",
+      "labels": [
+        "参考資料改正内容"
+      ],
+      "occurrences": 1
+    }
+  ]
+}
