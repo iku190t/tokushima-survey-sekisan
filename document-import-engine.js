@@ -336,7 +336,7 @@
       const entry = entries.find((candidate) => compact(candidate.text).includes(compact(jurisdiction.name)));
       fields.push({
         key: "jurisdiction",
-        label: "積算地域・発注機関マスター",
+        label: "見積提出先",
         value: jurisdiction.name,
         code: jurisdiction.code,
         selected: false,
@@ -344,7 +344,7 @@
         method: entry?.method || "text",
         confidence: entry?.method === "ocr" ? "low" : "medium",
         sourceText: entry?.text || jurisdiction.name,
-        affectsCalculation: true
+        affectsCalculation: false
       });
     }
     if (Number.isFinite(fiscalYear)) {

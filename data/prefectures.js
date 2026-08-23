@@ -49,6 +49,6 @@ window.SEKISAN_PREFECTURES = [
 ];
 
 window.SEKISAN_JURISDICTIONS = [
-  { code: "mlit", name: "国土交通省（直轄）", type: "national" },
+  { code: "mlit", name: "国土交通省（全国標準）", type: "national" },
   ...window.SEKISAN_PREFECTURES.map((entry) => ({ ...entry, type: "prefecture" }))
 ];

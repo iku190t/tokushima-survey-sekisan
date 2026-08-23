@@ -3,9 +3,9 @@
 
   const MASTER_KEY = "surveySekisanMastersV1";
   const ESTIMATE_KEY = "surveySekisanEstimateV1";
-  const defaultMasterId = "r8-tokushima-2026";
+  const defaultMasterId = "standard-r8-2026";
   const legacyMlitMasterId = "r8-mlit-2026-reference";
-  const defaultJurisdictionCode = "36";
+  const defaultJurisdictionCode = "mlit";
   const masterCatalogPath = "data/master-catalog.json";
   const yen = new Intl.NumberFormat("ja-JP", { style: "currency", currency: "JPY", maximumFractionDigits: 0 });
   const numberFormat = new Intl.NumberFormat("ja-JP", { maximumFractionDigits: 3 });
@@ -123,8 +123,8 @@
   }
 
   function verificationLabel(master) {
-    if (master.verificationStatus === "verified") return "県版検証済み";
-    if (master.verificationStatus === "standard-reference") return "全国標準参考";
+    if (master.verificationStatus === "verified") return "検証済み";
+    if (master.verificationStatus === "standard-reference") return "全国標準";
     if (master.verificationStatus === "official-reference") return "公開基準参照・要確認";
     return "利用者作成";
   }
@@ -171,21 +171,6 @@
     return applyVerifiedWorkItemExpansions(master);
   }
 
-  function bundledMaster() {
-    const master = clone(window.MASTER_R8);
-    master.id = defaultMasterId;
-    master.bundled = true;
-    master.walkYear = 2026;
-    master.rateYear = 2026;
-    master.scopeStatus = "verified";
-    master.verificationStatus = "verified";
-    master.masterVersion = master.masterVersion || "2026.1";
-    master.catalogEntryId = defaultMasterId;
-    master.fiscalYear = 2026;
-    master.label = "令和8年度・徳島県測量業務（検証済み資料収録）";
-    return normalizeMasterMetadata(master);
-  }
-
   function bundledNationalStandardMasters() {
     return (window.SEKISAN_NATIONAL_STANDARD_MASTERS || []).map((entry) => {
       const master = clone(entry);
@@ -197,57 +182,28 @@
     });
   }
 
-  function prefectureReferenceMasters(nationalMasters, exactRegionalMasters) {
-    const exactKeys = new Set(exactRegionalMasters.filter((master) => master.verificationStatus === "verified").map((master) => `${master.jurisdictionCode}:${master.fiscalYear}`));
-    return (window.SEKISAN_PREFECTURES || []).flatMap((region) => nationalMasters
-      .filter((master) => !exactKeys.has(`${region.code}:${master.fiscalYear}`))
-      .map((standard) => ({
-        ...standard,
-        id: `reference-${region.code}-r${standard.fiscalYear - 2018}-${standard.fiscalYear}`,
-        catalogEntryId: null,
-        catalogManaged: false,
-        jurisdictionCode: region.code,
-        jurisdictionName: region.name,
-        jurisdictionType: "prefecture",
-        label: `${eraLabel(standard.fiscalYear)}・${region.name}（全国標準参考）`,
-        authority: `${region.name}向け全国標準参考（県独自差分未確認）`,
-        baseMasterId: standard.id,
-        bundled: true,
-        virtualReference: true,
-        verificationStatus: "standard-reference",
-        scopeStatus: "national-standard-reference"
-      })));
-  }
-
   function loadMasters() {
     let stored = [];
     try { stored = JSON.parse(localStorage.getItem(MASTER_KEY) || "[]"); } catch (_) { stored = []; }
     if (!Array.isArray(stored)) stored = [];
-    const tokushima = bundledMaster();
     const national = bundledNationalStandardMasters();
-    const verified = (window.SEKISAN_VERIFIED_MASTERS || []).map((entry) => {
-      const master = clone(entry);
-      master.catalogEntryId = master.id;
-      master.catalogManaged = true;
-      master.bundled = true;
-      master.virtualReference = false;
-      return normalizeMasterMetadata(master, master.jurisdictionCode);
-    });
-    const exactRegional = [tokushima, ...verified];
-    const references = prefectureReferenceMasters(national, exactRegional);
-    const reservedIds = new Set([...exactRegional, ...national, ...references].map((master) => master.id));
+    const reservedIds = new Set(national.map((master) => master.id));
+    const downloadedStandards = stored
+      .filter((master) => master && !reservedIds.has(master.id) && master.catalogManaged && master.jurisdictionCode === "mlit" && master.verificationStatus === "standard-reference")
+      .map((master) => normalizeMasterMetadata(master, "mlit"));
     const custom = stored
-      .filter((master) => master && !reservedIds.has(master.id) && master.id !== legacyMlitMasterId && master.scopeStatus !== "rate-comparison" && master.scopeStatus !== "retired-comparison" && master.scopeStatus !== "national-standard-reference")
+      .filter((master) => master && !reservedIds.has(master.id) && master.id !== legacyMlitMasterId && master.id !== "r8-tokushima-2026" && !master.catalogManaged && master.scopeStatus !== "rate-comparison" && master.scopeStatus !== "retired-comparison" && master.scopeStatus !== "national-standard-reference")
       .map((master) => normalizeMasterMetadata(master));
-    return [tokushima, ...national, ...verified, ...references, ...custom];
+    return [...national, ...downloadedStandards, ...custom].sort((a, b) => num(b.fiscalYear) - num(a.fiscalYear));
   }
 
   function emptyEstimate() {
     const today = new Date();
     const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
     return {
-      schemaVersion: 3,
-      masterId: masters[0]?.id || defaultMasterId,
+      schemaVersion: 4,
+      masterId: masters.find((master) => master.id === defaultMasterId)?.id || masters[0]?.id || defaultMasterId,
+      submissionJurisdictionCode: "",
       projectName: "",
       projectInfo: defaultProjectInfo(),
       caseFile: defaultCaseFile(),
@@ -257,7 +213,7 @@
       lines: [],
       consulting: defaultConsultingState(),
       costs: { travel: 0, roundtrip: 0, baseCost: 0, other: 0, inspection: 0 },
-      options: { useElectronicDeliverable: true, useFourSignificantDigits: true, adjustBusinessPrice: true, travelMode: "noLodging", safetyRate: 0, taxRate: masters[0]?.taxRate ?? .1 }
+      options: { useElectronicDeliverable: true, useFourSignificantDigits: true, adjustBusinessPrice: true, travelMode: "noLodging", safetyRate: 0, taxRate: masters.find((master) => master.id === defaultMasterId)?.taxRate ?? masters[0]?.taxRate ?? .1 }
     };
   }
 
@@ -303,8 +259,11 @@
     try {
       const saved = JSON.parse(localStorage.getItem(ESTIMATE_KEY) || "null");
       if (saved && Array.isArray(saved.lines)) {
-        if (saved.masterId === legacyMlitMasterId) saved.masterId = "standard-r8-2026";
-        if (!masters.some((master) => master.id === saved.masterId)) saved.masterId = masters[0].id;
+        if (saved.masterId === legacyMlitMasterId || saved.masterId === "r8-tokushima-2026") saved.masterId = "standard-r8-2026";
+        if (!masters.some((master) => master.id === saved.masterId)) {
+          const savedYear = num(saved.masterId?.match(/-(20\d{2})$/)?.[1]);
+          saved.masterId = masters.find((master) => master.fiscalYear === savedYear && master.jurisdictionCode === "mlit")?.id || defaultMasterId;
+        }
         const normalized = Object.assign(emptyEstimate(), saved);
         normalized.projectInfo = Object.assign(defaultProjectInfo(), saved.projectInfo || {});
         normalized.caseFile = Object.assign(defaultCaseFile(), saved.caseFile || {});
@@ -341,7 +300,7 @@
   }
 
   function persistMasters() {
-    const stored = masters.filter((master) => !master.bundled && master.scopeStatus !== "national-standard-reference");
+    const stored = masters.filter((master) => !master.bundled && (master.catalogManaged || master.scopeStatus !== "national-standard-reference"));
     localStorage.setItem(MASTER_KEY, JSON.stringify(stored));
   }
 
@@ -405,43 +364,31 @@
 
   function populateMasterSelects() {
     const active = activeMaster();
-    $("jurisdictionSelect").innerHTML = (window.SEKISAN_JURISDICTIONS || []).map((region) => `<option value="${region.code}">${h(region.name)}</option>`).join("");
-    $("jurisdictionSelect").value = active.jurisdictionCode;
-    const priority = (master) => master.id === active.id ? 100 : master.verificationStatus === "verified" ? 30 : master.verificationStatus === "user-supplied" ? 20 : 10;
-    const byYear = new Map();
-    masters.filter((master) => master.jurisdictionCode === active.jurisdictionCode).forEach((master) => {
-      const existing = byYear.get(master.fiscalYear);
-      if (!existing || priority(master) > priority(existing)) byYear.set(master.fiscalYear, master);
-    });
-    const regionalMasters = [...byYear.values()].sort((a, b) => num(b.fiscalYear) - num(a.fiscalYear));
-    $("fiscalYearSelect").innerHTML = regionalMasters.map((master) => `<option value="${h(master.id)}">${h(eraLabel(master.fiscalYear))}（${h(verificationLabel(master))}）</option>`).join("");
+    $("jurisdictionSelect").innerHTML = `<option value="">提出先を選択しない</option>` + (window.SEKISAN_PREFECTURES || []).map((region) => `<option value="${region.code}">${h(region.name)}</option>`).join("");
+    $("jurisdictionSelect").value = estimate.submissionJurisdictionCode || "";
+    const selectableMasters = masters.slice().sort((a, b) => num(b.fiscalYear) - num(a.fiscalYear) || String(a.label).localeCompare(String(b.label), "ja"));
+    $("fiscalYearSelect").innerHTML = selectableMasters.map((master) => `<option value="${h(master.id)}">${h(eraLabel(master.fiscalYear))}｜${h(master.jurisdictionCode === "mlit" ? "国土交通省・全国標準" : master.label)}</option>`).join("");
     $("fiscalYearSelect").value = active.id;
-    const editorMasters = masters.filter((master) => !master.virtualReference || master.id === active.id);
+    const editorMasters = masters;
     if (!editorMasters.some((master) => master.id === editorMasterId)) editorMasterId = active.id;
     const options = editorMasters.map((master) => `<option value="${h(master.id)}">${h(master.jurisdictionName)}｜${h(eraLabel(master.fiscalYear))}｜${h(master.label)}${master.bundled ? "（初期収録）" : ""}</option>`).join("");
     $("masterEditorSelect").innerHTML = options;
     $("masterEditorSelect").value = editorMasterId;
     $("masterJurisdiction").innerHTML = (window.SEKISAN_JURISDICTIONS || []).map((region) => `<option value="${region.code}">${h(region.name)}</option>`).join("");
-    const verifiedAuthorities = new Set(masters.filter((master) => master.verificationStatus === "verified").map((master) => master.jurisdictionCode));
-    const prefectureCount = window.SEKISAN_PREFECTURES?.length || 47;
-    const verifiedPrefectures = [...verifiedAuthorities].filter((code) => code !== "mlit").length;
     const standardYears = [...new Set(masters.filter((master) => master.jurisdictionCode === "mlit" && master.verificationStatus === "standard-reference").map((master) => master.fiscalYear))].sort();
-    $("masterCoverageStatus").textContent = `全国標準：令和${standardYears.map((year) => year - 2018).join("・")}年度を47都道府県で参考計算可能。県版検証済み：${verifiedPrefectures}/${prefectureCount}都道府県。県差分未確認時は全国標準参考と表示します。`;
+    $("masterCoverageStatus").textContent = `国土交通省・全国標準の令和${standardYears.map((year) => year - 2018).join("・")}年度を収録。見積提出先は全国47都道府県から選べますが、提出先を変えても計算単価は変わりません。`;
   }
 
   function renderMasterStatus() {
     const master = activeMaster();
     const strip = document.querySelector(".accuracy-strip");
     strip.classList.toggle("warning", master.verificationStatus !== "verified");
-    if (master.verificationStatus === "verified") {
-      $("masterStatusTitle").textContent = `${master.jurisdictionName}・${eraLabel(master.fiscalYear)}の県版検証済みマスター`;
-      $("masterStatusText").textContent = "全国標準に加え、この発注機関が公開した同一年度の基準・率・単価を照合しています。案件の特記仕様・個別費用は別途確認してください。";
-    } else if (master.verificationStatus === "standard-reference") {
-      const target = master.jurisdictionCode === "mlit" ? "国土交通省の全国標準" : `${master.jurisdictionName}向け全国標準参考`;
-      $("masterStatusTitle").textContent = `${target}・${eraLabel(master.fiscalYear)}`;
-      $("masterStatusText").textContent = master.jurisdictionCode === "mlit"
-        ? "国交省公表の標準歩掛・技術者単価を年度別に組み合わせた参考版です。地方整備局等の適用通知・個別単価を確認してください。"
-        : "全国標準の歩掛・技術者単価による参考積算です。この都道府県の独自歩掛、労務・材料・市場・機械単価、補正、適用通知は未反映です。";
+    if (master.verificationStatus === "standard-reference") {
+      $("masterStatusTitle").textContent = `国土交通省・全国標準｜${eraLabel(master.fiscalYear)}`;
+      $("masterStatusText").textContent = "全国共通の標準歩掛・技術者単価による単価セットです。見積提出先を変えても金額は変わりません。地域条件、普通作業員単価、材料・市場単価、特記仕様は必要に応じて別途補正してください。";
+    } else if (master.verificationStatus === "verified") {
+      $("masterStatusTitle").textContent = `${master.label}｜検証済み`;
+      $("masterStatusText").textContent = "利用者が選択した個別単価セットです。全国標準へ戻す場合は標準単価セットから年度を選んでください。";
     } else if (master.verificationStatus === "official-reference") {
       $("masterStatusTitle").textContent = `国土交通省・${eraLabel(master.fiscalYear)}の公開基準参照マスター`;
       $("masterStatusText").textContent = "国交省公開の積算基準・改定資料・技術者単価に基づく参照版です。地方整備局等の適用日、特記仕様、個別費用を発注図書で確認してください。";
@@ -580,7 +527,7 @@
   function validationIssues(result) {
     const issues = [];
     const master = activeMaster();
-    if (master.verificationStatus === "standard-reference") issues.push({ severity: "warn", text: master.jurisdictionCode === "mlit" ? "全国標準参考版です。地方整備局等の適用通知・特記仕様・個別単価を確認してください。" : `${master.jurisdictionName}の県独自差分は未確認です。労務・材料・市場・機械単価、補正、適用通知を発注図書で確認してください。` });
+    if (master.verificationStatus === "standard-reference") issues.push({ severity: "warn", text: "全国標準単価セットです。地域条件、普通作業員単価、材料・市場・機械単価、補正、適用通知を発注図書で確認してください。" });
     else if (master.verificationStatus === "official-reference") issues.push({ severity: "warn", text: "国土交通省の公開基準参照版です。地方整備局等の適用通知・特記仕様・正解積算と照合してください。" });
     else if (master.verificationStatus !== "verified") issues.push({ severity: "warn", text: "利用者作成マスターです。発注機関・年度・出典と正解積算を照合してください。" });
     if (!result.lines.length) issues.push({ severity: "info", text: "作業項目がまだありません。" });
@@ -754,6 +701,7 @@
     const issues = validationIssues(result);
     const travelLabels = { noLodging: "宿泊なし（直接人件費×0.56%、上限23万円）", lodging: "宿泊あり（直接人件費×0.83%、上限31.3万円）", manual: "実費積上げ" };
     const conditionRows = [
+      ["見積提出先", estimate.submissionJurisdictionCode ? jurisdictionName(estimate.submissionJurisdictionCode) : "未設定"],
       ["使用マスター", master.label], ["検証状態", verificationLabel(master)], ["歩掛年度", eraLabel(master.walkYear || master.fiscalYear)], ["技術者単価年度", eraLabel(master.rateYear || master.fiscalYear)],
       ["適用開始日", displayDate(master.effectiveFrom)], ["積算数量の桁", "点・箇所・回等は整数、km・km²・時間は小数第3位まで"],
       ["測量単価の端数", estimate.options.useFourSignificantDigits === false ? "円未満切捨て" : "有効4桁止め"],
@@ -897,9 +845,9 @@
     return true;
   }
 
-  function preferredMaster(jurisdictionCode, fiscalYear) {
+  function preferredMaster(_jurisdictionCode, fiscalYear) {
     const priority = (master) => master.verificationStatus === "verified" ? 30 : master.verificationStatus === "user-supplied" ? 20 : 10;
-    return masters.filter((master) => (!jurisdictionCode || master.jurisdictionCode === jurisdictionCode) && (!fiscalYear || master.fiscalYear === fiscalYear))
+    return masters.filter((master) => master.jurisdictionCode === "mlit" && (!fiscalYear || master.fiscalYear === fiscalYear))
       .sort((a, b) => priority(b) - priority(a) || num(b.fiscalYear) - num(a.fiscalYear))[0] || null;
   }
 
@@ -908,9 +856,13 @@
     let applied = 0;
     let masterChanged = false;
     let masterFound = true;
-    const requestedMaster = preferredMaster(values.jurisdictionCode || activeMaster().jurisdictionCode, num(values.fiscalYear) || activeMaster().fiscalYear);
-    if ((values.jurisdictionCode || values.fiscalYear) && !requestedMaster) masterFound = false;
-    else if (requestedMaster && requestedMaster.id !== activeMaster().id && (values.jurisdictionCode || values.fiscalYear)) {
+    if (values.jurisdictionCode && (window.SEKISAN_PREFECTURES || []).some((entry) => entry.code === String(values.jurisdictionCode))) {
+      estimate.submissionJurisdictionCode = String(values.jurisdictionCode);
+      applied += 1;
+    }
+    const requestedMaster = preferredMaster("mlit", num(values.fiscalYear) || activeMaster().fiscalYear);
+    if (values.fiscalYear && !requestedMaster) masterFound = false;
+    else if (requestedMaster && requestedMaster.id !== activeMaster().id && values.fiscalYear) {
       switchMaster(requestedMaster.id);
       masterChanged = true;
       applied += 1;
@@ -1066,7 +1018,8 @@
         estimate.consulting.options = Object.assign(defaultConsultingState().options, imported.consulting?.options || {});
         estimate.report = Object.assign(defaultReportSettings(estimate.date), imported.report || {});
         estimate.report.sections = Object.assign(defaultReportSettings().sections, imported.report?.sections || {});
-        if (!masters.some((master) => master.id === estimate.masterId)) estimate.masterId = masters[0].id;
+        if (estimate.masterId === "r8-tokushima-2026") estimate.masterId = "standard-r8-2026";
+        if (!masters.some((master) => master.id === estimate.masterId)) estimate.masterId = defaultMasterId;
         const master = activeMaster();
         let correctedQuantities = 0;
         estimate.lines = estimate.lines.map((line) => {
@@ -1183,7 +1136,8 @@
 
   function validateCatalogMaster(master, entry) {
     if (!master?.roles || !Array.isArray(master.workItems) || !master.workItems.length) throw new Error("マスター形式が不正です");
-    if (entry.verificationStatus !== "verified") throw new Error("未検証マスターは追加できません");
+    if (entry.jurisdictionCode !== "mlit" || entry.verificationStatus !== "standard-reference") throw new Error("全国標準以外のマスターは自動追加できません");
+    if (master.verificationStatus !== "standard-reference") throw new Error("全国標準の検証状態が一致しません");
     if (String(master.jurisdictionCode) !== String(entry.jurisdictionCode) || num(master.fiscalYear) !== num(entry.fiscalYear)) throw new Error("地域または年度がカタログと一致しません");
   }
 
@@ -1204,7 +1158,7 @@
       if (catalog.schemaVersion !== 1 || !Array.isArray(catalog.masters)) throw new Error("カタログ形式が不正です");
       let added = 0;
       for (const entry of catalog.masters) {
-        if (entry.verificationStatus !== "verified") continue;
+        if (entry.jurisdictionCode !== "mlit" || entry.verificationStatus !== "standard-reference") continue;
         const alreadyInstalled = masters.some((master) => (master.catalogEntryId || master.id) === entry.id && String(master.masterVersion || "") === String(entry.version));
         if (alreadyInstalled) continue;
         const masterResponse = await fetch(validatedCatalogPath(entry.path), { cache: "no-store" });
@@ -1216,8 +1170,8 @@
         master.catalogEntryId = entry.id;
         master.id = masters.some((installed) => installed.id === entry.id) ? `${entry.id}@${entry.version}` : entry.id;
         master.masterVersion = entry.version;
-        master.verificationStatus = "verified";
-        master.scopeStatus = "verified";
+        master.verificationStatus = "standard-reference";
+        master.scopeStatus = "national-standard-reference";
         master.catalogManaged = true;
         master.bundled = false;
         normalizeMasterMetadata(master, entry.jurisdictionCode);
@@ -1227,7 +1181,7 @@
       if (added) {
         persistMasters();
         populateMasterSelects();
-        status.textContent = `${added}件の検証済み地域・年度マスターを追加しました。積算地域と積算年度から選択できます。`;
+        status.textContent = `${added}件の全国標準単価セットを追加しました。標準単価セットから選択できます。`;
         showToast(`検証済みマスターを${added}件追加しました`);
       } else {
         status.textContent = `更新確認済み（${catalog.updatedAt || "更新日不明"}）。利用可能な検証済みマスターは最新です。`;
@@ -1291,12 +1245,10 @@
     $("newItemQuantity").addEventListener("change", (event) => normalizeQuantityInput(event.target, quantityInputItem(event.target), true));
     $("addItemButton").addEventListener("click", addItem);
     $("jurisdictionSelect").addEventListener("change", (event) => {
-      const currentYear = activeMaster().fiscalYear;
-      const priority = (master) => master.verificationStatus === "verified" ? 30 : master.verificationStatus === "user-supplied" ? 20 : 10;
-      const candidates = masters.filter((master) => master.jurisdictionCode === event.target.value)
-        .sort((a, b) => num(b.fiscalYear) - num(a.fiscalYear) || priority(b) - priority(a));
-      const next = candidates.filter((master) => master.fiscalYear === currentYear).sort((a, b) => priority(b) - priority(a))[0] || candidates[0];
-      if (next) switchMaster(next.id);
+      estimate.submissionJurisdictionCode = event.target.value;
+      scheduleSave();
+      document.dispatchEvent(new CustomEvent("ezsekisan:estimatechange"));
+      showToast(event.target.value ? `見積提出先を${jurisdictionName(event.target.value)}に設定しました（単価は全国標準のままです）` : "見積提出先を未設定にしました");
     });
     $("fiscalYearSelect").addEventListener("change", (event) => switchMaster(event.target.value));
     ["projectName", "estimateDate", "projectMemo"].forEach((id) => $(id).addEventListener("input", updateEstimateField));
@@ -1389,6 +1341,8 @@
     getEstimate: () => estimate,
     getSurveyResult: currentResult,
     getActiveSurveyMaster: activeMaster,
+    getSubmissionJurisdictionCode: () => estimate.submissionJurisdictionCode || "",
+    getSubmissionJurisdictionName: () => estimate.submissionJurisdictionCode ? jurisdictionName(estimate.submissionJurisdictionCode) : "",
     getSurveyItemsForScope: (scope, master = activeMaster()) => surveyItemsForScope(master, scope),
     saveDraft: scheduleSave,
     notify: showToast,

@@ -49,7 +49,7 @@ assert.strictEqual(result.metadata.contractPeriod, "令和8年4月1日から令�
 assert.strictEqual(result.metadata.documentNumber, "TEST-001", "業務番号を抽出する");
 assert.strictEqual(result.metadata.documentDate, "令和8年3月1日", "公告日を抽出する");
 assert.ok(result.metadata.fields.find((field) => field.key === "projectName" && field.selected), "基本情報を個別確認候補にする");
-assert.ok(result.metadata.fields.find((field) => field.key === "jurisdiction" && field.affectsCalculation && !field.selected), "金額へ影響する発注機関マスターは初期選択しない");
+assert.ok(result.metadata.fields.find((field) => field.key === "jurisdiction" && !field.affectsCalculation && !field.selected && field.label === "見積提出先"), "見積提出先を計算マスターと分離して確認する");
 assert.ok(result.metadata.fields.find((field) => field.key === "fiscalYear" && field.affectsCalculation && !field.selected), "金額へ影響する年度マスターは初期選択しない");
 
 const control = result.candidates.find((candidate) => candidate.kind === "survey" && candidate.code === "2-2-1-1");

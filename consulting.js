@@ -62,7 +62,7 @@
     $("consultingFiscalYear").value = current.fiscalYear;
     $("consultingProjectName").value = app.getEstimate().projectName || "";
     const surveyMaster = app.getActiveSurveyMaster();
-    $("consultingAuthorityText").textContent = surveyMaster?.jurisdictionName || "発注機関未選択";
+    $("consultingAuthorityText").textContent = app.getSubmissionJurisdictionName?.() || "見積提出先未設定";
     $("consultingBasisText").textContent = `令和${current.fiscalYear - 2018}年度・国交省全国一律技術者単価`;
   }
 
@@ -242,7 +242,7 @@
     const current = state();
     const t = result.totals;
     const issueDate = estimate.date ? estimate.date.replace(/-/g, "/") : "—";
-    const authority = app.getActiveSurveyMaster()?.jurisdictionName || "—";
+    const authority = app.getSubmissionJurisdictionName?.() || "—";
     const rows = result.lines.map((line, index) => `<tr><td>${index + 1}</td><td>${h(line.serviceName)}</td><td>${h(line.taskName)}</td><td>${h(roleDefinition(line.serviceType, line.role)?.name || line.role)}</td><td>${h(line.days)}</td><td>${money(line.dailyRate)}</td><td>${money(line.amount)}</td></tr>`).join("");
     const sourceRows = [{ label: pricesByYear[current.fiscalYear].sourceLabel, url: pricesByYear[current.fiscalYear].sourceUrl }, ...master.sources].map((source) => `<li>${h(source.label)}<br><small>${h(source.url)}</small></li>`).join("");
     const header = (title) => `<header class="report-page-header"><div><p>測量・調査・設計業務 提出用帳票</p><h1>${h(title)}</h1><span>令和${current.fiscalYear - 2018}年度／${h(authority)}</span></div><div class="report-header-meta"><span>${h(issueDate)}</span></div></header>`;

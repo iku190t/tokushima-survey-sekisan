@@ -70,7 +70,8 @@ assert.ok(!directApply.includes(".view-tab") && !directApply.includes("documentI
 assert.ok(ui.includes("openPdfSelectionReviewButton") && ui.includes("renderReview(currentFileName, currentAnalysis)"), "必要な場合は従来の詳しい確認・修正画面も開ける");
 assert.ok(ui.includes('dataset.action = hasResults ? "apply" : "close"') && ui.includes("読み取れる項目なし・閉じる"), "候補0件では選択を要求せず閉じられる");
 assert.ok(ui.includes('$("importCandidateToolbar").hidden = candidateCount === 0') && ui.includes('$("importMetadataPanel").hidden = metadataCount === 0'), "候補がない区分の選択操作を隠す");
-assert.ok(ui.includes("window.confirm") && ui.includes("changesMaster"), "発注機関・年度の切替前に再確認する");
+assert.ok(ui.includes("window.confirm") && ui.includes("changesMaster") && ui.includes("標準単価セットの年度"), "年度単価セットの切替前だけ再確認する");
+assert.ok(ui.includes("計算単価には影響しません") && ui.includes("getSubmissionJurisdictionCode"), "見積提出先を単価セットから分離する");
 assert.ok(ui.includes("import-survey-code") && ui.includes("import-survey-quantity"), "測量項目と数量を修正できる");
 assert.ok(ui.includes("import-consulting-service") && ui.includes("import-consulting-role") && ui.includes("import-consulting-days"), "設計・調査・地質の区分・職種・人工を修正できる");
 assert.ok(app.includes("function importSurveyLines") && app.includes("SekisanEngine.normalizeQuantity"), "確認済み測量数量を単位別規則で正規化して反映する");

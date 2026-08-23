@@ -60,11 +60,11 @@
       </section>
       <section class="project-strip">
         <label class="field">
-          <span>発注機関</span>
+          <span>見積提出先（任意）</span>
           <select id="jurisdictionSelect" aria-describedby="masterStatusText"></select>
         </label>
         <label class="field compact-field">
-          <span>積算年度</span>
+          <span>標準単価セット</span>
           <select id="fiscalYearSelect" aria-describedby="masterStatusText"></select>
         </label>
         <label class="field">
@@ -410,26 +410,26 @@
           <div class="card-title-row">
             <div>
               <p class="section-kicker">ANNUAL MASTER</p>
-              <h2>年度マスター管理</h2>
+              <h2>標準単価セット管理</h2>
             </div>
             <span class="badge">検証済み年度を配信</span>
           </div>
           <div class="master-head-grid">
-            <label class="field"><span>地域・年度マスター</span><select id="masterEditorSelect"></select></label>
-            <label class="field"><span>発注機関</span><select id="masterJurisdiction"></select></label>
+            <label class="field"><span>単価セット</span><select id="masterEditorSelect"></select></label>
+            <label class="field"><span>基準区分</span><select id="masterJurisdiction"></select></label>
             <label class="field"><span>年度（西暦）</span><input id="masterYear" type="number" min="2000" max="2200"></label>
             <label class="field"><span>名称</span><input id="masterLabel" type="text"></label>
             <label class="field"><span>適用開始日</span><input id="masterEffective" type="date"></label>
           </div>
           <div class="master-toolbar no-print">
-            <button id="applyMasterMetaButton" class="button primary" type="button">地域・年度・名称を反映</button>
+            <button id="applyMasterMetaButton" class="button primary" type="button">年度・名称を反映</button>
             <button id="checkMasterUpdatesButton" class="button" type="button">年度マスターを更新確認</button>
             <button id="exportMasterButton" class="button" type="button">マスター書出し</button>
             <button id="importMasterButton" class="button" type="button">マスター読込み</button>
             <button id="deleteMasterButton" class="button danger" type="button">このマスターを削除</button>
             <input id="masterFileInput" type="file" accept="application/json,.json" hidden>
           </div>
-          <p id="masterUpdateStatus" class="callout">公開版では起動時に配信カタログを確認し、出典と内容を検証済みの発注機関・年度マスターだけを追加します。国と県、県同士のマスターを無条件に流用しません。</p>
+          <p id="masterUpdateStatus" class="callout">令和6・7・8年度の国土交通省・全国標準単価セットを収録しています。見積提出先は帳票情報であり、単価セットを変更しません。</p>
           <p id="masterCoverageStatus" class="callout warning-callout"></p>
         </section>
 
@@ -467,7 +467,7 @@
           <li><strong>直接測量費を作る</strong><span>直接作業費、精度管理費、電子成果品作成費、旅費等、成果検定費、安全費を合算します。</span></li>
           <li><strong>諸経費と消費税を計算</strong><span>成果検定費を除く対象額で諸経費率を算定し、業務価格を千円単位に調整します。</span></li>
         </ol>
-        <div class="callout"><strong>PDF・写真から始める場合</strong><br>「PDF・写真から取込み」で資料を読み取り、確認・修正画面で業務名、発注者、担当部署、場所、期間、元の文章、ページ、単位、数量、職種、人工を確認します。低確信度候補、金額、年度・発注機関マスターは初期選択しません。確認ボタンを押すまで積算データは変更されません。</div>
+        <div class="callout"><strong>PDF・写真から始める場合</strong><br>「PDF・写真から取込み」で資料を読み取り、確認・修正画面で業務名、発注者、担当部署、場所、期間、元の文章、ページ、単位、数量、職種、人工を確認します。低確信度候補、金額、年度・見積提出先は初期選択しません。確認ボタンを押すまで積算データは変更されません。</div>
         <div class="callout"><strong>数量の入力桁</strong><br>点・回・箇所・業務・測線・本・枚・日・m²などは整数だけ入力できます。km・km²・時間などの連続量は小数第3位までです。画面入力、貼り付け、保存済みJSONの読込みでも同じ規則を適用します。</div>
         <div class="formula-grid">
           <div><span>諸経費率</span><code>Z = 288.50 × X<sup>-0.084</sup></code><small>50万円以下95.8%、1億円超61.4%、中間は小数1位四捨五入</small></div>
@@ -559,7 +559,7 @@
       <section id="importMetadataPanel" class="import-metadata-panel">
         <div class="import-metadata-heading"><div><strong>業務基本情報</strong><p>読み取れた項目を修正し、反映する項目だけチェックしてください。</p></div><label id="toggleAllImportMetadataLabel" class="check"><input id="toggleAllImportMetadata" type="checkbox"><span>基本情報をすべて選択／解除</span></label></div>
         <div id="documentImportMetadataList" class="import-metadata-list"></div>
-        <p id="importedBasisHint">現在選択中の発注機関・年度のマスターへ取り込みます。</p>
+        <p id="importedBasisHint">現在選択中の全国標準単価セットへ取り込みます。見積提出先は計算単価を変更しません。</p>
       </section>
       <div id="documentImportWarnings" class="import-warning-list" hidden></div>
       <div id="documentImportEmptyGuide" class="import-empty-guide" hidden></div>
@@ -574,10 +574,8 @@
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <script src="data/prefectures.js?v=20260822-2"></script>
-  <script src="data/master-r8.js?v=20260822-2"></script>
+  <script src="data/prefectures.js?v=20260823-1"></script>
   <script src="data/national-standard-masters.js?v=20260822-1"></script>
-  <script src="data/verified-masters.js?v=20260822-1"></script>
   <script src="data/official-role-prices.js?v=20260822-1"></script>
   <script src="data/consulting-master.js?v=20260823-1"></script>
   <script src="data/verified-work-item-expansions.js?v=20260823-1"></script>
@@ -585,9 +583,9 @@
   <script src="consulting-engine.js?v=20260822-1"></script>
   <script src="document-import-engine.js?v=20260823-1"></script>
   <script src="document-reader.js?v=20260823-1"></script>
-  <script src="app.js?v=20260823-5"></script>
-  <script src="consulting.js?v=20260823-1"></script>
-  <script src="document-import.js?v=20260823-6"></script>
+  <script src="app.js?v=20260823-6"></script>
+  <script src="consulting.js?v=20260823-2"></script>
+  <script src="document-import.js?v=20260823-7"></script>
   <script src="analytics.js?v=20260823-1"></script>
 </body>
 </html>

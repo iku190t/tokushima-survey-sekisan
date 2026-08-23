@@ -624,10 +624,10 @@
     const payload = selectedClickPayload();
     if (!payload.selected.length) return;
     const active = activeMaster();
-    const changesMaster = (payload.metadata.jurisdictionCode && payload.metadata.jurisdictionCode !== active.jurisdictionCode) || (payload.metadata.fiscalYear && payload.metadata.fiscalYear !== active.fiscalYear);
-    if (changesMaster && !window.confirm("発注機関または年度マスターを切り替えると、現在の積算行の一部が対象外になる場合があります。確認済みの資料内容として切り替えますか？")) return;
+    const changesMaster = payload.metadata.fiscalYear && payload.metadata.fiscalYear !== active.fiscalYear;
+    if (changesMaster && !window.confirm("標準単価セットの年度を切り替えると、現在の積算行の一部が対象外になる場合があります。確認済みの資料年度へ切り替えますか？")) return;
     const metadataResult = app.applyImportedMetadata(payload.metadata);
-    if (!metadataResult.masterFound) { app.notify("選択した発注機関・年度のマスターがありません。基本情報と積算年度を確認してください"); return; }
+    if (!metadataResult.masterFound) { app.notify("選択した年度の全国標準単価セットがありません。積算年度を確認してください"); return; }
     const surveyResult = app.importSurveyLines(payload.survey, { fileName: currentFileName });
     const detail = { fileName: currentFileName, lines: payload.consulting, costs: payload.costs, includeSurvey: payload.survey.length > 0 && payload.consulting.length > 0, result: { added: 0, rejected: 0 } };
     document.dispatchEvent(new CustomEvent("ezsekisan:consultingimport", { detail }));
@@ -672,10 +672,11 @@
     $("toggleAllImportMetadataLabel").hidden = metadataCount === 0;
     const master = activeMaster();
     const detected = [analysis.metadata.jurisdictionName, analysis.metadata.fiscalYear ? `令和${analysis.metadata.fiscalYear - 2018}年度` : ""].filter(Boolean).join("・");
-    $("importedBasisHint").textContent = `${detected ? `資料候補：${detected}。` : "資料から発注機関・年度を確定できませんでした。"} 取込先：${master.jurisdictionName}・令和${master.fiscalYear - 2018}年度。取込先は自動変更しません。`;
+    const submissionName = app.getSubmissionJurisdictionName?.() || "未設定";
+    $("importedBasisHint").textContent = `${detected ? `資料候補：${detected}。` : "資料から見積提出先・年度を確定できませんでした。"} 見積提出先：${submissionName}／計算：国土交通省・全国標準 令和${master.fiscalYear - 2018}年度。確認した項目だけ反映します。`;
     const warnings = [...analysis.warnings];
     if (analysis.metadata.fiscalYear && analysis.metadata.fiscalYear !== master.fiscalYear) warnings.push("資料の年度候補と現在の積算年度が異なります。閉じて年度マスターを切り替えてから再度確認してください。");
-    if (analysis.metadata.jurisdictionCode && analysis.metadata.jurisdictionCode !== master.jurisdictionCode) warnings.push("資料の発注機関候補と現在の取込先が異なります。発注機関を確認してください。");
+    if (analysis.metadata.jurisdictionCode && analysis.metadata.jurisdictionCode !== app.getSubmissionJurisdictionCode?.()) warnings.push("資料の発注機関候補と現在の見積提出先が異なります。提出先を確認してください（計算単価には影響しません）。");
     $("documentImportWarnings").hidden = warnings.length === 0;
     $("documentImportWarnings").innerHTML = warnings.length ? `<ul>${warnings.map((warning) => `<li>${h(warning)}</li>`).join("")}</ul>` : "";
     $("documentImportCandidateList").innerHTML = analysis.candidates.map(candidateHtml).join("");
@@ -743,10 +744,10 @@
       if (row.dataset.kind === "consultingCost") costs[row.querySelector(".import-cost-key").value] = Math.max(0, Math.floor(Number(row.querySelector(".import-cost-amount").value) || 0));
     });
     const active = activeMaster();
-    const changesMaster = (metadata.jurisdictionCode && metadata.jurisdictionCode !== active.jurisdictionCode) || (metadata.fiscalYear && metadata.fiscalYear !== active.fiscalYear);
-    if (changesMaster && !window.confirm("発注機関または年度マスターを切り替えると、現在の積算行の一部が対象外になる場合があります。確認済みの資料内容として切り替えますか？")) return;
+    const changesMaster = metadata.fiscalYear && metadata.fiscalYear !== active.fiscalYear;
+    if (changesMaster && !window.confirm("標準単価セットの年度を切り替えると、現在の積算行の一部が対象外になる場合があります。確認済みの資料年度へ切り替えますか？")) return;
     const metadataResult = app.applyImportedMetadata(metadata);
-    if (!metadataResult.masterFound) { app.notify("選択した発注機関・年度のマスターがありません。基本情報と積算年度を確認してください"); return; }
+    if (!metadataResult.masterFound) { app.notify("選択した年度の全国標準単価セットがありません。積算年度を確認してください"); return; }
     const surveyResult = app.importSurveyLines(survey, { fileName: currentFileName });
     const detail = { fileName: currentFileName, lines: consulting, costs, includeSurvey: survey.length > 0 && consulting.length > 0, result: { added: 0, rejected: 0 } };
     document.dispatchEvent(new CustomEvent("ezsekisan:consultingimport", { detail }));
