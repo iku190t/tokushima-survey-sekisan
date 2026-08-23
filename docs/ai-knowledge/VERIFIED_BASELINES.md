@@ -1091,3 +1091,49 @@ OK: UI static wiring checks passed
 | `styles.css` | `893A835FBB33DE82265B15A3454053DBC19E5AD4FCAB0D98F5E0E41E582919B6` |
 | `tests/test-ui-static.js` | `25F17D077255E2ABBEE9A1758AA09BF31893B839C65FF386E33B9C62CD35B37A` |
 | `tests/test-document-import-ui.js` | `2C3605747796C7E1243AECAADC7C2D8B0DB90A00FEA8971398880683C205BFA4` |
+
+## B-2026-08-23-04
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-23
+- アプリコミット: `ab35d40e25ac501a72f663027e0240c9b2db6d0a`
+- GitHub Pagesビルド: `1168926002`（`built`）
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: B-2026-08-23-03へ、重複した別置きドロップ欄の廃止、詳細項目・数量・単位の実入力欄へのドラッグ、資料単位から積算基準単位への換算を追加した版。
+
+### 合格した試験
+
+```text
+OK: consulting/design/geology calculation checks passed
+OK: consulting UI and report wiring checks passed
+OK: document import review UI and safe apply wiring checks passed
+OK: document PDF/OCR extraction and review candidate checks passed
+OK: regulation audit checks passed (master mapping, precision, quantity formulas, travel, rounding, overhead)
+OK: Hiroshima R6-R8 complete annual master audit checks passed
+OK: nationwide jurisdiction and verified master catalog checks passed
+OK: nationwide R6-R8 standard reference master checks passed
+OK: official procurement case matching, XML parsing, and source ledger candidates passed
+OK: official case search UI is removed while saved-data compatibility remains
+OK: MLIT official role price presets R4-R8 and consulting roles R6-R8
+OK: UI static wiring checks passed
+```
+
+追加検査: `node --check document-import-engine.js`、`node --check document-import.js`、`git diff --check`合格。
+
+### 実ブラウザー確認
+
+- 国土地理院公開PDFをローカルHTTP画面へ読み込み、別置きドロップ欄0件、実入力マッパーが初期表示されることを確認した。
+- 用地測量「公図等の転写」を選び、資料数量6.9、資料単位10,000m²を入力すると「6.9 × 10,000m² ＝ 69,000m²（積算へ反映）」と表示された。
+- 反映待ちには69,000m²と資料表記6.9×10,000m²の両方が表示され、積算へ追加後の数量入力は69,000m²だった。ブラウザー警告・エラー0件。
+- GitHub Pages公開版で別置きドロップ欄0件、単位入力・換算結果要素、`styles.css?v=20260823-3`、`document-import-engine.js?v=20260823-1`、`document-import.js?v=20260823-4`を確認し、ブラウザー警告・エラー0件だった。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `A8409349B588549A8B418901E667C1CAAB006309817163C7DE431AFAA432883F` |
+| `document-import-engine.js` | `06D517BD663120F137B26DB9891A03B7C62ED6171A05CBD10132A956E6AC79E4` |
+| `document-import.js` | `92B8FF4412D96D20F4F7EF17951907AA4F1215CA5E52E68FF2656737AF58D8B4` |
+| `styles.css` | `8E8EAFEB34A9C61EFDFBD6A7A186CCEE64D08364C9C5F730891B357AC4AE3F3A` |
+| `tests/test-document-import.js` | `C228343DA3E4433678934EF652B5265080EB7D36886D30C70A763B61E3A9F9A0` |
+| `tests/test-document-import-ui.js` | `209A5F41F978F4E186C10E63BFD020356DF99E505AB35EB1D9F65579066BAED7` |
