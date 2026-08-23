@@ -15,7 +15,7 @@
 | T-CONSULT | `node tests/test-consulting-engine.js` | 設計その他原価・一般管理費、電子成果品、地質諸経費、年度別職種単価、測量との税抜合算、人工桁 | 設計・調査計算、職種単価、総合計変更時は必須 | 合格 |
 | T-CONSULT-UI | `node tests/test-consulting-ui.js` | 4業務区分、人工入力、確認済み歩掛、警告、保存、新規、総合帳票結線 | `consulting.js`、総合画面・帳票変更時は必須 | 合格 |
 | T-DOC-IMPORT | `node tests/test-document-import.js` | PDF文字配置、同一行の5セル分割、隣接文字結合、OCRセル分割、行文脈、数量と縮尺の分離、業務基本情報、測量数量、設計・地質人工 | PDF/OCR解析、候補対応付け、正規化変更時は必須 | 合格 |
-| T-DOC-UI | `node tests/test-document-import-ui.js` | 小型ドロップ、直接抽出/OCR切替、文字ブロックのクリック、測量分類→詳細項目、同一画面での連続反映、貼付け解析と公式案件UIの非表示、基本情報確認、ファイル非送信 | 資料取込画面、反映API、読取ライブラリ変更時は必須 | 合格 |
+| T-DOC-UI | `node tests/test-document-import-ui.js` | 小型ファイル投下、直接抽出/OCR切替、文字ブロックのクリック、項目・数量の個別ドラッグ、HTMLドラッグとポインター経路、測量分類→詳細項目、同一画面での連続反映、不要UI非表示、ファイル非送信 | 資料取込画面、反映API、読取ライブラリ変更時は必須 | 合格 |
 | T-OFFICIAL-CASE | `node tests/test-official-case-engine.js` | 官公需API XML解析、案件一致度、資料分類、検索URL、安全なURLスキーム | 公式案件検索、XML解析、資料台帳候補変更時は必須 | 合格 |
 | T-OFFICIAL-CASE-UI | `node tests/test-official-case-ui.js` | 公式案件検索・台帳UIと関連スクリプトの非読込、旧保存データ構造の互換維持 | 資料取込UI、旧案件保存API変更時は必須 | 合格 |
 
@@ -33,7 +33,7 @@
 | 起動・自動保存復元 | T-UI | 新規起動、復元ボタン、未操作終了、JSON読込を実ブラウザーで確認 |
 | 公開表示・アクセス解析 | T-UI | フッター1ボタン・統合ダイアログ、HTTPS公開版で応援リンク、同意／拒否、GA着信を確認 |
 | 4業務タブ・設計地質積算 | T-CONSULT, T-CONSULT-UI, T-RATES, T-UI, T-ENGINE | 指定順、初期設計画面、測量／航空船舶の項目分離、設計／地質の区分分離、年度切替、総合計、実ブラウザー表示 |
-| PDF・写真取込 | T-DOC-IMPORT, T-DOC-UI, T-ENGINE, T-CONSULT | 文字入りPDFのセル・文字ブロック分割、隣接文字結合、測量分類→詳細項目、未判定ブロックの手動対応付け、同一画面での連続反映、画像OCR、年度・発注機関の切替警告を実ブラウザー確認 |
+| PDF・写真取込 | T-DOC-IMPORT, T-DOC-UI, T-ENGINE, T-CONSULT | 文字入りPDFのセル・文字ブロック分割、項目・数量の個別ドラッグと出典結合、ドロップ後のPDF位置維持、測量分類→詳細項目、未判定ブロックの手動対応付け、同一画面での連続反映、画像OCR、年度・発注機関の切替警告を実ブラウザー確認 |
 | 旧公式案件保存互換 | T-OFFICIAL-CASE, T-OFFICIAL-CASE-UI, T-DOC-UI, T-UI | 現行UI・スクリプトが非表示／非読込で、旧保存JSONの読込構造だけが維持されることを確認 |
 
 ## 現在未完了の手動検証

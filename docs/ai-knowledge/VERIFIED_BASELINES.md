@@ -999,3 +999,48 @@ OK: UI static wiring checks passed
 | `tests/test-document-import.js` | `2AE125741AC42B9432F199B15E3654EA67931BB6A7037EC7293D72AB92F765E9` |
 | `tests/test-document-import-ui.js` | `4A6D51493EC8DEA818B38ADF5BC60F897C20764ACC26753FC811B9F958BE1A16` |
 | `tests/test-official-case-ui.js` | `760D164512AD48103DDB5FF5542DBF53B729DB8BC7B7D22E0AE7D1C77770BB5C` |
+
+## B-2026-08-23-02
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-23
+- アプリコミット: `258b0010854d15b6c0448626d0dd71f418d9bece`
+- GitHub Pagesビルド: `1168807200`（`built`）
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: B-2026-08-23-01へ、PDF文字ブロックを右側の項目・数量へ別々にドラッグし、同じ反映候補へまとめる操作を追加した版。クリック操作、分類・詳細選択、単位別数量規則は維持する。
+
+### 合格した試験
+
+```text
+OK: consulting/design/geology calculation checks passed
+OK: consulting UI and report wiring checks passed
+OK: document import review UI and safe apply wiring checks passed
+OK: document PDF/OCR extraction and review candidate checks passed
+OK: regulation audit checks passed (master mapping, precision, quantity formulas, travel, rounding, overhead)
+OK: Hiroshima R6-R8 complete annual master audit checks passed
+OK: nationwide jurisdiction and verified master catalog checks passed
+OK: nationwide R6-R8 standard reference master checks passed
+OK: official procurement case matching, XML parsing, and source ledger candidates passed
+OK: official case search UI is removed while saved-data compatibility remains
+OK: MLIT official role price presets R4-R8 and consulting roles R6-R8
+OK: UI static wiring checks passed
+```
+
+追加検査: `node --check document-import.js`、`git diff --check`合格。
+
+### 実ブラウザー確認
+
+- 国土地理院公開PDF7ページをローカルHTTP画面へ読み込み、290文字ブロックを表示した。
+- 項目ブロックを右側の「項目」へドラッグし、対応付け欄が開いて項目原文が表示されることを確認した。
+- 続けて別の数量ブロックを「数量」へドラッグし、項目原文と数量原文が別々に表示され、数量入力へ候補値が入ることを確認した。
+- 最初のドロップ前後で次の数量ブロックの画面座標が不変であり、PDF位置を維持して連続操作できた。ローカル版のブラウザー警告・エラー0件。
+- GitHub Pages公開版で項目・数量の受け皿と`document-import.js?v=20260823-2`を確認し、ブラウザー警告・エラー0件だった。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `3C0C978737F88B6F4A171EE6720FE811D2676B106106DCA6CDE061796736924C` |
+| `styles.css` | `82825D7AEFCA58E55E4642031F720A6AB49D90D46F186A934B141E3F867BF909` |
+| `document-import.js` | `BE14DE8628DD5BCD4DF4F1C461B1A3F91A701634C7F4D4513187AC015381BFBF` |
+| `tests/test-document-import-ui.js` | `5093860212E2205D973FFFC4E2CB322F91DC4EE3FD06A7693AD4EF9E4C51BF08` |
