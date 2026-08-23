@@ -1646,3 +1646,49 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `official-source-catalog.json` | `77391507F81B03A2C88C93D0B24CBB032C89228520128395D0E27286510C8DD1` |
 | `master-standard-r8.json` | `D329A3698F8AADE986E0FA73D9A70215A67E9668E6DCFD36EBEAF0482B557897` |
 | `test-nationwide-standard.js` | `3DCF394B30C164000A94E55AE929A30AF1722223B9ADBB9E1CE0E5D6AA71EC04` |
+
+## B-2026-08-24-02
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-24
+- 実装コミット: `085e0a70b16c6c9fa71e2fb6f04193dca904cf43`
+- GitHub Pagesビルド: `1170042826`（`built`）
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: 測量以外を人工入力中心から、基準書分類・業務条件・数量を先に選ぶ方式へ組み直し、未実装条件を完成積算と誤表示しないよう完全性区分を追加した版。
+
+### 確認済みの実装
+
+- `1km当り`、`10箇所当り`、`10,000m2当り`、`1孔当り1回当り`等を数量欄へ分解し、数量比を職種別人工へ反映する。
+- 個数単位は整数、延長・面積は小数第3位までで、数量欄は空欄開始とする。
+- 全国標準候補735表を、基準数量の一次試算703表と参照専用32表へ監査分類した。
+- 編成人員、規格区分、日当たり作業量等の参照専用表は、関連計算規則なしに自動追加できない。
+- 一次試算行は明細・帳票・提出前検査で補正等未反映と表示し、原表確認済み項目と区別する。
+- 人工直接入力は、基準書にない作業・見積項目の折りたたみ手動調整へ移した。
+
+### 合格した試験
+
+- `tests/test-*.js` 全13本合格。
+- `node --check consulting-engine.js`、`node --check consulting.js`合格。
+- `git diff --check`合格。
+- T-CONSULT-WALKSで設計549、調査・計画89、地質解析54、地質一般43の全735表を走査し、一次試算703、参照専用32を固定値確認した。
+
+### 実ブラウザー確認
+
+- ローカル版で令和8年度道路詳細設計（A）2.5kmを入力し、標準1kmに対する2.5倍の計算根拠と6職種の読取専用人工を確認した。
+- 地質一般の地下水位測定で3孔×4回＝12倍を確認し、条件確認前は追加されないことを確認した。
+- 「編成人員」を検索すると「参照専用・自動計算不可」と表示し、数量・確認・追加を無効化することを確認した。
+- 原表確認済みの設計留意書は「原表確認済み」と表示し、通常の条件・数量入力が有効であることを確認した。
+- 公開版で同じ一次試算表示と参照専用の追加禁止を確認し、ブラウザーエラー0件だった。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `615B1259132D06299791BB7EE30649EB925E7B199463BD06346B5EC8C40E0F37` |
+| `consulting.js` | `620F18587839AB07C9139A12CAE68A1AE0974730FA5E06DA1E3447907580AA7C` |
+| `consulting-engine.js` | `61B0D8B2F467F40E2AE7BBF6F1B263849C3F2D4D9F980440D9BE6AF477B83CDF` |
+| `styles.css` | `39DF0BEAF010484C0E5DF3B3196D54E8856538E09AB7173E510C3336A8D04A78` |
+| `tests/test-consulting-engine.js` | `06DA0A06D8822FFA75892F11A0EA474EE50E7EF94A0565860DB2D71CCCCAAE3C` |
+| `tests/test-consulting-ui.js` | `347598E2045943BA866B69D14552816435AB5F5783A822A34CCB3A7ECC540893` |
+| `tests/test-consulting-walks.js` | `9F7C240C0516697196C2872DC04765D7D05AB5C2CE8F0AFEC468557C3185AAD5` |
+| `tests/test-ui-static.js` | `1EEA8B310784E0D5C52207880C1109C4FA1AC4E147503CFD91A1A616FF2A4646` |
