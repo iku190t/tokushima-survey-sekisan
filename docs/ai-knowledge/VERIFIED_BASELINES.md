@@ -1318,3 +1318,52 @@ OK: R8 UAV laser detailed work item expansion checks passed
 | `styles.css` | `030F3AEF9203E1B619ACC1B256816933FCAFD5B6ABB9E0101597FAFEE4C27E19` |
 | `tests/test-ui-static.js` | `111B6E25F8A2E8E1787FFB2A76C145E09AEB5560C75AFA4D811A8FDECD358D91` |
 | `業務積算ソフト製品・基準体系調査.md` | `92F468DB5C6A84D4AD73FDAA6279A523E377C4795571AA5939B224F32A24A9F6` |
+
+## B-2026-08-23-09
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-23
+- アプリコミット: `415d5b238a9d381334b87dec92d080aa8cf91305`
+- GitHub Pagesビルド: `1169097322`（`built`）
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: B-2026-08-23-08へ、Survey Plan型の見積提出先／全国標準単価セット分離、徳島県・県別マスターの通常画面非読込、全国標準R6～R8だけの配信カタログ、旧徳島県保存データの全国標準移行を追加した版。
+
+### 合格した試験
+
+```text
+OK: consulting/design/geology calculation checks passed
+OK: consulting UI and report wiring checks passed
+OK: document import review UI and safe apply wiring checks passed
+OK: document PDF/OCR extraction and review candidate checks passed
+OK: regulation audit checks passed (master mapping, precision, quantity formulas, travel, rounding, overhead)
+OK: Hiroshima R6-R8 complete annual master audit checks passed
+OK: nationwide submission destinations and standard master catalog checks passed
+OK: nationwide R6-R8 standard reference master checks passed
+OK: official procurement case matching, XML parsing, and source ledger candidates passed
+OK: official case search UI is removed while saved-data compatibility remains
+OK: MLIT official role price presets R4-R8 and consulting roles R6-R8
+OK: UI static wiring checks passed
+OK: R8 UAV laser detailed work item expansion checks passed
+```
+
+追加検査: `node --check app.js`、`node --check document-import-engine.js`、`node --check document-import.js`、`node --check consulting.js`、`git diff --check`合格。
+
+### 実ブラウザー確認
+
+- 新規画面は見積提出先未設定、`standard-r8-2026`。単価セット選択肢は令和8・7・6年度の国土交通省・全国標準3件だけで、県別マスタースクリプトは読み込まない。
+- ローカルHTTP版で2級基準点10点を追加し、提出先未設定と徳島県で税込合計7,616,400円・マスター`standard-r8-2026`が不変。徳島県を維持して令和7年度へ切り替えると`standard-r7-2025`・7,491,000円になった。
+- GitHub Pages公開版で同じ令和8年度計算を提出先未設定と北海道で比較し、税込合計7,616,400円・マスター`standard-r8-2026`が不変。ページ幅とスクロール幅は1265px、ブラウザー警告・エラー0件。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `app.js` | `3DD9C644664ECCE94F333DC7BC46FC91CAD647E25D58350117E147E202EF5555` |
+| `consulting.js` | `0064314C14B773D9C25086B97B1DCBE7855891F16436E21B6205116101AF62F3` |
+| `document-import-engine.js` | `7CA8EBBA851F6F5330DDBF0BB36362E90AD605D69839A446884A8D8B03C6839B` |
+| `document-import.js` | `9DDDEA135EDE1F7760B2408D3DE5B7D3C9FED45E2B6263952F5DA6CFB3C58085` |
+| `index.html` | `055F8A7251AD8E7A0F3802C67F8C0370B38AD843E185F70877DD66F7C9833D18` |
+| `data/master-catalog.json` | `B0DB05E5239F9E9194068EA9A370A44204CED676862CAAAE564CBD22A19AAE20` |
+| `data/prefectures.js` | `850BAB880C3FD863BF080DC2A9D3268788A28AE19B5F30824437ABAFACF3EF6C` |
+| `tests/test-ui-static.js` | `C16C536E13C54A8A57D51F66C6097225D02E49D89CA45E98CDEF74E832B186B8` |
+| `tests/test-master-catalog.js` | `25BE14F75E3994AF542669FA23D18B60656C0AB2A14B800572A4439C6E58D062` |
