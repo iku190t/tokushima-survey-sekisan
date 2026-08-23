@@ -7,7 +7,7 @@
   <meta name="description" content="設計、測量、航空・船舶、地質を年度別技術者単価と根拠表示付きで計算するWeb業務積算ソフト">
   <meta name="author" content="株式会社アイズ測量">
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="styles.css?v=20260823-4">
+  <link rel="stylesheet" href="styles.css?v=20260823-5">
 </head>
 <body data-business-scope="design">
   <header class="app-header">
@@ -311,11 +311,11 @@
             <section id="pdfManualMapper" class="pdf-manual-mapper" hidden>
               <div class="pdf-manual-heading"><strong id="pdfManualHeadingText">この行の反映先を指定</strong><button id="cancelPdfManualLineButton" type="button" aria-label="閉じる">×</button></div>
               <q id="pdfManualSourceText">—</q>
-              <label class="field"><span>反映する種類</span><select id="pdfManualKind"><option value="survey">測量項目・数量</option><option value="consulting">設計・調査・地質の人工</option><option value="metadata">業務基本情報</option></select></label>
+              <label class="field"><span>反映する業務区分</span><select id="pdfManualKind"><option value="design">設計業務（作業・職種・人工）</option><option value="survey">測量業務（項目・数量・単位）</option><option value="aerial">航空・船舶関係（項目・数量・単位）</option><option value="geology">地質業務（作業・職種・人工）</option><option value="metadata">業務基本情報</option></select></label>
               <div id="pdfManualSurveyFields" class="pdf-manual-fields">
                 <label class="field"><span>分類</span><select id="pdfManualSurveyCategory"></select></label>
-                <label class="field pdf-field-drop-target" data-pdf-drop-target="item"><span>積算する詳細項目</span><small>PDFの項目名をここへドロップ</small><select id="pdfManualSurveyCode"></select></label>
-                <div class="field pdf-survey-quantity-field"><span>資料の数量・単位</span><div class="pdf-manual-quantity"><label class="pdf-field-drop-target" data-pdf-drop-target="quantity"><span>数量をここへドロップ</span><input id="pdfManualSurveyQuantity" type="number"></label><label class="pdf-field-drop-target" data-pdf-drop-target="unit"><span>単位をここへドロップ</span><select id="pdfManualSurveySourceUnit"></select></label></div><strong id="pdfManualSurveyConversion">項目を選択してください。</strong><small id="pdfManualSurveyRule">項目を選択してください。</small></div>
+                <label class="field pdf-field-drop-target" data-pdf-drop-target="item"><span class="pdf-drop-title"><b aria-hidden="true">1</b>PDFの項目名をドロップ</span><small class="pdf-drop-callout">左のPDFから項目名の文字枠をつかんで、ここへ移動</small><select id="pdfManualSurveyCode" aria-label="積算する詳細項目"></select></label>
+                <div class="field pdf-survey-quantity-field"><span>資料の数量・単位</span><div class="pdf-manual-quantity"><label class="pdf-field-drop-target" data-pdf-drop-target="quantity"><span class="pdf-drop-title"><b aria-hidden="true">2</b>PDFの数量をドロップ</span><small class="pdf-drop-callout">例：6.9、11</small><input id="pdfManualSurveyQuantity" type="number" aria-label="資料の数量"></label><label class="pdf-field-drop-target" data-pdf-drop-target="unit"><span class="pdf-drop-title"><b aria-hidden="true">3</b>PDFの単位をドロップ</span><small class="pdf-drop-callout">例：10,000m²、回</small><select id="pdfManualSurveySourceUnit" aria-label="資料の単位"></select></label></div><strong id="pdfManualSurveyConversion">項目を選択してください。</strong><small id="pdfManualSurveyRule">項目を選択してください。</small></div>
               </div>
               <div id="pdfManualConsultingFields" class="pdf-manual-fields" hidden>
                 <label class="field"><span>業務区分</span><select id="pdfManualConsultingService"></select></label>
@@ -560,9 +560,9 @@
   <script src="consulting-engine.js?v=20260822-1"></script>
   <script src="document-import-engine.js?v=20260823-1"></script>
   <script src="document-reader.js?v=20260823-1"></script>
-  <script src="app.js?v=20260823-1"></script>
+  <script src="app.js?v=20260823-2"></script>
   <script src="consulting.js?v=20260822-2"></script>
-  <script src="document-import.js?v=20260823-4"></script>
+  <script src="document-import.js?v=20260823-5"></script>
   <script src="analytics.js?v=20260823-1"></script>
 </body>
 </html>

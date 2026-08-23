@@ -294,10 +294,10 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
 .privacy-note p { margin: 5px 0 0; font-size: 10px; line-height: 1.6; }
 .last-import-summary { color: #174d3c; background: var(--green-soft); font-size: 11px; line-height: 1.6; }
 
-.pdf-click-workbench { margin: 18px clamp(18px,3vw,48px) 0; }
+.pdf-click-workbench { margin: 18px 0 0; padding: clamp(14px,1.5vw,22px); }
 .pdf-click-workbench[hidden] { display: none; }
-.pdf-click-layout { display: grid; grid-template-columns: minmax(0,1fr) 310px; gap: 16px; align-items: start; }
-.pdf-click-pages { max-height: 78vh; overflow: auto; padding: 14px; background: #dfe5e2; border: 1px solid #cbd6d1; border-radius: 11px; }
+.pdf-click-layout { display: grid; grid-template-columns: minmax(0,1fr) clamp(330px,22vw,390px); gap: 12px; align-items: start; }
+.pdf-click-pages { max-height: 78vh; overflow: auto; padding: 8px; background: #dfe5e2; border: 1px solid #cbd6d1; border-radius: 11px; }
 .pdf-click-page { margin: 0 auto 16px; }
 .pdf-click-page:last-child { margin-bottom: 0; }
 .pdf-click-page > header { display: flex; justify-content: space-between; margin-bottom: 6px; color: #43564e; font-size: 10px; font-weight: 800; }
@@ -332,21 +332,24 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
 .pdf-pending-panel .pdf-click-selected-list { grid-template-columns: repeat(auto-fit,minmax(230px,1fr)); max-height: 260px; }
 .pdf-pending-controls { min-width: 0; }
 .pdf-pending-panel .pdf-click-note { grid-column: 1 / -1; }
-.pdf-field-drop-target.drag-over { background: #dff2e9; border-color: #1d6c52; box-shadow: 0 0 0 3px rgba(29,108,82,.13); }
+.pdf-field-drop-target.drag-over { background: #cfeee0; border-color: #0d6748; box-shadow: 0 0 0 4px rgba(29,108,82,.2); transform: translateY(-1px); }
 .pdf-manual-mapper { display: grid; gap: 10px; padding: 12px; background: #f1f7f4; border: 1px solid #9dbdae; border-radius: 10px; box-shadow: 0 7px 22px rgba(24,75,58,.1); }
 .pdf-manual-mapper[hidden], .pdf-manual-fields[hidden] { display: none; }
 .pdf-manual-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .pdf-manual-heading strong { color: var(--green-dark); font-size: 12px; }
 .pdf-manual-heading button { width: 28px; height: 28px; padding: 0; color: #40544b; background: #fff; border: 1px solid var(--line); border-radius: 50%; cursor: pointer; }
-.pdf-manual-mapper > q { display: block; max-height: 70px; overflow: auto; padding: 8px; color: #243b31; background: #fff; border-left: 3px solid #367d63; font-size: 10px; line-height: 1.55; }
+.pdf-manual-mapper > q { display: block; max-height: 70px; overflow: auto; padding: 9px; color: #173d2f; background: #fff; border: 1px solid #c9ddd4; border-left: 4px solid #1d6c52; font-size: 10px; line-height: 1.55; }
 .pdf-manual-fields { display: grid; gap: 8px; }
 .pdf-manual-mapper .field { gap: 4px; }
-.pdf-field-drop-target { padding: 6px; border: 2px dashed transparent; border-radius: 8px; transition: .14s; }
+.pdf-field-drop-target { position: relative; padding: 8px; background: #fff; border: 2px dashed #4e9b7c; border-radius: 9px; box-shadow: inset 0 0 0 3px rgba(78,155,124,.07); transition: .14s; }
 .pdf-manual-mapper .field > span { font-size: 9px; }
 .pdf-manual-mapper input, .pdf-manual-mapper select { min-width: 0; padding: 8px 9px; font-size: 10px; }
-.pdf-manual-quantity { display: grid; grid-template-columns: minmax(0,1fr) minmax(105px,.7fr); align-items: stretch; gap: 7px; }
-.pdf-manual-quantity > label { display: grid; align-content: start; gap: 4px; margin: 0; background: #fff; border: 2px dashed #8eb5a4; }
-.pdf-manual-quantity > label > span { color: #456c5d; font-size: 8px; font-weight: 800; }
+.pdf-drop-title { display: flex; align-items: center; gap: 6px; color: #0d583f; font-size: 10px !important; font-weight: 900; }
+.pdf-drop-title b { width: 19px; height: 19px; display: inline-grid; flex: 0 0 auto; place-items: center; color: #fff; background: #16704e; border-radius: 50%; font-size: 10px; }
+.pdf-drop-callout { display: block; padding: 6px 8px; color: #174d3c !important; background: #e2f3eb; border-radius: 6px; font-size: 9px !important; font-weight: 800; line-height: 1.45; }
+.pdf-field-drop-target > input, .pdf-field-drop-target > select { border-color: #8db7a5; }
+.pdf-manual-quantity { display: grid; grid-template-columns: 1fr; align-items: stretch; gap: 7px; }
+.pdf-manual-quantity > label { display: grid; align-content: start; gap: 5px; margin: 0; }
 .pdf-survey-quantity-field > strong { padding: 8px 9px; color: #124d3a; background: #e3f2ea; border-radius: 7px; font-size: 10px; line-height: 1.5; }
 .pdf-manual-fields small { color: var(--muted); font-size: 9px; line-height: 1.45; }
 .pdf-manual-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }

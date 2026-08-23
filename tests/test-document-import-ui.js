@@ -23,6 +23,10 @@ for (const id of ["importView", "documentDropZone", "documentFileInput", "pdfCli
 }
 assert.ok(html.includes("設計・測量・航空船舶・地質"), "資料取込の対象業務を4業務タブ順で明示する");
 assert.ok(html.includes(">PDF・写真から取込み<"), "資料取込の表示名をPDF・写真から取込みに統一する");
+const kindOptions = ['value="design">設計業務', 'value="survey">測量業務', 'value="aerial">航空・船舶関係', 'value="geology">地質業務', 'value="metadata">業務基本情報'];
+assert.ok(kindOptions.every((option) => html.includes(option)), "PDF反映先を4業務区分と基本情報へ分ける");
+assert.deepStrictEqual(kindOptions.map((option) => html.indexOf(option)), [...kindOptions.map((option) => html.indexOf(option))].sort((a, b) => a - b), "PDF反映先を設計・測量・航空船舶・地質・基本情報の順にする");
+assert.ok(!html.includes("設計・調査・地質の人工"), "異なる積算基準の設計・調査・地質を1つの選択肢へまとめない");
 assert.ok(html.includes("資料内容は外部送信しません"), "ブラウザー内処理を明示する");
 assert.ok(html.includes('accept="application/pdf,image/png,image/jpeg,image/webp'), "PDFと写真を選択できる");
 assert.ok(!html.includes("documentPasteText") && !html.includes("analyzePastedTextButton") && !ui.includes("analyzePastedText"), "原文貼り付け解析を画面と処理から撤去する");
@@ -41,6 +45,7 @@ assert.ok(ui.includes("renderPdfClickWorkbench") && ui.includes("pdf-line-hotspo
 assert.ok(ui.includes("clickLines.set") && !ui.includes('if (!targets.length) return ""'), "自動判定の有無にかかわらずPDFの全抽出行をクリック対象にする");
 assert.ok(ui.includes("openManualMapper") && ui.includes("addManualCandidate") && ui.includes("metadataLabels"), "未判定行の反映先・数量・人工・基本情報を右側で指定できる");
 assert.ok(ui.includes("surveyCategoryOptions") && ui.includes("populateManualSurveyItems") && ui.includes("pdfManualSurveyCategory"), "長い測量項目を分類で絞り込んで詳細項目を選べる");
+assert.ok(app.includes("getSurveyItemsForScope") && ui.includes("consultingServiceIdsByKind") && ui.includes("businessKindForSurveyItem") && ui.includes("businessKindForService"), "PDF取込も本体と同じ4業務区分で項目・人工を絞る");
 assert.ok(html.includes('draggable="true"') || ui.includes('draggable="true"'), "PDF文字ブロックをドラッグ開始できる");
 assert.ok(!html.includes('id="pdfDragDock"') && !html.includes("PDFからドラッグして入力"), "別置きの重複したドラッグ入力欄を表示しない");
 assert.ok(html.includes('data-pdf-drop-target="item"') && html.includes('data-pdf-drop-target="quantity"') && html.includes('data-pdf-drop-target="unit"'), "実入力欄を項目・数量・単位のドラッグ先にする");
@@ -78,5 +83,7 @@ assert.ok(css.includes(".import-review-dialog") && css.includes(".import-candida
 assert.ok(css.includes('.pdf-line-hotspot[data-mapped="false"]') && css.includes(".pdf-manual-mapper"), "未判定行と右側反映先エディターを視覚的に区別する");
 assert.ok(!css.includes(".pdf-drag-dock") && css.includes(".pdf-field-drop-target.drag-over"), "実入力欄だけをドラッグ先として視覚表示する");
 assert.ok(css.includes(".pdf-click-sidebar { position: sticky; top: 18px; align-self: start;") && css.includes(".pdf-pending-panel { display: grid;"), "入力エディターをPDF上端に固定し、反映待ちを独立配置する");
+assert.ok(css.includes(".pdf-click-workbench { margin: 18px 0 0;") && css.includes("grid-template-columns: minmax(0,1fr) clamp(330px,22vw,390px)"), "PDF作業画面の重複余白を除き横幅を広く使う");
+assert.ok(html.includes("pdf-drop-title") && html.includes("pdf-drop-callout") && css.includes("border: 2px dashed #4e9b7c"), "項目・数量・単位のドロップ先を常時強調する");
 
 console.log("OK: document import review UI and safe apply wiring checks passed");

@@ -29,6 +29,17 @@
   const PDF_LINE_DRAG_TYPE = "application/x-ezsekisan-pdf-line";
   let pointerPdfDrag = null;
   let suppressPdfClickLineId = "";
+  const consultingServiceIdsByKind = {
+    design: new Set(["design", "planning"]),
+    geology: new Set(["geologyAnalysis", "geologyGeneral"])
+  };
+  const manualKindHeadings = {
+    design: "PDFから設計業務の作業・人工を入れる",
+    survey: "PDFから測量業務の項目・数量・単位を入れる",
+    aerial: "PDFから航空・船舶関係の項目・数量・単位を入れる",
+    geology: "PDFから地質業務の作業・人工を入れる",
+    metadata: "PDFから業務基本情報を入れる"
+  };
 
   const metadataLabels = {
     projectName: "業務名",
@@ -44,6 +55,18 @@
   function activeMaster() { return app.getActiveSurveyMaster(); }
   function serviceById(id) { return consultingMaster.serviceTypes.find((entry) => entry.id === id) || consultingMaster.serviceTypes[0]; }
   function rolesFor(serviceType) { return consultingMaster.roleGroups[serviceById(serviceType).roleGroup] || []; }
+  function isSurveyBusinessKind(kind) { return kind === "survey" || kind === "aerial"; }
+  function isConsultingBusinessKind(kind) { return kind === "design" || kind === "geology"; }
+  function surveyItemsForKind(kind = "") {
+    if (!isSurveyBusinessKind(kind)) return activeMaster().workItems;
+    return app.getSurveyItemsForScope(kind === "aerial" ? "aerial" : "survey", activeMaster());
+  }
+  function businessKindForSurveyItem(item) {
+    return app.getSurveyItemsForScope("aerial", activeMaster()).some((entry) => entry.code === item?.code) ? "aerial" : "survey";
+  }
+  function businessKindForService(serviceType) {
+    return consultingServiceIdsByKind.geology.has(serviceType) ? "geology" : "design";
+  }
 
   function updateProgress(status) {
     $("documentImportProgress").hidden = false;
@@ -52,26 +75,28 @@
     $("documentImportProgressBar").style.width = `${percent}%`;
   }
 
-  function surveyOptions(selectedCode, includeBlank = false, category = "") {
+  function surveyOptions(selectedCode, includeBlank = false, category = "", kind = "") {
     const blank = includeBlank ? '<option value="">測量項目を選択してください</option>' : "";
-    return blank + activeMaster().workItems.filter((item) => !category || item.category === category).map((item) => `<option value="${h(item.code)}" ${item.code === selectedCode ? "selected" : ""}>${h(item.code)}｜${h(item.name)}</option>`).join("");
+    return blank + surveyItemsForKind(kind).filter((item) => !category || item.category === category).map((item) => `<option value="${h(item.code)}" ${item.code === selectedCode ? "selected" : ""}>${h(item.code)}｜${h(item.name)}</option>`).join("");
   }
 
-  function surveyCategoryOptions(selectedCategory = "") {
-    const categories = [...new Set(activeMaster().workItems.map((item) => item.category).filter(Boolean))];
+  function surveyCategoryOptions(selectedCategory = "", kind = "") {
+    const categories = [...new Set(surveyItemsForKind(kind).map((item) => item.category).filter(Boolean))];
     return '<option value="">すべての分類</option>' + categories.map((category) => `<option value="${h(category)}" ${category === selectedCategory ? "selected" : ""}>${h(category)}</option>`).join("");
   }
 
   function populateManualSurveyItems() {
+    const kind = $("pdfManualKind").value;
     const category = $("pdfManualSurveyCategory").value;
     const previous = $("pdfManualSurveyCode").value;
-    $("pdfManualSurveyCode").innerHTML = surveyOptions(previous, true, category);
+    $("pdfManualSurveyCode").innerHTML = surveyOptions(previous, true, category, kind);
     if (![...$("pdfManualSurveyCode").options].some((option) => option.value === previous)) $("pdfManualSurveyCode").value = "";
     updateManualSurveyRule();
   }
 
-  function serviceOptions(selectedId) {
-    return consultingMaster.serviceTypes.map((service) => `<option value="${h(service.id)}" ${service.id === selectedId ? "selected" : ""}>${h(service.name)}</option>`).join("");
+  function serviceOptions(selectedId, kind = "") {
+    const allowed = consultingServiceIdsByKind[kind];
+    return consultingMaster.serviceTypes.filter((service) => !allowed || allowed.has(service.id)).map((service) => `<option value="${h(service.id)}" ${service.id === selectedId ? "selected" : ""}>${h(service.name)}</option>`).join("");
   }
 
   function roleOptions(serviceType, selectedId) {
@@ -156,9 +181,19 @@
 
   function updateManualKind() {
     const kind = $("pdfManualKind").value;
-    $("pdfManualSurveyFields").hidden = kind !== "survey";
-    $("pdfManualConsultingFields").hidden = kind !== "consulting";
+    const surveyKind = isSurveyBusinessKind(kind);
+    const consultingKind = isConsultingBusinessKind(kind);
+    $("pdfManualSurveyFields").hidden = !surveyKind;
+    $("pdfManualConsultingFields").hidden = !consultingKind;
     $("pdfManualMetadataFields").hidden = kind !== "metadata";
+    if (!currentManualLineId && !currentEditingTarget) $("pdfManualHeadingText").textContent = manualKindHeadings[kind] || "PDFから積算項目を入れる";
+    if (surveyKind) {
+      const previousCategory = $("pdfManualSurveyCategory").value;
+      $("pdfManualSurveyCategory").innerHTML = surveyCategoryOptions(previousCategory, kind);
+      if (![...$("pdfManualSurveyCategory").options].some((option) => option.value === previousCategory)) $("pdfManualSurveyCategory").value = "";
+      populateManualSurveyItems();
+    }
+    if (consultingKind) updateManualConsultingServices();
   }
 
   function showEmptyManualMapper() {
@@ -166,7 +201,7 @@
     $("pdfManualKind").disabled = false;
     $("pdfManualHeadingText").textContent = "PDFから項目・数量・単位を入れる";
     $("pdfManualSourceText").textContent = "左のPDFで項目名をクリックするか、下の入力欄へ文字枠をドロップしてください。";
-    $("pdfManualSurveyCategory").innerHTML = surveyCategoryOptions();
+    $("pdfManualSurveyCategory").innerHTML = surveyCategoryOptions("", "survey");
     $("pdfManualSurveyCategory").value = "";
     populateManualSurveyItems();
     $("pdfManualSurveyQuantity").value = "1";
@@ -181,6 +216,14 @@
   function updateManualConsultingRoles() {
     const serviceType = $("pdfManualConsultingService").value;
     $("pdfManualConsultingRole").innerHTML = roleOptions(serviceType, $("pdfManualConsultingRole").value);
+  }
+
+  function updateManualConsultingServices(selectedId = "") {
+    const kind = $("pdfManualKind").value;
+    const previous = selectedId || $("pdfManualConsultingService").value;
+    $("pdfManualConsultingService").innerHTML = serviceOptions(previous, kind);
+    if (![...$("pdfManualConsultingService").options].some((option) => option.value === previous)) $("pdfManualConsultingService").selectedIndex = 0;
+    updateManualConsultingRoles();
   }
 
   function openManualMapper(lineId, options = {}) {
@@ -198,11 +241,11 @@
       manualUnitLineId = "";
       manualSourceLineIds.clear();
       manualSourceLineIds.add(lineId);
-      $("pdfManualSurveyCategory").innerHTML = surveyCategoryOptions();
+      const kind = $("pdfManualKind").value;
+      $("pdfManualSurveyCategory").innerHTML = surveyCategoryOptions("", isSurveyBusinessKind(kind) ? kind : "survey");
       $("pdfManualSurveyCategory").value = "";
       populateManualSurveyItems();
       $("pdfManualSurveyQuantity").value = quantityFromLine(line.contextText || line.text);
-      $("pdfManualConsultingService").innerHTML = serviceOptions("design");
       $("pdfManualConsultingTask").value = line.text;
       $("pdfManualConsultingDays").value = quantityFromLine(line.text);
       $("pdfManualMetadataValue").value = line.text;
@@ -222,7 +265,7 @@
   function matchSurveyDrop(text) {
     const key = analyzer.compact(text);
     if (!key) return { category: "", item: null, matches: [] };
-    const items = activeMaster().workItems;
+    const items = surveyItemsForKind($("pdfManualKind").value);
     const categories = [...new Set(items.map((item) => item.category).filter(Boolean))];
     const category = categories.find((value) => {
       const categoryKey = analyzer.compact(value);
@@ -241,7 +284,7 @@
     if (!line) return;
     const preserve = !$("pdfManualMapper").hidden;
     openManualMapper(lineId, { preserve, scroll: false });
-    $("pdfManualKind").value = "survey";
+    if (!isSurveyBusinessKind($("pdfManualKind").value)) $("pdfManualKind").value = "survey";
     updateManualKind();
     manualSourceLineIds.add(lineId);
     if (targetType === "quantity") {
@@ -303,7 +346,10 @@
   }
 
   function candidateHtml(candidate) {
-    const commonStart = `<article class="import-candidate" data-candidate-id="${h(candidate.id)}" data-kind="${h(candidate.kind)}" data-confidence="${h(candidate.confidence)}"><input class="import-candidate-select" type="checkbox" ${candidate.selected ? "checked" : ""} aria-label="この候補を取り込む"><div class="import-candidate-type"><strong>${candidate.kind === "survey" ? "測量数量" : candidate.kind === "consulting" ? "設計・調査人工" : "積上費用"}</strong><span>${h(methodLabel(candidate.method))}／p.${h(candidate.page)}</span></div>`;
+    const businessLabel = candidate.kind === "survey"
+      ? businessKindForSurveyItem(activeMaster().workItems.find((entry) => entry.code === candidate.code)) === "aerial" ? "航空・船舶関係" : "測量業務"
+      : candidate.kind === "consulting" ? businessKindForService(candidate.serviceType) === "geology" ? "地質業務" : "設計業務" : "積上費用";
+    const commonStart = `<article class="import-candidate" data-candidate-id="${h(candidate.id)}" data-kind="${h(candidate.kind)}" data-confidence="${h(candidate.confidence)}"><input class="import-candidate-select" type="checkbox" ${candidate.selected ? "checked" : ""} aria-label="この候補を取り込む"><div class="import-candidate-type"><strong>${h(businessLabel)}</strong><span>${h(methodLabel(candidate.method))}／p.${h(candidate.page)}</span></div>`;
     const source = `<div class="import-candidate-source"><q>${h(candidate.sourceText)}</q></div><span class="confidence-chip">${h(confidenceLabel(candidate.confidence))}</span></article>`;
     if (candidate.kind === "survey") {
       const item = activeMaster().workItems.find((entry) => entry.code === candidate.code) || activeMaster().workItems[0];
@@ -387,15 +433,16 @@
       $("pdfManualMetadataValue").value = target.item.value || target.item.displayValue || "";
     } else if (target.item.kind === "survey") {
       const selectedItem = activeMaster().workItems.find((entry) => entry.code === target.item.code);
-      $("pdfManualKind").value = "survey";
+      $("pdfManualKind").value = businessKindForSurveyItem(selectedItem);
+      updateManualKind();
       $("pdfManualSurveyCategory").value = selectedItem?.category || "";
       populateManualSurveyItems();
       $("pdfManualSurveyCode").value = target.item.code;
       $("pdfManualSurveyQuantity").value = target.item.sourceQuantity ?? target.item.quantity;
       updateManualSurveyRule(target.item.sourceUnitId || "base");
     } else {
-      $("pdfManualKind").value = "consulting";
-      $("pdfManualConsultingService").value = target.item.serviceType;
+      $("pdfManualKind").value = businessKindForService(target.item.serviceType);
+      updateManualConsultingServices(target.item.serviceType);
       updateManualConsultingRoles();
       $("pdfManualConsultingTask").value = target.item.taskName;
       $("pdfManualConsultingRole").value = target.item.role;
@@ -476,7 +523,7 @@
     const source = { page: line.page, method: line.method, confidence: "medium", sourceText: line.text, selected: true, applied: false, manual: true };
     const editingTarget = currentEditingTarget;
     let target;
-    if ($("pdfManualKind").value === "survey") {
+    if (isSurveyBusinessKind($("pdfManualKind").value)) {
       const item = activeMaster().workItems.find((entry) => entry.code === $("pdfManualSurveyCode").value);
       if (!item) { app.notify("反映する測量項目を選択してください"); return; }
       const converted = analyzer.convertSurveyQuantity($("pdfManualSurveyQuantity").value, $("pdfManualSurveySourceUnit").value, item);
@@ -490,7 +537,7 @@
         currentAnalysis.candidates.push(candidate);
         target = { type: "candidate", item: candidate };
       }
-    } else if ($("pdfManualKind").value === "consulting") {
+    } else if (isConsultingBusinessKind($("pdfManualKind").value)) {
       const serviceType = $("pdfManualConsultingService").value;
       const taskName = $("pdfManualConsultingTask").value.trim();
       const days = Math.round(Math.max(0, Number($("pdfManualConsultingDays").value) || 0) * 1000) / 1000;

@@ -21,8 +21,8 @@
     return aerialShipCategories.has(item?.category);
   }
 
-  function surveyItemsForScope(master = activeMaster()) {
-    return master.workItems.filter((item) => activeSurveyScope === "aerial" ? isAerialShipItem(item) : !isAerialShipItem(item));
+  function surveyItemsForScope(master = activeMaster(), scope = activeSurveyScope) {
+    return master.workItems.filter((item) => scope === "aerial" ? isAerialShipItem(item) : !isAerialShipItem(item));
   }
 
   function renderSurveyScopeLabels() {
@@ -1368,6 +1368,7 @@
     getEstimate: () => estimate,
     getSurveyResult: currentResult,
     getActiveSurveyMaster: activeMaster,
+    getSurveyItemsForScope: (scope, master = activeMaster()) => surveyItemsForScope(master, scope),
     saveDraft: scheduleSave,
     notify: showToast,
     importSurveyLines,
