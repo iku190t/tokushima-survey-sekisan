@@ -221,6 +221,41 @@
     return ["要確認", "pending"];
   }
 
+  function surveySourceUsage(entry, source) {
+    const label = String(entry?.label || "");
+    if (label.includes("技術者単価") || source?.kind === "role-prices") return "測量技術者の日額単価";
+    if (label.includes("公開全編") || (source?.jurisdictionCode === "34" && source?.kind === "standard")) return "測量歩掛・直接経費率・諸経費率の原表";
+    if (label.includes("測量業務積算基準") || source?.kind === "measurement-standard") return "当該年度の測量積算基準・改定確認";
+    if (label.includes("年度別")) return "国土交通省の年度別公式掲載ページ";
+    return "測量マスターの出典・照合資料";
+  }
+
+  function selectedSurveySourceRows(master, item) {
+    const links = Array.isArray(master.sourceLinks) ? master.sourceLinks.filter((entry) => typeof entry === "object") : [];
+    const findLink = (word) => links.find((entry) => String(entry.label || "").includes(word));
+    const fullBook = findLink("公開全編") || links[0];
+    const measurementStandard = findLink("測量業務積算基準");
+    const rolePrices = findLink("技術者単価");
+    const gsiRegulation = (officialSourceCatalog.sources || []).find((source) => source.jurisdictionCode === "gsi" && Number(source.fiscalYear) === Number(master.fiscalYear));
+    const sourceLink = (entry, fallback) => entry?.url && /^https:\/\//i.test(entry.url)
+      ? `<a href="${h(entry.url)}" target="_blank" rel="noopener noreferrer">${h(entry.label || fallback)}</a>`
+      : h(entry?.label || fallback);
+    const sourcePage = item?.source?.standardPage ? `p.${h(item.source.standardPage)}${item.source.ratioPage ? `／直接経費率 p.${h(item.source.ratioPage)}` : ""}` : "ページ未登録";
+    const rows = [
+      ["歩掛・経費率の原表", sourceLink(fullBook, `${eraYear(master.fiscalYear)} 測量業務積算基準書`), sourcePage],
+      ["年度の積算基準・改定確認", sourceLink(measurementStandard, `${eraYear(master.fiscalYear)} 国土交通省 測量業務積算基準`), "年度・適用内容を確認"],
+      ["技術者単価", sourceLink(rolePrices, `${eraYear(master.fiscalYear)} 設計業務委託等技術者単価`), `${eraYear(master.rateYear || master.fiscalYear)}適用`]
+    ];
+    if (gsiRegulation) rows.push(["作業規程上の分類", `<a href="${h(gsiRegulation.url)}" target="_blank" rel="noopener noreferrer">${h(officialSourceTitle(gsiRegulation))}</a>`, h(regulationPathForItem(item))]);
+    return rows;
+  }
+
+  function renderSelectedSurveySources(item) {
+    const body = $("selectedItemSourceBody");
+    if (!body) return;
+    body.innerHTML = item ? selectedSurveySourceRows(activeMaster(), item).map(([use, source, location]) => `<tr><td>${h(use)}</td><td>${source}</td><td>${location}</td></tr>`).join("") : '<tr><td colspan="3">測量項目を選択してください。</td></tr>';
+  }
+
   function renderGuideSourceLedger(resetYear = false) {
     const yearSelect = $("guideSourceYear");
     const body = $("guideSourceLedgerBody");
@@ -228,20 +263,16 @@
     const preferredYear = Number(estimate.consulting?.fiscalYear || activeMaster().fiscalYear || 2026);
     if (resetYear || !yearSelect.value) yearSelect.value = String(preferredYear);
     const fiscalYear = Number(yearSelect.value || preferredYear);
-    const rows = (officialSourceCatalog.sources || [])
-      .filter((source) => Number(source.fiscalYear) === fiscalYear)
-      .sort((a, b) => {
-        const weight = (source) => source.kind === "role-prices" ? 0 : source.kind === "standard" ? 1 : source.kind === "reference" ? 2 : source.kind === "measurement-standard" ? 3 : source.kind === "design-standard" ? 4 : source.kind === "geology-standard" ? 5 : 10;
-        return weight(a) - weight(b) || officialSourceTitle(a).localeCompare(officialSourceTitle(b), "ja");
-      });
-    body.innerHTML = rows.map((source) => {
-      const [status, statusClass] = officialSourceStatus(source);
-      const sha = source.sha256 ? `<small>SHA-256 ${h(source.sha256.slice(0, 12))}…</small>` : "";
-      const title = officialSourceTitle(source);
-      const link = /^https:\/\//i.test(source.url || "") ? `<a href="${h(source.url)}" target="_blank" rel="noopener noreferrer">${h(title)}</a>` : h(title);
-      return `<tr><td>${h(source.jurisdictionName || "—")}</td><td>${link}${sha}</td><td class="source-use-status">${h(officialSourceUsage(source))}</td><td class="source-page">${source.pages ? `${h(source.pages)}頁` : "—"}</td><td><span class="scope-status ${h(statusClass)}">${h(status)}</span></td></tr>`;
+    const surveyMaster = masters.find((master) => Number(master.fiscalYear) === fiscalYear && master.scopeStatus === "national-standard-reference") || activeMaster();
+    const rows = (surveyMaster.sourceLinks || []).filter((entry) => typeof entry === "object");
+    body.innerHTML = rows.map((entry) => {
+      const source = (officialSourceCatalog.sources || []).find((candidate) => candidate.url === entry.url);
+      const [status, statusClass] = source ? officialSourceStatus(source) : [String(entry.label || "").includes("年度別") ? "公式掲載ページ" : "マスター記載", "pending"];
+      const sha = source?.sha256 ? `<small>SHA-256 ${h(source.sha256.slice(0, 12))}…</small>` : "";
+      const link = /^https:\/\//i.test(entry.url || "") ? `<a href="${h(entry.url)}" target="_blank" rel="noopener noreferrer">${h(entry.label || officialSourceTitle(source || {}))}</a>` : h(entry.label || "出典資料");
+      return `<tr><td>${h(source?.jurisdictionName || (String(entry.label || "").includes("国土交通省") ? "国土交通省" : surveyMaster.authority || "—"))}</td><td>${link}${sha}</td><td class="source-use-status">${h(surveySourceUsage(entry, source))}</td><td class="source-page">${source?.pages ? `${h(source.pages)}頁` : "—"}</td><td><span class="scope-status ${h(statusClass)}">${h(status)}</span></td></tr>`;
     }).join("") || '<tr><td colspan="5">この年度の公式資料台帳は未収録です。</td></tr>';
-    $("guideSourceLedgerSummary").textContent = `${eraYear(fiscalYear)}：公式PDF・資料 ${rows.length}件。資料の取得状態と、実際の計算への使用状況を分けて表示しています。`;
+    $("guideSourceLedgerSummary").textContent = `${eraYear(fiscalYear)}：この測量マスターが使用・照合する公式PDF・資料 ${rows.length}件。`;
   }
 
   function jurisdictionName(code) {
@@ -533,16 +564,16 @@
 
   function updateSelectedItemMeta() {
     const item = activeMaster().workItems.find((entry) => entry.code === $("itemSelect").value);
-    if (!item) { $("selectedItemMeta").textContent = ""; return; }
+    if (!item) { $("selectedItemMeta").textContent = ""; renderSelectedSurveySources(null); return; }
     $("newItemQuantity").value = item.standardQuantity;
     applyQuantityInputRule($("newItemQuantity"), item);
     const qRule = quantityRule(item);
     const standard = window.SekisanEngine.calculateItem({ masterItem: item, quantity: item.standardQuantity, correctionRate: 0, conditionValue: item.conditionFormula?.default }, activeMaster(), {});
     const limit = item.applicability ? ` ｜ 適用範囲：${item.applicability.note}` : "";
     const condition = item.conditionFormula ? ` ｜ 標準条件：${item.conditionFormula.label}${numberFormat.format(item.conditionFormula.default)}${item.conditionFormula.unit}` : "";
-    const ratioSource = item.source.ratioPage ? `・直接経費率 p.${item.source.ratioPage}` : "・直接経費は個別規定";
     const manualNote = item.manualCostNote ? ` ｜ 要確認：${item.manualCostNote}` : "";
-    $("selectedItemMeta").textContent = `${regulationPathForItem(item)} ｜ 数量入力：${quantityLabel(qRule)}。標準歩掛は ${numberFormat.format(item.standardQuantity)} ${item.unit} 一式です。標準直接費 ${yen.format(standard.standardDirect)} ÷ ${numberFormat.format(item.standardQuantity)} ${item.unit} → 1${item.unit}当り ${yen.format(standard.standardUnitPrice)}。${condition}${limit}${manualNote} ｜ 出典：基準書 p.${item.source.standardPage}${ratioSource}`;
+    $("selectedItemMeta").textContent = `${regulationPathForItem(item)} ｜ 数量入力：${quantityLabel(qRule)}。標準歩掛は ${numberFormat.format(item.standardQuantity)} ${item.unit} 一式です。標準直接費 ${yen.format(standard.standardDirect)} ÷ ${numberFormat.format(item.standardQuantity)} ${item.unit} → 1${item.unit}当り ${yen.format(standard.standardUnitPrice)}。${condition}${limit}${manualNote}`;
+    renderSelectedSurveySources(item);
   }
 
   function populateSafetyRates() {

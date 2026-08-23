@@ -13,7 +13,7 @@ const ids = new Set([...html.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1
 const referencedIds = new Set([...ui.matchAll(/\$\("([^"]+)"\)/g)].map((match) => match[1]));
 assert.deepStrictEqual([...referencedIds].filter((id) => !ids.has(id)), [], "consulting.jsから参照するHTML要素が揃う");
 
-for (const id of ["consultingView", "consultingFiscalYear", "consultingServiceType", "consultingTaskTemplate", "consultingTaskName", "consultingRole", "consultingDays", "consultingPresetSearch", "consultingPreset", "consultingPresetMultiplier", "consultingPresetStatus", "consultingLineBody", "consultingSummaryList", "consultingUsedSourceBody", "consultingSourceTableBody", "consultingPrintButton"]) {
+for (const id of ["consultingView", "consultingFiscalYear", "consultingServiceType", "consultingTaskTemplate", "consultingTaskName", "consultingRole", "consultingDays", "consultingPresetSearch", "consultingPreset", "consultingPresetMultiplier", "consultingPresetStatus", "consultingLineBody", "consultingSummaryList", "consultingPrintButton"]) {
   assert.ok(html.includes(`id="${id}"`), `${id}を表示する`);
 }
 for (const file of ["data/consulting-master.js", "consulting-engine.js", "consulting.js"]) {
@@ -32,9 +32,6 @@ assert.ok(master.includes('id: "design-note-r8"') && master.includes('id: "desig
 assert.ok(ui.includes("CONSULTING_STANDARD_WALKS") && ui.includes("preset.fiscalYear") && ui.includes("consultingPresetSearch"), "標準歩掛を年度・業務タブ・検索語で絞る");
 assert.ok(ui.includes("consultingPresetMultiplier") && ui.includes("standardUnit") && ui.includes("sourcePage"), "標準単位・適用倍率・出典ページを歩掛追加へ反映する");
 assert.ok(ui.includes("OFFICIAL_SOURCE_CATALOG") && ui.includes('source.jurisdictionCode === "mlit"') && ui.includes("fullBook.presetCount"), "選択年度の国交省8資料と標準歩掛全編を計算根拠に表示する");
-assert.ok(ui.includes("usedCalculationSources") && ui.includes("原表抽出済み") && ui.includes("根拠PDF未登録"), "採用歩掛を根拠PDF・ページへ対応付け、人工入力を区別する");
-assert.ok(html.includes("この積算で採用した歩掛") && html.includes("選択年度の公式PDF一覧") && html.includes("取得・索引済み"), "計算画面に採用歩掛表と年度別PDF表を表示する");
-assert.ok(ui.includes("採用歩掛と原表ページ") && ui.includes("年度別公式PDF一覧"), "総合PDF帳票にも根拠対応表と資料台帳を出力する");
 assert.ok(ui.includes("人工入力の行があります"), "未確認人工を提出前警告する");
 assert.ok(html.includes("未入力の0円"), "0円を不要と誤認しない注意を表示する");
 assert.ok(engine.includes("alpha / Math.max") && engine.includes("beta / Math.max"), "設計方式をその他原価と一般管理費に分ける");

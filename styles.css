@@ -235,12 +235,18 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
 .source-ledger-heading .inline-select { min-width: 180px; }
 .source-ledger-note { margin: 12px 0 0; padding: 10px 12px; color: #4d5e57; background: #f2f6f4; border-left: 4px solid #7b9e91; border-radius: 6px; font-size: 12px; line-height: 1.65; }
 .guide-source-ledger { margin: 26px 0; padding-top: 22px; border-top: 1px solid var(--line); }
-.guide-source-ledger h3, .consulting-source-card h3 { margin: 18px 0 10px; color: var(--green-dark); font-size: 16px; }
+.guide-source-ledger h3 { margin: 18px 0 10px; color: var(--green-dark); font-size: 16px; }
 .source-ledger-table { min-width: 880px; }
 .source-ledger-table td small { display: block; margin-top: 4px; color: var(--muted); overflow-wrap: anywhere; }
 .source-ledger-table .source-use-status { font-weight: 700; color: var(--green-dark); }
 .source-ledger-table .source-missing { color: #8c2f18; font-weight: 700; }
 .source-ledger-table .source-page { white-space: nowrap; }
+.selected-item-sources { margin-top: 14px; padding: 12px 14px; background: #f5f9f7; border: 1px solid #cbded6; border-radius: 9px; }
+.selected-item-sources > strong { display: block; margin-bottom: 9px; color: var(--green-dark); font-size: 13px; }
+.survey-source-table { min-width: 760px; }
+.survey-source-table th:nth-child(1) { width: 180px; }
+.survey-source-table th:nth-child(3) { width: 250px; }
+.survey-source-table a { font-weight: 800; }
 
 .report-builder { max-width: 1120px; margin: 0 auto; }
 .report-settings-card { padding: clamp(22px, 3vw, 36px); }

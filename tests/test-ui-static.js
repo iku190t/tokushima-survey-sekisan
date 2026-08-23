@@ -30,9 +30,11 @@ assert.ok(app.includes('class="line-code table-item-select"') && app.includes('c
 assert.ok(app.includes("line.correctionSelections = {}") && app.includes("line.manualUnitPrice = 0"), "作業項目変更時に旧項目固有の補正と手動単価を引き継がない");
 assert.ok(app.includes("calc-detail"), "項目ごとの計算根拠表示がある");
 for (const id of ["guideSourceYear", "guideSourceLedgerSummary", "guideSourceLedgerBody"]) assert.ok(html.includes(`id="${id}"`), `${id}で年度別公式PDF台帳を表示する`);
-assert.ok(app.includes("renderGuideSourceLedger") && app.includes("officialSourceUsage") && app.includes("取得・索引済み"), "公式PDFの取得状態と計算への使用状況を分けて一覧表示する");
+assert.ok(app.includes("renderGuideSourceLedger") && app.includes("surveySourceUsage") && app.includes("surveyMaster.sourceLinks"), "測量マスターが実際に使用・照合するPDFだけを年度別表示する");
 assert.ok(app.includes('String(entry.label || "").includes("公開全編")') && app.includes("item.source.standardPage"), "測量明細から年度別全編PDFの原表ページへリンクする");
 assert.ok(app.includes("公式PDF・計算根拠一覧") && app.includes("sourceTableHtml(master)"), "測量の積算条件書にもPDF名・用途・頁数・確認状態の一覧表を出す");
+assert.ok(html.includes('id="selectedItemSourceBody"') && html.includes("この測量項目で使用する規定書・PDF"), "測量項目の選択直下に規定書PDF一覧表を表示する");
+assert.ok(app.includes("selectedSurveySourceRows") && app.includes("歩掛・経費率の原表") && app.includes("作業規程上の分類"), "選択した測量項目を歩掛原表・年度積算基準・技術者単価・作業規程へ対応付ける");
 assert.ok(html.includes("航空局の空港設計・調査とは別") && html.includes("港湾請負工事積算基準") && html.includes("船舶損料"), "航空測量・深浅測量と空港・港湾船舶の別基準を明示する");
 assert.ok(html.includes('id="validationPanel"'), "提出前チェックがある");
 assert.ok(html.includes('id="jurisdictionSelect"') && html.includes("見積提出先（任意）"), "見積提出先を計算条件と分けて選択できる");
