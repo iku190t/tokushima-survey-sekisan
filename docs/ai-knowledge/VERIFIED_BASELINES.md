@@ -1272,3 +1272,46 @@ OK: R8 UAV laser detailed work item expansion checks passed
 | `index.html` | `277D618A965265C2333A5178C098D68D01AA6A2012BA9994AB133487293933E4` |
 | `styles.css` | `760255E26BD18BC3FF2BAFE27AB57A5448B6E83F9C8970B7AE7B1C59DB65B3B6` |
 | `tests/test-work-item-expansions.js` | `6F2418DBB463D001E0DAFD8E9867FF80362C24DB8DDE1CF5B4A4A956FC44FB87` |
+
+## B-2026-08-23-08
+
+- 状態: **検証済み・ローカル公開前**
+- 検証日: 2026-08-23
+- アプリコミット: `3752520d675ad51227ba4349137a520be3a1f2d9`
+- 内容: B-2026-08-23-07へ、主要業務積算製品と公式積算基準体系の横断調査、国交省一般と港湾・航空局・用地・農林・上下水道等の別体系表示、航空測量／空港・深浅測量／港湾船舶の混同防止を追加した版。
+
+### 合格した試験
+
+```text
+OK: consulting/design/geology calculation checks passed
+OK: consulting UI and report wiring checks passed
+OK: document import review UI and safe apply wiring checks passed
+OK: document PDF/OCR extraction and review candidate checks passed
+OK: regulation audit checks passed (master mapping, precision, quantity formulas, travel, rounding, overhead)
+OK: Hiroshima R6-R8 complete annual master audit checks passed
+OK: nationwide jurisdiction and verified master catalog checks passed
+OK: nationwide R6-R8 standard reference master checks passed
+OK: official procurement case matching, XML parsing, and source ledger candidates passed
+OK: official case search UI is removed while saved-data compatibility remains
+OK: MLIT official role price presets R4-R8 and consulting roles R6-R8
+OK: UI static wiring checks passed
+OK: R8 UAV laser detailed work item expansion checks passed
+```
+
+追加検査: `node --check app.js`、`node --check consulting.js`、`node --check document-import.js`、`git diff --check`合格。
+
+### 実ブラウザー確認
+
+- 「使い方・計算根拠」で対応表を開き、7基準体系、公式リンク6本、一部自動計算1件、別体系・未収録6件を確認した。
+- 幅1265pxでページ幅とスクロール幅がともに1265pxとなり、ページ全体の横あふれなし。
+- 航空・船舶タブで国交省一般の収録6分類と、航空局・港湾基準・船舶損料を一括収録していない説明を確認した。ブラウザー警告・エラー0件。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `app.js` | `EFDCA81A49D801DC6C1B06649D26B7B75A418FC2DC0EA8161AAE21545870B8CD` |
+| `index.html` | `2E11EF146856CF525144F804D6B2964BDEB9837CEB84B305B7417F44E2D3F504` |
+| `styles.css` | `030F3AEF9203E1B619ACC1B256816933FCAFD5B6ABB9E0101597FAFEE4C27E19` |
+| `tests/test-ui-static.js` | `111B6E25F8A2E8E1787FFB2A76C145E09AEB5560C75AFA4D811A8FDECD358D91` |
+| `業務積算ソフト製品・基準体系調査.md` | `92F468DB5C6A84D4AD73FDAA6279A523E377C4795571AA5939B224F32A24A9F6` |
