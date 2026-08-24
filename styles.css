@@ -201,6 +201,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--green); box-shad
 .consulting-incomplete-rule { padding: 10px 12px; color: #6c5314; background: #fff8e6; border: 1px solid #e2bd58; border-radius: 9px; }
 .consulting-condition-check { grid-area: confirm; align-self: stretch; padding: 11px 12px; background: #fff8e6; border: 1px solid #e6c777; border-radius: 10px; }
 #addConsultingPresetButton { grid-area: add; }
+#addItemButton { grid-area: add; }
 #consultingPresetStatus { grid-area: status; }
 .consulting-manual-entry { margin-top: 16px; border-top: 1px solid var(--line); padding-top: 14px; }
 .consulting-manual-entry summary { color: var(--green-dark); font-weight: 700; cursor: pointer; }
@@ -300,6 +301,10 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
 .metric-row strong { color: var(--green); font-size: 24px; }
 .metric-row span { margin-top: 3px; color: var(--muted); font-size: 11px; }
 .source-list { margin: 0; padding-left: 20px; color: var(--muted); line-height: 1.9; }
+.source-list li + li { margin-top: 7px; }
+.source-list li strong, .source-list li small { display: block; }
+.source-list li strong { color: var(--green-dark); }
+.source-list li small { line-height: 1.5; }
 .source-ledger-lead { margin: 4px 0 16px; color: var(--muted); line-height: 1.7; }
 .source-ledger-heading { align-items: end; margin-bottom: 4px; }
 .source-ledger-heading .inline-select { min-width: 180px; }
@@ -311,12 +316,6 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
 .source-ledger-table .source-use-status { font-weight: 700; color: var(--green-dark); }
 .source-ledger-table .source-missing { color: #8c2f18; font-weight: 700; }
 .source-ledger-table .source-page { white-space: nowrap; }
-.selected-item-sources { margin-top: 14px; padding: 12px 14px; background: #f5f9f7; border: 1px solid #cbded6; border-radius: 9px; }
-.selected-item-sources > strong { display: block; margin-bottom: 9px; color: var(--green-dark); font-size: 13px; }
-.survey-source-table { min-width: 760px; }
-.survey-source-table th:nth-child(1) { width: 180px; }
-.survey-source-table th:nth-child(3) { width: 250px; }
-.survey-source-table a { font-weight: 800; }
 
 .report-builder { max-width: 1120px; margin: 0 auto; }
 .report-settings-card { padding: clamp(22px, 3vw, 36px); }

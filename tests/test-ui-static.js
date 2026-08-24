@@ -33,6 +33,10 @@ for (const key of ["orderingParty", "department", "contactName", "workLocation",
 }
 assert.strictEqual((html.match(/class="workspace-grid business-workspace"/g) || []).length, 2, "4業務で同じ作業領域と右集計の骨格を使う");
 assert.strictEqual((html.match(/class="card add-card business-add-card no-print"/g) || []).length, 2, "4業務で同じ作業追加カードを使う");
+assert.strictEqual((html.match(/class="verified-preset-row(?: survey-preset-row)?"/g) || []).length, 2, "測量と設計等で同じ作業選択グリッドを使う");
+assert.strictEqual((html.match(/class="field consulting-group-field"/g) || []).length, 2, "測量と設計等で同じ作業区分欄を使う");
+assert.strictEqual((html.match(/class="field consulting-item-field"/g) || []).length, 2, "測量と設計等で同じ作業項目欄を使う");
+assert.ok(!html.includes('id="surveyScopeNote"') && !app.includes("surveyScopeNote"), "測量だけの上部説明帯を表示しない");
 assert.strictEqual((html.match(/class="card table-card business-detail-card"/g) || []).length, 2, "4業務で同じ積算内訳カードを使う");
 assert.strictEqual((html.match(/class="card business-cost-card no-print"/g) || []).length, 2, "4業務で同じ追加費用カードを使う");
 assert.strictEqual((html.match(/class="summary-card business-summary-card"/g) || []).length, 2, "4業務で同じ集計カードを使う");
@@ -57,7 +61,8 @@ assert.ok(app.includes('String(entry.label || "").includes("第1編 測量業務
 assert.ok(app.includes("公式PDF・計算根拠一覧") && app.includes("sourceTableHtml(master)"), "測量の積算条件書にもPDF名・用途・頁数・確認状態の一覧表を出す");
 const surveyCostCardIndex = html.indexOf('class="card business-cost-card no-print"');
 const surveySourceCardIndex = html.indexOf('class="card source-card consulting-source-card survey-source-card"');
-assert.ok(html.includes('id="selectedItemSourceBody"') && html.includes("選択中の測量項目で使用する規定書・PDF") && surveySourceCardIndex > surveyCostCardIndex, "測量の計算根拠を他3業務と同じ下部カードへ配置する");
+assert.ok(html.includes('<ul id="selectedItemSourceBody" class="source-list"') && !html.includes("survey-source-table") && surveySourceCardIndex > surveyCostCardIndex, "測量の計算根拠を他3業務と同じ下部リストへ配置する");
+assert.ok(app.includes('<li><strong>${h(use)}</strong>${source}<small>${location}</small></li>') && !app.includes("<tr><td>${h(use)}</td>"), "測量の計算根拠を設計等と同じリスト書式で描画する");
 assert.ok(app.includes("selectedSurveySourceRows") && app.includes("基準書本体・歩掛") && app.includes("作業規程上の分類"), "選択した測量項目を国交省基準書本体・年度積算基準・技術者単価・作業規程へ対応付ける");
 assert.ok(html.includes("航空局の空港設計・調査とは別") && html.includes("港湾請負工事積算基準") && html.includes("船舶損料"), "航空測量・深浅測量と空港・港湾船舶の別基準を明示する");
 assert.ok(html.includes('id="validationPanel"'), "提出前チェックがある");
@@ -87,7 +92,7 @@ assert.ok(html.includes('id="surveyKeywordList"') && html.includes('id="surveyIt
 assert.ok(html.includes('id="newItemQuantityLabel"') && app.includes('`積算数量（${item.unit}）`'), "測量の積算数量へ選択作業項目の単位を表示する");
 assert.ok(!html.includes('id="regulationGroupSelect"'), "測量の最初の選択を編番号プルダウンへ戻さない");
 for (const keyword of ["基準点", "水準", "現地", "写真", "UAV・レーザ", "路線", "河川", "用地", "深浅"]) assert.ok(app.includes(`label: "${keyword}"`), `${keyword}キーワードを年度マスターの収録項目へ対応させる`);
-assert.ok(html.includes('class="work-name-search"') && html.includes("名称・コードでさらに絞り込む"), "文字検索を補助操作として折りたたむ");
+assert.ok(html.includes('class="work-name-search"') && (html.match(/名称でさらに絞り込む/g) || []).length === 2, "測量と設計等で文字検索の表示を統一する");
 for (const group of ["第2編 基準点測量", "第3編 地形測量及び写真測量", "第4編 地形測量及び写真測量（三次元点群測量）", "第5編 応用測量"]) assert.ok(app.includes(group), `${group}を独立して表示する`);
 assert.ok(app.includes('"深浅測量": "作業規程 第5編 第3章 第7節 深浅測量"'), "深浅測量を応用測量の河川測量内へ位置付ける");
 assert.ok(!app.includes("aerialShipCategories") && !html.includes('data-business-scope="aerial"'), "航空・船舶を測量と並列の業務タブにしない");

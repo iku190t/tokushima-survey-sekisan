@@ -7,7 +7,7 @@
   <meta name="description" content="設計、測量、調査・計画、地質を年度別技術者単価と根拠表示付きで計算するWeb業務積算ソフト">
   <meta name="author" content="株式会社アイズ測量">
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="styles.css?v=20260824-14">
+  <link rel="stylesheet" href="styles.css?v=20260824-15">
 </head>
 <body data-business-scope="design">
   <header class="app-header">
@@ -103,31 +103,23 @@
               </div>
               <span id="itemCountBadge" class="badge"></span>
             </div>
-            <p id="surveyScopeNote" class="scope-note"></p>
             <div class="work-keyword-filter">
               <span>キーワードから選ぶ</span>
               <div id="surveyKeywordList" class="work-keyword-list" role="group" aria-label="測量のキーワード"></div>
             </div>
-            <div class="picker-grid">
-              <label class="field">
-                <span>積算基準の作業区分</span>
-                <select id="categorySelect"></select>
-              </label>
-              <label class="field item-picker">
-                <span>作業項目</span>
-                <select id="itemSelect"></select>
-              </label>
-              <label class="field small-field">
-                <span id="newItemQuantityLabel">積算数量</span>
-                <input id="newItemQuantity" type="number" min="0" step="0.001" value="1">
-              </label>
-              <button id="addItemButton" class="button primary add-button" type="button">追加</button>
-            </div>
             <details class="work-name-search">
-              <summary>名称・コードでさらに絞り込む</summary>
+              <summary>名称でさらに絞り込む</summary>
               <label class="field"><span>補助検索</span><input id="surveyItemSearch" type="search" placeholder="例：新点、現地踏査、UAV"></label>
             </details>
-            <p id="selectedItemMeta" class="field-note"></p>
+            <div class="verified-preset-row survey-preset-row">
+              <label class="field consulting-group-field"><span>積算基準の作業区分</span><select id="categorySelect"></select></label>
+              <label class="field consulting-item-field"><span>作業項目</span><select id="itemSelect"></select></label>
+              <div id="selectedItemMeta" class="consulting-rule-basis" aria-live="polite"></div>
+              <div class="consulting-quantity-fields">
+                <label class="field"><span id="newItemQuantityLabel">積算数量</span><input id="newItemQuantity" type="number" min="0" step="0.001" value="1"></label>
+              </div>
+              <button id="addItemButton" class="button primary add-button" type="button">追加</button>
+            </div>
           </section>
 
           <section class="card table-card business-detail-card">
@@ -185,9 +177,7 @@
           </section>
 
           <section class="card source-card consulting-source-card survey-source-card">
-            <p class="section-kicker">OFFICIAL SOURCES</p><h2>計算根拠</h2>
-            <p class="field-note">選択中の測量項目で使用する規定書・PDFを表示します。</p>
-            <div class="standards-table-wrap" aria-live="polite"><table class="standards-table survey-source-table"><thead><tr><th>用途</th><th>規定書・公式資料</th><th>該当箇所</th></tr></thead><tbody id="selectedItemSourceBody"></tbody></table></div>
+            <p class="section-kicker">OFFICIAL SOURCES</p><h2>計算根拠</h2><ul id="selectedItemSourceBody" class="source-list" aria-live="polite"></ul>
           </section>
         </div>
 
@@ -667,7 +657,7 @@
   <script src="reference-case-engine.js?v=20260824-1"></script>
   <script src="document-import-engine.js?v=20260824-5"></script>
   <script src="document-reader.js?v=20260823-1"></script>
-  <script src="app.js?v=20260824-11"></script>
+  <script src="app.js?v=20260824-12"></script>
   <script src="consulting.js?v=20260824-16"></script>
   <script src="document-import.js?v=20260824-19"></script>
   <script src="analytics.js?v=20260823-1"></script>

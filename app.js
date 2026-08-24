@@ -90,7 +90,6 @@
     $("surveyDetailHeading").textContent = "測量業務の積算内訳";
     $("surveyEmptyText").textContent = "上の「測量作業項目を追加」から積算を始めます。";
     $("surveySummaryHeading").textContent = "測量業務の積算結果";
-    $("surveyScopeNote").textContent = "作業規程の第2編～第5編に沿って測量種別を分け、その下で積算基準の作業区分を選びます。空中写真、航空・UAV・地上レーザ、深浅測量も測量業務内の該当編へ収録しています。";
   }
 
   function quantityRule(item, master = activeMaster()) {
@@ -286,7 +285,7 @@
   function renderSelectedSurveySources(item) {
     const body = $("selectedItemSourceBody");
     if (!body) return;
-    body.innerHTML = item ? selectedSurveySourceRows(activeMaster(), item).map(([use, source, location]) => `<tr><td>${h(use)}</td><td>${source}</td><td>${location}</td></tr>`).join("") : '<tr><td colspan="3">測量項目を選択してください。</td></tr>';
+    body.innerHTML = item ? selectedSurveySourceRows(activeMaster(), item).map(([use, source, location]) => `<li><strong>${h(use)}</strong>${source}<small>${location}</small></li>`).join("") : "<li>測量項目を選択してください。</li>";
   }
 
   function renderGuideSourceLedger(resetYear = false) {
