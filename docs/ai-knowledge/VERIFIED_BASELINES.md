@@ -1834,3 +1834,28 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `consulting.js` | `D393E297A03C4D2BEAA393B7A70EDEFB2EFCF4F9A863C184FCD5C28BF8A4CA47` |
 | `tests/test-consulting-ui.js` | `9C0B3859F63C105C94785D9EEA186F7D1112AA0024C045EE22594DC61BEA23BF` |
 | `tests/test-ui-static.js` | `A12A6144681A74619B6112AD23FBBC9E04D5D30C18FE94EF03B2CF5012001DAF` |
+
+## B-2026-08-24-07
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-24
+- 実装コミット: `6a6ec81dbdca4d9bb4a7e732d86dc199e1c73dd9`
+- 公開キャッシュ修正コミット: `a945774ca36f6b83705180282eb98201ecaec9e3`
+- 外部知能コミット: この項目を追加するコミット
+- GitHub Pagesビルド: `1171009494`（`built`、コミット`a945774ca36f6b83705180282eb98201ecaec9e3`）
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: 測量画面の「国土交通省・全国標準｜年度」状態帯、説明本文、DOM更新処理、不要になったARIA参照を撤去した。提出先・標準単価セット・年度切替・計算根拠は維持する。
+
+### 合格した試験・実画面確認
+
+- `tests/test-*.js`全18本合格、`node --check app.js`合格、`git diff --check`合格。
+- ローカル版で測量状態帯0件、令和7年度切替後134項目、設計・調査計画・地質の説明帯各1件、4業務の横あふれ0、ブラウザー警告・エラー0件を確認した。
+- 公開版で`app.js?v=20260824-4`を読み込み、測量状態帯0件、年度3件、令和8年度測量141項目、横あふれ0、ブラウザー警告・エラー0件を確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `9F288B3B870ECCB7808A0A6B950570B0A285185A78F0C67EE694D1003F42FABF` |
+| `app.js` | `EB38F5625D2B16021FC329CA2B5A85CF0C34E181B88524B1BA8223FFDC3908DB` |
+| `tests/test-ui-static.js` | `A5D4A83298E4C1DBA07E448D7A7FF2105DB102C1B4810E8C20B51D8E3557523A` |
