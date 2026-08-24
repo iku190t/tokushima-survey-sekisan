@@ -2247,3 +2247,28 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `document-import.js` | `08375D91A8E9095A2C3A7B03147600E6535596407E0743A1F76558DDDE7D9544` |
 | `tests/test-document-import-ui.js` | `BC48E6B5859A364799A92A0E85FB83276A8E4393B191A913FDDC9F3031CB4B57` |
 | `tests/test-ui-static.js` | `6AB2A3AD203B2B9845974BC55BADA7E37E7BD0D99698778A7346D3F6CD36989E` |
+
+## B-2026-08-24-22
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-24
+- 実装コミット: `cc739952c9034bbca2aca8ac6bc167b3e53f43a4`
+- 外部知能コミット: この項目を追加するコミット
+- GitHub Pages: `built`、ビルド`1171664583`、コミット`cc739952c9034bbca2aca8ac6bc167b3e53f43a4`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: 測量の作業追加カード内部を設計等と同じキーワード→補助検索→作業選択グリッドへ統一し、測量専用説明帯を撤去した。計算根拠も3列表から設計等と同じ一覧形式へ変更し、測量固有の正式分類・数量規則・計算式・公式リンクは保持した。
+
+### 合格した試験・実画面確認
+
+- `tests/test-*.js`全19本、`git diff --check`合格。
+- ローカル実ブラウザーで設計と測量の作業区分220px、作業項目420px、積算数量150px、追加ボタン高さ40pxが一致すること、測量説明帯0件、測量根拠表0件・根拠リスト4件、ブラウザー警告・エラー0件を確認した。
+- 公開版で`styles.css?v=20260824-15`、`app.js?v=20260824-12`、測量の共通`verified-preset-row`、説明帯0件、計算根拠`UL.source-list`4件、ブラウザー警告・エラー0件を確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `B1811613D283BFCE7E68A397C85CE294A70017889A6DF2A75584E0B8D71826BE` |
+| `app.js` | `F93AB6C988BF11931DAE75DB26B5A5FF5D28D0D9CF7FB4D4EA117ADEF00D4DE4` |
+| `styles.css` | `63E4FB55C97771B4BD38F339FC0100D8886E70CD9A304477E61DFE2AAA629961` |
+| `tests/test-ui-static.js` | `222A8604BA92C13DCFB9452135F081B8EBB3A6849F71A953C1FD5E2986000ADF` |
