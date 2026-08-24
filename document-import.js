@@ -623,13 +623,13 @@
 
   function openSelectedTargetEditor(target) {
     if (!isEditableClickTarget(target)) {
-      app.notify("この費用項目は「一覧で詳しく修正」から変更してください");
+      app.notify("この費用項目は積算へ追加後、該当する業務画面で変更してください");
       return;
     }
     const lineIds = sourceLineIdsForTarget(target);
     const primaryLineId = lineIds[0];
     if (!primaryLineId || !clickLines.has(primaryLineId)) {
-      app.notify("元のPDF行を確認できないため、一覧で詳しく修正してください");
+      app.notify("元のPDF行を確認できないため、積算へ追加後に該当する業務画面で変更してください");
       return;
     }
     openManualMapper(primaryLineId, { scroll: false });
@@ -676,13 +676,12 @@
     $("pdfClickSelectedList").innerHTML = selected.length
       ? selected.map((target, index) => {
         const detail = `${methodLabel(target.item.method)}／p.${target.item.page}／${confidenceLabel(target.item.confidence)}`;
-        if (!isEditableClickTarget(target)) return `<div class="pdf-click-selected-item"><strong>${h(clickTargetLabel(target))}</strong><span>${h(detail)}／一覧で変更</span></div>`;
+        if (!isEditableClickTarget(target)) return `<div class="pdf-click-selected-item"><strong>${h(clickTargetLabel(target))}</strong><span>${h(detail)}／追加後に該当業務画面で変更</span></div>`;
         const key = `target-${index}`;
         editablePdfTargets.set(key, target);
         return `<button class="pdf-click-selected-item" data-pdf-edit-target="${h(key)}" type="button" title="クリックして変更"><strong>${h(clickTargetLabel(target))}</strong><span>${h(detail)}／クリックして変更</span></button>`;
       }).join("")
       : '<div class="empty-state"><p>まだ選択されていません。</p></div>';
-    $("openPdfSelectionReviewButton").disabled = selected.length === 0;
     $("applyPdfSelectionNowButton").disabled = selected.length === 0;
     $("applyPdfSelectionNowButton").textContent = selected.length ? `反映待ち${selected.length}件を積算へ追加` : "反映待ちを積算へ追加";
     clickLineTargets.forEach((lineTargetList, lineId) => {
@@ -1046,14 +1045,6 @@
       closeManualMapper();
       updatePdfClickSelection();
     });
-    $("selectDetectedPdfLinesButton").addEventListener("click", () => {
-      allClickTargets().forEach((target) => { target.item.selected = !target.item.applied && !target.item.affectsCalculation && target.item.confidence !== "low"; });
-      updatePdfClickSelection();
-    });
-    $("clearPdfLineSelectionButton").addEventListener("click", () => {
-      allClickTargets().forEach((target) => { target.item.selected = false; });
-      updatePdfClickSelection();
-    });
     $("pdfManualKind").addEventListener("change", () => {
       updateManualKind();
       clearManualInputValues();
@@ -1103,8 +1094,6 @@
       updatePdfClickSelection();
     });
     $("applyPdfSelectionNowButton").addEventListener("click", applyPdfClickSelection);
-    $("openPdfSelectionReviewButton").addEventListener("click", () => renderReview(currentFileName, currentAnalysis));
-    $("openPdfFullReviewButton").addEventListener("click", () => renderReview(currentFileName, currentAnalysis));
     ["closeDocumentImportDialogButton", "cancelDocumentImportButton"].forEach((id) => $(id).addEventListener("click", () => $("documentImportDialog").close()));
     $("documentImportDialog").addEventListener("click", (event) => { if (event.target === $("documentImportDialog")) $("documentImportDialog").close(); });
     $("toggleAllImportCandidates").addEventListener("change", (event) => { document.querySelectorAll(".import-candidate-select").forEach((box) => { box.checked = event.target.checked; }); updateSelectionState(); });
