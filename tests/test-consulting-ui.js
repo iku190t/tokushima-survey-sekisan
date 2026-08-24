@@ -13,7 +13,7 @@ const ids = new Set([...html.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1
 const referencedIds = new Set([...ui.matchAll(/\$\("([^"]+)"\)/g)].map((match) => match[1]));
 assert.deepStrictEqual([...referencedIds].filter((id) => !ids.has(id)), [], "consulting.jsから参照するHTML要素が揃う");
 
-for (const id of ["consultingView", "consultingFiscalYear", "consultingEstimateDate", "consultingProjectMemo", "consultingServiceType", "consultingTaskTemplate", "consultingTaskName", "consultingRole", "consultingDays", "consultingPresetSearch", "consultingRuleGroup", "consultingPreset", "consultingPresetBasis", "consultingQuantityFields", "consultingConditionsConfirmed", "consultingConditionsLabel", "consultingPresetStatus", "consultingLineBody", "consultingSummaryList", "consultingSummaryHeading", "consultingPrintButton"]) {
+for (const id of ["consultingView", "consultingFiscalYear", "consultingEstimateDate", "consultingProjectMemo", "consultingServiceType", "consultingTaskTemplate", "consultingTaskName", "consultingRole", "consultingDays", "consultingKeywordList", "consultingPresetSearch", "consultingRuleGroup", "consultingPreset", "consultingPresetBasis", "consultingQuantityFields", "consultingConditionsConfirmed", "consultingConditionsLabel", "consultingPresetStatus", "consultingLineBody", "consultingSummaryList", "consultingSummaryHeading", "consultingPrintButton"]) {
   assert.ok(html.includes(`id="${id}"`), `${id}を表示する`);
 }
 for (const file of ["data/consulting-master.js", "consulting-engine.js", "consulting.js"]) {
@@ -36,7 +36,10 @@ assert.ok(ui.includes('entry.id === "design"') && ui.includes('entry.id === "pla
 assert.ok(ui.includes('ezsekisan:businessscope') && ui.includes("activeConsultingScope"), "業務タブ切替を設計・地質入力へ反映する");
 assert.ok(html.includes('data-consulting-scope="design-planning"') && html.includes('data-consulting-scope="geology"'), "タブに対応する積上費用だけを表示する");
 assert.ok(master.includes('id: "design-note-r8"') && master.includes('id: "design-note-r7"') && master.includes('id: "design-note-r6"') && master.includes("designLead: 0.5") && master.includes("designEngineerA: 1.0"), "令和6～8年度の設計留意書歩掛をプリセットする");
-assert.ok(ui.includes("CONSULTING_RULE_PACK") && ui.includes("preset.fiscalYear") && ui.includes("consultingPresetSearch"), "照合済み標準歩掛を年度・業務タブ・検索語で絞る");
+assert.ok(ui.includes("CONSULTING_RULE_PACK") && ui.includes("preset.fiscalYear") && ui.includes("consultingPresetSearch"), "照合済み標準歩掛を年度・業務タブ・補助検索語で絞る");
+assert.ok(ui.includes("consultingKeywordDefinitions") && ui.includes("presetMatchesKeyword") && ui.includes("renderConsultingKeywords"), "設計・調査計画・地質を正式familyCode由来のキーワードで絞る");
+for (const keyword of ["道路", "橋梁", "河川・水辺", "水文・観測", "ボーリング", "原位置試験", "解析"]) assert.ok(ui.includes(`label: "${keyword}"`), `${keyword}キーワードを表示できる`);
+assert.ok(html.includes("名称でさらに絞り込む"), "文字検索を初期操作ではなく折りたたみの補助操作にする");
 assert.ok(ui.includes("parseStandardQuantity") && ui.includes("calculateStandardQuantity") && ui.includes("quantitySummary"), "標準単位から数量比と職種別人工を自動算出する");
 assert.ok(ui.includes("consultingConditionsConfirmed") && ui.includes("表示した業務種類・適用範囲・計算条件を確認"), "表示した業務種類・適用条件の確認なしに追加しない");
 assert.ok(ui.includes("familyForPreset") && ui.includes("consulting-parameter-value") && ui.includes("consultingFormulaModel") && ui.includes("compileFormula"), "適用条件表と補正式を歩掛へ結び付ける");

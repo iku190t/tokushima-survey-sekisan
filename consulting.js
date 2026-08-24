@@ -22,6 +22,69 @@
     || Object.values(master.roleGroups).flat().find((entry) => entry.id === roleId);
   let activeConsultingScope = "design";
   let visiblePresets = [];
+  const activeConsultingKeywords = { design: "all", planning: "all", geology: "all" };
+  const consultingKeywordDefinitions = {
+    design: [
+      { id: "all", label: "すべて", prefixes: [] },
+      { id: "common", label: "共通", prefixes: ["1-"] },
+      { id: "road", label: "道路", prefixes: ["2-", "3-", "4-", "5-", "6-"] },
+      { id: "structure", label: "構造物", prefixes: ["7-"] },
+      { id: "bridge", label: "橋梁", prefixes: ["8-"] },
+      { id: "underground", label: "地下・共同溝", prefixes: ["9-", "11-", "12-"] },
+      { id: "temporary", label: "仮設", prefixes: ["13-"] },
+      { id: "tunnel", label: "トンネル", prefixes: ["10-"] },
+      { id: "river", label: "河川", prefixes: ["14-"] },
+      { id: "sabo", label: "砂防", prefixes: ["15-"] },
+      { id: "other", label: "その他", prefixes: [], fallback: true }
+    ],
+    planning: [
+      { id: "all", label: "すべて", prefixes: [] },
+      { id: "common", label: "共通", prefixes: ["1-"] },
+      { id: "river", label: "河川・水辺", prefixes: ["2-", "3-"] },
+      { id: "road", label: "道路防災", prefixes: ["4-1"] },
+      { id: "bridge", label: "橋梁点検", prefixes: ["4-2"] },
+      { id: "tunnel", label: "トンネル点検", prefixes: ["4-3"] },
+      { id: "hydrology", label: "水文・観測", prefixes: ["5-"] },
+      { id: "other", label: "その他", prefixes: [], fallback: true }
+    ],
+    geology: [
+      { id: "all", label: "すべて", prefixes: [] },
+      { id: "common", label: "共通", prefixes: ["1-"] },
+      { id: "boring", label: "ボーリング", prefixes: ["2-1"] },
+      { id: "sampling", label: "サンプリング", prefixes: ["2-2"] },
+      { id: "field-test", label: "原位置試験", prefixes: ["2-3"] },
+      { id: "transport", label: "運搬", prefixes: ["2-4"] },
+      { id: "temporary", label: "仮設", prefixes: ["2-5"] },
+      { id: "indirect", label: "間接調査", prefixes: ["2-6", "3-5"] },
+      { id: "exploration", label: "物理探査", prefixes: ["3-4"] },
+      { id: "soft-ground", label: "軟弱地盤", prefixes: ["4-2"] },
+      { id: "analysis", label: "解析", prefixes: ["2-7", "5-"] },
+      { id: "other", label: "その他", prefixes: [], fallback: true }
+    ]
+  };
+
+  function keywordDefinitions() {
+    return consultingKeywordDefinitions[activeConsultingScope] || consultingKeywordDefinitions.design;
+  }
+
+  function presetMatchesKeyword(preset, keywordId = activeConsultingKeywords[activeConsultingScope]) {
+    if (!keywordId || keywordId === "all") return true;
+    const definitions = keywordDefinitions();
+    const definition = definitions.find((entry) => entry.id === keywordId);
+    if (!definition) return false;
+    const code = String(preset.familyCode || "");
+    if (definition.fallback) return !definitions.some((entry) => entry.id !== "all" && !entry.fallback && entry.prefixes.some((prefix) => code.startsWith(prefix)));
+    return definition.prefixes.some((prefix) => code.startsWith(prefix));
+  }
+
+  function renderConsultingKeywords(presets) {
+    const available = keywordDefinitions().filter((keyword) => keyword.id === "all" || presets.some((preset) => presetMatchesKeyword(preset, keyword.id)));
+    if (!available.some((keyword) => keyword.id === activeConsultingKeywords[activeConsultingScope])) activeConsultingKeywords[activeConsultingScope] = "all";
+    $("consultingKeywordList").innerHTML = available.map((keyword) => {
+      const count = keyword.id === "all" ? presets.length : presets.filter((preset) => presetMatchesKeyword(preset, keyword.id)).length;
+      return `<button class="work-keyword-button" type="button" data-consulting-keyword="${h(keyword.id)}" aria-pressed="${keyword.id === activeConsultingKeywords[activeConsultingScope]}">${h(keyword.label)}<small>${count}</small></button>`;
+    }).join("");
+  }
 
   function presetGroup(preset) {
     if (preset?.familyCode) return { id: preset.familyCode, label: `${preset.familyCode}｜${familyForPreset(preset)?.title || "基準書項目"}` };
@@ -132,9 +195,13 @@
     const query = String($("consultingPresetSearch").value || "").trim().toLocaleLowerCase("ja");
     const year = Number(state().fiscalYear);
     const allPresets = Array.isArray(rulePack.rules) && rulePack.rules.length ? rulePack.rules : master.verifiedPresets;
-    const candidates = allPresets.filter((preset) =>
+    const scopedPresets = allPresets.filter((preset) =>
       scopedServices().some((entry) => entry.id === preset.serviceType)
       && (!preset.fiscalYear || Number(preset.fiscalYear) === year)
+    );
+    renderConsultingKeywords(scopedPresets);
+    const candidates = scopedPresets.filter((preset) =>
+      presetMatchesKeyword(preset)
       && (!query || `${preset.label} ${preset.standardUnit || ""} ${preset.source || ""}`.toLocaleLowerCase("ja").includes(query))
     );
     const previousGroup = $("consultingRuleGroup").value;
@@ -700,6 +767,13 @@
     $("consultingServiceType").addEventListener("change", () => renderServiceControls(true));
     $("consultingTaskTemplate").addEventListener("change", () => { $("consultingTaskName").value = $("consultingTaskTemplate").value; });
     $("consultingPresetSearch").addEventListener("input", renderPresets);
+    $("consultingKeywordList").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-consulting-keyword]");
+      if (!button) return;
+      activeConsultingKeywords[activeConsultingScope] = button.dataset.consultingKeyword;
+      $("consultingPresetSearch").value = "";
+      renderPresets();
+    });
     $("consultingRuleGroup").addEventListener("change", renderPresets);
     $("consultingPreset").addEventListener("change", renderPresetRule);
     $("consultingRole").addEventListener("change", renderRoleMeta);
@@ -822,6 +896,7 @@
     document.addEventListener("ezsekisan:businessscope", (event) => {
       if (!["design", "planning", "geology"].includes(event.detail?.scope)) return;
       activeConsultingScope = event.detail.scope;
+      $("consultingPresetSearch").value = "";
       renderAll();
     });
     document.addEventListener("ezsekisan:consultingimport", (event) => importCandidates(event.detail || {}));

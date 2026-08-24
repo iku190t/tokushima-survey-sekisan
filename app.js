@@ -22,6 +22,20 @@
     { id: "terrain-pointcloud", label: "第4編 地形測量及び写真測量（三次元点群測量）", categories: ["地上レーザ測量", "UAV写真点群測量", "UAVレーザ測量", "航空レーザ測量"] },
     { id: "applied", label: "第5編 応用測量", categories: ["路線測量", "河川測量", "深浅測量", "用地測量"] }
   ];
+  const surveyKeywordDefinitions = [
+    { id: "all", label: "すべて", categories: [] },
+    { id: "common", label: "共通", categories: ["共通"] },
+    { id: "control", label: "基準点", categories: ["基準点測量"] },
+    { id: "level", label: "水準", categories: ["水準測量"] },
+    { id: "field", label: "現地", categories: ["現地測量"] },
+    { id: "photo", label: "写真", categories: ["空中写真測量"] },
+    { id: "pointcloud", label: "UAV・レーザ", categories: ["地上レーザ測量", "UAV写真点群測量", "UAVレーザ測量", "航空レーザ測量"] },
+    { id: "route", label: "路線", categories: ["路線測量"] },
+    { id: "river", label: "河川", categories: ["河川測量"] },
+    { id: "land", label: "用地", categories: ["用地測量"] },
+    { id: "bathymetry", label: "深浅", categories: ["深浅測量"] }
+  ];
+  let activeSurveyKeyword = "all";
 
   const surveyRegulationPaths = {
     "共通": "積算基準 第2章 第1節 共通（作業規程の測量種別外）",
@@ -49,6 +63,24 @@
 
   function surveyItemsForScope(master = activeMaster()) {
     return master.workItems;
+  }
+
+  function surveyKeywordDefinition(id = activeSurveyKeyword) {
+    return surveyKeywordDefinitions.find((entry) => entry.id === id) || surveyKeywordDefinitions[0];
+  }
+
+  function surveyItemsForKeyword(items, keywordId = activeSurveyKeyword) {
+    const keyword = surveyKeywordDefinition(keywordId);
+    return keyword.id === "all" ? items : items.filter((item) => keyword.categories.includes(item.category));
+  }
+
+  function renderSurveyKeywords(items) {
+    const available = surveyKeywordDefinitions.filter((keyword) => keyword.id === "all" || items.some((item) => keyword.categories.includes(item.category)));
+    if (!available.some((keyword) => keyword.id === activeSurveyKeyword)) activeSurveyKeyword = "all";
+    $("surveyKeywordList").innerHTML = available.map((keyword) => {
+      const count = keyword.id === "all" ? items.length : surveyItemsForKeyword(items, keyword.id).length;
+      return `<button class="work-keyword-button" type="button" data-survey-keyword="${h(keyword.id)}" aria-pressed="${keyword.id === activeSurveyKeyword}">${h(keyword.label)}<small>${count}</small></button>`;
+    }).join("");
   }
 
   function renderSurveyScopeLabels() {
@@ -515,16 +547,12 @@
   function populateCategories() {
     const master = activeMaster();
     const scopedItems = surveyItemsForScope(master);
-    const previousGroup = $("regulationGroupSelect").value;
-    const availableGroups = surveyRegulationGroups.filter((group) => scopedItems.some((item) => group.categories.includes(item.category)));
-    $("regulationGroupSelect").innerHTML = `<option value="">すべての作業規程分類</option>` + availableGroups.map((group) => `<option value="${h(group.id)}">${h(group.label)}</option>`).join("");
-    $("regulationGroupSelect").value = availableGroups.some((group) => group.id === previousGroup) ? previousGroup : "";
-    const group = surveyRegulationGroups.find((entry) => entry.id === $("regulationGroupSelect").value);
-    const groupItems = scopedItems.filter((item) => !group || group.categories.includes(item.category));
-    const categories = [...new Set(groupItems.map((item) => item.category))];
+    renderSurveyKeywords(scopedItems);
+    const keywordItems = surveyItemsForKeyword(scopedItems);
+    const categories = [...new Set(keywordItems.map((item) => item.category))];
     const previous = $("categorySelect").value;
-    $("categorySelect").innerHTML = `<option value="">すべての作業区分</option>` + categories.map((category) => `<option>${h(category)}</option>`).join("");
-    $("categorySelect").value = categories.includes(previous) ? previous : "";
+    $("categorySelect").innerHTML = (categories.length > 1 ? `<option value="">すべての作業区分</option>` : "") + categories.map((category) => `<option>${h(category)}</option>`).join("");
+    $("categorySelect").value = categories.includes(previous) ? previous : (categories.length === 1 ? categories[0] : "");
     populateItems();
     $("itemCountBadge").textContent = `${scopedItems.length}項目収録`;
     renderSurveyScopeLabels();
@@ -532,10 +560,13 @@
 
   function populateItems() {
     const master = activeMaster();
-    const group = surveyRegulationGroups.find((entry) => entry.id === $("regulationGroupSelect").value);
     const category = $("categorySelect").value;
+    const query = String($("surveyItemSearch").value || "").trim().toLocaleLowerCase("ja");
     const previous = $("itemSelect").value;
-    const filtered = surveyItemsForScope(master).filter((item) => (!group || group.categories.includes(item.category)) && (!category || item.category === category));
+    const filtered = surveyItemsForKeyword(surveyItemsForScope(master)).filter((item) =>
+      (!category || item.category === category)
+      && (!query || `${item.code} ${item.name} ${item.category}`.toLocaleLowerCase("ja").includes(query))
+    );
     $("itemSelect").innerHTML = filtered.map((item) => `<option value="${h(item.code)}">${h(item.code)}｜${h(item.name)}</option>`).join("");
     if (filtered.some((item) => item.code === previous)) $("itemSelect").value = previous;
     updateSelectedItemMeta();
@@ -1357,8 +1388,15 @@
       if (button.dataset.view === "consulting") document.dispatchEvent(new CustomEvent("ezsekisan:estimatechange"));
     }));
     $("guideSourceYear").addEventListener("change", () => renderGuideSourceLedger(false));
-    $("regulationGroupSelect").addEventListener("change", populateCategories);
+    $("surveyKeywordList").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-survey-keyword]");
+      if (!button) return;
+      activeSurveyKeyword = button.dataset.surveyKeyword;
+      $("surveyItemSearch").value = "";
+      populateCategories();
+    });
     $("categorySelect").addEventListener("change", populateItems);
+    $("surveyItemSearch").addEventListener("input", populateItems);
     $("itemSelect").addEventListener("change", updateSelectedItemMeta);
     $("newItemQuantity").addEventListener("keydown", blockInvalidQuantityKey);
     $("newItemQuantity").addEventListener("paste", blockInvalidQuantityPaste);

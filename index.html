@@ -7,7 +7,7 @@
   <meta name="description" content="設計、測量、調査・計画、地質を年度別技術者単価と根拠表示付きで計算するWeb業務積算ソフト">
   <meta name="author" content="株式会社アイズ測量">
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="styles.css?v=20260824-7">
+  <link rel="stylesheet" href="styles.css?v=20260824-8">
 </head>
 <body data-business-scope="design">
   <header class="app-header">
@@ -104,11 +104,11 @@
               <span id="itemCountBadge" class="badge"></span>
             </div>
             <p id="surveyScopeNote" class="scope-note"></p>
+            <div class="work-keyword-filter">
+              <span>キーワードから選ぶ</span>
+              <div id="surveyKeywordList" class="work-keyword-list" role="group" aria-label="測量のキーワード"></div>
+            </div>
             <div class="picker-grid">
-              <label class="field">
-                <span>作業規程上の分類</span>
-                <select id="regulationGroupSelect"></select>
-              </label>
               <label class="field">
                 <span>積算基準の作業区分</span>
                 <select id="categorySelect"></select>
@@ -123,6 +123,10 @@
               </label>
               <button id="addItemButton" class="button primary add-button" type="button">追加</button>
             </div>
+            <details class="work-name-search">
+              <summary>名称・コードでさらに絞り込む</summary>
+              <label class="field"><span>補助検索</span><input id="surveyItemSearch" type="search" placeholder="例：新点、現地踏査、UAV"></label>
+            </details>
             <p id="selectedItemMeta" class="field-note"></p>
             <div class="selected-item-sources" aria-live="polite">
               <strong>この測量項目で使用する規定書・PDF</strong>
@@ -230,8 +234,15 @@
         <div class="workspace-main">
           <section class="card add-card business-add-card no-print">
             <div class="card-title-row"><div><p class="section-kicker">WORK ITEM</p><h2 id="consultingAddHeading">設計業務の条件・数量から積算</h2></div><span class="badge">数量→標準歩掛→職種別人工</span></div>
+            <div class="work-keyword-filter">
+              <span>キーワードから選ぶ</span>
+              <div id="consultingKeywordList" class="work-keyword-list" role="group" aria-label="設計等のキーワード"></div>
+            </div>
+            <details class="work-name-search">
+              <summary>名称でさらに絞り込む</summary>
+              <label class="field"><span>補助検索</span><input id="consultingPresetSearch" type="search" placeholder="例：道路詳細、橋梁点検、地盤特性"></label>
+            </details>
             <div class="verified-preset-row">
-              <label class="field"><span>標準歩掛を検索</span><input id="consultingPresetSearch" type="search" placeholder="例：道路詳細、橋梁点検、地盤特性"></label>
               <label class="field compact-field"><span>基準書の項目分類</span><select id="consultingRuleGroup"></select></label>
               <label class="field span-2"><span>業務種類・適用条件</span><select id="consultingPreset"></select></label>
               <div id="consultingPresetBasis" class="consulting-rule-basis"></div>
@@ -641,8 +652,8 @@
   <script src="reference-case-engine.js?v=20260824-1"></script>
   <script src="document-import-engine.js?v=20260823-2"></script>
   <script src="document-reader.js?v=20260823-1"></script>
-  <script src="app.js?v=20260824-5"></script>
-  <script src="consulting.js?v=20260824-10"></script>
+  <script src="app.js?v=20260824-6"></script>
+  <script src="consulting.js?v=20260824-11"></script>
   <script src="document-import.js?v=20260823-9"></script>
   <script src="analytics.js?v=20260823-1"></script>
 </body>

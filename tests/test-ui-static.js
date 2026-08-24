@@ -77,7 +77,10 @@ assert.ok(html.includes("見積提出先") && html.includes("基準区分"), "�
 assert.ok(app.includes("blockInvalidQuantityKey"), "整数数量への小数キー入力を防止する");
 assert.ok(app.includes("blockInvalidQuantityPaste"), "不正な桁数の貼り付けを防止する");
 assert.ok(app.includes("normalizeQuantityInput"), "数量を単位別規則に正規化する");
-assert.ok(html.includes('id="regulationGroupSelect"') && html.includes("作業規程上の分類") && app.includes("surveyRegulationGroups"), "測量項目を作業規程上の分類から選べる");
+assert.ok(html.includes('id="surveyKeywordList"') && html.includes('id="surveyItemSearch"') && app.includes("surveyKeywordDefinitions"), "測量項目を常時表示キーワードから絞り込める");
+assert.ok(!html.includes('id="regulationGroupSelect"'), "測量の最初の選択を編番号プルダウンへ戻さない");
+for (const keyword of ["基準点", "水準", "現地", "写真", "UAV・レーザ", "路線", "河川", "用地", "深浅"]) assert.ok(app.includes(`label: "${keyword}"`), `${keyword}キーワードを年度マスターの収録項目へ対応させる`);
+assert.ok(html.includes('class="work-name-search"') && html.includes("名称・コードでさらに絞り込む"), "文字検索を補助操作として折りたたむ");
 for (const group of ["第2編 基準点測量", "第3編 地形測量及び写真測量", "第4編 地形測量及び写真測量（三次元点群測量）", "第5編 応用測量"]) assert.ok(app.includes(group), `${group}を独立して表示する`);
 assert.ok(app.includes('"深浅測量": "作業規程 第5編 第3章 第7節 深浅測量"'), "深浅測量を応用測量の河川測量内へ位置付ける");
 assert.ok(!app.includes("aerialShipCategories") && !html.includes('data-business-scope="aerial"'), "航空・船舶を測量と並列の業務タブにしない");
