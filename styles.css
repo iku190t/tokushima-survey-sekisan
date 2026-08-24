@@ -382,11 +382,19 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
 .import-layout { width: 100%; margin: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; align-items: start; }
 .import-hero-card { padding: clamp(22px, 3vw, 36px); }
 .import-lead { max-width: 820px; margin: -4px 0 20px; color: var(--muted); line-height: 1.75; }
-.document-drop-zone { width: 100%; min-height: 132px; display: grid; place-items: center; align-content: center; gap: 5px; padding: 16px 24px; color: var(--green-dark); background: linear-gradient(145deg, #f7fbf8, #edf6f1); border: 2px dashed #8ebda9; border-radius: 13px; text-align: center; transition: .18s; }
+.import-start-grid { display: grid; grid-template-columns: minmax(0,1.65fr) minmax(300px,.72fr); gap: 14px; align-items: stretch; }
+.document-drop-zone { width: 100%; min-height: 150px; display: grid; place-items: center; align-content: center; gap: 5px; padding: 16px 24px; color: var(--green-dark); background: linear-gradient(145deg, #f7fbf8, #edf6f1); border: 2px dashed #8ebda9; border-radius: 13px; text-align: center; transition: .18s; }
 .document-drop-zone:hover, .document-drop-zone.drag-over { background: #e1f1e9; border-color: var(--green); transform: translateY(-1px); }
 .document-drop-zone strong { font-size: 16px; }
 .document-drop-zone > span:last-child { color: var(--muted); font-size: 11px; line-height: 1.6; }
 .drop-zone-icon { width: 38px; height: 38px; display: grid; place-items: center; color: #fff; background: var(--green); border-radius: 11px; font-size: 20px; font-weight: 900; }
+.import-safety-card { min-width: 0; padding: 14px 16px; background: #f8faf9; border: 1px solid var(--line); border-radius: 13px; }
+.import-safety-card .section-kicker { margin: 0 0 3px; font-size: 9px; }
+.import-safety-card h3 { margin: 0; color: var(--green-dark); font-size: 14px; }
+.import-safety-card ol { margin: 8px 0; padding-left: 20px; color: #334b42; font-size: 10px; line-height: 1.55; }
+.import-safety-card > p:last-child { margin: 8px 0 0; padding-top: 8px; border-top: 1px solid #dce7e2; font-size: 9px; line-height: 1.5; }
+.import-safety-card > p:last-child strong, .import-safety-card > p:last-child span { display: block; }
+.import-safety-card > p:last-child span { margin-top: 2px; color: var(--muted); }
 .import-progress { margin-top: 16px; padding: 12px 14px; color: #295343; background: #edf6f1; border-radius: 9px; }
 .import-progress[hidden] { display: none; }
 .import-progress-track { height: 7px; overflow: hidden; margin-bottom: 8px; background: #d5e5dd; border-radius: 999px; }
@@ -449,13 +457,14 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
 .recently-imported-line { animation: imported-row-highlight 4.5s ease-out both; }
 @keyframes imported-row-highlight { 0%,35% { background: #dff6e9; box-shadow: inset 5px 0 #1c7a58; } 100% { background: transparent; box-shadow: inset 0 0 transparent; } }
 .pdf-field-drop-target.drag-over { background: #cfeee0; border-color: #0d6748; box-shadow: 0 0 0 4px rgba(29,108,82,.2); transform: translateY(-1px); }
-.pdf-manual-mapper { display: grid; grid-template-rows: auto minmax(0,1fr) auto; gap: 10px; height: 100%; min-height: 0; padding: 12px; overflow: hidden; background: #f1f7f4; border: 1px solid #9dbdae; border-radius: 10px; box-shadow: 0 7px 22px rgba(24,75,58,.1); }
+.pdf-manual-mapper { display: grid; grid-template-rows: auto auto minmax(0,1fr); gap: 10px; height: 100%; min-height: 0; padding: 12px; overflow: hidden; background: #f1f7f4; border: 1px solid #9dbdae; border-radius: 10px; box-shadow: 0 7px 22px rgba(24,75,58,.1); }
 .pdf-manual-mapper[hidden], .pdf-manual-fields[hidden] { display: none; }
 .pdf-manual-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .pdf-manual-heading strong { color: var(--green-dark); font-size: 12px; }
 .pdf-manual-heading button { width: 28px; height: 28px; padding: 0; color: #40544b; background: #fff; border: 1px solid var(--line); border-radius: 50%; cursor: pointer; }
-.pdf-manual-scroll-body { display: grid; align-content: start; gap: 10px; min-height: 0; padding-right: 4px; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
-.pdf-manual-keyword-filter { margin: 0; padding: 9px; background: rgba(255,255,255,.68); border: 1px solid #c9ddd4; border-radius: 9px; }
+.pdf-manual-scroll-body { display: grid; align-content: start; gap: 12px; min-height: 0; padding: 2px 4px 0 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
+.pdf-manual-scroll-body > .field:first-child { padding-bottom: 10px; border-bottom: 1px solid #c9ddd4; }
+.pdf-manual-keyword-filter { position: relative; z-index: 0; margin: 0; padding: 9px; background: rgba(255,255,255,.82); border: 1px solid #c9ddd4; border-radius: 9px; isolation: isolate; }
 .pdf-manual-keyword-filter .work-keyword-list { gap: 5px; }
 .pdf-manual-keyword-filter .work-keyword-button { min-height: 28px; padding: 5px 8px; font-size: 9px; }
 .pdf-manual-fields { display: grid; gap: 8px; }
@@ -472,7 +481,7 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
 .pdf-survey-quantity-field > strong { padding: 8px 9px; color: #124d3a; background: #e3f2ea; border-radius: 7px; font-size: 10px; line-height: 1.5; }
 .pdf-manual-fields small { color: var(--muted); font-size: 9px; line-height: 1.45; }
 .pdf-manual-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-.pdf-manual-footer { position: relative; z-index: 2; padding-top: 9px; background: #f1f7f4; border-top: 1px solid #cbded5; box-shadow: 0 -9px 18px rgba(24,75,58,.08); }
+.pdf-manual-footer { position: relative; z-index: 2; padding: 9px; background: #e6f2ec; border: 1px solid #bdd6ca; border-radius: 9px; box-shadow: 0 6px 16px rgba(24,75,58,.09); }
 .pdf-manual-add-hint { margin: 0 0 7px; padding: 7px 9px; color: #52615b; background: #f3f6f4; border-radius: 7px; font-size: .72rem; line-height: 1.4; }
 .pdf-manual-add-hint.is-ready { color: #124f3d; background: #dff3e9; font-weight: 700; }
 #addPdfManualCandidateButton.is-ready { box-shadow: 0 0 0 4px rgba(174,225,81,.3); transform: translateY(-1px); }
@@ -598,6 +607,7 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
   .workspace-grid { grid-template-columns: 1fr; }
   .summary-card { position: static; }
   .import-layout { grid-template-columns: 1fr; }
+  .import-start-grid { grid-template-columns: 1fr; }
   .project-strip { grid-template-columns: repeat(2,1fr); }
   .master-head-grid { grid-template-columns: repeat(2,1fr); }
   .case-search-grid { grid-template-columns: repeat(2,1fr); }
@@ -642,7 +652,7 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
   .pdf-click-sidebar { position: static; height: auto; max-height: none; overflow: visible; }
   .pdf-manual-mapper { height: auto; max-height: none; }
   .pdf-manual-scroll-body { max-height: 62vh; }
-  .pdf-manual-footer { position: sticky; bottom: 0; }
+  .pdf-manual-footer { position: relative; }
   .pdf-pending-panel { grid-template-columns: 1fr; }
   .pdf-pending-panel .pdf-click-note { grid-column: auto; }
   .import-metadata-heading { align-items: flex-start; flex-direction: column; }

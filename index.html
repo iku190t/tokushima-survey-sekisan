@@ -7,7 +7,7 @@
   <meta name="description" content="設計、測量、調査・計画、地質を年度別技術者単価と根拠表示付きで計算するWeb業務積算ソフト">
   <meta name="author" content="株式会社アイズ測量">
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="styles.css?v=20260824-17">
+  <link rel="stylesheet" href="styles.css?v=20260824-18">
 </head>
 <body data-business-scope="design">
   <header class="app-header">
@@ -326,14 +326,26 @@
         <section class="card import-hero-card">
           <div class="card-title-row"><div><p class="section-kicker">DOCUMENT TO ESTIMATE</p><h2>PDF・写真から取込み</h2></div><span class="badge">設計・測量・調査計画・地質</span></div>
           <p class="import-lead">発注仕様書、数量表、設計書などから、業務基本情報と積算候補を作ります。文字情報を持つPDFは直接抽出し、画像PDFと写真だけ日本語OCRを使用します。</p>
-          <button id="documentDropZone" class="document-drop-zone" type="button">
-            <span class="drop-zone-icon" aria-hidden="true">↓</span>
-            <strong>ここへPDF・写真をドロップ</strong>
-            <span>またはクリックして選択／PDF・PNG・JPEG・WebP／最大30MB・PDFは60ページまで</span>
-          </button>
+          <div class="import-start-grid">
+            <button id="documentDropZone" class="document-drop-zone" type="button">
+              <span class="drop-zone-icon" aria-hidden="true">↓</span>
+              <strong>ここへPDF・写真をドロップ</strong>
+              <span>またはクリックして選択／PDF・PNG・JPEG・WebP／最大30MB・PDFは60ページまで</span>
+            </button>
+            <aside class="import-safety-card" aria-label="取込み前の確認事項">
+              <p class="section-kicker">SAFE REVIEW</p>
+              <h3>確定前に必ず確認</h3>
+              <ol>
+                <li>PDFの状態に応じて直接抽出・OCRを自動切替</li>
+                <li>基本情報と積算候補を分けて整理</li>
+                <li>一覧で修正してから積算へ反映</li>
+                <li>選択項目だけを反映</li>
+              </ol>
+              <p><strong>資料内容は外部送信しません。</strong><span>解析はブラウザー内で行います。</span></p>
+            </aside>
+          </div>
           <input id="documentFileInput" type="file" accept="application/pdf,image/png,image/jpeg,image/webp,.pdf,.png,.jpg,.jpeg,.webp" hidden>
           <div id="documentImportProgress" class="import-progress" hidden><div class="import-progress-track"><span id="documentImportProgressBar"></span></div><strong id="documentImportStatus">解析を準備しています…</strong></div>
-          <p class="import-local-note"><strong>資料内容は外部送信しません。</strong> PDF・写真の解析はブラウザー内で行います。</p>
           <div id="lastImportSummary" class="last-import-summary" hidden></div>
         </section>
       </div>
@@ -345,6 +357,10 @@
           <aside class="pdf-click-sidebar">
             <section id="pdfManualMapper" class="pdf-manual-mapper" hidden>
               <div class="pdf-manual-heading"><strong id="pdfManualHeadingText">この行の反映先を指定</strong><button id="cancelPdfManualLineButton" type="button" aria-label="閉じる">×</button></div>
+              <footer class="pdf-manual-footer">
+                <p id="pdfManualAddHint" class="pdf-manual-add-hint">作業項目を選ぶと、数量・単位が未入力でも反映待ちへ追加できます。</p>
+                <div class="pdf-manual-actions"><button id="addPdfManualCandidateButton" class="button primary" type="button">反映待ちへ追加</button><button id="ignorePdfManualLineButton" class="button" type="button">この行は対象外</button></div>
+              </footer>
               <div class="pdf-manual-scroll-body">
               <label class="field"><span>反映先</span><select id="pdfManualKind"><option value="design">設計業務</option><option value="survey">測量業務</option><option value="planning">調査・計画業務</option><option value="geology">地質業務</option><option value="metadata">業務基本情報</option></select></label>
               <div id="pdfManualKeywordFilter" class="work-keyword-filter pdf-manual-keyword-filter"><span>キーワードから選ぶ</span><div id="pdfManualKeywordList" class="work-keyword-list" role="group" aria-label="PDF取込の作業キーワード"></div></div>
@@ -368,10 +384,6 @@
                 <label class="field"><span>反映する内容</span><input id="pdfManualMetadataValue" type="text"></label>
               </div>
               </div>
-              <footer class="pdf-manual-footer">
-                <p id="pdfManualAddHint" class="pdf-manual-add-hint">作業項目を選ぶと、数量・単位が未入力でも反映待ちへ追加できます。</p>
-                <div class="pdf-manual-actions"><button id="addPdfManualCandidateButton" class="button primary" type="button">反映待ちへ追加</button><button id="ignorePdfManualLineButton" class="button" type="button">この行は対象外</button></div>
-              </footer>
             </section>
           </aside>
         </div>

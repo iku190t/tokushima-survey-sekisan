@@ -24,7 +24,9 @@ for (const id of ["importView", "documentDropZone", "documentFileInput", "pdfCli
 }
 assert.ok(html.includes("設計・測量・調査計画・地質"), "資料取込の対象業務を積算基準の4業務区分順で明示する");
 assert.ok(html.includes(">PDF・写真から取込み<"), "資料取込の表示名をPDF・写真から取込みに統一する");
-assert.ok(!html.includes("確定前に必ず確認") && !html.includes("compact-flow") && !html.includes("import-safety-card"), "取込開始画面の重複した確認案内カードを撤去する");
+assert.ok(html.includes('class="import-start-grid"') && html.includes('class="import-safety-card"') && html.includes("確定前に必ず確認"), "取込確認事項を大きな横長カードにせずファイル投下欄の横へ配置する");
+assert.ok(html.indexOf('class="pdf-manual-footer"') < html.indexOf('class="pdf-manual-scroll-body"') && css.includes("grid-template-rows: auto auto minmax(0,1fr)"), "反映待ち追加ボタンを右入力欄の上部へ固定し入力項目で隠さない");
+assert.ok(css.includes(".pdf-manual-scroll-body > .field:first-child") && css.includes("isolation: isolate"), "反映先とキーワード欄を別段にして文字の重なりを防ぐ");
 assert.ok(css.includes(".utility-view-tabs { margin-left: 0;") && !css.includes(".utility-view-tabs { margin-left: auto;"), "PDF・写真から取込みを業務タブ側へ寄せる");
 const kindOptions = ['value="design">設計業務', 'value="survey">測量業務', 'value="planning">調査・計画業務', 'value="geology">地質業務', 'value="metadata">業務基本情報'];
 assert.ok(kindOptions.every((option) => html.includes(option)), "PDF反映先を4業務区分と基本情報へ分ける");
