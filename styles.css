@@ -623,13 +623,12 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
 
 @media print {
   @page { size: A4 portrait; margin: 12mm 12mm 11mm; }
-  @page landscape-report { size: A4 landscape; margin: 10mm; }
   html, body { width: auto; min-width: 0; margin: 0; padding: 0; color: #111; background: #fff; font-family: "Yu Mincho", "Yu Gothic", "Meiryo", serif; font-size: 9.2pt; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   body > :not(#printDocument) { display: none !important; }
   #printDocument { display: block !important; }
   .report-page { position: relative; min-height: 270mm; padding: 0 0 11mm; break-after: page; page-break-after: always; }
   .report-page:last-child { break-after: auto; page-break-after: auto; }
-  .report-landscape-page { page: landscape-report; min-height: 185mm; }
+  .report-landscape-page { min-height: 270mm; }
   .report-page-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 10mm; margin-bottom: 7mm; padding: 0 0 3.2mm; border-bottom: .6mm solid #184d3e; }
   .report-page-header p { margin: 0 0 1mm; color: #3b6c5c; font: 700 7.5pt/1.2 "Yu Gothic", "Meiryo", sans-serif; letter-spacing: .16em; }
   .report-page-header h1 { margin: 0; color: #111; font-size: 18pt; font-weight: 700; letter-spacing: .22em; }
@@ -697,8 +696,8 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
   .breakdown-report-table .subtotal-row td { background: #f0f4f2; border-top-width: .4mm; font-weight: 800; text-align: right; }
   .breakdown-report-table tfoot th { background: #edf3f0; font-weight: 800; }
   .breakdown-report-table tfoot .grand-row th { color: #fff; background: #184d3e; border-color: #184d3e; font-size: 9.5pt; }
-  .unit-detail-table { font-size: 5.9pt; }
-  .unit-detail-table th, .unit-detail-table td { padding: 1mm .8mm; }
+  .unit-detail-table { font-size: 5.3pt; }
+  .unit-detail-table th, .unit-detail-table td { box-sizing: border-box; padding: .9mm .55mm; overflow-wrap: anywhere; }
   .unit-detail-table th:nth-child(1) { width: 4%; }
   .unit-detail-table th:nth-child(2) { width: 23%; }
   .unit-detail-table th:nth-child(3), .unit-detail-table th:nth-child(4), .unit-detail-table th:nth-child(5), .unit-detail-table th:nth-child(6) { width: 9%; }
