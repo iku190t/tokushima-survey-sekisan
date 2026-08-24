@@ -21,6 +21,14 @@ assert.ok(html.includes("<title>web積算｜") && html.includes("<h1>web積算</
 const businessTabs = [...html.matchAll(/<button class="view-tab(?: active)?" data-view="[^"]+" data-business-scope="([^"]+)"[^>]*>([^<]+)<\/button>/g)].map((match) => [match[1], match[2]]);
 assert.deepStrictEqual(businessTabs, [["design", "設計業務"], ["survey", "測量業務"], ["planning", "調査・計画業務"], ["geology", "地質業務"]], "積算基準の4業務区分を指定順で表示する");
 assert.ok(html.includes('id="consultingView" class="view active"') && !html.includes('id="estimateView" class="view active"'), "初期画面を設計業務にする");
+assert.strictEqual((html.match(/class="project-strip business-project-strip"/g) || []).length, 2, "測量と設計等で同じ上部5項目レイアウトを使う");
+assert.strictEqual((html.match(/class="accuracy-strip business-status-strip"/g) || []).length, 2, "測量と設計等で同じ状態帯を使う");
+assert.strictEqual((html.match(/class="workspace-grid business-workspace"/g) || []).length, 2, "4業務で同じ作業領域と右集計の骨格を使う");
+assert.strictEqual((html.match(/class="card add-card business-add-card no-print"/g) || []).length, 2, "4業務で同じ作業追加カードを使う");
+assert.strictEqual((html.match(/class="card table-card business-detail-card"/g) || []).length, 2, "4業務で同じ積算内訳カードを使う");
+assert.strictEqual((html.match(/class="card business-cost-card no-print"/g) || []).length, 2, "4業務で同じ追加費用カードを使う");
+assert.strictEqual((html.match(/class="summary-card business-summary-card"/g) || []).length, 2, "4業務で同じ集計カードを使う");
+assert.ok(html.includes('id="surveySummaryHeading">測量業務の積算結果') && html.includes('id="consultingSummaryHeading">設計業務の積算結果'), "4業務の右集計見出しを同じ命名規則にする");
 for (const source of ["data/prefectures.js", "data/master-catalog.json", "data/official-source-catalog.json", "data/master-r8.js", "data/national-standard-masters.js", "data/official-role-prices.js", "data/verified-work-item-expansions.js", "engine.js", "app.js", "analytics.js", "styles.css", "DISCLAIMER.md"]) {
   assert.ok(fs.existsSync(path.join(root, source)), `${source} が存在する`);
 }
@@ -111,7 +119,7 @@ assert.ok(!html.includes('id="consultingPresetMultiplier"') && html.includes('id
 assert.ok(!html.includes('id="pdfManualSurveyQuantity" type="number" aria-label="資料の数量" value="1"'), "PDF取込数量を1で初期化しない");
 assert.ok(documentImport.includes('$("pdfManualSurveyQuantity").value = "";') && documentImport.includes('$("pdfManualConsultingDays").value = "";'), "PDF取込の数量・人工を空欄へ戻す");
 assert.ok(documentImport.includes('return values.length ? values[values.length - 1][1] : "";'), "PDFに数値がなければ1を補わない");
-assert.ok(consulting.includes("calculateStandardQuantity") && consulting.includes("業務種類・適用範囲が特記仕様書と一致"), "条件確認と標準数量なしに標準歩掛を追加しない");
+assert.ok(consulting.includes("calculateStandardQuantity") && consulting.includes("表示した業務種類・適用範囲・計算条件を確認"), "条件確認と標準数量なしに標準歩掛を追加しない");
 assert.ok(consulting.includes("CONSULTING_RULE_PACK") && consulting.includes("国交省基準の適用条件") && consulting.includes("source-table-crosschecked"), "国交省ページ照合済みの設計・調査・地質条件を使用する");
 assert.ok(!html.includes('id="analyticsConsent"') && !html.includes('id="analyticsAcceptButton"') && !html.includes('id="analyticsDeclineButton"'), "アクセス解析の同意ポップアップを表示しない");
 assert.ok(!html.includes('id="analyticsSettingsButton"') && !analytics.includes("readConsent") && !analytics.includes("writeConsent"), "アクセス解析の同意保存と設定変更UIを残さない");

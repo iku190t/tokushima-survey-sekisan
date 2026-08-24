@@ -7,7 +7,7 @@
   <meta name="description" content="設計、測量、調査・計画、地質を年度別技術者単価と根拠表示付きで計算するWeb業務積算ソフト">
   <meta name="author" content="株式会社アイズ測量">
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="styles.css?v=20260824-6">
+  <link rel="stylesheet" href="styles.css?v=20260824-7">
 </head>
 <body data-business-scope="design">
   <header class="app-header">
@@ -58,7 +58,7 @@
           <button id="restoreDraftButton" class="button primary" type="button">前回データを復元</button>
         </div>
       </section>
-      <section class="project-strip">
+      <section class="project-strip business-project-strip">
         <label class="field">
           <span>見積提出先（任意）</span>
           <select id="jurisdictionSelect" aria-describedby="masterStatusText"></select>
@@ -93,7 +93,7 @@
         </div>
       </details>
 
-      <section class="accuracy-strip" aria-live="polite">
+      <section class="accuracy-strip business-status-strip" aria-live="polite">
         <span class="accuracy-icon" aria-hidden="true">✓</span>
         <div>
           <strong id="masterStatusTitle">収録資料を確認中</strong>
@@ -101,9 +101,9 @@
         </div>
       </section>
 
-      <div class="workspace-grid">
+      <div class="workspace-grid business-workspace">
         <div class="workspace-main">
-          <section class="card add-card no-print">
+          <section class="card add-card business-add-card no-print">
             <div class="card-title-row">
               <div>
                 <p class="section-kicker">WORK ITEM</p>
@@ -138,7 +138,7 @@
             </div>
           </section>
 
-          <section class="card table-card">
+          <section class="card table-card business-detail-card">
             <div class="card-title-row">
               <div>
                 <p class="section-kicker">ESTIMATE DETAIL</p>
@@ -168,7 +168,7 @@
             </div>
           </section>
 
-          <section class="card no-print">
+          <section class="card business-cost-card no-print">
             <div class="card-title-row">
               <div>
                 <p class="section-kicker">ADDITIONAL COSTS</p>
@@ -193,9 +193,9 @@
           </section>
         </div>
 
-        <aside class="summary-card">
+        <aside class="summary-card business-summary-card">
           <p class="section-kicker">COST SUMMARY</p>
-          <h2 id="surveySummaryHeading">案件全体の測量積算結果</h2>
+          <h2 id="surveySummaryHeading">測量業務の積算結果</h2>
           <div class="grand-total">
             <span>税込合計</span>
             <strong id="totalAmount">¥0</strong>
@@ -213,38 +213,23 @@
     </section>
 
     <section id="consultingView" class="view active">
-      <section class="project-strip consulting-project-strip">
-        <label class="field"><span>業務名（共通）</span><input id="consultingProjectName" type="text" placeholder="例：○○地区 測量・地質調査・道路設計業務"></label>
-        <label class="field compact-field"><span>積算年度</span><select id="consultingFiscalYear"></select></label>
-        <div class="field static-field"><span>発注機関</span><strong id="consultingAuthorityText">—</strong></div>
-        <div class="field static-field"><span>単価・計算基準</span><strong id="consultingBasisText">—</strong></div>
+      <section class="project-strip business-project-strip">
+        <div class="field static-field"><span>見積提出先（任意）</span><strong id="consultingAuthorityText">—</strong></div>
+        <label class="field compact-field"><span>標準単価セット</span><select id="consultingFiscalYear"></select></label>
+        <label class="field"><span>業務名</span><input id="consultingProjectName" type="text" placeholder="例：○○地区道路設計業務"></label>
+        <label class="field compact-field"><span>積算日</span><input id="consultingEstimateDate" type="date"></label>
+        <label class="field"><span>発注者・メモ</span><input id="consultingProjectMemo" type="text" placeholder="任意"></label>
       </section>
 
-      <section class="accuracy-strip consulting-accuracy" aria-live="polite">
+      <section class="accuracy-strip business-status-strip" aria-live="polite">
         <span class="accuracy-icon" aria-hidden="true">✓</span>
         <div><strong id="consultingScopeTitle">設計業務の年度別技術者単価と計算方式</strong><span id="consultingScopeDescription">土木設計・調査計画を設計方式で計算します。歩掛を確認できない作業の人工は自動推定しません。</span></div>
       </section>
 
-      <section class="card no-print consulting-compliance-card">
-        <div class="card-title-row"><div><p class="section-kicker">APPLICABILITY GATE</p><h2>適用基準・通知・特記仕様の確認</h2></div><span id="consultingComplianceBadge" class="badge">未確認</span></div>
-        <div class="compliance-grid">
-          <label class="field"><span>積算基準体系</span><select id="consultingStandardSystem"></select><small id="consultingStandardSystemNote"></small></label>
-          <label class="field"><span>地方整備局等・発注機関</span><select id="consultingRegionalAuthority"></select><small id="consultingRegionalAuthorityLink"></small></label>
-          <label class="field"><span>適用通知・運用資料</span><input id="consultingNotificationReference" type="text" placeholder="通知名、URL、発出日、適用開始日"></label>
-          <label class="field"><span>特記仕様書・案件資料</span><input id="consultingSpecificationReference" type="text" placeholder="ファイル名、資料番号、版、該当ページ"></label>
-        </div>
-        <div class="compliance-checks">
-          <label class="check"><input id="consultingNotificationConfirmed" type="checkbox"><span>発注機関の適用通知・端数運用を確認した</span></label>
-          <label class="check"><input id="consultingSpecificationConfirmed" type="checkbox"><span>特記仕様書の適用範囲・追加・控除条件を確認した</span></label>
-          <label class="check"><input id="consultingPriceSourcesConfirmed" type="checkbox"><span>市場・材料・機械・運搬・見積の単価根拠を確認した</span></label>
-        </div>
-        <p id="consultingComplianceStatus" class="field-note">確認内容は案件データと帳票へ保存します。未確認のままでも試算できますが、提出前チェックに残ります。</p>
-      </section>
-
-      <div class="workspace-grid consulting-workspace">
+      <div class="workspace-grid business-workspace">
         <div class="workspace-main">
-          <section class="card add-card no-print">
-            <div class="card-title-row"><div><p class="section-kicker">RULE-BASED SERVICE ITEM</p><h2 id="consultingAddHeading">設計業務の条件・数量から積算</h2></div><span class="badge">数量→標準歩掛→職種別人工</span></div>
+          <section class="card add-card business-add-card no-print">
+            <div class="card-title-row"><div><p class="section-kicker">WORK ITEM</p><h2 id="consultingAddHeading">設計業務の条件・数量から積算</h2></div><span class="badge">数量→標準歩掛→職種別人工</span></div>
             <div class="verified-preset-row">
               <label class="field"><span>標準歩掛を検索</span><input id="consultingPresetSearch" type="search" placeholder="例：道路詳細、橋梁点検、地盤特性"></label>
               <label class="field compact-field"><span>基準書の項目分類</span><select id="consultingRuleGroup"></select></label>
@@ -252,7 +237,7 @@
               <div id="consultingPresetBasis" class="consulting-rule-basis"></div>
               <div id="consultingQuantityFields" class="consulting-quantity-fields"></div>
               <div id="consultingConditionFields" class="consulting-condition-fields"></div>
-              <label class="check consulting-condition-check"><input id="consultingConditionsConfirmed" type="checkbox"><span id="consultingConditionsLabel">選択した業務種類・適用範囲が特記仕様書と一致することを確認しました</span></label>
+              <label class="check consulting-condition-check"><input id="consultingConditionsConfirmed" type="checkbox"><span id="consultingConditionsLabel">表示した業務種類・適用範囲・計算条件を確認しました</span></label>
               <button id="addConsultingPresetButton" class="button primary" type="button">条件・数量から積算へ追加</button>
               <small id="consultingPresetStatus">業務種類を選ぶと、基準単位に応じた数量欄を表示します。人工を直接入力する必要はありません。</small>
             </div>
@@ -271,8 +256,8 @@
             </details>
           </section>
 
-          <section class="card table-card">
-            <div class="card-title-row"><div><p class="section-kicker">STAFFING DETAIL</p><h2 id="consultingDetailHeading">設計業務の職種別内訳</h2></div></div>
+          <section class="card table-card business-detail-card">
+            <div class="card-title-row"><div><p class="section-kicker">ESTIMATE DETAIL</p><h2 id="consultingDetailHeading">設計業務の積算内訳</h2></div></div>
             <div class="table-scroll">
               <table class="estimate-table consulting-table">
                 <thead><tr><th>業務区分・作業</th><th>積算条件</th><th>職種</th><th>人工</th><th>基準日額</th><th>直接人件費</th><th class="no-print"><span class="sr-only">操作</span></th></tr></thead>
@@ -282,8 +267,8 @@
             </div>
           </section>
 
-          <section class="card no-print">
-            <div class="card-title-row"><div><p class="section-kicker">DIRECT COSTS</p><h2>積上げ費用・計算条件</h2></div></div>
+          <section class="card business-cost-card no-print">
+            <div class="card-title-row"><div><p class="section-kicker">ADDITIONAL COSTS</p><h2>追加費用・条件</h2></div></div>
             <div class="cost-grid consulting-cost-grid">
               <label class="field" data-consulting-scope="design-planning"><span>設計・調査計画の積上直接経費</span><input class="consulting-cost" data-cost="designDirectExpenses" type="number" min="0" step="1"></label>
               <label class="field" data-consulting-scope="design-planning"><span>調査計画（測量方式）の積上直接経費</span><input class="consulting-cost" data-cost="surveyPlanningDirectExpenses" type="number" min="0" step="1"></label>
@@ -320,13 +305,13 @@
           </section>
         </div>
 
-        <aside class="summary-card">
-          <p class="section-kicker">COMBINED SUMMARY</p><h2>案件全体の総合積算結果</h2>
+        <aside class="summary-card business-summary-card">
+          <p class="section-kicker">COST SUMMARY</p><h2 id="consultingSummaryHeading">設計業務の積算結果</h2>
           <div class="grand-total"><span>税込合計</span><strong id="consultingTotalAmount">¥0</strong></div>
           <dl class="summary-list" id="consultingSummaryList"></dl>
           <div class="rate-chip"><span>地質一般・諸経費率</span><strong id="consultingGeologyRate">—</strong></div>
           <section class="validation-panel"><strong>提出前チェック</strong><ul id="consultingValidationList"></ul></section>
-          <button id="consultingPrintButton" class="button primary full no-print" type="button">総合内訳をPDF出力</button>
+          <button id="consultingPrintButton" class="button primary full no-print" type="button">帳票・PDFを作成</button>
           <p class="summary-note">測量を含める場合、現在の測量積算の税抜業務価格を合算し、消費税を一度だけ計算します。</p>
         </aside>
       </div>
@@ -656,8 +641,8 @@
   <script src="reference-case-engine.js?v=20260824-1"></script>
   <script src="document-import-engine.js?v=20260823-2"></script>
   <script src="document-reader.js?v=20260823-1"></script>
-  <script src="app.js?v=20260824-2"></script>
-  <script src="consulting.js?v=20260824-8"></script>
+  <script src="app.js?v=20260824-3"></script>
+  <script src="consulting.js?v=20260824-9"></script>
   <script src="document-import.js?v=20260823-9"></script>
   <script src="analytics.js?v=20260823-1"></script>
 </body>
