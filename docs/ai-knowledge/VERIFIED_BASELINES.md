@@ -1939,3 +1939,27 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `consulting.js` | `5A1B2030DDF0C50783E0637C3276764B15286314582ABFC3EE9DCD873320EF5B` |
 | `tests/test-ui-static.js` | `9B0DCB78293AD3FCCEBC986C6971C7333192A3A5B0EFAF2CA379219ABDE69015` |
 | `tests/test-consulting-ui.js` | `4C78A330664DEE4E8C88F9CB39E8CDDAF6214CA391CF41718D9EF40EF0660044` |
+
+## B-2026-08-24-11
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-24
+- 実装コミット: `81be9cb92bd3704ee35dc6802f5240bf8aff08d5`
+- 外部知能コミット: この項目を追加するコミット
+- GitHub Pagesビルド: `1171148519`（`built`、コミット`81be9cb92bd3704ee35dc6802f5240bf8aff08d5`）
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: 設計・調査計画・地質の数量欄直下の補助文を撤去し、数量入力欄と追加ボタンの枠を揃えた。整数・小数桁の制約と説明は入力属性、検証処理、`aria-description`へ保持した。
+
+### 合格した試験・実画面確認
+
+- `tests/test-*.js`全18本合格、`node --check consulting.js`、`git diff --check`合格。
+- ローカル版の設計・調査計画・地質で数量欄内の`small`要素0件を確認し、設計・調査計画で数量入力欄と追加ボタンの上端・下端差が0pxだった。
+- 公開版で`consulting.js?v=20260824-13`を読み込み、数量欄の補助文0件、数量入力欄と追加ボタンの上端・下端差0px、ブラウザー警告・エラー0件を確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `5FD6EE91A8E85C7F0601CB39175A503C17B8E2D884DD396080545C50414B53C3` |
+| `consulting.js` | `325A9146B1268BCCFE007F61D491F654540F44CFF362D44985206BE89707FF95` |
+| `tests/test-consulting-ui.js` | `A8A2ABFBE06204EFE3CB08BAB9259A6FF58B8EB33FB4FD5E37C3EF94415A8C11` |
