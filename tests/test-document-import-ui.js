@@ -110,5 +110,8 @@ assert.ok(css.includes(".pdf-click-sidebar { position: sticky; top: 18px; align-
 assert.ok(css.includes(".pdf-click-workbench { margin: 18px 0 0;") && css.includes("grid-template-columns: minmax(0,1fr) clamp(330px,22vw,390px)"), "PDF作業画面の重複余白を除き横幅を広く使う");
 assert.ok(html.includes("pdf-drop-title") && html.includes("pdf-drop-callout") && css.includes("border: 2px dashed #4e9b7c"), "項目・数量・単位のドロップ先を常時強調する");
 assert.ok(ui.includes('PDF横（狭い画面では下）の緑枠「PDFから項目・数量・単位を入れる」') && !ui.includes("候補が${matched.matches.length}件あります。右側"), "複数候補の案内は曖昧な『右側』ではなく操作枠名と配置を示す");
+assert.ok(html.includes('id="pdfManualAddHint"') && ui.includes("作業項目だけでも追加できます") && css.includes("#addPdfManualCandidateButton.is-ready"), "作業項目を選ぶと反映待ち追加ボタンと案内を強調する");
+assert.ok(ui.includes("const inputPending = !(quantity > 0)") && ui.includes("quantity: inputPending ? null : quantity") && ui.includes("splitSurveyQuantityUnit"), "数量・単位未入力でも項目を入力待ち候補にし、数字付き単位を分離する");
+assert.ok(app.includes("数量未入力（計算対象外）") && app.includes("!line.inputPending") && consulting.includes("職種・人工未入力") && consulting.includes("!line.inputPending"), "未入力行を4業務画面に明示し計算対象から除外する");
 
 console.log("OK: document import review UI and safe apply wiring checks passed");

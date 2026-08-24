@@ -42,6 +42,12 @@ assert.strictEqual(importEngine.convertSurveyQuantity(1, "standard", photoItem).
 
 const areaItem = masters[2].workItems.find((item) => catalog.normalize(item.unit) === "m2");
 assert.ok(areaItem, "面積単位の測量項目がある");
+const standardAreaParts = importEngine.splitSurveyQuantityUnit(`${areaItem.standardQuantity}${areaItem.unit}`, areaItem);
+assert.strictEqual(standardAreaParts.unitId, "standard", "10,000m²等は標準単位として優先判定する");
+assert.strictEqual(standardAreaParts.quantityText, "", "標準単位内の10,000を積算数量へ誤入力しない");
+const combinedAreaParts = importEngine.splitSurveyQuantityUnit(`12${areaItem.unit}`, areaItem);
+assert.strictEqual(combinedAreaParts.unitId, "base", "12m²等から単位を分離する");
+assert.strictEqual(combinedAreaParts.quantityText, "12", "標準単位でない数字＋単位から数字だけを数量へ分離する");
 assert.strictEqual(importEngine.detectSurveyUnitId("12筆", areaItem), "筆", "PDFの筆を資料単位として認識する");
 assert.strictEqual(importEngine.convertSurveyQuantity(12, "筆", areaItem).compatible, false, "筆を面積へ根拠なく換算しない");
 assert.strictEqual(importEngine.detectSurveyUnitId("12筆", { unit: "筆", standardQuantity: 1 }), "base", "積算項目の単位が筆ならPDF単位を受け付ける");

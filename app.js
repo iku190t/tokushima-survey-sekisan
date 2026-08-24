@@ -541,7 +541,7 @@
     const master = activeMaster();
     const prepared = Object.assign({}, estimate, {
       lines: estimate.lines.map((line) => ({ ...line, masterItem: master.workItems.find((item) => item.code === line.code) }))
-        .filter((line) => line.masterItem)
+        .filter((line) => line.masterItem && !line.inputPending && Number(line.quantity) > 0)
     });
     return window.SekisanEngine.calculateEstimate(prepared, master);
   }
@@ -626,7 +626,20 @@
   function renderLines(result) {
     const master = activeMaster();
     const visibleLines = result.lines;
-    $("lineTableBody").innerHTML = visibleLines.map((calculated) => {
+    const pendingHtml = estimate.lines.filter((line) => line.inputPending).map((line) => {
+      const item = master.workItems.find((entry) => entry.code === line.code);
+      if (!item) return "";
+      const qRule = quantityRule(item, master);
+      const itemEditorOptions = surveyItemsForScope(master).map((candidate) => `<option value="${h(candidate.code)}" ${candidate.code === line.code ? "selected" : ""}>${h(candidate.code)}｜${h(candidate.name)}</option>`).join("");
+      const importSource = line.importSource ? `<small>資料取込：${h(line.importSource.fileName || "PDF")} p.${h(line.importSource.page || 1)}／${line.importSource.method === "ocr" ? "OCR" : "文字抽出"}／要原文照合</small>` : "";
+      return `<tr data-line-id="${h(line.id)}" class="pending-input-row ${recentlyImportedSurveyLineIds.has(line.id) ? "recently-imported-line" : ""}">
+        <td><select class="line-code table-item-select" aria-label="作業項目を変更">${itemEditorOptions}</select><span class="item-code">クリックして作業項目を変更</span>${importSource}<span class="pending-input-label">数量未入力（計算対象外）</span></td>
+        <td><input class="table-input line-quantity" type="number" min="${qRule.min}" step="${qRule.step}" inputmode="${qRule.integer ? "numeric" : "decimal"}" data-quantity-decimals="${qRule.decimals}" aria-description="${h(item.unit)}は${h(quantityLabel(qRule))}" value="" placeholder="未入力"><span> ${h(item.unit)}</span><small>${h(quantityLabel(qRule))}</small></td>
+        <td><small>数量を入力すると計算を開始します。</small></td><td>—</td><td>—</td><td>—</td>
+        <td class="no-print"><button class="delete-line" type="button" title="削除" aria-label="${h(item.name)}を削除">×</button></td>
+      </tr>`;
+    }).join("");
+    const calculatedHtml = visibleLines.map((calculated) => {
       const line = estimate.lines.find((entry) => entry.id === calculated.id);
       const item = master.workItems.find((entry) => entry.code === calculated.code);
       const qRule = quantityRule(item, master);
@@ -666,7 +679,8 @@
         <td class="no-print"><button class="delete-line" type="button" title="削除" aria-label="${h(calculated.name)}を削除">×</button></td>
       </tr>`;
     }).join("");
-    $("emptyState").classList.toggle("hidden", visibleLines.length > 0);
+    $("lineTableBody").innerHTML = pendingHtml + calculatedHtml;
+    $("emptyState").classList.toggle("hidden", estimate.lines.length > 0);
   }
 
   function renderSummary(result) {
@@ -699,7 +713,11 @@
     if (master.verificationStatus === "standard-reference") issues.push({ severity: "warn", text: "全国標準単価セットです。地域条件、普通作業員単価、材料・市場・機械単価、補正、適用通知を発注図書で確認してください。" });
     else if (master.verificationStatus === "official-reference") issues.push({ severity: "warn", text: "国土交通省の公開基準参照版です。地方整備局等の適用通知・特記仕様・正解積算と照合してください。" });
     else if (master.verificationStatus !== "verified") issues.push({ severity: "warn", text: "利用者作成マスターです。発注機関・年度・出典と正解積算を照合してください。" });
-    if (!result.lines.length) issues.push({ severity: "info", text: "作業項目がまだありません。" });
+    if (!estimate.lines.length) issues.push({ severity: "info", text: "作業項目がまだありません。" });
+    estimate.lines.filter((line) => line.inputPending).forEach((line) => {
+      const item = master.workItems.find((entry) => entry.code === line.code);
+      issues.push({ severity: "error", text: `${item?.name || line.code}：数量未入力のため計算対象外です。` });
+    });
     result.lines.forEach((calculated) => {
       const item = master.workItems.find((entry) => entry.code === calculated.code);
       const line = estimate.lines.find((entry) => entry.id === calculated.id);
@@ -720,7 +738,7 @@
     const hasError = issues.some((issue) => issue.severity === "error");
     const hasWarning = issues.some((issue) => issue.severity === "warn");
     panel.className = `validation-panel ${hasError ? "error" : hasWarning ? "warning" : "good"}`;
-    $("validationTitle").textContent = hasError ? "未確定項目があります" : hasWarning ? "確認が必要です" : result.lines.length ? "自動計算範囲は入力済み" : "提出前チェック";
+    $("validationTitle").textContent = hasError ? "未確定項目があります" : hasWarning ? "確認が必要です" : estimate.lines.length ? "自動計算範囲は入力済み" : "提出前チェック";
     const visible = issues.slice(0, 5);
     $("validationList").innerHTML = visible.length
       ? visible.map((issue) => `<li>${h(issue.text)}</li>`).join("") + (issues.length > visible.length ? `<li>ほか${issues.length - visible.length}件</li>` : "")
@@ -979,14 +997,16 @@
     (Array.isArray(entries) ? entries : []).forEach((entry) => {
       const item = master.workItems.find((candidate) => candidate.code === entry.code);
       if (!item) { rejected += 1; return; }
-      const quantity = window.SekisanEngine.normalizeQuantity(entry.quantity, item, master);
-      if (!(quantity > 0)) { rejected += 1; return; }
+      const requestedPending = entry.inputPending === true || entry.quantity == null || String(entry.quantity).trim() === "";
+      const quantity = requestedPending ? null : window.SekisanEngine.normalizeQuantity(entry.quantity, item, master);
+      if (!requestedPending && !(quantity > 0)) { rejected += 1; return; }
       const id = `line-import-${Date.now()}-${added}-${Math.random().toString(16).slice(2)}`;
       recentlyImportedSurveyLineIds.add(id);
       estimate.lines.push({
         id,
         code: item.code,
         quantity,
+        inputPending: requestedPending,
         correctionRate: 0,
         correctionSelections: {},
         conditionValue: item.conditionFormula?.default,
@@ -1202,6 +1222,7 @@
         estimate.lines = estimate.lines.map((line) => {
           const item = master.workItems.find((entry) => entry.code === line.code);
           if (!item) return line;
+          if (line.inputPending || line.quantity == null || String(line.quantity).trim() === "") return { ...line, quantity: null, inputPending: true };
           const quantity = window.SekisanEngine.normalizeQuantity(line.quantity, item, master);
           if (num(line.quantity) !== quantity) correctedQuantities += 1;
           return { ...line, quantity };
@@ -1447,7 +1468,13 @@
       if (!line) return;
       if (event.target.classList.contains("line-quantity")) {
         const item = activeMaster().workItems.find((entry) => entry.code === line.code);
-        if (event.target.value !== "") line.quantity = enforceQuantityPrecision(event.target, item, true);
+        if (event.target.value === "") {
+          line.quantity = null;
+          line.inputPending = true;
+        } else {
+          const quantity = enforceQuantityPrecision(event.target, item, true);
+          if (quantity > 0) { line.quantity = quantity; line.inputPending = false; }
+        }
       }
       if (event.target.classList.contains("line-correction")) line.correctionRate = num(event.target.value) / 100;
       if (event.target.classList.contains("line-condition")) line.conditionValue = Math.max(0, num(event.target.value));
@@ -1465,7 +1492,7 @@
         const item = activeMaster().workItems.find((entry) => entry.code === event.target.value);
         if (item) {
           line.code = item.code;
-          line.quantity = window.SekisanEngine.normalizeQuantity(line.quantity, item, activeMaster());
+          if (!line.inputPending && line.quantity != null) line.quantity = window.SekisanEngine.normalizeQuantity(line.quantity, item, activeMaster());
           line.correctionRate = 0;
           line.correctionSelections = {};
           line.conditionValue = item.conditionFormula?.default;
@@ -1476,7 +1503,9 @@
       }
       if (line && event.target.classList.contains("line-quantity")) {
         const item = activeMaster().workItems.find((entry) => entry.code === line.code);
-        line.quantity = normalizeQuantityInput(event.target, item, true);
+        const quantity = normalizeQuantityInput(event.target, item, true);
+        line.quantity = quantity;
+        line.inputPending = !(quantity > 0);
       }
       if (line && event.target.classList.contains("line-precision")) line.precisionRate = num(event.target.value);
       if (line && event.target.classList.contains("line-rule")) {

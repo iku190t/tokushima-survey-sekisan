@@ -143,7 +143,9 @@
 
   function currentResult() {
     const survey = app.getSurveyResult();
-    return engine.calculateEstimate(state(), master, rolePrices(), survey?.totals?.businessPrice || 0);
+    const current = state();
+    const calculationState = { ...current, lines: current.lines.filter((line) => !line.inputPending && line.role && Number(line.days) > 0) };
+    return engine.calculateEstimate(calculationState, master, rolePrices(), survey?.totals?.businessPrice || 0);
   }
 
   function renderYearAndProject() {
@@ -336,8 +338,22 @@
   function renderLines(result) {
     const current = state();
     const visibleLines = result.lines.filter((line) => scopedServices().some((entry) => entry.id === line.serviceType));
-    $("consultingEmptyState").hidden = visibleLines.length > 0;
-    $("consultingLineBody").innerHTML = visibleLines.map((line) => {
+    const pendingLines = current.lines.filter((line) => line.inputPending && scopedServices().some((entry) => entry.id === line.serviceType));
+    $("consultingEmptyState").hidden = visibleLines.length + pendingLines.length > 0;
+    const pendingHtml = pendingLines.map((line) => {
+      const selectedService = service(line.serviceType);
+      const roles = master.roleGroups[selectedService.roleGroup] || [];
+      const roleChoices = '<option value="">職種を選択してください</option>' + roles.map((role) => `<option value="${h(role.id)}" ${role.id === line.role ? "selected" : ""}>${h(role.name)}</option>`).join("");
+      const imported = line.importSource;
+      return `<tr data-consulting-line="${h(line.id)}" class="pending-input-row ${recentlyImportedConsultingLineIds.has(line.id) ? "recently-imported-line" : ""}">
+        <td><strong>${h(line.taskName)}</strong><small>${h(selectedService.name)}${imported ? `／資料取込：${h(imported.fileName || "PDF")} p.${h(imported.page || 1)}（要原文照合）` : ""}</small><span class="pending-input-label">${line.role ? "人工未入力" : "職種・人工未入力"}（計算対象外）</span></td>
+        <td><strong>作業項目のみ取込済み</strong><small>未入力項目を補うと計算を開始します。</small></td>
+        <td><select class="consulting-line-role" aria-label="職種">${roleChoices}</select></td>
+        <td><input class="consulting-line-days" type="number" min="0.001" step="0.001" inputmode="decimal" data-decimals="3" value="" placeholder="未入力"><span class="input-unit">人日</span><small>小数第3位まで</small></td>
+        <td>—</td><td>—</td><td class="no-print"><button class="icon-button danger-text delete-consulting-line" type="button" aria-label="削除">×</button></td>
+      </tr>`;
+    }).join("");
+    const calculatedHtml = visibleLines.map((line) => {
       const role = roleDefinition(line.serviceType, line.role);
       const sourceLine = current.lines.find((entry) => entry.id === line.id);
       const source = sourceLine?.verifiedSource;
@@ -361,6 +377,7 @@
         <td class="no-print"><button class="icon-button danger-text delete-consulting-line" type="button" aria-label="削除">×</button></td>
       </tr>`;
     }).join("");
+    $("consultingLineBody").innerHTML = pendingHtml + calculatedHtml;
   }
 
   function renderCostsAndOptions() {
@@ -375,7 +392,8 @@
   function validationIssues(result) {
     const issues = [];
     const current = state();
-    if (!result.lines.length) issues.push("積算内訳がありません。条件・数量から作業を追加してください。");
+    if (!current.lines.length) issues.push("積算内訳がありません。条件・数量から作業を追加してください。");
+    current.lines.filter((line) => line.inputPending).forEach((line) => issues.push(`${line.taskName || "作業項目"}：${line.role ? "人工" : "職種・人工"}未入力のため計算対象外です。`));
     if (result.lines.some((line) => line.lineType !== "amount" && !line.dailyRate)) issues.push("基準日額が0円の職種があります。年度単価を確認してください。");
     if (result.lines.some((line) => line.calculationSystem === "geology" && line.lineType !== "amount") && !current.costs.geologyDirectNonLabor && !current.costs.geologyIndirect) issues.push("地質一般調査の機械・材料・運搬・仮設等が0円です。不要か未入力か確認してください。");
     if (current.options.includeSurvey && !app.getSurveyResult().lines.length) issues.push("測量積算を合算する設定ですが、測量作業項目がありません。");
@@ -669,9 +687,10 @@
     (Array.isArray(detail?.lines) ? detail.lines : []).forEach((entry) => {
       const selectedService = master.serviceTypes.find((candidate) => candidate.id === entry.serviceType);
       const roles = selectedService ? master.roleGroups[selectedService.roleGroup] || [] : [];
-      if (!selectedService || !roles.some((role) => role.id === entry.role)) { rejected += 1; return; }
-      const days = engine.normalizeDays(entry.days);
-      if (!(days > 0)) { rejected += 1; return; }
+      if (!selectedService) { rejected += 1; return; }
+      const role = roles.some((candidate) => candidate.id === entry.role) ? entry.role : "";
+      const days = entry.days == null || String(entry.days).trim() === "" ? null : engine.normalizeDays(entry.days);
+      const inputPending = entry.inputPending === true || !role || !(days > 0);
       const id = `consult-import-${Date.now()}-${added}-${Math.random().toString(16).slice(2)}`;
       recentlyImportedConsultingLineIds.add(id);
       current.lines.push({
@@ -679,8 +698,9 @@
         serviceType: selectedService.id,
         taskName: String(entry.taskName || "資料取込作業").trim().slice(0, 120) || "資料取込作業",
         referenceRuleId: String(entry.referenceRuleId || "").slice(0, 120),
-        role: entry.role,
-        days,
+        role,
+        days: inputPending ? null : days,
+        inputPending,
         importSource: {
           fileName: String(entry.fileName || detail.fileName || "").slice(0, 180),
           page: Math.max(1, Math.floor(Number(entry.page) || 1)),
@@ -889,12 +909,22 @@
     $("consultingLineBody").addEventListener("change", (event) => {
       const row = event.target.closest("tr[data-consulting-line]");
       const line = state().lines.find((entry) => entry.id === row?.dataset.consultingLine);
-      if (line && event.target.classList.contains("consulting-line-days")) line.days = engine.normalizeDays(event.target.value);
+      if (line && event.target.classList.contains("consulting-line-role")) line.role = event.target.value;
+      if (line && event.target.classList.contains("consulting-line-days")) line.days = event.target.value === "" ? null : engine.normalizeDays(event.target.value);
+      if (line && (event.target.classList.contains("consulting-line-role") || event.target.classList.contains("consulting-line-days"))) line.inputPending = !line.role || !(Number(line.days) > 0);
       updateAndRender();
     });
     $("consultingLineBody").addEventListener("input", (event) => {
       if (!event.target.classList.contains("consulting-line-days")) return;
-      enforceDecimalInput(event.target, 3, engine.normalizeDays, true);
+      const row = event.target.closest("tr[data-consulting-line]");
+      const line = state().lines.find((entry) => entry.id === row?.dataset.consultingLine);
+      const days = event.target.value === "" ? null : enforceDecimalInput(event.target, 3, engine.normalizeDays, true);
+      if (line) {
+        line.days = days;
+        line.inputPending = !line.role || !(Number(days) > 0);
+        renderSummary(currentResult());
+        app.saveDraft();
+      }
     });
     $("consultingLineBody").addEventListener("click", (event) => {
       const button = event.target.closest(".delete-consulting-line");

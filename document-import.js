@@ -196,6 +196,7 @@
       $("pdfManualConsultingService").innerHTML = "";
       $("pdfManualConsultingTask").value = "";
       $("pdfManualConsultingRole").innerHTML = manualRoleOptions("");
+      updateManualAddButtonState();
       return;
     }
     const kind = $("pdfManualKind").value;
@@ -203,6 +204,7 @@
     $("pdfManualConsultingService").value = rule.serviceType;
     $("pdfManualConsultingTask").value = rule.label;
     updateManualConsultingRoles();
+    updateManualAddButtonState();
   }
 
   function clearManualInputValues() {
@@ -265,14 +267,42 @@
     else showEmptyManualMapper();
   }
 
+  function updateManualAddButtonState() {
+    const kind = $("pdfManualKind").value;
+    const ready = isSurveyBusinessKind(kind)
+      ? Boolean($("pdfManualSurveyCode").value)
+      : isConsultingBusinessKind(kind)
+        ? Boolean(selectedManualConsultingRule())
+        : Boolean($("pdfManualMetadataValue").value.trim());
+    const button = $("addPdfManualCandidateButton");
+    const hint = $("pdfManualAddHint");
+    button.disabled = !ready;
+    button.classList.toggle("is-ready", ready);
+    if (!currentEditingTarget) button.textContent = ready && (isSurveyBusinessKind(kind) || isConsultingBusinessKind(kind)) ? "この作業項目を反映待ちへ追加" : "反映待ちへ追加";
+    hint.classList.toggle("is-ready", ready);
+    hint.textContent = ready
+      ? isSurveyBusinessKind(kind)
+        ? "作業項目だけでも追加できます。数量・単位は積算画面で後から入力できます。"
+        : isConsultingBusinessKind(kind)
+          ? "作業項目だけでも追加できます。職種・人工は各業務画面で後から入力できます。"
+          : "この内容を反映待ちへ追加できます。"
+      : isSurveyBusinessKind(kind)
+        ? "作業項目を選ぶと、数量・単位が未入力でも反映待ちへ追加できます。"
+        : isConsultingBusinessKind(kind)
+          ? "作業項目を選ぶと、職種・人工が未入力でも反映待ちへ追加できます。"
+          : "反映する内容を入力してください。";
+  }
+
   function updateManualSurveyConversion() {
     const item = activeMaster().workItems.find((entry) => entry.code === $("pdfManualSurveyCode").value);
     if (!item) {
       $("pdfManualSurveyConversion").textContent = "項目を選択してください。";
+      updateManualAddButtonState();
       return null;
     }
     if ($("pdfManualSurveyQuantity").value === "" || !$("pdfManualSurveySourceUnit").value) {
-      $("pdfManualSurveyConversion").textContent = "数量と単位を確認して入力してください。";
+      $("pdfManualSurveyConversion").textContent = "数量・単位は未入力のまま追加でき、積算画面で後から入力できます。";
+      updateManualAddButtonState();
       return null;
     }
     const converted = analyzer.convertSurveyQuantity($("pdfManualSurveyQuantity").value, $("pdfManualSurveySourceUnit").value, item);
@@ -285,6 +315,7 @@
     $("pdfManualSurveyConversion").textContent = converted.factor === 1
       ? `${raw}${converted.sourceUnitLabel} ＝ ${result}${item.unit}（積算へ反映）`
       : `${raw} × ${converted.sourceUnitLabel} ＝ ${result}${item.unit}（積算へ反映）`;
+    updateManualAddButtonState();
     return converted;
   }
 
@@ -298,11 +329,8 @@
     }
     const rule = window.SekisanEngine.quantityRule(item, activeMaster());
     const options = analyzer.surveyUnitOptions(item);
-    const sourceText = [manualUnitLineId, manualQuantityLineId, manualItemLineId, currentManualLineId]
-      .map((lineId) => clickLines.get(lineId)?.contextText || clickLines.get(lineId)?.text || "").join(" ");
     const previous = preferredUnitId || $("pdfManualSurveySourceUnit").value;
-    const detected = analyzer.detectSurveyUnitId(sourceText, item);
-    const selected = options.some((option) => option.id === previous) ? previous : detected;
+    const selected = options.some((option) => option.id === previous) ? previous : "";
     const directOptions = options.filter((option) => !option.group);
     const groupedOptions = [...new Set(options.map((option) => option.group).filter(Boolean))].map((group) => `<optgroup label="${h(group)}">${options.filter((option) => option.group === group).map((option) => `<option value="${h(option.id)}" ${option.id === selected ? "selected" : ""}>${h(option.label)}</option>`).join("")}</optgroup>`).join("");
     $("pdfManualSurveySourceUnit").innerHTML = '<option value="">単位を選択してください</option>' + directOptions.map((option) => `<option value="${h(option.id)}" ${option.id === selected ? "selected" : ""}>${h(option.label)}</option>`).join("") + groupedOptions;
@@ -340,6 +368,7 @@
       populateManualSurveyItems();
     }
     if (consultingKind) updateManualConsultingServices();
+    updateManualAddButtonState();
   }
 
   function showEmptyManualMapper() {
@@ -353,9 +382,11 @@
     populateManualSurveyItems();
     $("addPdfManualCandidateButton").textContent = "反映待ちへ追加";
     $("addPdfManualCandidateButton").disabled = true;
+    $("addPdfManualCandidateButton").classList.remove("is-ready");
     $("ignorePdfManualLineButton").disabled = true;
     updateManualKind();
     clearManualInputValues();
+    updateManualAddButtonState();
     $("pdfManualMapper").hidden = false;
   }
 
@@ -427,7 +458,7 @@
       manualSourceLineIds.add(lineId);
     }
     $("pdfManualMapper").hidden = false;
-    $("addPdfManualCandidateButton").disabled = false;
+    updateManualAddButtonState();
     $("ignorePdfManualLineButton").disabled = false;
     if (options.scroll !== false) $("pdfManualMapper").scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
@@ -514,9 +545,13 @@
       manualUnitLineId = lineId;
       const item = activeMaster().workItems.find((entry) => entry.code === $("pdfManualSurveyCode").value);
       if (item) {
-        const unitId = analyzer.detectSurveyUnitId(line.text, item);
-        if (unitId) {
-          updateManualSurveyRule(unitId);
+        const parsed = analyzer.splitSurveyQuantityUnit(line.text, item);
+        if (parsed.unitId) {
+          updateManualSurveyRule(parsed.unitId);
+          if (parsed.quantityText && $("pdfManualSurveyQuantity").value === "") {
+            $("pdfManualSurveyQuantity").value = parsed.quantityText;
+            updateManualSurveyConversion();
+          }
           app.notify(`単位「${line.text}」を緑枠の単位欄へ入れました`);
         } else {
           updateManualSurveyRule("");
@@ -610,10 +645,12 @@
     const item = target.item;
     if (target.type === "metadata") return `${item.label}：${item.displayValue || item.value}`;
     if (item.kind === "survey") {
+      if (item.inputPending) return `${item.label}：数量未入力（計算対象外）`;
       const source = item.sourceQuantity != null && item.sourceUnitLabel ? `（資料：${item.sourceQuantity} × ${item.sourceUnitLabel}）` : "";
       return `${item.label}：${Number(item.quantity).toLocaleString("ja-JP", { maximumFractionDigits: 6 })}${item.unit}${source}`;
     }
     if (item.kind === "consulting") {
+      if (item.inputPending) return `${item.taskName}：${item.role ? "人工未入力" : "職種・人工未入力"}（計算対象外）`;
       const roleName = rolesFor(item.serviceType).find((role) => role.id === item.role)?.name || item.role;
       return `${item.taskName}／${roleName}：${item.days}人日`;
     }
@@ -754,25 +791,35 @@
 
   function addManualCandidate() {
     const primaryLineId = manualItemLineId || manualConsultingTaskLineId || currentManualLineId || manualQuantityLineId || manualConsultingDaysLineId || manualConsultingRoleLineId;
-    const line = clickLines.get(primaryLineId);
-    if (!line || !currentAnalysis) return;
+    if (!currentAnalysis) return;
+    const selectedItem = activeMaster().workItems.find((entry) => entry.code === $("pdfManualSurveyCode").value);
+    const selectedRule = selectedManualConsultingRule();
+    const line = clickLines.get(primaryLineId) || { page: 1, method: "text", text: selectedItem?.name || selectedRule?.label || $("pdfManualMetadataValue").value };
     const source = { page: line.page, method: line.method, confidence: "medium", sourceText: line.text, selected: true, applied: false, manual: true };
     const editingTarget = currentEditingTarget;
     let target;
     if (isSurveyBusinessKind($("pdfManualKind").value)) {
       const item = activeMaster().workItems.find((entry) => entry.code === $("pdfManualSurveyCode").value);
       if (!item) { app.notify("反映する測量項目を選択してください"); return; }
-      if ($("pdfManualSurveyQuantity").value === "") { app.notify("資料の数量を入力してください"); return; }
-      if (!$("pdfManualSurveySourceUnit").value) { app.notify("資料の単位を選択してください"); return; }
-      const converted = analyzer.convertSurveyQuantity($("pdfManualSurveyQuantity").value, $("pdfManualSurveySourceUnit").value, item);
-      if (!converted.compatible) { app.notify(`${converted.sourceUnitLabel.replace("（固定換算なし）", "")}から${item.unit}へ固定換算できません。同じ単位の積算項目を選んでください`); return; }
-      const quantity = window.SekisanEngine.normalizeQuantity(converted.quantity, item, activeMaster());
-      if (!(quantity > 0)) { app.notify("換算後の積算数量は0より大きい値を入力してください"); return; }
+      const hasQuantity = $("pdfManualSurveyQuantity").value !== "";
+      const hasUnit = Boolean($("pdfManualSurveySourceUnit").value);
+      const converted = hasQuantity && hasUnit ? analyzer.convertSurveyQuantity($("pdfManualSurveyQuantity").value, $("pdfManualSurveySourceUnit").value, item) : null;
+      const quantity = converted?.compatible ? window.SekisanEngine.normalizeQuantity(converted.quantity, item, activeMaster()) : null;
+      const inputPending = !(quantity > 0);
+      const surveyValues = {
+        kind: "survey", code: item.code, label: item.name, unit: item.unit,
+        quantity: inputPending ? null : quantity,
+        inputPending,
+        sourceQuantity: hasQuantity ? Number($("pdfManualSurveyQuantity").value) : null,
+        sourceUnitId: hasUnit ? $("pdfManualSurveySourceUnit").value : "",
+        sourceUnitLabel: converted?.sourceUnitLabel || "",
+        selected: true
+      };
       if (editingTarget) {
-        Object.assign(editingTarget.item, { kind: "survey", code: item.code, label: item.name, unit: item.unit, quantity, sourceQuantity: converted.rawQuantity, sourceUnitId: converted.sourceUnitId, sourceUnitLabel: converted.sourceUnitLabel, selected: true });
+        Object.assign(editingTarget.item, surveyValues);
         target = editingTarget;
       } else {
-        const candidate = { ...source, id: `manual-${++manualCandidateSequence}`, kind: "survey", code: item.code, label: item.name, unit: item.unit, quantity, sourceQuantity: converted.rawQuantity, sourceUnitId: converted.sourceUnitId, sourceUnitLabel: converted.sourceUnitLabel };
+        const candidate = { ...source, id: `manual-${++manualCandidateSequence}`, ...surveyValues };
         currentAnalysis.candidates.push(candidate);
         target = { type: "candidate", item: candidate };
       }
@@ -782,12 +829,13 @@
       const taskName = rule?.label || "";
       const days = Math.round(Math.max(0, Number($("pdfManualConsultingDays").value) || 0) * 1000) / 1000;
       if (!rule) { app.notify("積算基準の作業区分と作業項目を選択してください"); return; }
-      if (days <= 0) { app.notify("人工は0より大きい値を入力してください"); return; }
+      const role = $("pdfManualConsultingRole").value;
+      const inputPending = !role || !(days > 0);
       if (editingTarget) {
-        Object.assign(editingTarget.item, { kind: "consulting", serviceType, taskName, referenceRuleId: rule.id, role: $("pdfManualConsultingRole").value, days, selected: true });
+        Object.assign(editingTarget.item, { kind: "consulting", serviceType, taskName, referenceRuleId: rule.id, role, days: inputPending ? null : days, inputPending, selected: true });
         target = editingTarget;
       } else {
-        const candidate = { ...source, id: `manual-${++manualCandidateSequence}`, kind: "consulting", serviceType, taskName, referenceRuleId: rule.id, role: $("pdfManualConsultingRole").value, days };
+        const candidate = { ...source, id: `manual-${++manualCandidateSequence}`, kind: "consulting", serviceType, taskName, referenceRuleId: rule.id, role, days: inputPending ? null : days, inputPending };
         currentAnalysis.candidates.push(candidate);
         target = { type: "candidate", item: candidate };
       }
@@ -811,7 +859,7 @@
       app.notify(`「${changedLabel}」へ変更しました`);
       return;
     }
-    const sourceLineIds = manualSourceLineIds.size ? [...manualSourceLineIds] : [primaryLineId];
+    const sourceLineIds = (manualSourceLineIds.size ? [...manualSourceLineIds] : [primaryLineId]).filter(Boolean);
     sourceLineIds.forEach((lineId) => {
       const targets = clickLineTargets.get(lineId) || [];
       if (!targets.includes(target)) targets.push(target);
@@ -837,8 +885,8 @@
         return;
       }
       const source = { fileName: currentFileName, page: item.page, method: item.method, confidence: item.confidence, sourceText: item.sourceText };
-      if (item.kind === "survey") survey.push({ ...source, code: item.code, quantity: item.quantity });
-      if (item.kind === "consulting") consulting.push({ ...source, serviceType: item.serviceType, taskName: item.taskName, referenceRuleId: item.referenceRuleId, role: item.role, days: item.days });
+      if (item.kind === "survey") survey.push({ ...source, code: item.code, quantity: item.quantity, inputPending: item.inputPending });
+      if (item.kind === "consulting") consulting.push({ ...source, serviceType: item.serviceType, taskName: item.taskName, referenceRuleId: item.referenceRuleId, role: item.role, days: item.days, inputPending: item.inputPending });
       if (item.kind === "consultingCost") costs[item.costKey] = Math.max(0, Math.floor(Number(item.amount) || 0));
     });
     return { selected, survey, consulting, costs, metadata };
@@ -1091,7 +1139,9 @@
     $("pdfManualSurveyRegulationGroup").addEventListener("change", populateManualSurveyCategories);
     $("pdfManualSurveyCategory").addEventListener("change", populateManualSurveyItems);
     $("pdfManualSurveyCode").addEventListener("change", () => {
+      $("pdfManualSurveySourceUnit").value = "";
       updateManualSurveyRule();
+      updateManualAddButtonState();
     });
     $("pdfManualSurveySourceUnit").addEventListener("change", () => updateManualSurveyRule($("pdfManualSurveySourceUnit").value));
     $("pdfManualSurveyQuantity").addEventListener("input", (event) => {
@@ -1101,7 +1151,8 @@
     });
     $("pdfManualConsultingDays").addEventListener("input", (event) => enforceDecimalInput(event.target, 3, (value) => Math.round(Math.max(0, Number(value) || 0) * 1000) / 1000));
     $("pdfManualConsultingRuleGroup").addEventListener("change", () => updateManualConsultingItemsForGroup());
-    $("pdfManualConsultingTaskTemplate").addEventListener("change", syncManualConsultingRule);
+    $("pdfManualConsultingTaskTemplate").addEventListener("change", () => { syncManualConsultingRule(); updateManualAddButtonState(); });
+    $("pdfManualMetadataValue").addEventListener("input", updateManualAddButtonState);
     $("addPdfManualCandidateButton").addEventListener("click", addManualCandidate);
     $("pdfClickSelectedList").addEventListener("click", (event) => {
       const removeButton = event.target.closest("[data-pdf-remove-target]");

@@ -19,6 +19,7 @@
     return String(value ?? "").replace(/[①-⑳]/g, (char) => String(char.codePointAt(0) - 0x2460 + 1))
       .replace(/[０-９．，：－＋（）／　]/g, (char) => HALFWIDTH[FULLWIDTH.indexOf(char)] || char)
       .replace(/[㎢]/g, "km2").replace(/km²/gi, "km2").replace(/平方キロメートル/g, "km2")
+      .replace(/[㎡]/g, "m2").replace(/m²/gi, "m2").replace(/平方メートル/g, "m2")
       .replace(/[㎞]/g, "km").replace(/キロメートル/g, "km").replace(/人・日/g, "人日")
       .replace(/\r\n?/g, "\n");
   }
@@ -50,8 +51,8 @@
   }
 
   function canonicalUnit(unit) {
-    if (unitCatalog) return unitCatalog.normalize(unit);
-    const value = compact(unit).replace(/㎡/g, "m2").replace(/m²/gi, "m2");
+    const value = compact(normalizeCharacters(unit)).replace(/㎡/g, "m2").replace(/m²/gi, "m2");
+    if (unitCatalog) return unitCatalog.definition(value)?.id || value;
     if (value === "平方メートル" || value === "平方m") return "m2";
     if (value === "平方キロメートル" || value === "平方km" || value === "平方キロ") return "km2";
     return value;
@@ -108,6 +109,16 @@
     }
     if (target && source.includes(target)) return "base";
     return "";
+  }
+
+  function splitSurveyQuantityUnit(text, item) {
+    const source = normalizeCharacters(text).trim();
+    const unitId = detectSurveyUnitId(source, item);
+    const compactSource = source.replace(/[\s,，]/g, "");
+    const standardToken = canonicalUnit(`${item?.standardQuantity ?? ""}${item?.unit || ""}`);
+    const isStandardUnit = unitId === "standard" && standardToken && canonicalUnit(compactSource).includes(standardToken);
+    const numeric = source.replace(/,/g, "").match(/[0-9]+(?:\.[0-9]+)?/);
+    return { unitId, quantityText: numeric && !isStandardUnit ? numeric[0] : "", isStandardUnit };
   }
 
   function convertSurveyQuantity(value, sourceUnitId, item) {
@@ -436,5 +447,5 @@
     return { metadata: detectMetadata(safePages, jurisdictions), pages: safePages, candidates, warnings };
   }
 
-  return { normalizeCharacters, compact, numericMatches, surveyUnitOptions, detectSurveyUnitId, convertSurveyQuantity, detectMetadata, analyze };
+  return { normalizeCharacters, compact, numericMatches, surveyUnitOptions, detectSurveyUnitId, splitSurveyQuantityUnit, convertSurveyQuantity, detectMetadata, analyze };
 });

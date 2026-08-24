@@ -7,7 +7,7 @@
   <meta name="description" content="設計、測量、調査・計画、地質を年度別技術者単価と根拠表示付きで計算するWeb業務積算ソフト">
   <meta name="author" content="株式会社アイズ測量">
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="styles.css?v=20260824-12">
+  <link rel="stylesheet" href="styles.css?v=20260824-13">
 </head>
 <body data-business-scope="design">
   <header class="app-header">
@@ -378,6 +378,7 @@
                 <label class="field"><span>基本情報の項目</span><select id="pdfManualMetadataKey"><option value="projectName">業務名</option><option value="orderingParty">発注者</option><option value="department">担当部署</option><option value="contactName">担当者</option><option value="workLocation">業務場所</option><option value="contractPeriod">履行期間</option><option value="documentNumber">文書・業務番号</option><option value="documentDate">公告・資料日</option></select></label>
                 <label class="field"><span>反映する内容</span><input id="pdfManualMetadataValue" type="text"></label>
               </div>
+              <p id="pdfManualAddHint" class="pdf-manual-add-hint">作業項目を選ぶと、数量・単位が未入力でも反映待ちへ追加できます。</p>
               <div class="pdf-manual-actions"><button id="addPdfManualCandidateButton" class="button primary" type="button">反映待ちへ追加</button><button id="ignorePdfManualLineButton" class="button" type="button">この行は対象外</button></div>
             </section>
           </aside>
@@ -662,11 +663,11 @@
   <script src="engine.js?v=20260824-2"></script>
   <script src="consulting-engine.js?v=20260824-4"></script>
   <script src="reference-case-engine.js?v=20260824-1"></script>
-  <script src="document-import-engine.js?v=20260824-4"></script>
+  <script src="document-import-engine.js?v=20260824-5"></script>
   <script src="document-reader.js?v=20260823-1"></script>
-  <script src="app.js?v=20260824-10"></script>
-  <script src="consulting.js?v=20260824-15"></script>
-  <script src="document-import.js?v=20260824-17"></script>
+  <script src="app.js?v=20260824-11"></script>
+  <script src="consulting.js?v=20260824-16"></script>
+  <script src="document-import.js?v=20260824-18"></script>
   <script src="analytics.js?v=20260823-1"></script>
 </body>
 </html>
