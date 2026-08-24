@@ -2132,3 +2132,27 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `styles.css` | `0AB6367C8D3972D044F1D2906DC1C47210E81075A93500819A11A0658AEC5692` |
 | `document-import.js` | `2F7610E100337B213DEE43F0774664E92D5E0C9512E7365AF5166F85EF4253D6` |
 | `tests/test-document-import-ui.js` | `BB41AE642AAFF8B679C331B6934CC3F298DF79DC3EF076A85B9BD4ECCB5B7961` |
+
+## B-2026-08-24-18
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-24
+- 実装コミット: `550bc1d543ffbd71b9d4c9a779ee7959771446d0`
+- 外部知能コミット: この項目を追加するコミット
+- GitHub Pages: `built`、コミット`550bc1d543ffbd71b9d4c9a779ee7959771446d0`、GitHub Actions実行`32705409453`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: PDF反映待ちの補助操作4個を撤去し、「反映待ち○件を積算へ追加」1ボタンへ集約した。候補カードの同一画面編集と、追加後の各業務画面での修正は保持する。
+
+### 合格した試験・実画面確認
+
+- `tests/test-*.js`全18本、`node --check document-import.js`、`git diff --check`合格。
+- ローカル版で補助ボタン0件、確定ボタン1件、候補0件時の無効状態、候補1件時の文言と有効状態、候補カードからの変更画面を確認した。
+- ローカル／公開版で匿名デモPDFの2級基準点測量1件を選び、「反映待ち1件を積算へ追加」で測量1件へ反映し、反映待ち0件へ戻ることを確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `C642BDEB6B8FA8ADA25F66995154C906B50DB6476586B97DDE9408C33690F7D6` |
+| `document-import.js` | `A29105EFF8584BB531C5D2C66858DDD3B654A9D463148D7B192E7FEF6FC4B5B4` |
+| `tests/test-document-import-ui.js` | `08BBC491F0259F1151A26D89155B36F5FA5470C2E3B9C716C32242EEFBEC3270` |
