@@ -1767,3 +1767,42 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `data/source-audits/consulting-fullbook-crosswalk.json` | `82B1C65BB970D4A6DAD00D13665246FAEA6F2782C0F2B455DE9B1291392B6AFE` |
 | `index.html` | `B8C2F4B38FAB84D2384F6C0AD0AA47EAAFADC3F19A72235CB1B0E0D17CDF0D1F` |
 | `tests/test-consulting-rule-pack.js` | `4022A6F0CDB5246B5761E664DC0D02429077F3D7FC1567F716DEB12FF55DFCD3` |
+
+## B-2026-08-24-05
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-24
+- 実装コミット: `b929cc4`, `1980c8b`, `5e52ae0`, `d63db5b`, `b901a2d585c184ad9b507f21a9ddd8cb3c15eac8`
+- 外部知能コミット: この項目を追加するコミット
+- GitHub Pagesビルド: `1170775604`（`built`、コミット`b901a2d585c184ad9b507f21a9ddd8cb3c15eac8`）
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: 地方整備局等・適用通知・特記仕様の案件別確認ゲート、市場単価・材料・機械・運搬・個別見積等の根拠付き積上げ、低確度・未照合63ページの個別除外台帳、全項目入力ドメイン、匿名正解案件の費目別照合、別基準体系の誤用防止、公開版からの実PDF QAを追加した版。
+
+### 合格した試験
+
+- `tests/test-*.js` 全18本合格。
+- T-CROSSWALK-63で63ページを全件走査し、表なし48、表あり15、計算対象0を確認した。
+- T-CONSULT-RULE-PACKとT-ENGINEで測量R6～R8各134項目および設計等1,393歩掛の全件に入力ドメインがあり、点・箇所・回・式等は整数、m・km・m²・km²・ha・m³・t・時間は小数第3位までであることを確認した。
+- T-REFERENCE-CASEで匿名化不足を拒否し、許可費目を1円単位で比較できることを確認した。実案件の正解JSONは未提供のため、案件一致は未検証である。
+- `git diff --check`合格。
+
+### 公開版・実PDF確認
+
+- 公開HTTPS版で適用基準体系、地方整備局等、適用通知、特記仕様、価格根拠の確認状態を入力し、`確認済み`になることを確認した。
+- 市場単価の匿名項目12.5m×15,000円/mを追加し、187,500円として地質直接調査費へ積み上がることを確認した。
+- 港湾、空港、農林・土地改良、下水道、水道、森林、官庁営繕は別基準体系として表示し、一般土木マスターで選択・計算できないことを確認した。
+- 公開版の匿名QA入口から測量5帳票と設計・調査・地質3帳票を実PDF保存し、合計8ページの文字欠け、列切れ、改ページ、表頭、合計、根拠、免責、フッターを目視確認した。
+- 測量PDFは税込7,616,400円、2級基準点1単位344,800円、精度管理費290,555円、設計等PDFは税込846,418円、積上げ市場単価187,500円を画面表示・帳票で確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `BBC00AA48C055EAE51158EDF4AF53DB798C856D0CBEEB20C7CA9F757AA431378` |
+| `styles.css` | `18AA1A6939BA750C6F447D969C645A75A3088ACC4A638D16CB19A8856342F199` |
+| `consulting-engine.js` | `94D7D68EA106114AC18A932C003C8DD48844F2EAE2FFF8A9DD2DD6200101900B` |
+| `consulting.js` | `9A4601DECD8A19017E3972EC41BA23FE65E4922094C3C5859B1B351FB72B85EC` |
+| `reference-case-engine.js` | `B7DA20ED4582AA4819EC30B544474927724DB75BE4B2ED303EA5FD2FBEA2E349` |
+| `data/estimation-compliance-catalog.js` | `BB303BD3655F0B83ADB352C41F6E659B7F25A315441B4B92ED565BFA5FE507C2` |
+| `data/source-audits/input-domain-audit.json` | `3C60B7CAA23081420D9139A2CCE7D05B13CE83106257710230C17969407CEF06` |
+| `data/source-audits/consulting-crosswalk-resolution.json` | `5809950B7F891FEEEAA82CA14A49E53F13572A38394399C49D474388A2568324` |
