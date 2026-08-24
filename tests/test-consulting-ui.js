@@ -13,7 +13,7 @@ const ids = new Set([...html.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1
 const referencedIds = new Set([...ui.matchAll(/\$\("([^"]+)"\)/g)].map((match) => match[1]));
 assert.deepStrictEqual([...referencedIds].filter((id) => !ids.has(id)), [], "consulting.jsから参照するHTML要素が揃う");
 
-for (const id of ["consultingView", "consultingFiscalYear", "consultingEstimateDate", "consultingProjectMemo", "consultingServiceType", "consultingTaskTemplate", "consultingTaskName", "consultingRole", "consultingDays", "consultingKeywordList", "consultingPresetSearch", "consultingRuleGroup", "consultingPreset", "consultingPresetBasis", "consultingQuantityFields", "consultingConditionsConfirmed", "consultingConditionsLabel", "consultingPresetStatus", "consultingLineBody", "consultingSummaryList", "consultingSummaryHeading", "consultingPrintButton"]) {
+for (const id of ["consultingView", "consultingFiscalYear", "consultingEstimateDate", "consultingProjectMemo", "consultingServiceType", "consultingTaskTemplate", "consultingTaskName", "consultingRole", "consultingDays", "consultingItemCountBadge", "consultingKeywordList", "consultingPresetSearch", "consultingRuleGroup", "consultingPreset", "consultingPresetBasis", "consultingQuantityFields", "consultingConditionsConfirmed", "consultingConditionsLabel", "consultingPresetStatus", "consultingLineBody", "consultingSummaryList", "consultingSummaryHeading", "consultingPrintButton"]) {
   assert.ok(html.includes(`id="${id}"`), `${id}を表示する`);
 }
 for (const file of ["data/consulting-master.js", "consulting-engine.js", "consulting.js"]) {
@@ -40,6 +40,10 @@ assert.ok(ui.includes("CONSULTING_RULE_PACK") && ui.includes("preset.fiscalYear"
 assert.ok(ui.includes("consultingKeywordDefinitions") && ui.includes("presetMatchesKeyword") && ui.includes("renderConsultingKeywords"), "設計・調査計画・地質を正式familyCode由来のキーワードで絞る");
 for (const keyword of ["道路", "橋梁", "河川・水辺", "水文・観測", "ボーリング", "原位置試験", "解析"]) assert.ok(ui.includes(`label: "${keyword}"`), `${keyword}キーワードを表示できる`);
 assert.ok(html.includes("名称でさらに絞り込む"), "文字検索を初期操作ではなく折りたたみの補助操作にする");
+for (const label of ["積算基準の作業区分", "作業項目", "積算数量（"]) assert.ok(html.includes(label) || ui.includes(label), `${label}を測量と共通表示する`);
+assert.ok(ui.includes('`${scopedPresets.length}項目収録`') && ui.includes('`${label.replace(/業務$/, "")}作業項目を追加`'), "見出しと収録件数を測量と同じ形式にする");
+assert.ok(ui.includes("consultingMarketQuantityLabel") && ui.includes('`積算数量（${event.target.value}）`'), "市場単価方式も選択単位を積算数量へ表示する");
+assert.ok(html.includes('id="addConsultingPresetButton" class="button primary add-button"') && ui.includes('textContent = "追加"'), "追加ボタンの名称と配置を測量に揃える");
 assert.ok(ui.includes("parseStandardQuantity") && ui.includes("calculateStandardQuantity") && ui.includes("quantitySummary"), "標準単位から数量比と職種別人工を自動算出する");
 assert.ok(ui.includes("consultingConditionsConfirmed") && ui.includes("表示した業務種類・適用範囲・計算条件を確認"), "表示した業務種類・適用条件の確認なしに追加しない");
 assert.ok(ui.includes("familyForPreset") && ui.includes("consulting-parameter-value") && ui.includes("consultingFormulaModel") && ui.includes("compileFormula"), "適用条件表と補正式を歩掛へ結び付ける");

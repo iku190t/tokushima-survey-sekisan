@@ -78,6 +78,7 @@ assert.ok(app.includes("blockInvalidQuantityKey"), "整数数量への小数キ�
 assert.ok(app.includes("blockInvalidQuantityPaste"), "不正な桁数の貼り付けを防止する");
 assert.ok(app.includes("normalizeQuantityInput"), "数量を単位別規則に正規化する");
 assert.ok(html.includes('id="surveyKeywordList"') && html.includes('id="surveyItemSearch"') && app.includes("surveyKeywordDefinitions"), "測量項目を常時表示キーワードから絞り込める");
+assert.ok(html.includes('id="newItemQuantityLabel"') && app.includes('`積算数量（${item.unit}）`'), "測量の積算数量へ選択作業項目の単位を表示する");
 assert.ok(!html.includes('id="regulationGroupSelect"'), "測量の最初の選択を編番号プルダウンへ戻さない");
 for (const keyword of ["基準点", "水準", "現地", "写真", "UAV・レーザ", "路線", "河川", "用地", "深浅"]) assert.ok(app.includes(`label: "${keyword}"`), `${keyword}キーワードを年度マスターの収録項目へ対応させる`);
 assert.ok(html.includes('class="work-name-search"') && html.includes("名称・コードでさらに絞り込む"), "文字検索を補助操作として折りたたむ");

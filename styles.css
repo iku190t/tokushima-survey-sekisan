@@ -127,6 +127,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--green); box-shad
 
 .workspace-grid { display: grid; grid-template-columns: minmax(0, 1fr) 310px; gap: 18px; align-items: start; }
 .workspace-main, .master-layout { display: grid; min-width: 0; gap: 18px; }
+.workspace-main > * { min-width: 0; }
 .card, .summary-card {
   padding: 22px; background: var(--paper); border: 1px solid var(--line);
   border-radius: var(--radius); box-shadow: var(--shadow);
@@ -148,19 +149,21 @@ input:focus, select:focus, textarea:focus { border-color: var(--green); box-shad
 .work-name-search { margin: 12px 0 0; padding: 9px 11px; background: #f7faf8; border: 1px solid var(--line); border-radius: 9px; }
 .work-name-search summary { color: var(--green-dark); font-size: 11px; font-weight: 800; cursor: pointer; }
 .work-name-search .field { margin-top: 10px; max-width: 520px; }
-.verified-preset-row { display: grid; grid-template-columns: minmax(220px,.65fr) minmax(420px,1.5fr); gap: 12px; align-items: end; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
+.verified-preset-row { display: grid; grid-template-columns: minmax(220px,.65fr) minmax(420px,1.5fr) minmax(150px,.45fr) auto; grid-template-areas: "group item quantity add" "basis basis basis basis" "conditions conditions conditions conditions" "confirm confirm confirm confirm" "status status status status"; gap: 12px; align-items: end; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
+.verified-preset-row > *, .verified-preset-row select, .verified-preset-row input { min-width: 0; max-width: 100%; }
 .verified-preset-row small { grid-column: 1 / -1; align-self: center; color: var(--muted); line-height: 1.5; }
-.verified-preset-row .span-2 { grid-column: span 1; }
-.consulting-rule-basis { grid-column: 1 / -1; display: grid; gap: 6px; padding: 12px 14px; color: #173d2f; background: #f1f7f4; border: 1px solid #b8d2c6; border-radius: 10px; line-height: 1.55; }
+.consulting-group-field { grid-area: group; }
+.consulting-item-field { grid-area: item; }
+.consulting-rule-basis { grid-area: basis; display: grid; gap: 6px; padding: 12px 14px; color: #173d2f; background: #f1f7f4; border: 1px solid #b8d2c6; border-radius: 10px; line-height: 1.55; }
 .consulting-rule-basis strong { font-size: 13px; }
 .consulting-rule-basis span, .consulting-rule-basis small { color: var(--muted); }
 .consulting-rule-basis.verified { background: #edf8f1; border-color: #76ad8e; }
 .consulting-rule-basis.reference { background: #fff8e6; border-color: #e2bd58; }
 .consulting-rule-basis.blocked { background: #fff0ed; border-color: #d8897c; }
-.consulting-quantity-fields { grid-column: 1 / span 2; display: grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap: 10px; }
-.consulting-quantity-fields .field { padding: 10px; background: #fff; border: 2px dashed #82ad9a; border-radius: 10px; }
+.consulting-quantity-fields { grid-area: quantity; display: grid; grid-template-columns: repeat(auto-fit,minmax(140px,1fr)); gap: 10px; }
+.consulting-quantity-fields .field { min-width: 0; }
 .consulting-quantity-fields .quantity-standard { color: var(--muted); font-size: 10px; }
-.consulting-condition-fields { grid-column: 1 / -1; }
+.consulting-condition-fields { grid-area: conditions; }
 .consulting-condition-fields fieldset { display: grid; grid-template-columns: repeat(auto-fit,minmax(240px,1fr)); gap: 10px; margin: 0; padding: 14px; background: #f4f8f6; border: 1px solid #a8c7b9; border-radius: 12px; }
 .consulting-condition-fields legend { padding: 0 8px; color: #184d3e; font-weight: 800; }
 .consulting-condition-fields fieldset + fieldset { margin-top: 12px; }
@@ -196,7 +199,9 @@ input:focus, select:focus, textarea:focus { border-color: var(--green); box-shad
 .condition-calculation-note { padding: 9px 11px; color: #244e3f; background: #e4f1eb; border-radius: 8px; font-size: 12px; }
 .condition-source-list { padding-left: 22px; font-size: 11px; line-height: 1.6; }
 .consulting-incomplete-rule { padding: 10px 12px; color: #6c5314; background: #fff8e6; border: 1px solid #e2bd58; border-radius: 9px; }
-.consulting-condition-check { align-self: stretch; padding: 11px 12px; background: #fff8e6; border: 1px solid #e6c777; border-radius: 10px; }
+.consulting-condition-check { grid-area: confirm; align-self: stretch; padding: 11px 12px; background: #fff8e6; border: 1px solid #e6c777; border-radius: 10px; }
+#addConsultingPresetButton { grid-area: add; }
+#consultingPresetStatus { grid-area: status; }
 .consulting-manual-entry { margin-top: 16px; border-top: 1px solid var(--line); padding-top: 14px; }
 .consulting-manual-entry summary { color: var(--green-dark); font-weight: 700; cursor: pointer; }
 .consulting-manual-entry > p { margin: 8px 0 0; color: var(--muted); font-size: 11px; }
@@ -583,6 +588,7 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
   .header-actions { justify-content: flex-start; }
   .save-state { width: 100%; }
   .project-strip, .picker-grid, .consulting-picker-grid, .verified-preset-row, .cost-grid, .master-head-grid, .role-price-grid, .formula-grid, .rate-preset-row, .additional-cost-grid { grid-template-columns: 1fr; }
+  .verified-preset-row { grid-template-areas: "group" "item" "quantity" "add" "basis" "conditions" "confirm" "status"; }
   .additional-cost-grid .span-2 { grid-column: auto; }
   .view-tabs { overflow-x: visible; flex-wrap: wrap; padding-block: 5px; }
   .view-tab-group { width: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px; }

@@ -117,7 +117,7 @@
     const geology = activeConsultingScope === "geology";
     const planning = activeConsultingScope === "planning";
     const label = geology ? "地質業務" : planning ? "調査・計画業務" : "設計業務";
-    $("consultingAddHeading").textContent = `${label}の条件・数量から積算`;
+    $("consultingAddHeading").textContent = `${label.replace(/業務$/, "")}作業項目を追加`;
     $("consultingDetailHeading").textContent = `${label}の積算内訳`;
     $("consultingSummaryHeading").textContent = `${label}の積算結果`;
     $("consultingEmptyText").textContent = `${label}の業務種類と数量を選ぶと、標準歩掛から職種別人工を算出します。`;
@@ -199,6 +199,7 @@
       scopedServices().some((entry) => entry.id === preset.serviceType)
       && (!preset.fiscalYear || Number(preset.fiscalYear) === year)
     );
+    $("consultingItemCountBadge").textContent = `${scopedPresets.length}項目収録`;
     renderConsultingKeywords(scopedPresets);
     const candidates = scopedPresets.filter((preset) =>
       presetMatchesKeyword(preset)
@@ -309,7 +310,10 @@
     const source = preset.source || {};
     const roleText = preset.serviceType === "geologyGeneral" ? "市場単価方式" : presetRoleSummary(preset);
     $("consultingPresetBasis").innerHTML = `<strong>${h(preset.label)}</strong><span>標準単位：${h(preset.standardUnit || "標準表1式")}／経費体系：${h(preset.costSystem === "survey" ? "測量" : preset.costSystem === "geology" ? "地質一般" : "設計等")}</span><small>${sourceLink(source, `国交省対応ページ（照合${source.confidence === "high" ? "高" : "中"}）`)}</small><small>収録：${h(roleText)}</small>${geologyWarning}`;
-    $("consultingQuantityFields").innerHTML = preset.serviceType === "geologyGeneral" ? "" : quantityRule.dimensions.map((dimension) => `<label class="field"><span>${h(dimension.label)}</span><input class="consulting-rule-quantity" data-quantity-key="${h(dimension.key)}" data-quantity-unit="${h(dimension.unit)}" data-quantity-decimals="${h(dimension.decimals)}" type="number" min="${h(dimension.min)}" step="${h(dimension.step)}" inputmode="${dimension.integer ? "numeric" : "decimal"}" placeholder="未入力"${coverage.canCalculate ? "" : " disabled"}><small class="quantity-standard">標準 ${h(dimension.baseQuantity.toLocaleString("ja-JP"))} ${h(dimension.unit)}当り／${h(dimension.integer ? "整数のみ" : `小数第${dimension.decimals}位まで`)}</small></label>`).join("");
+    const marketUnits = ["m", "m²", "km", "km²", "ha", "m³", "孔", "回", "日", "箇所", "本", "台", "t", "式"];
+    $("consultingQuantityFields").innerHTML = preset.serviceType === "geologyGeneral"
+      ? `<label class="field consulting-market-unit-field"><span>積算単位</span><select id="consultingMarketUnit"><option value="">選択してください</option>${marketUnits.map((unit) => `<option value="${h(unit)}">${h(unit)}</option>`).join("")}</select></label><label class="field"><span id="consultingMarketQuantityLabel">積算数量（単位を選択）</span><input id="consultingMarketQuantity" type="number" inputmode="decimal" placeholder="未入力" disabled><small id="consultingMarketQuantityRule">単位に応じて整数・小数を制限します。</small></label>`
+      : quantityRule.dimensions.map((dimension) => `<label class="field"><span>積算数量（${h(dimension.unit)}）</span><input class="consulting-rule-quantity" aria-label="積算数量（${h(dimension.unit)}）" data-quantity-key="${h(dimension.key)}" data-quantity-unit="${h(dimension.unit)}" data-quantity-decimals="${h(dimension.decimals)}" type="number" min="${h(dimension.min)}" step="${h(dimension.step)}" inputmode="${dimension.integer ? "numeric" : "decimal"}" placeholder="未入力"${coverage.canCalculate ? "" : " disabled"}><small class="quantity-standard">${h(dimension.label)}／標準 ${h(dimension.baseQuantity.toLocaleString("ja-JP"))} ${h(dimension.unit)}当り／${h(dimension.integer ? "整数のみ" : `小数第${dimension.decimals}位まで`)}</small></label>`).join("");
     const curated = conditionRule ? `<fieldset><legend>${h(conditionRule.title)}</legend>${(conditionRule.inputs || []).map((input) => input.type === "select-rate"
       ? `<label class="field"><span>${h(input.label)}</span><select class="consulting-rule-condition" data-condition-id="${h(input.id)}"><option value="">選択してください</option>${(input.options || []).map((option) => `<option value="${h(option.value)}">${h(option.label)}（${option.rate >= 0 ? "+" : ""}${h(option.rate * 100)}%）</option>`).join("")}</select>${input.help ? `<small>${h(input.help)}</small>` : ""}</label>`
       : `<label class="check consulting-rate-check"><input class="consulting-rule-condition" data-condition-id="${h(input.id)}" type="checkbox"><span>${h(input.label)}（${input.rate >= 0 ? "+" : ""}${h(input.rate * 100)}%）${input.help ? `<small>${h(input.help)}</small>` : ""}</span></label>`).join("")}<p class="condition-calculation-note">${h(conditionRule.calculationNote)}</p><p id="consultingConditionSummary" class="quantity-standard">必須条件を選択すると補正率を表示します。</p><ul class="condition-source-list">${(conditionRule.sources || []).map((entry) => `<li><a href="${h(entry.url)}" target="_blank" rel="noopener noreferrer">${h(entry.label)} p.${h(entry.pages.join("・"))}</a></li>`).join("")}</ul></fieldset>` : "";
@@ -320,13 +324,12 @@
     const notes = [...(family?.applicability || []), ...(family?.notes || [])];
     const applicability = notes.length ? `<details class="consulting-applicability"><summary>適用範囲・注記（${notes.length}件）</summary><ol>${notes.map((note) => `<li>${h(note)}</li>`).join("")}</ol></details>` : "";
     const selectedParameter = parameterTables ? `<div id="consultingSelectedParameter" class="selected-parameter">条件表の該当値をクリックしてください。複数の増減率は加算し、補正係数は乗算します。</div>` : "";
-    const marketUnits = ["m", "m²", "km", "km²", "ha", "m³", "孔", "回", "日", "箇所", "本", "台", "t", "式"];
-    const market = preset.serviceType === "geologyGeneral" ? `<fieldset class="consulting-market-fields"><legend>市場単価による積算</legend><label class="field"><span>単位</span><select id="consultingMarketUnit"><option value="">選択してください</option>${marketUnits.map((unit) => `<option value="${h(unit)}">${h(unit)}</option>`).join("")}</select></label><label class="field"><span>数量</span><input id="consultingMarketQuantity" type="number" inputmode="decimal" placeholder="単位を先に選択" disabled><small id="consultingMarketQuantityRule">単位に応じて整数・小数を制限します。</small></label><label class="field"><span>市場単価（円／単位）</span><input id="consultingMarketUnitPrice" type="number" min="1" step="1" inputmode="numeric" placeholder="見積・刊行物の採用単価"></label><label class="field span-2"><span>単価根拠（必須）</span><input id="consultingMarketSource" type="text" placeholder="例：物価資料2026年8月号 p.00／見積書A-01 2026-08-20"></label><small>市場単価は公開基準から推定せず、発注者指定資料・刊行物・見積の名称、年月、ページ又は見積番号を保存します。</small></fieldset>` : "";
+    const market = preset.serviceType === "geologyGeneral" ? `<fieldset class="consulting-market-fields"><legend>市場単価による積算</legend><label class="field"><span>市場単価（円／選択単位）</span><input id="consultingMarketUnitPrice" type="number" min="1" step="1" inputmode="numeric" placeholder="見積・刊行物の採用単価"></label><label class="field span-2"><span>単価根拠（必須）</span><input id="consultingMarketSource" type="text" placeholder="例：物価資料2026年8月号 p.00／見積書A-01 2026-08-20"></label><small>市場単価は公開基準から推定せず、発注者指定資料・刊行物・見積の名称、年月、ページ又は見積番号を保存します。</small></fieldset>` : "";
     $("consultingConditionFields").innerHTML = `${curated}<fieldset><legend>国交省基準の適用条件・原文</legend>${conditionRule ? "<p>上の構造化済み条件を計算に使用します。重複する原文条件は二重加算しません。</p>" : adjustments || "<p>自動抽出された定率加減条件はありません。</p>"}${parameterTables}${selectedParameter}${formulas}${applicability}${market}</fieldset>`;
     $("consultingConditionsConfirmed").disabled = !coverage.canCalculate;
     $("consultingConditionsLabel").textContent = "表示した適用範囲、条件表、補正式を確認し、該当する条件だけを選択しました";
     $("addConsultingPresetButton").disabled = !coverage.canCalculate;
-    $("addConsultingPresetButton").textContent = preset.serviceType === "geologyGeneral" ? "市場単価・数量を積算へ追加" : "条件・数量から積算へ追加";
+    $("addConsultingPresetButton").textContent = "追加";
   }
 
   function renderLines(result) {
@@ -786,21 +789,23 @@
     });
     $("consultingConditionFields").addEventListener("input", updateConditionSummary);
     $("consultingConditionFields").addEventListener("change", updateConditionSummary);
-    $("consultingConditionFields").addEventListener("change", (event) => {
+    $("consultingQuantityFields").addEventListener("change", (event) => {
       if (event.target.id !== "consultingMarketUnit") return;
       const input = document.querySelector("#consultingMarketQuantity");
       const note = document.querySelector("#consultingMarketQuantityRule");
+      const label = document.querySelector("#consultingMarketQuantityLabel");
       const domain = engine.inputDomainForUnit(event.target.value);
-      if (!input || !note) return;
+      if (!input || !note || !label) return;
       input.disabled = !event.target.value;
       input.value = "";
       input.min = String(domain.min);
       input.step = String(domain.step);
       input.inputMode = domain.integer ? "numeric" : "decimal";
       input.dataset.quantityDecimals = String(domain.decimals);
+      label.textContent = event.target.value ? `積算数量（${event.target.value}）` : "積算数量（単位を選択）";
       note.textContent = event.target.value ? `${event.target.value}：${domain.label}` : "単位に応じて整数・小数を制限します。";
     });
-    $("consultingConditionFields").addEventListener("input", (event) => {
+    $("consultingQuantityFields").addEventListener("input", (event) => {
       if (event.target.id !== "consultingMarketQuantity") return;
       const unit = document.querySelector("#consultingMarketUnit")?.value || "";
       const domain = engine.inputDomainForUnit(unit);

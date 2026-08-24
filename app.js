@@ -574,7 +574,8 @@
 
   function updateSelectedItemMeta() {
     const item = activeMaster().workItems.find((entry) => entry.code === $("itemSelect").value);
-    if (!item) { $("selectedItemMeta").textContent = ""; renderSelectedSurveySources(null); return; }
+    if (!item) { $("newItemQuantityLabel").textContent = "積算数量"; $("selectedItemMeta").textContent = ""; renderSelectedSurveySources(null); return; }
+    $("newItemQuantityLabel").textContent = `積算数量（${item.unit}）`;
     $("newItemQuantity").value = item.standardQuantity;
     applyQuantityInputRule($("newItemQuantity"), item);
     const qRule = quantityRule(item);

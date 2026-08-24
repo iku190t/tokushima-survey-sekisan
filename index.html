@@ -7,7 +7,7 @@
   <meta name="description" content="設計、測量、調査・計画、地質を年度別技術者単価と根拠表示付きで計算するWeb業務積算ソフト">
   <meta name="author" content="株式会社アイズ測量">
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="styles.css?v=20260824-8">
+  <link rel="stylesheet" href="styles.css?v=20260824-9">
 </head>
 <body data-business-scope="design">
   <header class="app-header">
@@ -118,7 +118,7 @@
                 <select id="itemSelect"></select>
               </label>
               <label class="field small-field">
-                <span>積算数量</span>
+                <span id="newItemQuantityLabel">積算数量</span>
                 <input id="newItemQuantity" type="number" min="0" step="0.001" value="1">
               </label>
               <button id="addItemButton" class="button primary add-button" type="button">追加</button>
@@ -233,7 +233,7 @@
       <div class="workspace-grid business-workspace">
         <div class="workspace-main">
           <section class="card add-card business-add-card no-print">
-            <div class="card-title-row"><div><p class="section-kicker">WORK ITEM</p><h2 id="consultingAddHeading">設計業務の条件・数量から積算</h2></div><span class="badge">数量→標準歩掛→職種別人工</span></div>
+            <div class="card-title-row"><div><p class="section-kicker">WORK ITEM</p><h2 id="consultingAddHeading">設計作業項目を追加</h2></div><span id="consultingItemCountBadge" class="badge"></span></div>
             <div class="work-keyword-filter">
               <span>キーワードから選ぶ</span>
               <div id="consultingKeywordList" class="work-keyword-list" role="group" aria-label="設計等のキーワード"></div>
@@ -243,14 +243,14 @@
               <label class="field"><span>補助検索</span><input id="consultingPresetSearch" type="search" placeholder="例：道路詳細、橋梁点検、地盤特性"></label>
             </details>
             <div class="verified-preset-row">
-              <label class="field compact-field"><span>基準書の項目分類</span><select id="consultingRuleGroup"></select></label>
-              <label class="field span-2"><span>業務種類・適用条件</span><select id="consultingPreset"></select></label>
+              <label class="field consulting-group-field"><span>積算基準の作業区分</span><select id="consultingRuleGroup"></select></label>
+              <label class="field consulting-item-field"><span>作業項目</span><select id="consultingPreset"></select></label>
               <div id="consultingPresetBasis" class="consulting-rule-basis"></div>
               <div id="consultingQuantityFields" class="consulting-quantity-fields"></div>
               <div id="consultingConditionFields" class="consulting-condition-fields"></div>
               <label class="check consulting-condition-check"><input id="consultingConditionsConfirmed" type="checkbox"><span id="consultingConditionsLabel">表示した業務種類・適用範囲・計算条件を確認しました</span></label>
-              <button id="addConsultingPresetButton" class="button primary" type="button">条件・数量から積算へ追加</button>
-              <small id="consultingPresetStatus">業務種類を選ぶと、基準単位に応じた数量欄を表示します。人工を直接入力する必要はありません。</small>
+              <button id="addConsultingPresetButton" class="button primary add-button" type="button">追加</button>
+              <small id="consultingPresetStatus">作業項目を選ぶと、その項目の単位を積算数量欄に表示します。</small>
             </div>
             <details class="consulting-manual-entry">
               <summary>基準書にない作業・見積項目を手動調整する</summary>
@@ -652,8 +652,8 @@
   <script src="reference-case-engine.js?v=20260824-1"></script>
   <script src="document-import-engine.js?v=20260823-2"></script>
   <script src="document-reader.js?v=20260823-1"></script>
-  <script src="app.js?v=20260824-6"></script>
-  <script src="consulting.js?v=20260824-11"></script>
+  <script src="app.js?v=20260824-7"></script>
+  <script src="consulting.js?v=20260824-12"></script>
   <script src="document-import.js?v=20260823-9"></script>
   <script src="analytics.js?v=20260823-1"></script>
 </body>
