@@ -1500,6 +1500,15 @@
 
   bindEvents();
   renderAll();
+  if (new URLSearchParams(location.search).get("__qa_report") === "survey") {
+    const item = activeMaster().workItems.find((entry) => entry.code === "2-2-1-1");
+    estimate.projectName = "匿名化・帳票QA測量業務";
+    estimate.projectInfo = { ...defaultProjectInfo(), orderingParty: "匿名発注機関", department: "検査用部署", workLocation: "匿名化済み", contractPeriod: "令和8年度" };
+    estimate.lines = item ? [{ id: "qa-survey-line", code: item.code, quantity: 10, correctionRate: 0, correctionSelections: {}, conditionValue: item.conditionFormula?.default, precisionRate: item.precisionRate, manualUnitPrice: 0 }] : [];
+    estimate.report = { ...defaultReportSettings(estimate.date), clientName: "匿名発注機関 御中", companyName: "株式会社アイズ測量", quoteNumber: "QA-2026-001", delivery: "契約条件による", validity: "発行日から30日", paymentTerms: "契約条件による", remarks: "帳票レイアウト検査用の匿名化データです。", sections: { quote: true, summary: true, breakdown: true, unitDetail: true, conditions: true } };
+    renderAll();
+    renderPrintDocument();
+  }
   renderDraftRecovery();
   checkForMasterUpdates({ silent: true });
 })();

@@ -878,4 +878,17 @@
 
   bindEvents();
   renderAll();
+  if (new URLSearchParams(location.search).get("__qa_report") === "consulting") {
+    const current = state();
+    current.lines = [
+      { id: "qa-design", serviceType: "design", taskName: "道路詳細設計・匿名QA", role: "designLead", days: 1.25, verifiedSource: true },
+      { id: "qa-planning", serviceType: "planning", taskName: "調査計画・匿名QA", role: "designEngineerA", days: 0.75, verifiedSource: true },
+      { id: "qa-geology", serviceType: "geologyGeneral", taskName: "地質一般・匿名QA", role: "geologyEngineer", days: 1, verifiedSource: true }
+    ];
+    current.additionalCosts = [{ id: "qa-market", category: "market", costBucket: "geologyDirectNonLabor", name: "機械ボーリング・匿名QA", quantity: 12.5, unit: "m", unitPrice: 15000, source: "匿名見積書QA", sourceDate: "2026-08-24" }];
+    current.compliance = { standardSystem: "mlit-general", regionalAuthority: "shikoku", notificationReference: "四国地方整備局・匿名QA適用通知", specificationReference: "匿名特記仕様書 QA p.1", notificationConfirmed: true, specificationConfirmed: true, priceSourcesConfirmed: true };
+    app.getEstimate().projectName = "匿名化・設計調査地質QA業務";
+    renderAll();
+    renderPrintDocument(currentResult());
+  }
 })();

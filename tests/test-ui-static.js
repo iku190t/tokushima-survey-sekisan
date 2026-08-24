@@ -68,6 +68,7 @@ assert.ok(!app.includes("aerialShipCategories") && !html.includes('data-business
 assert.ok(app.includes("applyVerifiedWorkItemExpansions") && html.includes("data/verified-work-item-expansions.js?v="), "令和8年度UAVレーザの公式詳細工程を年度マスターへ展開する");
 assert.ok(html.includes('id="reportView"'), "提出用帳票の設定画面がある");
 assert.ok(html.includes('id="printDocument"'), "画面とは独立した印刷専用文書がある");
+assert.ok(app.includes('__qa_report") === "survey"') && app.includes("renderPrintDocument();"), "公開HTTPSから測量5帳票を実PDF検査できる匿名QA入口を持つ");
 for (const section of ["quote", "summary", "breakdown", "unitDetail", "conditions"]) {
   assert.ok(html.includes(`data-section="${section}"`), `${section}帳票を選択できる`);
 }

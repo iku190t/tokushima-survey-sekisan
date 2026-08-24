@@ -51,6 +51,7 @@ assert.ok(engine.includes("surveyPlanningBusinessPrice") && engine.includes("sur
 assert.ok(app.includes("draft.consulting?.lines?.length"), "設計・調査だけの案件も新規作成時に確認する");
 assert.ok(app.includes('dataset.mode !== "consulting"'), "総合帳票を測量帳票で上書きしない");
 assert.ok(ui.includes("t.surveyBusinessPrice") && ui.includes("t.designBusinessPrice") && ui.includes("t.geologyBusinessPrice"), "3区分を総合帳票へ合算する");
+assert.ok(ui.includes('__qa_report") === "consulting"') && ui.includes("renderPrintDocument(currentResult())"), "公開HTTPSから総合3帳票を実PDF検査できる匿名QA入口を持つ");
 assert.ok(!master.includes("標準歩掛（推定）"), "推測歩掛を登録しない");
 
 console.log("OK: consulting UI and report wiring checks passed");
