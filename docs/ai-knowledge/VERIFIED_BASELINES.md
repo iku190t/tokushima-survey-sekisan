@@ -2377,3 +2377,28 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `index.html` | `CC4E84AF10AAD3953BF1B7B1D991EC760AC609892630D29941298C1BA48558E9` |
 | `styles.css` | `7C04A079FDFB6CC88511FE4E42EDE333C7FCA5C4CAA4E92AE40C7F78066C4BFD` |
 | `tests/test-document-import-ui.js` | `BA7BF7EFE61FE0DA8AB6F5F6962D3F3E1BC34F19B539558E8CFD93AC2A81B2A9` |
+
+## B-2026-08-24-27
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-24
+- 実装コミット: `92c452bae6d75f721708b9e3288c1c0e32ff8aee`
+- 外部知能コミット: この項目を追加するコミット
+- GitHub Pages: `built`、ビルド`1171819577`、コミット`92c452bae6d75f721708b9e3288c1c0e32ff8aee`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: PDF対応付け画面上部の見出し・説明枠を撤去し、PDFと右入力欄を共通の拡張高さで表示する。
+
+### 合格した試験・実画面確認
+
+- `tests/test-*.js`全19本、`git diff --check`合格。
+- ローカル／公開版で、対応付け画面直下の見出し0件・説明0件、PDFと右入力欄の上端9px・高さ680px一致を確認した。
+- 1280×720環境で従来の約562pxから680pxへ約118px拡張し、右入力欄上部の反映待ち追加ボタンが表示されることを確認した。
+- 公開版で`styles.css?v=20260824-19`、ブラウザー警告・エラー0件を確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `F2329D9F1E4DB303B8473313E04D75027779F597476A912703B511EBA29F8E77` |
+| `styles.css` | `49A938400F515E6712FA18CC6D74CAB1160485AD4117CDDBDA6CE5DCD0A9C7CA` |
+| `tests/test-document-import-ui.js` | `F9C98F1DFBD9A3EA319AAD0D8CA6A8D6ADAA560690045EF53FA70BF9E8F02DFC` |
