@@ -1806,3 +1806,31 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `data/estimation-compliance-catalog.js` | `BB303BD3655F0B83ADB352C41F6E659B7F25A315441B4B92ED565BFA5FE507C2` |
 | `data/source-audits/input-domain-audit.json` | `3C60B7CAA23081420D9139A2CCE7D05B13CE83106257710230C17969407CEF06` |
 | `data/source-audits/consulting-crosswalk-resolution.json` | `5809950B7F891FEEEAA82CA14A49E53F13572A38394399C49D474388A2568324` |
+
+## B-2026-08-24-06
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-24
+- 実装コミット: `9b85641a24a76d59de5f757f0399186e17ea91df`
+- 外部知能コミット: この項目を追加するコミット
+- GitHub Pagesビルド: `1170995707`（`built`）
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: 設計・調査計画・地質の適用通知・特記仕様確認UIと帳票表を撤去し、設計・測量・調査計画・地質の上部情報、状態帯、作業追加、積算内訳、追加費用、右集計の画面骨格と命名を統一した版。
+
+### 合格した試験・実画面確認
+
+- `tests/test-*.js` 全18本合格、`node --check consulting.js`合格、`git diff --check`合格。
+- ローカル版と公開版で4業務を順に切り替え、上部5項目と`WORK ITEM`、`ESTIMATE DETAIL`、`ADDITIONAL COSTS`、`COST SUMMARY`が全業務で一致することを確認した。
+- 公開版で適用通知・特記仕様確認欄0件、ページ横あふれ0、ブラウザー警告・エラー0件を確認した。
+- 匿名QA帳票DOMは3ページで、総合積算総括表、業務費内訳書、積上費用台帳を生成し、適用基準・適用通知・特記仕様の確認表を含まないことを確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `2710DB8387961E9B30419B5C769EC037678671DB0203B237CC31C6CF0FEE0414` |
+| `styles.css` | `BE06A37AC5FF2ECD4B45E534129FA19AA35723E50D3F71991E9B1750D5E9D508` |
+| `app.js` | `74648BD6EE671D45A5ACEDD3EF639A5919DE539BA14563C2DA6D52F9141F9DEC` |
+| `consulting.js` | `D393E297A03C4D2BEAA393B7A70EDEFB2EFCF4F9A863C184FCD5C28BF8A4CA47` |
+| `tests/test-consulting-ui.js` | `9C0B3859F63C105C94785D9EEA186F7D1112AA0024C045EE22594DC61BEA23BF` |
+| `tests/test-ui-static.js` | `A12A6144681A74619B6112AD23FBBC9E04D5D30C18FE94EF03B2CF5012001DAF` |

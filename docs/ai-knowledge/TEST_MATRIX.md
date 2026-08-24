@@ -8,11 +8,11 @@
 |---|---|---|---|---|
 | T-ENGINE | `node tests/test-engine.js` | 歩掛、精度、数量式、旅費、丸め、諸経費 | `engine.js`、マスター、計算UI変更時は必須 | 合格 |
 | T-RATES | `node tests/test-role-prices.js` | 令和4～8年度の公式技術者単価 | 単価プリセット、年度切替変更時は必須 | 合格 |
-| T-UI | `node tests/test-ui-static.js` | HTML要素の結線、数量制限、追加済み測量項目の変更、選択中測量項目の規定書PDF・原表ページ対応表、測量資料だけの年度一覧、5帳票、測量明細の原表ページリンク、積算条件書の根拠一覧表、A4印刷CSS、Ez積算の統合案内・免責・公開HTTPS版Analytics常時計測 | `index.html`、`app.js`、`analytics.js`、`styles.css`変更時は必須 | 合格 |
+| T-UI | `node tests/test-ui-static.js` | HTML要素の結線、4業務共通の上部5項目・状態帯・追加／内訳／費用／集計カード、数量制限、追加済み測量項目の変更、選択中測量項目の規定書PDF・原表ページ対応表、測量資料だけの年度一覧、5帳票、A4印刷CSS、Ez積算の統合案内・免責・公開HTTPS版Analytics常時計測 | `index.html`、`app.js`、`analytics.js`、`styles.css`変更時は必須 | 合格 |
 | T-CATALOG | `node tests/test-master-catalog.js` | 見積提出先47都道府県、全国標準R6～R8配信カタログ、年度メタデータ、国交省ページ171リンク・重複除外PDF152件の取得監査、SHA-256、県別マスター非配信 | 提出先一覧、年度単価セット、公式資料台帳、配信処理変更時は必須 | 合格 |
 | T-NATIONAL | `node tests/test-nationwide-standard.js` | 全国標準参考R6～R8の134項目、技術者単価、諸経費、代表固定金額、国交省のみの出典、原表ページ未対応表示 | 全国標準参考マスター、年度・地域切替変更時は必須 | 合格 |
 | T-CONSULT | `node tests/test-consulting-engine.js` | 設計その他原価・一般管理費、電子成果品、地質諸経費、年度別職種単価、測量との税抜合算、数量単位分解、整数制限、複合数量、条件未実装／参照専用の自動追加禁止 | 設計・調査計算、職種単価、数量規則、総合計変更時は必須 | 合格 |
-| T-CONSULT-UI | `node tests/test-consulting-ui.js` | 4業務区分、基準書分類→業務条件→数量、手動人工の隔離、原表確認済み／条件規則実装済み／自動計算不可、提出前警告、保存、新規、総合帳票結線 | `consulting.js`、総合画面・帳票変更時は必須 | 合格 |
+| T-CONSULT-UI | `node tests/test-consulting-ui.js` | 4業務区分、設計等から適用通知・特記仕様確認UIを撤去、基準書分類→業務条件→数量、手動人工の隔離、原表確認済み／条件規則実装済み／自動計算不可、提出前警告、保存、新規、積上費用台帳結線 | `consulting.js`、総合画面・帳票変更時は必須 | 合格 |
 | T-CONSULT-WALKS | `node tests/test-consulting-walks.js` | 国交省R6～R8各8資料、全国標準参考735表、全標準単位の数量欄化、条件未実装703表、編成人員等の参照専用32表、代表固定値 | 設計・調査計画・地質の参考歩掛、原資料台帳、完全性分類、年度出典変更時は必須 | 合格 |
 | T-CONSULT-CONDITIONS | `node tests/test-consulting-condition-rules.js` | 現行系列124文書・2,102ページの分離、旧版非混在、道路概略・予備・詳細設計の補正条件、必須条件、加減算、補正後人工 | 条件規則、現行資料監査台帳、補正UI・エンジン変更時は必須 | 合格 |
 | T-CONSULT-RULE-PACK | `node tests/test-consulting-rule-pack.js` | R6～R8の1,393歩掛行、年度別461・462・470件、国交省URL・ページ、照合確度、職種、標準単位、設計／測量／地質経費体系 | 設計・調査計画・地質の規則パック、ページ対応、生成処理変更時は必須 | 合格 |
