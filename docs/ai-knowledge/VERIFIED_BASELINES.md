@@ -2188,3 +2188,34 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `engine.js` | `FFA8E17E4288074455C363E937BA6A228B32BB601462A36820C2A02639C8838C` |
 | `data/unit-catalog.js` | `BB48E75A20900048C52EADD95D6697124C010A0BE2D13E08ACD36529FF63B953` |
 | `tests/test-unit-catalog.js` | `236D64C0A04632DFD6D12053D320B9F32F0D6AA8A712550C361B18323253610A` |
+
+## B-2026-08-24-20
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-24
+- 実装コミット: `9f024e1ef759e1ec340bfcd467d9054f10bf0a47`
+- 外部知能コミット: この項目を追加するコミット
+- GitHub Pages: `built`、ビルド`1171568248`、コミット`9f024e1ef759e1ec340bfcd467d9054f10bf0a47`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: PDF取込で作業項目だけを反映待ちへ追加できる。測量の数量・単位、設計等の職種・人工は空欄を保持し、不足値がある行は入力待ちとして計算から除外する。初期値1・単位の自動補完を行わず、数字付き単位は標準数量との一致を判定して安全に分離する。
+
+### 合格した試験・実画面確認
+
+- `tests/test-*.js`全19本、変更JavaScript 4ファイルの`node --check`、`git diff --check`合格。
+- T-DOC-UIで作業項目だけの追加ボタン有効化・強調、空欄維持、入力待ち計算除外、後入力経路を確認した。
+- T-UNIT-CATALOGで`10,000m²`を標準単位として扱い数量10,000へ誤転記しないこと、`12m²`を数量12と単位へ分離することを確認した。
+- ローカル実ブラウザーで測量入力待ちが税込0円、設計入力待ちが税込0円であること、設計に職種と人工1を後入力すると税込184,589円へ移ることを確認した。
+- 公開版で測量の作業項目選択後も数量・単位が空欄、追加ボタンが有効、反映待ちカードが「数量未入力（計算対象外）」となること、ブラウザー警告・エラー0件を確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `64F8C96BDA27DD686CEDF4EC456B7189A27CB24B1A3149FF1CEDC15938E76978` |
+| `styles.css` | `3B5B8C3CCEC7D47F18368A62401AF7E8380BA0FA2F4808EF42F788700CA134C7` |
+| `app.js` | `31193770514452C15643115BABA87C801B0A5D8EEC0B84BA3854C551773DEE4A` |
+| `consulting.js` | `84964FDC287F39A3D610768D5678E5AB291B8AA7543D379817C8EE76ED710B43` |
+| `document-import-engine.js` | `74BA15120BAD02BF5118B622D7F50F1C165C8C1584E575BC4C306905631D13E3` |
+| `document-import.js` | `247962CE7D91E73108D92A3BA1A98B6B36817E94592A33BC680C0052142EB446` |
+| `tests/test-document-import-ui.js` | `730C992D713EC61D5505F1D6F617BDB7C4B411A98B4993273B876780E1612340` |
+| `tests/test-unit-catalog.js` | `BFB8CD480E8C17EE0D94722535368689D513AF1385A59351474F551FE1B5D90A` |
