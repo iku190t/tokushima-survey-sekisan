@@ -1993,3 +1993,38 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `media/web-sekisan-introduction.mp4` | `D438C548C1B01ED9955D8229E19711A722185F01BC03CA939B5E777E46186327` |
 | `media/web-sekisan-introduction-thumbnail.jpg` | `16B102CC94C8E9EBB0FF965AD5B1E7AD6735545D05687D3D0A354300C7BAD54D` |
 | `tools/create-intro-video.py` | `CD3FB4267069E5AE93D24C940945F897765F001DC4103193491ACD3312B6134D` |
+
+## B-2026-08-24-13
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-24
+- 実装コミット: `42966c68c9810a999e45db013ea39329bf376ec8`
+- 外部知能コミット: この項目を追加するコミット
+- GitHub Pagesビルド: `1171261067`（`built`、コミット`42966c68c9810a999e45db013ea39329bf376ec8`）
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: 紹介動画を実PDFドラッグ4場面、日本語ナレーション、オリジナルBGM付きへ更新し、高確度なPDF先頭業務見出しの4業務共通欄への自動入力と、複数候補通知の操作枠明示を追加した。
+
+### 合格した試験・実画面確認
+
+- `tests/test-*.js`全18本合格、`git diff --check`合格。
+- 匿名合成A4 PDFをPNG化し、文字欠け、表ずれ、列切れなしを目視確認した。
+- ローカル実ブラウザーで匿名PDFを読み込み、2級基準点測量、数量20、単位「点」を緑枠へ個別ドラッグし、反映待ち1件へ追加した。4業務タブの業務名はすべて同じ自動入力値だった。
+- 紹介MP4を全1,194フレームまで復号し、H.264 High、yuv420p、1280×720、24fps、49.75秒、AAC音声、平均音量-17.6dB、最大-0.8dB、破損なしを確認した。PDF実演4場面とサムネイルを目視確認した。
+- 公開版で動画`readyState=4`、49.75秒、`muted=false`、警告・エラー0件を確認した。Google Analyticsタグ`G-88B9YPJXWP`のHTTPS読込も確認したが、GA管理画面への着信は未検証である。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `18D50FB4B51802C7510A8A35E167EB61202B5A4C36D60FDFA75D3671ED7719D7` |
+| `document-import-engine.js` | `8B80D1A88F8EA9EBE385DEC6A99229F57DA5CFFF376C35EB2A8B829F8E743895` |
+| `document-import.js` | `CA41350D2BB36D8175603AFE07A755DB0BFC8326101FDEC454518CBF3080E6C9` |
+| `tests/test-document-import.js` | `1EDA38DA9563A10CCFC4CF8B7C45209D94936CFDA35921D741EF181A71A52139` |
+| `tests/test-document-import-ui.js` | `46A925992A8E39BEB7613DEC927FB930D8E579938AB2D9204F242AC0CBF96B09` |
+| `tests/test-ui-static.js` | `910E232C539343690DA8C06500296366E9B00616B6A523C5D3F8D1EF49770670` |
+| `media/web-sekisan-introduction.mp4` | `01132E54A0C141665973B8CF0F84EE4F2357FC9A89810557EDD89CB92B598B6B` |
+| `media/web-sekisan-introduction-thumbnail.jpg` | `06C8956C886E5297ADC44DAC4C011F61C12335AAADFFA7F24DA6F2CE971DB9F0` |
+| `media/intro-assets/web-sekisan-demo.pdf` | `816D078DDD3BA40D01CDB4EEC9AA85EB5794F45FCB0A894E8BBB30A6C5523074` |
+| `tools/create-intro-video.py` | `CD1EF93E64847F2E0559D9E08FE9716913C6B463D52B7C71453DA6344B7C1C78` |
+| `tools/create-intro-demo-pdf.py` | `75A9347449DB9E8FEA781F27A0A887DE4FA60CEB06E477FE6592F64E5A11358D` |
+| `tools/create-intro-narration.ps1` | `796AB335109334E17B3E9123BC6517BD3152393FA640804055313373D341F486` |
