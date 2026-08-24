@@ -25,9 +25,11 @@ for (const rule of data.rules) {
   assert.ok(["design", "survey", "geology"].includes(rule.costSystem), `経費体系が明示される: ${rule.id}`);
   assert.ok(Object.keys(rule.roles).every((role) => validRoles.has(role)), `職種コードが正しい: ${rule.id}`);
   assert.ok(Object.values(rule.roles).every((days) => Number.isFinite(days) && days > 0), `人工が正数: ${rule.id}`);
-  const spec = engine.parseStandardQuantity(rule.standardUnit);
+  assert.ok(Array.isArray(rule.quantitySpec) && rule.quantitySpec.length, `入力桁規則を明示する: ${rule.id}`);
+  assert.ok(rule.quantitySpec.every((dimension) => dimension.status === "audited-2026-08-24" && [0, 3].includes(dimension.decimals)), `整数・小数桁を監査済みにする: ${rule.id}`);
+  const spec = engine.parseStandardQuantity(rule.standardUnit, rule.quantitySpec);
   const values = Object.fromEntries(spec.dimensions.map((dimension) => [dimension.key, dimension.baseQuantity]));
-  assert.strictEqual(engine.calculateStandardQuantity(rule.standardUnit, values).multiplier, 1, `標準数量が1倍になる: ${rule.id}`);
+  assert.strictEqual(engine.calculateStandardQuantity(rule.standardUnit, values, rule.quantitySpec).multiplier, 1, `標準数量が1倍になる: ${rule.id}`);
 }
 
 for (const year of [2024, 2025, 2026]) {

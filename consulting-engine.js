@@ -19,12 +19,56 @@
   const normalizeCorrectionFactor = (value) => roundHalfUp(Math.max(0, number(value)), 2);
 
   const quantityUnitLabels = {
-    km: "延長（km）", m: "延長（m）", m2: "面積（m²）", 箇所: "箇所数", 橋: "橋数",
+    km: "延長（km）", m: "延長（m）", m2: "面積（m²）", km2: "面積（km²）", ha: "面積（ha）", m3: "体積（m³）", t: "重量（t）", 時間: "時間数",
+    箇所: "箇所数", 橋: "橋数",
     基: "基数", トンネル: "トンネル数", 日: "日数", ケース: "ケース数", 断面: "断面数",
     坑口: "坑口数", タイプ: "タイプ数", 業務: "業務数", 工法: "工法数", 機関: "機関数",
     孔: "孔数", 回: "回数", 台: "台数", 本: "本数", 観測所: "観測所数", 計器: "計器数", 式: "数量"
   };
   const integerQuantityUnits = new Set(["箇所", "橋", "基", "トンネル", "日", "ケース", "断面", "坑口", "タイプ", "業務", "工法", "機関", "孔", "回", "台", "本", "観測所", "計器", "式"]);
+  const knownContinuousUnits = new Set(["km", "m", "m2", "km2", "ha", "m3", "t", "時間"]);
+  const unitAliases = new Map([
+    ["㎡", "m2"], ["m²", "m2"], ["m^2", "m2"], ["平方メートル", "m2"],
+    ["㎢", "km2"], ["km²", "km2"], ["km^2", "km2"], ["平方キロメートル", "km2"],
+    ["㎥", "m3"], ["m³", "m3"], ["m^3", "m3"], ["立方メートル", "m3"],
+    ["ｋｍ", "km"], ["ＫＭ", "km"], ["メートル", "m"], ["キロメートル", "km"],
+    ["トン", "t"], ["ｔ", "t"], ["時", "時間"]
+  ]);
+
+  function normalizeQuantityUnit(unit) {
+    const raw = String(unit || "式").trim();
+    return unitAliases.get(raw) || raw;
+  }
+
+  function inputDomainForUnit(unit, options = {}) {
+    const normalizedUnit = normalizeQuantityUnit(unit);
+    const integer = integerQuantityUnits.has(normalizedUnit);
+    const known = integer || knownContinuousUnits.has(normalizedUnit);
+    const decimals = Number.isInteger(options.decimals) ? Math.max(0, Math.min(6, options.decimals)) : integer ? 0 : 3;
+    return {
+      unit: normalizedUnit,
+      known,
+      kind: integer ? "integer" : "decimal",
+      integer,
+      decimals,
+      step: decimals === 0 ? 1 : 10 ** -decimals,
+      min: options.allowZero ? 0 : decimals === 0 ? 1 : 10 ** -decimals,
+      label: integer ? "整数のみ" : `小数第${decimals}位まで`
+    };
+  }
+
+  function validateDomainValue(value, domainOrUnit, options = {}) {
+    const domain = typeof domainOrUnit === "object" && domainOrUnit ? domainOrUnit : inputDomainForUnit(domainOrUnit, options);
+    if (value === "" || value === null || value === undefined) return { valid: false, reason: "数量を入力してください", value: null, domain };
+    const raw = String(value).trim().replace(/,/g, "");
+    if (!/^\d+(?:\.\d+)?$/.test(raw)) return { valid: false, reason: `${domain.unit}は0以上の数値で入力してください`, value: null, domain };
+    const numberValue = Number(raw);
+    if (!Number.isFinite(numberValue) || numberValue < domain.min) return { valid: false, reason: `${domain.unit}は${domain.min}以上で入力してください`, value: null, domain };
+    const fractionLength = (raw.split(".")[1] || "").length;
+    if (domain.integer && !Number.isInteger(numberValue)) return { valid: false, reason: `${domain.unit}は整数で入力してください`, value: null, domain };
+    if (fractionLength > domain.decimals) return { valid: false, reason: `${domain.unit}は${domain.label}です`, value: null, domain };
+    return { valid: true, reason: "", value: domain.integer ? Math.floor(numberValue) : roundHalfUp(numberValue, domain.decimals), domain };
+  }
   const referenceOnlyPatterns = [
     /編成人員|編成人肩/,
     /市場単価.*規格|規格区分/,
@@ -67,11 +111,30 @@
     };
   }
 
-  function parseStandardQuantity(standardUnit) {
+  function parseStandardQuantity(standardUnit, explicitDimensions = null) {
     const source = String(standardUnit || "標準表1式")
-      .replace(/㎡/g, "m2").replace(/m²/g, "m2").replace(/ｍ/g, "m").replace(/ｋｍ/gi, "km")
+      .replace(/㎡/g, "m2").replace(/m²/g, "m2").replace(/㎢/g, "km2").replace(/km²/g, "km2").replace(/㎥/g, "m3").replace(/m³/g, "m3").replace(/ｍ/g, "m").replace(/ｋｍ/gi, "km")
       .replace(/，/g, ",").replace(/あたり/g, "当り").replace(/\s+/g, "");
-    const pattern = /(\d[\d,]*(?:\.\d+)?)\s*(km|m2|m|箇所|橋|基|トンネル|日|ケース|断面|坑口|タイプ|業務|工法|機関|孔|回|台|本|観測所|計器|式)(?=当り)/g;
+    if (Array.isArray(explicitDimensions) && explicitDimensions.length) {
+      return {
+        source,
+        dimensions: explicitDimensions.map((entry, index) => {
+          const domain = inputDomainForUnit(entry.unit, { decimals: entry.decimals });
+          return {
+            key: `quantity${index + 1}`,
+            label: quantityUnitLabels[domain.unit] || `数量（${domain.unit}）`,
+            unit: domain.unit,
+            baseQuantity: number(entry.baseQuantity, 1),
+            integer: domain.integer,
+            decimals: domain.decimals,
+            step: domain.step,
+            min: domain.min,
+            domainStatus: entry.status || "explicit"
+          };
+        })
+      };
+    }
+    const pattern = /(\d[\d,]*(?:\.\d+)?)\s*(km2|m2|m3|km|ha|m|t|時間|箇所|橋|基|トンネル|日|ケース|断面|坑口|タイプ|業務|工法|機関|孔|回|台|本|観測所|計器|式)(?=当り)/g;
     const dimensions = [];
     let match;
     while ((match = pattern.exec(source))) {
@@ -80,13 +143,17 @@
       if (!(baseQuantity > 0)) continue;
       const prefixStart = dimensions.length ? dimensions[dimensions.length - 1]._end : 0;
       const prefix = source.slice(prefixStart, match.index).replace(/^当り/, "").replace(/^単位[:：]?/, "");
+      const domain = inputDomainForUnit(unit);
       dimensions.push({
         key: `quantity${dimensions.length + 1}`,
         label: prefix ? `${prefix}${quantityUnitLabels[unit] || `数量（${unit}）`}` : quantityUnitLabels[unit] || `数量（${unit}）`,
         unit,
         baseQuantity,
-        integer: integerQuantityUnits.has(unit),
-        decimals: integerQuantityUnits.has(unit) ? 0 : 3,
+        integer: domain.integer,
+        decimals: domain.decimals,
+        step: domain.step,
+        min: domain.min,
+        domainStatus: domain.known ? "audited-unit" : "review-required",
         _end: pattern.lastIndex
       });
     }
@@ -94,18 +161,16 @@
     return { source, dimensions: dimensions.map(({ _end, ...dimension }) => dimension) };
   }
 
-  function calculateStandardQuantity(standardUnit, values) {
-    const specification = parseStandardQuantity(standardUnit);
+  function calculateStandardQuantity(standardUnit, values, explicitDimensions = null) {
+    const specification = parseStandardQuantity(standardUnit, explicitDimensions);
     const normalized = [];
     let multiplier = 1;
     for (const dimension of specification.dimensions) {
       const raw = values?.[dimension.key];
       if (raw === "" || raw === null || raw === undefined) return { valid: false, reason: `${dimension.label}を入力してください`, specification, quantities: normalized, multiplier: 0 };
-      let quantity = number(raw, NaN);
-      if (!Number.isFinite(quantity) || quantity <= 0) return { valid: false, reason: `${dimension.label}を0より大きい値で入力してください`, specification, quantities: normalized, multiplier: 0 };
-      if (dimension.integer && !Number.isInteger(quantity)) return { valid: false, reason: `${dimension.label}は整数で入力してください`, specification, quantities: normalized, multiplier: 0 };
-      quantity = dimension.integer ? Math.floor(quantity) : roundHalfUp(quantity, dimension.decimals);
-      if (!(quantity > 0)) return { valid: false, reason: `${dimension.label}を0より大きい値で入力してください`, specification, quantities: normalized, multiplier: 0 };
+      const validation = validateDomainValue(raw, dimension);
+      if (!validation.valid) return { valid: false, reason: validation.reason.replace(dimension.unit, dimension.label), specification, quantities: normalized, multiplier: 0 };
+      const quantity = validation.value;
       normalized.push({ ...dimension, quantity });
       multiplier *= quantity / dimension.baseQuantity;
     }
@@ -219,13 +284,26 @@
 
   function calculateEstimate(state, master, rolePrices, surveyBusinessPrice = 0) {
     const lines = (state?.lines || []).map((line) => calculateRoleLine(line, rolePrices, master?.serviceTypes));
+    const additionalCosts = (state?.additionalCosts || []).map((entry) => ({
+      id: entry.id,
+      category: String(entry.category || "other"),
+      costBucket: String(entry.costBucket || "designDirectExpenses"),
+      name: String(entry.name || "案件別積上げ費用").trim() || "案件別積上げ費用",
+      quantity: number(entry.quantity),
+      unit: normalizeQuantityUnit(entry.unit || "式"),
+      unitPrice: floorYen(entry.unitPrice),
+      amount: floorYen(number(entry.quantity) * number(entry.unitPrice)),
+      source: String(entry.source || "").trim(),
+      sourceDate: String(entry.sourceDate || "").trim()
+    }));
+    const additionalAmount = (bucket) => additionalCosts.filter((entry) => entry.costBucket === bucket).reduce((sum, entry) => sum + entry.amount, 0);
     const designLines = lines.filter((line) => line.calculationSystem === "design");
     const surveyLines = lines.filter((line) => line.calculationSystem === "survey");
     const geologyLines = lines.filter((line) => line.calculationSystem === "geology");
     const sumAmount = (entries) => entries.reduce((sum, line) => sum + line.amount, 0);
 
     const designLabor = sumAmount(designLines);
-    const designDirectExpenses = floorYen(state?.costs?.designDirectExpenses);
+    const designDirectExpenses = floorYen(state?.costs?.designDirectExpenses) + additionalAmount("designDirectExpenses");
     const electronicMode = state?.options?.electronicMode || "none";
     const electronic = electronicMode === "none"
       ? 0
@@ -238,7 +316,7 @@
     const designBusinessPrice = designBusinessCost + generalManagement;
 
     const surveyPlanningLabor = sumAmount(surveyLines);
-    const surveyPlanningDirectExpenses = floorYen(state?.costs?.surveyPlanningDirectExpenses);
+    const surveyPlanningDirectExpenses = floorYen(state?.costs?.surveyPlanningDirectExpenses) + additionalAmount("surveyPlanningDirectExpenses");
     const surveyPlanningDirect = surveyPlanningLabor + surveyPlanningDirectExpenses;
     const surveyRule = master?.surveyRulesByYear?.[number(state?.fiscalYear)];
     const surveyPlanningOverheadRate = overheadRate(surveyPlanningDirect, surveyRule?.overhead);
@@ -246,9 +324,9 @@
     const surveyPlanningBusinessPrice = surveyPlanningDirect + surveyPlanningOverhead;
 
     const geologyLabor = sumAmount(geologyLines);
-    const geologyDirectNonLabor = floorYen(state?.costs?.geologyDirectNonLabor);
-    const geologyIndirect = floorYen(state?.costs?.geologyIndirect);
-    const geologyExcluded = floorYen(state?.costs?.geologyExcluded);
+    const geologyDirectNonLabor = floorYen(state?.costs?.geologyDirectNonLabor) + additionalAmount("geologyDirectNonLabor");
+    const geologyIndirect = floorYen(state?.costs?.geologyIndirect) + additionalAmount("geologyIndirect");
+    const geologyExcluded = floorYen(state?.costs?.geologyExcluded) + additionalAmount("geologyExcluded");
     const geologyTarget = geologyLabor + geologyDirectNonLabor + geologyIndirect;
     const geologyOverheadRate = overheadRate(geologyTarget, master?.geologyRules?.overhead);
     const geologyOverhead = floorYen(geologyTarget * geologyOverheadRate / 100);
@@ -264,6 +342,7 @@
 
     return {
       lines,
+      additionalCosts,
       totals: {
         surveyBusinessPrice: includedSurveyBusinessPrice,
         designLabor,
@@ -297,5 +376,5 @@
     };
   }
 
-  return { floorYen, roundHalfUp, normalizeDays, normalizeCorrectionFactor, classifyPresetCoverage, parseStandardQuantity, calculateStandardQuantity, standardQuantitySummary, findConditionRule, calculateConditionCorrection, calculateRuleQuantityMultiplier, overheadRate, electronicDeliverableCost, calculateRoleLine, calculateEstimate };
+  return { floorYen, roundHalfUp, normalizeDays, normalizeCorrectionFactor, normalizeQuantityUnit, inputDomainForUnit, validateDomainValue, classifyPresetCoverage, parseStandardQuantity, calculateStandardQuantity, standardQuantitySummary, findConditionRule, calculateConditionCorrection, calculateRuleQuantityMultiplier, overheadRate, electronicDeliverableCost, calculateRoleLine, calculateEstimate };
 });

@@ -166,6 +166,24 @@ input:focus, select:focus, textarea:focus { border-color: var(--green); box-shad
 .consulting-formula-list ol, .consulting-applicability ol { margin: 10px 0 0; padding-left: 22px; line-height: 1.65; }
 .consulting-formula-list .field { margin-top: 10px; }
 .consulting-market-fields { grid-column: 1 / -1; }
+.consulting-compliance-card { margin: 18px 20px 0; }
+.compliance-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.compliance-checks { display: flex; flex-wrap: wrap; gap: 10px 18px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
+.badge.verified { background: #dff3e8; color: #175f46; }
+.additional-cost-entry { margin-top: 16px; border-top: 1px solid var(--line); padding-top: 14px; }
+.additional-cost-entry > summary { cursor: pointer; font-weight: 800; color: var(--green); }
+.additional-cost-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; align-items: end; margin: 14px 0; }
+.additional-cost-grid .span-2 { grid-column: span 2; }
+.additional-cost-table small { display: block; color: var(--muted); margin-top: 3px; }
+.additional-cost-table th:nth-child(1) { min-width: 190px; }
+.additional-cost-table th:nth-child(6) { min-width: 220px; }
+.reference-case-audit { margin-top: 24px; padding: 20px; border: 1px solid var(--line); border-radius: 16px; background: #f8fbf9; }
+.reference-case-result { margin-top: 14px; }
+.reference-case-result table { width: 100%; border-collapse: collapse; background: #fff; }
+.reference-case-result th, .reference-case-result td { padding: 9px 10px; border: 1px solid var(--line); text-align: right; }
+.reference-case-result th:first-child, .reference-case-result td:first-child { text-align: left; }
+.reference-case-result .matched { color: var(--green); font-weight: 700; }
+.reference-case-result .mismatch { color: #9e3f2f; font-weight: 700; }
 .consulting-rate-check { align-items: flex-start; min-height: 58px; padding: 10px; background: #fff; border: 1px solid #d4e1dc; border-radius: 9px; }
 .consulting-rate-check small { display: block; margin-top: 4px; color: var(--muted); line-height: 1.45; }
 .condition-calculation-note, .condition-source-list, .consulting-incomplete-rule { grid-column: 1 / -1; margin: 0; }
@@ -558,7 +576,9 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
   .app-header { align-items: flex-start; flex-direction: column; }
   .header-actions { justify-content: flex-start; }
   .save-state { width: 100%; }
-  .project-strip, .picker-grid, .consulting-picker-grid, .verified-preset-row, .cost-grid, .master-head-grid, .role-price-grid, .formula-grid, .rate-preset-row { grid-template-columns: 1fr; }
+  .project-strip, .picker-grid, .consulting-picker-grid, .verified-preset-row, .cost-grid, .master-head-grid, .role-price-grid, .formula-grid, .rate-preset-row, .compliance-grid, .additional-cost-grid { grid-template-columns: 1fr; }
+  .additional-cost-grid .span-2 { grid-column: auto; }
+  .consulting-compliance-card { margin-inline: 12px; }
   .view-tabs { overflow-x: visible; flex-wrap: wrap; padding-block: 5px; }
   .view-tab-group { width: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px; }
   .utility-view-tabs { margin-left: 0; padding: 5px 0 0; border-top: 1px solid var(--line); border-left: 0; }

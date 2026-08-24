@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-08-24",
+  "scope": "公式資料で式または固定結果を確認できる公開例。匿名化実案件の代替とはせず、式単位の回帰試験にだけ使用する。",
+  "examples": [
+    {
+      "id": "mlit-hydrology-mp-linear",
+      "status": "official-formula-reference-only",
+      "source": "https://www.mlit.go.jp/common/001234723.pdf",
+      "sourcePage": 30,
+      "formula": "Mp = 0.02 * N2 + 2.65",
+      "inputs": { "N2": 10 },
+      "expected": 2.85,
+      "runtimeEnabled": false,
+      "note": "該当年度の全条件・職種配分との表単位対応が未完了のため、公式式の回帰確認だけに使用する。"
+    },
+    {
+      "id": "survey-r8-second-class-10-points",
+      "status": "source-table-crosschecked",
+      "source": "https://www.mlit.go.jp/tec/gyoumu_sekisan.html",
+      "inputs": { "fiscalYear": 2026, "workItemCode": "2-2-1-1", "quantity": 10 },
+      "expected": { "unitPrice": 344800, "directWork": 3448000, "precision": 290555 },
+      "runtimeEnabled": true
+    }
+  ]
+}

@@ -25,7 +25,7 @@
     return Math.floor(source / place) * place;
   }
 
-  const defaultIntegerUnits = new Set(["式", "点", "箇所", "回", "機関", "業務", "戸", "人", "測線", "断面", "本", "枚", "日", "橋", "基", "社", "件", "ケース", "施設", "トンネル", "m²"]);
+  const defaultIntegerUnits = new Set(["式", "点", "箇所", "回", "機関", "業務", "戸", "人", "測線", "断面", "本", "枚", "日", "橋", "基", "社", "件", "ケース", "施設", "トンネル"]);
 
   function quantityRule(item, master = {}) {
     const unit = item?.unit || "式";

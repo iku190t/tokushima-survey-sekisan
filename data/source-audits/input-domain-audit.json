@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "auditedAt": "2026-08-24",
+  "policy": "離散量は整数、延長・面積・体積・重量・時間は小数第3位まで。全項目へ明示メタデータを付与し、既定値フォールバックを使用しない。",
+  "survey": [
+    {
+      "fiscalYear": 2024,
+      "itemCount": 134,
+      "explicitInputDomainCount": 134,
+      "unitCounts": {
+        "回:integer": 4,
+        "機関:integer": 1,
+        "点:integer": 20,
+        "km:decimal": 23,
+        "業務:integer": 10,
+        "本:integer": 4,
+        "断面:integer": 1,
+        "測線:integer": 6,
+        "m²:decimal": 18,
+        "戸:integer": 1,
+        "人:integer": 1,
+        "km²:decimal": 33,
+        "時間:decimal": 6,
+        "日:integer": 3,
+        "枚:integer": 2,
+        "箇所:integer": 1
+      }
+    },
+    {
+      "fiscalYear": 2025,
+      "itemCount": 134,
+      "explicitInputDomainCount": 134,
+      "unitCounts": {
+        "回:integer": 4,
+        "機関:integer": 1,
+        "点:integer": 20,
+        "km:decimal": 23,
+        "業務:integer": 10,
+        "本:integer": 4,
+        "断面:integer": 1,
+        "測線:integer": 6,
+        "m²:decimal": 18,
+        "戸:integer": 1,
+        "人:integer": 1,
+        "km²:decimal": 33,
+        "時間:decimal": 6,
+        "日:integer": 3,
+        "枚:integer": 2,
+        "箇所:integer": 1
+      }
+    },
+    {
+      "fiscalYear": 2026,
+      "itemCount": 134,
+      "explicitInputDomainCount": 134,
+      "unitCounts": {
+        "回:integer": 4,
+        "機関:integer": 1,
+        "点:integer": 20,
+        "km:decimal": 23,
+        "業務:integer": 10,
+        "本:integer": 4,
+        "断面:integer": 1,
+        "測線:integer": 6,
+        "m²:decimal": 18,
+        "戸:integer": 1,
+        "人:integer": 1,
+        "km²:decimal": 33,
+        "時間:decimal": 6,
+        "日:integer": 3,
+        "枚:integer": 2,
+        "箇所:integer": 1
+      }
+    }
+  ],
+  "consulting": {
+    "ruleCount": 1393,
+    "explicitInputDomainCount": 1393,
+    "dimensionCounts": {
+      "式:integer": 161,
+      "業務:integer": 123,
+      "km:decimal": 114,
+      "箇所:integer": 390,
+      "m:decimal": 72,
+      "タイプ:integer": 6,
+      "橋:integer": 144,
+      "基:integer": 177,
+      "工法:integer": 3,
+      "断面:integer": 12,
+      "坑口:integer": 9,
+      "トンネル:integer": 30,
+      "ケース:integer": 12,
+      "日:integer": 28,
+      "機関:integer": 9,
+      "m2:decimal": 4,
+      "回:integer": 39,
+      "観測所:integer": 30,
+      "計器:integer": 24,
+      "台:integer": 3,
+      "本:integer": 3
+    }
+  }
+}

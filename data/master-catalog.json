@@ -10,7 +10,7 @@
       "fiscalYear": 2024,
       "verificationStatus": "standard-reference",
       "path": "data/master-standard-r6.json",
-      "sha256": "8e1d2edc631480e6511db4af7573c0eda733ce4a6a6b0e79dcaaab89045a9929",
+      "sha256": "5a0da19ac80b3d294f741b5512c5905fc02ae69c34fecd8ab206ef7557cd9a91",
       "sources": ["令和6年度 設計業務等標準積算基準書", "令和6年度 設計業務委託等技術者単価"]
     },
     {
@@ -21,7 +21,7 @@
       "fiscalYear": 2025,
       "verificationStatus": "standard-reference",
       "path": "data/master-standard-r7.json",
-      "sha256": "e7d9439c2c6e9dd66615cb55e8554091840527de7208d6ce6fb6fb9fb7c901b7",
+      "sha256": "59d851b1d93cdb59d909efb7df9b0b6d251f1c1a6f4545d245f071103b3df592",
       "sources": ["令和7年度 設計業務等標準積算基準書", "令和7年度 設計業務委託等技術者単価"]
     },
     {
@@ -32,7 +32,7 @@
       "fiscalYear": 2026,
       "verificationStatus": "standard-reference",
       "path": "data/master-standard-r8.json",
-      "sha256": "d329a3698f8aade986e0fa73d9a70215a67e9668e6dcfd36ebeaf0482b557897",
+      "sha256": "420fba2183e96b9af6a37f371e16f0db76d8d508dfea3d19ef3a1d4a79aa0bc9",
       "sources": ["令和8年度 設計業務等標準積算基準書", "令和8年度 設計業務委託等技術者単価"]
     }
   ]

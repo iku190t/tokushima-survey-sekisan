@@ -98,6 +98,9 @@ quantity = engine.calculateStandardQuantity("10,000m2当り", { quantity1: 69000
 assert.strictEqual(quantity.multiplier, 6.9, "面積を標準10,000m2単位へ換算する");
 assert.strictEqual(engine.calculateStandardQuantity("1橋当り", { quantity1: "" }).valid, false, "数量の空欄を1として補完しない");
 assert.strictEqual(engine.calculateStandardQuantity("1橋当り", { quantity1: 1.5 }).valid, false, "橋数の小数入力を拒否する");
+assert.strictEqual(engine.validateDomainValue(1.5, "m2").valid, true, "面積は連続量として小数入力を受け付ける");
+assert.strictEqual(engine.validateDomainValue(1.5, "回").valid, false, "回数は整数以外を拒否する");
+assert.strictEqual(engine.validateDomainValue(1.2345, "km").valid, false, "距離は小数第3位を超える入力を拒否する");
 
 let coverage = engine.classifyPresetCoverage(master.verifiedPresets[0]);
 assert.strictEqual(coverage.status, "verified-complete", "原表確認済みプリセットを完全確認済みとして区別する");
@@ -108,5 +111,15 @@ assert.strictEqual(coverage.canCalculate, false, "関連する日当たり作業
 coverage = engine.classifyPresetCoverage({ label: "2-3-1 道路詳細設計（A）", verificationStatus: "national-reference" });
 assert.strictEqual(coverage.status, "incomplete-rule", "補正未実装の全国標準候補は自動計算不可として区別する");
 assert.strictEqual(coverage.canCalculate, false, "条件規則のない候補を数量比例だけで追加しない");
+
+const detailed = baseState();
+detailed.additionalCosts = [
+  { id: "a1", category: "market", costBucket: "geologyDirectNonLabor", name: "機械ボーリング", quantity: 12.5, unit: "m", unitPrice: 15000, source: "見積書A", sourceDate: "2026-08-24" },
+  { id: "a2", category: "transport", costBucket: "geologyExcluded", name: "運搬費", quantity: 1, unit: "式", unitPrice: 80000, source: "見積書B", sourceDate: "2026-08-24" }
+];
+result = engine.calculateEstimate(detailed, master, prices[2026].roles, 0);
+assert.strictEqual(result.totals.geologyDirectNonLabor, 187500, "根拠付き市場単価を地質直接経費へ計上する");
+assert.strictEqual(result.totals.geologyExcluded, 80000, "運搬等の諸経費対象外積上げを区別する");
+assert.strictEqual(result.additionalCosts[0].amount, 187500, "積上費用は数量×単価で円未満切捨てする");
 
 console.log("OK: consulting/design/geology calculation checks passed");

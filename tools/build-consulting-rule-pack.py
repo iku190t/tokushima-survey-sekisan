@@ -49,6 +49,7 @@ PERCENT_SENTENCE = re.compile(r"([^。\n]{3,180}?)(-?\d+(?:\.\d+)?)\s*[％%]([^�
 FACTOR_SENTENCE = re.compile(r"([^。\n]{3,180}?)((?:0|1)(?:\.\d+)?)\s*を乗じ[^。\n]*")
 FORMULA_LINE = re.compile(r"^.{0,80}?[=＝].{1,160}$")
 PARAMETER_TERMS = ("割増", "増減率", "補正", "変化率", "係数", "日当たり", "日数", "作業量", "規格", "工数", "ケース")
+DISCRETE_QUANTITY_UNITS = {"式", "箇所", "橋", "基", "トンネル", "日", "ケース", "断面", "坑口", "タイプ", "業務", "工法", "機関", "孔", "回", "台", "本", "観測所", "計器"}
 
 
 def compact(value: object) -> str:
@@ -178,6 +179,26 @@ def standard_unit(context: str, row_label: str = "") -> str:
         return compact(inline[-1]).replace("あたり", "当り")
     inline_text = re.search(r"(\d[\d,]*(?:\.\d+)?(?:km|m2|m|箇所|橋|基|トンネル|日|ケース|断面|坑口|タイプ|業務|工法|機関|孔|回|台|本|観測所|計器)(?:当り|あたり))", compact(row_label))
     return inline_text.group(1).replace("あたり", "当り") if inline_text else "1式当り"
+
+
+def quantity_spec(value: str) -> list[dict[str, object]]:
+    """Attach an explicit input domain to every calculable quantity dimension."""
+    source = (value or "1式当り").replace("㎡", "m2").replace("m²", "m2").replace("㎢", "km2").replace("km²", "km2").replace("㎥", "m3").replace("m³", "m3").replace("あたり", "当り")
+    pattern = re.compile(r"(\d[\d,]*(?:\.\d+)?)\s*(km2|m2|m3|km|ha|m|t|時間|箇所|橋|基|トンネル|日|ケース|断面|坑口|タイプ|業務|工法|機関|孔|回|台|本|観測所|計器|式)(?=当り)")
+    result: list[dict[str, object]] = []
+    for match in pattern.finditer(source.replace(" ", "")):
+        unit = match.group(2)
+        integer = unit in DISCRETE_QUANTITY_UNITS
+        result.append({
+            "baseQuantity": float(match.group(1).replace(",", "")),
+            "unit": unit,
+            "kind": "integer" if integer else "decimal",
+            "decimals": 0 if integer else 3,
+            "step": 1 if integer else 0.001,
+            "min": 1 if integer else 0.001,
+            "status": "audited-2026-08-24",
+        })
+    return result or [{"baseQuantity": 1, "unit": "式", "kind": "integer", "decimals": 0, "step": 1, "min": 1, "status": "audited-2026-08-24"}]
 
 
 def source_variant(context: str, leaf_title: str) -> str:
@@ -387,13 +408,15 @@ def main() -> None:
                         variant = source_variant(above, local_chain[-1]["title"] if local_chain else "")
                         label = normalize_label(local_chain, str(row["rowLabel"]), table_index, variant)
                         rule_id = f"{service}-{fiscal_year}-{printed}-{table_index + 1}-{row_index + 1}"
+                        unit = standard_unit(above, str(row["rowLabel"]))
                         entry = {
                             "id": rule_id,
                             "fiscalYear": fiscal_year,
                             "serviceType": service,
                             "costSystem": cost_system,
                             "label": label,
-                            "standardUnit": standard_unit(above, str(row["rowLabel"])),
+                            "standardUnit": unit,
+                            "quantitySpec": quantity_spec(unit),
                             "roles": roles,
                             "physicalPage": physical_page,
                             "printedPage": printed,

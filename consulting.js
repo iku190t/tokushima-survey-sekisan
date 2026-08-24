@@ -9,6 +9,8 @@
   const conditionRules = window.CONSULTING_CONDITION_RULES || { rules: [] };
   const rulePack = window.CONSULTING_RULE_PACK || { rules: [], families: [], audits: [] };
   const officialSourceCatalog = window.OFFICIAL_SOURCE_CATALOG || { sources: [] };
+  const complianceCatalog = window.ESTIMATION_COMPLIANCE_CATALOG || { systems: [], regionalAuthorities: [], additionalCostCategories: [], costBuckets: [] };
+  const referenceCaseEngine = window.ReferenceCaseEngine;
   if (!app || !master || !engine || !pricesByYear) return;
 
   const $ = (id) => document.getElementById(id);
@@ -66,9 +68,14 @@
   function state() {
     const estimate = app.getEstimate();
     if (!estimate.consulting) {
-      estimate.consulting = { schemaVersion: 2, fiscalYear: 2026, lines: [], costs: {}, options: {} };
+      estimate.consulting = { schemaVersion: 3, fiscalYear: 2026, lines: [], additionalCosts: [], compliance: {}, costs: {}, options: {} };
     }
     estimate.consulting.lines = Array.isArray(estimate.consulting.lines) ? estimate.consulting.lines : [];
+    estimate.consulting.additionalCosts = Array.isArray(estimate.consulting.additionalCosts) ? estimate.consulting.additionalCosts : [];
+    estimate.consulting.compliance = Object.assign({
+      standardSystem: "mlit-general", regionalAuthority: "unselected", notificationReference: "", specificationReference: "",
+      notificationConfirmed: false, specificationConfirmed: false, priceSourcesConfirmed: false
+    }, estimate.consulting.compliance || {});
     estimate.consulting.costs = Object.assign({ designDirectExpenses: 0, surveyPlanningDirectExpenses: 0, geologyDirectNonLabor: 0, geologyIndirect: 0, geologyExcluded: 0 }, estimate.consulting.costs || {});
     estimate.consulting.options = Object.assign({ includeSurvey: false, electronicMode: "none", adjustBusinessPrice: false, taxRate: 0.1 }, estimate.consulting.options || {});
     if (!master.supportedYears.includes(Number(estimate.consulting.fiscalYear))) estimate.consulting.fiscalYear = master.supportedYears[0];
@@ -92,6 +99,47 @@
     const surveyMaster = app.getActiveSurveyMaster();
     $("consultingAuthorityText").textContent = app.getSubmissionJurisdictionName?.() || "見積提出先未設定";
     $("consultingBasisText").textContent = `令和${current.fiscalYear - 2018}年度・国交省全国一律技術者単価`;
+  }
+
+  function renderCompliance() {
+    const current = state();
+    const compliance = current.compliance;
+    $("consultingStandardSystem").innerHTML = complianceCatalog.systems.map((entry) => `<option value="${h(entry.id)}"${entry.selectable ? "" : " disabled"}>${h(entry.name)}${entry.selectable ? "" : "（別基準・計算未対応）"}</option>`).join("");
+    $("consultingStandardSystem").value = complianceCatalog.systems.some((entry) => entry.id === compliance.standardSystem && entry.selectable) ? compliance.standardSystem : "mlit-general";
+    const selectedSystem = complianceCatalog.systems.find((entry) => entry.id === $("consultingStandardSystem").value);
+    $("consultingStandardSystemNote").innerHTML = selectedSystem ? `${h(selectedSystem.note)} <a href="${h(selectedSystem.source)}" target="_blank" rel="noopener noreferrer">公式資料</a>` : "";
+    $("consultingRegionalAuthority").innerHTML = complianceCatalog.regionalAuthorities.map((entry) => `<option value="${h(entry.id)}">${h(entry.name)}</option>`).join("");
+    $("consultingRegionalAuthority").value = complianceCatalog.regionalAuthorities.some((entry) => entry.id === compliance.regionalAuthority) ? compliance.regionalAuthority : "unselected";
+    const selectedAuthority = complianceCatalog.regionalAuthorities.find((entry) => entry.id === $("consultingRegionalAuthority").value);
+    $("consultingRegionalAuthorityLink").innerHTML = selectedAuthority?.url ? `<a href="${h(selectedAuthority.url)}" target="_blank" rel="noopener noreferrer">公式サイトで通知・仕様を確認</a>` : "発注機関を選択し、案件の通知・仕様を記録してください。";
+    $("consultingNotificationReference").value = compliance.notificationReference || "";
+    $("consultingSpecificationReference").value = compliance.specificationReference || "";
+    $("consultingNotificationConfirmed").checked = Boolean(compliance.notificationConfirmed);
+    $("consultingSpecificationConfirmed").checked = Boolean(compliance.specificationConfirmed);
+    $("consultingPriceSourcesConfirmed").checked = Boolean(compliance.priceSourcesConfirmed);
+    updateComplianceStatus();
+  }
+
+  function updateComplianceStatus() {
+    const compliance = state().compliance;
+    const complete = compliance.regionalAuthority !== "unselected" && compliance.notificationReference && compliance.specificationReference
+      && compliance.notificationConfirmed && compliance.specificationConfirmed && compliance.priceSourcesConfirmed;
+    $("consultingComplianceBadge").textContent = complete ? "確認済み" : "未確認あり";
+    $("consultingComplianceBadge").classList.toggle("verified", complete);
+    $("consultingComplianceStatus").textContent = complete
+      ? "発注機関、適用通知、特記仕様、価格根拠の確認記録が揃っています。"
+      : "不足項目は提出前チェックとPDF帳票へ未確認として表示します。";
+  }
+
+  function additionalCostLabel(collection, id) {
+    return collection.find((entry) => entry.id === id)?.name || id;
+  }
+
+  function renderAdditionalCosts(result = currentResult()) {
+    const current = state();
+    $("consultingAdditionalCategory").innerHTML = complianceCatalog.additionalCostCategories.map((entry) => `<option value="${h(entry.id)}">${h(entry.name)}</option>`).join("");
+    $("consultingAdditionalBucket").innerHTML = complianceCatalog.costBuckets.map((entry) => `<option value="${h(entry.id)}">${h(entry.name)}</option>`).join("");
+    $("consultingAdditionalCostBody").innerHTML = (result.additionalCosts || []).map((entry) => `<tr data-additional-cost="${h(entry.id)}"><td><strong>${h(additionalCostLabel(complianceCatalog.additionalCostCategories, entry.category))}</strong><small>${h(entry.name)}</small></td><td>${h(additionalCostLabel(complianceCatalog.costBuckets, entry.costBucket))}</td><td>${h(entry.quantity)} ${h(entry.unit)}</td><td>${money(entry.unitPrice)}</td><td><strong>${money(entry.amount)}</strong></td><td>${h(entry.source)}${entry.sourceDate ? `<small>${h(entry.sourceDate)}</small>` : ""}</td><td><button class="icon-button danger-text delete-additional-cost" type="button" aria-label="削除">×</button></td></tr>`).join("") || '<tr><td colspan="7" class="empty-report-cell">根拠付き積上げ費用はありません</td></tr>';
   }
 
   function renderServiceControls(resetTask = false) {
@@ -180,11 +228,12 @@
   function renderParameterTable(table, index) {
     const mode = parameterMode(table);
     const rows = table.rows || [];
+    const trusted = ["high", "medium"].includes(table?.source?.confidence);
     return `<details class="consulting-parameter-table"><summary>条件表 ${index + 1}（${mode === "rate" ? "増減率" : mode === "productivity" ? "日当たり作業量・日数" : mode === "factor" ? "補正係数" : "規格・適用表"}）</summary><div class="parameter-table-scroll"><table><tbody>${rows.map((row, rowIndex) => `<tr>${row.map((cell) => {
       const value = numericParameter(cell);
-      const selectable = mode !== "reference" && rowIndex > 0 && value !== null;
+      const selectable = trusted && mode !== "reference" && rowIndex > 0 && value !== null;
       return `<td>${selectable ? `<button type="button" class="consulting-parameter-value" data-parameter-mode="${mode}" data-parameter-value="${h(value)}" data-parameter-table="${index}">${h(cell)}</button>` : h(cell)}</td>`;
-    }).join("")}</tr>`).join("")}</tbody></table></div><small>${sourceLink(table.source, "この表の出典")}</small></details>`;
+    }).join("")}</tr>`).join("")}</tbody></table></div><small>${trusted ? sourceLink(table.source, "この表の出典") : "低確度・未対応ページのため参照専用（計算選択不可）"}</small></details>`;
   }
 
   function compileFormula(formula, index) {
@@ -220,7 +269,7 @@
       $("addConsultingPresetButton").disabled = true;
       return;
     }
-    const quantityRule = engine.parseStandardQuantity(preset.standardUnit);
+    const quantityRule = engine.parseStandardQuantity(preset.standardUnit, preset.quantitySpec);
     const conditionRule = engine.findConditionRule(preset, conditionRules, state().fiscalYear);
     const family = familyForPreset(preset);
     const coverage = engine.classifyPresetCoverage(preset, conditionRule);
@@ -231,17 +280,19 @@
     const source = preset.source || {};
     const roleText = preset.serviceType === "geologyGeneral" ? "市場単価方式" : presetRoleSummary(preset);
     $("consultingPresetBasis").innerHTML = `<strong>${h(preset.label)}</strong><span>標準単位：${h(preset.standardUnit || "標準表1式")}／経費体系：${h(preset.costSystem === "survey" ? "測量" : preset.costSystem === "geology" ? "地質一般" : "設計等")}</span><small>${sourceLink(source, `国交省対応ページ（照合${source.confidence === "high" ? "高" : "中"}）`)}</small><small>収録：${h(roleText)}</small>${geologyWarning}`;
-    $("consultingQuantityFields").innerHTML = preset.serviceType === "geologyGeneral" ? "" : quantityRule.dimensions.map((dimension) => `<label class="field"><span>${h(dimension.label)}</span><input class="consulting-rule-quantity" data-quantity-key="${h(dimension.key)}" type="number" min="${dimension.integer ? 1 : 0.001}" step="${dimension.integer ? 1 : 0.001}" inputmode="${dimension.integer ? "numeric" : "decimal"}" placeholder="未入力"${coverage.canCalculate ? "" : " disabled"}><small class="quantity-standard">標準 ${h(dimension.baseQuantity.toLocaleString("ja-JP"))} ${h(dimension.unit)}当り</small></label>`).join("");
+    $("consultingQuantityFields").innerHTML = preset.serviceType === "geologyGeneral" ? "" : quantityRule.dimensions.map((dimension) => `<label class="field"><span>${h(dimension.label)}</span><input class="consulting-rule-quantity" data-quantity-key="${h(dimension.key)}" data-quantity-unit="${h(dimension.unit)}" data-quantity-decimals="${h(dimension.decimals)}" type="number" min="${h(dimension.min)}" step="${h(dimension.step)}" inputmode="${dimension.integer ? "numeric" : "decimal"}" placeholder="未入力"${coverage.canCalculate ? "" : " disabled"}><small class="quantity-standard">標準 ${h(dimension.baseQuantity.toLocaleString("ja-JP"))} ${h(dimension.unit)}当り／${h(dimension.integer ? "整数のみ" : `小数第${dimension.decimals}位まで`)}</small></label>`).join("");
     const curated = conditionRule ? `<fieldset><legend>${h(conditionRule.title)}</legend>${(conditionRule.inputs || []).map((input) => input.type === "select-rate"
       ? `<label class="field"><span>${h(input.label)}</span><select class="consulting-rule-condition" data-condition-id="${h(input.id)}"><option value="">選択してください</option>${(input.options || []).map((option) => `<option value="${h(option.value)}">${h(option.label)}（${option.rate >= 0 ? "+" : ""}${h(option.rate * 100)}%）</option>`).join("")}</select>${input.help ? `<small>${h(input.help)}</small>` : ""}</label>`
       : `<label class="check consulting-rate-check"><input class="consulting-rule-condition" data-condition-id="${h(input.id)}" type="checkbox"><span>${h(input.label)}（${input.rate >= 0 ? "+" : ""}${h(input.rate * 100)}%）${input.help ? `<small>${h(input.help)}</small>` : ""}</span></label>`).join("")}<p class="condition-calculation-note">${h(conditionRule.calculationNote)}</p><p id="consultingConditionSummary" class="quantity-standard">必須条件を選択すると補正率を表示します。</p><ul class="condition-source-list">${(conditionRule.sources || []).map((entry) => `<li><a href="${h(entry.url)}" target="_blank" rel="noopener noreferrer">${h(entry.label)} p.${h(entry.pages.join("・"))}</a></li>`).join("")}</ul></fieldset>` : "";
-    const adjustments = conditionRule ? "" : (family?.adjustments || []).map((item, index) => `<label class="check consulting-rate-check"><input class="consulting-family-adjustment" data-adjustment-index="${index}" data-adjustment-type="${h(item.type)}" data-adjustment-value="${h(item.rate ?? item.factor ?? 0)}" type="checkbox"><span>${h(item.text)}（${item.type === "factor-sentence" ? `${item.factor}倍` : `${item.rate >= 0 ? "+" : ""}${engine.roundHalfUp(item.rate * 100, 2)}%`}）</span></label>`).join("");
+    const familyTrusted = Boolean(family?.sources?.length) && family.sources.every((entry) => ["high", "medium"].includes(entry.confidence));
+    const adjustments = conditionRule ? "" : (family?.adjustments || []).map((item, index) => `<label class="check consulting-rate-check"><input class="consulting-family-adjustment" data-adjustment-index="${index}" data-adjustment-type="${h(item.type)}" data-adjustment-value="${h(item.rate ?? item.factor ?? 0)}" type="checkbox"${familyTrusted ? "" : " disabled"}><span>${h(item.text)}（${item.type === "factor-sentence" ? `${item.factor}倍` : `${item.rate >= 0 ? "+" : ""}${engine.roundHalfUp(item.rate * 100, 2)}%`}）${familyTrusted ? "" : "／参照専用"}</span></label>`).join("");
     const parameterTables = conditionRule ? "" : (family?.parameterTables || []).map(renderParameterTable).join("");
-    const formulas = (family?.formulas || []).length ? `<details class="consulting-formula-list"><summary>基準書の補正式・数量式</summary><ol>${family.formulas.map((formula) => `<li>${h(formula)}</li>`).join("")}</ol>${conditionRule?.quantityFormula ? `<p class="quantity-standard">数量式は自動反映：${h(conditionRule.quantityFormula.label)}</p>` : renderFormulaCalculator(family.formulas)}</details>` : "";
+    const formulas = (family?.formulas || []).length ? `<details class="consulting-formula-list"><summary>基準書の補正式・数量式</summary><ol>${family.formulas.map((formula) => `<li>${h(formula)}</li>`).join("")}</ol>${conditionRule?.quantityFormula ? `<p class="quantity-standard">数量式は自動反映：${h(conditionRule.quantityFormula.label)}</p>` : familyTrusted ? renderFormulaCalculator(family.formulas) : '<p class="limit-warning">低確度・未対応ページを含むため式は参照専用です。</p>'}</details>` : "";
     const notes = [...(family?.applicability || []), ...(family?.notes || [])];
     const applicability = notes.length ? `<details class="consulting-applicability"><summary>適用範囲・注記（${notes.length}件）</summary><ol>${notes.map((note) => `<li>${h(note)}</li>`).join("")}</ol></details>` : "";
     const selectedParameter = parameterTables ? `<div id="consultingSelectedParameter" class="selected-parameter">条件表の該当値をクリックしてください。複数の増減率は加算し、補正係数は乗算します。</div>` : "";
-    const market = preset.serviceType === "geologyGeneral" ? `<fieldset class="consulting-market-fields"><legend>市場単価による積算</legend><label class="field"><span>数量</span><input id="consultingMarketQuantity" type="number" min="0.001" step="0.001" inputmode="decimal" placeholder="未入力"></label><label class="field"><span>市場単価（円／単位）</span><input id="consultingMarketUnitPrice" type="number" min="1" step="1" inputmode="numeric" placeholder="見積・刊行物の採用単価"></label><label class="field"><span>単位</span><input id="consultingMarketUnit" type="text" placeholder="例：m、孔、日、t"></label><small>国交省公開資料には市場単価そのものは掲載されないため、発注者指定資料・見積・物価資料の単価を入力します。</small></fieldset>` : "";
+    const marketUnits = ["m", "m²", "km", "km²", "ha", "m³", "孔", "回", "日", "箇所", "本", "台", "t", "式"];
+    const market = preset.serviceType === "geologyGeneral" ? `<fieldset class="consulting-market-fields"><legend>市場単価による積算</legend><label class="field"><span>単位</span><select id="consultingMarketUnit"><option value="">選択してください</option>${marketUnits.map((unit) => `<option value="${h(unit)}">${h(unit)}</option>`).join("")}</select></label><label class="field"><span>数量</span><input id="consultingMarketQuantity" type="number" inputmode="decimal" placeholder="単位を先に選択" disabled><small id="consultingMarketQuantityRule">単位に応じて整数・小数を制限します。</small></label><label class="field"><span>市場単価（円／単位）</span><input id="consultingMarketUnitPrice" type="number" min="1" step="1" inputmode="numeric" placeholder="見積・刊行物の採用単価"></label><label class="field span-2"><span>単価根拠（必須）</span><input id="consultingMarketSource" type="text" placeholder="例：物価資料2026年8月号 p.00／見積書A-01 2026-08-20"></label><small>市場単価は公開基準から推定せず、発注者指定資料・刊行物・見積の名称、年月、ページ又は見積番号を保存します。</small></fieldset>` : "";
     $("consultingConditionFields").innerHTML = `${curated}<fieldset><legend>国交省基準の適用条件・原文</legend>${conditionRule ? "<p>上の構造化済み条件を計算に使用します。重複する原文条件は二重加算しません。</p>" : adjustments || "<p>自動抽出された定率加減条件はありません。</p>"}${parameterTables}${selectedParameter}${formulas}${applicability}${market}</fieldset>`;
     $("consultingConditionsConfirmed").disabled = !coverage.canCalculate;
     $("consultingConditionsLabel").textContent = "表示した適用範囲、条件表、補正式と特記仕様書を確認し、該当する条件だけを選択しました";
@@ -265,7 +316,7 @@
       const sourceType = standard?.coverageStatus === "verified-complete" ? "原表確認済み" : "全国標準参考";
       if (line.lineType === "amount") return `<tr data-consulting-line="${h(line.id)}">
         <td><strong>${h(line.taskName)}</strong><small>${h(line.serviceName)}／市場単価方式${source ? `／出典：${h(source)}` : ""}</small></td>
-        <td><strong>${h(basis)}</strong><small>${h(line.quantity)} ${h(line.unit)} × ${money(line.unitPrice)} × ${h(line.correctionFactor)}倍</small></td>
+        <td><strong>${h(basis)}</strong><small>${h(line.quantity)} ${h(line.unit)} × ${money(line.unitPrice)} × ${h(line.correctionFactor)}倍</small><small>単価根拠：${h(sourceLine?.priceSource || "未記録")}</small></td>
         <td>市場単価</td><td>${h(line.quantity)} ${h(line.unit)}</td><td>${money(line.unitPrice)}</td><td><strong>${money(line.amount)}</strong></td>
         <td class="no-print"><button class="icon-button danger-text delete-consulting-line" type="button" aria-label="削除">×</button></td></tr>`;
       return `<tr data-consulting-line="${h(line.id)}">
@@ -297,6 +348,12 @@
     if (current.options.includeSurvey && !app.getSurveyResult().lines.length) issues.push("測量積算を合算する設定ですが、測量作業項目がありません。");
     if (current.lines.some((line) => line.standardWalk && !line.standardWalk.conditionsConfirmed)) issues.push("適用条件の確認が完了していない行があります。");
     if (result.lines.some((line) => !current.lines.find((entry) => entry.id === line.id)?.verifiedSource)) issues.push("人工入力の行があります。採用歩掛と数量条件を積算基準・特記仕様書で照合してください。");
+    if (current.compliance.regionalAuthority === "unselected") issues.push("地方整備局等・発注機関が未選択です。");
+    if (!current.compliance.notificationReference || !current.compliance.notificationConfirmed) issues.push("発注機関の適用通知・端数運用の確認記録が未完了です。");
+    if (!current.compliance.specificationReference || !current.compliance.specificationConfirmed) issues.push("特記仕様書の適用範囲・追加・控除条件の確認記録が未完了です。");
+    if (!current.compliance.priceSourcesConfirmed) issues.push("市場単価・材料・機械・運搬・見積の価格根拠確認が未完了です。");
+    if ((result.additionalCosts || []).some((entry) => !entry.source)) issues.push("単価根拠がない積上げ費用があります。");
+    if (Object.values(current.costs).some((value) => Number(value) > 0)) issues.push("一括入力の積上げ費用があります。提出用には根拠付き費用明細への置換を推奨します。");
     return issues;
   }
 
@@ -360,12 +417,14 @@
   function renderAll() {
     renderScopeLabels();
     renderYearAndProject();
+    renderCompliance();
     renderServiceControls(false);
     renderPresets();
     renderCostsAndOptions();
     renderSources();
     const result = currentResult();
     renderLines(result);
+    renderAdditionalCosts(result);
     renderSummary(result);
   }
 
@@ -373,6 +432,7 @@
     app.saveDraft();
     const result = currentResult();
     renderLines(result);
+    renderAdditionalCosts(result);
     renderSummary(result);
     renderRoleMeta();
   }
@@ -392,6 +452,47 @@
       if (announce) app.notify(`${decimalLabel(decimals)}に補正しました`);
     }
     return value;
+  }
+
+  function configureDomainInput(unitSelect, quantityInput, note) {
+    const domain = engine.inputDomainForUnit(unitSelect.value);
+    quantityInput.disabled = !unitSelect.value;
+    quantityInput.value = "";
+    quantityInput.min = String(domain.min);
+    quantityInput.step = String(domain.step);
+    quantityInput.inputMode = domain.integer ? "numeric" : "decimal";
+    quantityInput.dataset.quantityDecimals = String(domain.decimals);
+    note.textContent = unitSelect.value ? `${unitSelect.value}：${domain.label}` : "単位に応じて整数・小数を制限";
+  }
+
+  function addAdditionalCost() {
+    const unit = $("consultingAdditionalUnit").value;
+    const validation = engine.validateDomainValue($("consultingAdditionalQuantity").value, unit);
+    if (!unit) { app.notify("積上げ費用の単位を選択してください"); return; }
+    if (!validation.valid) { app.notify(validation.reason); return; }
+    const unitPrice = Math.floor(Number($("consultingAdditionalUnitPrice").value) || 0);
+    if (!(unitPrice > 0)) { app.notify("積上げ費用の単価を1円以上で入力してください"); return; }
+    const name = $("consultingAdditionalName").value.trim();
+    if (!name) { app.notify("費用の名称・規格を入力してください"); return; }
+    const source = $("consultingAdditionalSource").value.trim();
+    if (!source) { app.notify("刊行物・見積・発注者資料などの単価根拠を入力してください"); return; }
+    state().additionalCosts.push({
+      id: `additional-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+      category: $("consultingAdditionalCategory").value,
+      costBucket: $("consultingAdditionalBucket").value,
+      name,
+      quantity: validation.value,
+      unit: validation.domain.unit,
+      inputDomain: validation.domain,
+      unitPrice,
+      source,
+      sourceDate: $("consultingAdditionalSourceDate").value
+    });
+    for (const id of ["consultingAdditionalName", "consultingAdditionalQuantity", "consultingAdditionalUnitPrice", "consultingAdditionalSource", "consultingAdditionalSourceDate"]) $(id).value = "";
+    $("consultingAdditionalUnit").value = "";
+    configureDomainInput($("consultingAdditionalUnit"), $("consultingAdditionalQuantity"), $("consultingAdditionalQuantityRule"));
+    updateAndRender();
+    app.notify("根拠付き積上げ費用を追加しました");
   }
 
   function addLine() {
@@ -415,10 +516,16 @@
     if (!$("consultingConditionsConfirmed").checked) { app.notify("業務種類・適用範囲が特記仕様書と一致することを確認してください"); return; }
     const quantityValues = {};
     document.querySelectorAll(".consulting-rule-quantity").forEach((input) => { quantityValues[input.dataset.quantityKey] = input.value; });
-    const marketQuantity = Number(document.querySelector("#consultingMarketQuantity")?.value || 0);
+    const marketUnit = String(document.querySelector("#consultingMarketUnit")?.value || "").trim();
+    const marketValidation = preset.serviceType === "geologyGeneral"
+      ? engine.validateDomainValue(document.querySelector("#consultingMarketQuantity")?.value, marketUnit)
+      : null;
+    const marketQuantity = marketValidation?.valid ? marketValidation.value : 0;
     const calculation = preset.serviceType === "geologyGeneral"
-      ? { valid: marketQuantity > 0, reason: "数量を0より大きい値で入力してください", multiplier: 1, quantities: [{ key: "marketQuantity", label: "数量", unit: String(document.querySelector("#consultingMarketUnit")?.value || "式"), baseQuantity: 1, quantity: marketQuantity }] }
-      : engine.calculateStandardQuantity(preset.standardUnit, quantityValues);
+      ? marketUnit
+        ? { valid: Boolean(marketValidation?.valid), reason: marketValidation?.reason || "数量を入力してください", multiplier: 1, quantities: [{ key: "marketQuantity", label: "数量", unit: marketUnit, baseQuantity: 1, quantity: marketQuantity }] }
+        : { valid: false, reason: "市場単価の単位を選択してください", multiplier: 0, quantities: [] }
+      : engine.calculateStandardQuantity(preset.standardUnit, quantityValues, preset.quantitySpec);
     if (!calculation.valid) { app.notify(calculation.reason); return; }
     const conditionValues = {};
     document.querySelectorAll(".consulting-rule-condition").forEach((input) => { conditionValues[input.dataset.conditionId] = input.type === "checkbox" ? input.checked : input.value; });
@@ -457,8 +564,10 @@
     if (preset.serviceType === "geologyGeneral") {
       const unitPrice = Math.floor(Number(document.querySelector("#consultingMarketUnitPrice")?.value) || 0);
       if (!(unitPrice > 0)) { app.notify("地質一般調査の市場単価を入力してください"); return; }
+      const marketSource = String(document.querySelector("#consultingMarketSource")?.value || "").trim();
+      if (!marketSource) { app.notify("市場単価の根拠資料・年月・ページ又は見積番号を入力してください"); return; }
       const quantity = marketQuantity;
-      const unit = String(document.querySelector("#consultingMarketUnit")?.value || calculation.quantities.map((entry) => entry.unit).join("・") || "式").trim();
+      const unit = marketUnit;
       state().lines.push({
         id: `consult-market-${Date.now()}-${Math.random().toString(16).slice(2)}`,
         lineType: "amount",
@@ -468,6 +577,8 @@
         quantity,
         unitPrice,
         unit,
+        priceSource: marketSource,
+        inputDomain: marketValidation.domain,
         correctionFactor: correction.factor * genericFactor,
         verifiedSource: `${preset.source?.url || ""}${preset.source?.page ? ` p.${preset.source.page}` : ""}`,
         standardWalk: {
@@ -567,9 +678,20 @@
       const standard = sourceLine?.standardWalk;
       const basisBase = standard?.quantitySummary || (sourceLine?.importSource ? "資料記載人工・要照合" : "基準外・手動調整");
       const basis = standard && standard.coverageStatus !== "verified-complete" ? `${basisBase}（${standard.conditionRuleId ? "選択補正反映・未構造化条件は要照合" : "一次試算・補正等未反映"}）` : basisBase;
-      return `<tr><td>${index + 1}</td><td>${h(line.serviceName)}</td><td>${h(line.taskName)}</td><td>${h(basis)}</td><td>${h(line.lineType === "amount" ? "市場単価" : roleDefinition(line.serviceType, line.role)?.name || line.role)}</td><td>${h(line.lineType === "amount" ? `${line.quantity} ${line.unit}` : line.days)}</td><td>${money(line.lineType === "amount" ? line.unitPrice : line.dailyRate)}</td><td>${money(line.amount)}</td></tr>`;
+      const priceSource = line.lineType === "amount" ? `／単価根拠：${sourceLine?.priceSource || "未記録"}` : "";
+      return `<tr><td>${index + 1}</td><td>${h(line.serviceName)}</td><td>${h(line.taskName)}</td><td>${h(basis + priceSource)}</td><td>${h(line.lineType === "amount" ? "市場単価" : roleDefinition(line.serviceType, line.role)?.name || line.role)}</td><td>${h(line.lineType === "amount" ? `${line.quantity} ${line.unit}` : line.days)}</td><td>${money(line.lineType === "amount" ? line.unitPrice : line.dailyRate)}</td><td>${money(line.amount)}</td></tr>`;
     }).join("");
     const sourceRows = currentSources().map((source) => `<li>${h(source.label)}<br><small>${h(source.url)}</small></li>`).join("");
+    const additionalRows = (result.additionalCosts || []).map((entry, index) => `<tr><td>${index + 1}</td><td>${h(additionalCostLabel(complianceCatalog.additionalCostCategories, entry.category))}</td><td>${h(entry.name)}</td><td>${h(entry.quantity)} ${h(entry.unit)}</td><td>${money(entry.unitPrice)}</td><td>${money(entry.amount)}</td><td>${h(entry.source)}${entry.sourceDate ? `（${h(entry.sourceDate)}）` : ""}</td></tr>`).join("");
+    const compliance = current.compliance;
+    const authorityEntry = complianceCatalog.regionalAuthorities.find((entry) => entry.id === compliance.regionalAuthority);
+    const complianceRows = [
+      ["積算基準体系", additionalCostLabel(complianceCatalog.systems, compliance.standardSystem), true],
+      ["地方整備局等・発注機関", authorityEntry?.name || "未選択", compliance.regionalAuthority !== "unselected"],
+      ["適用通知・運用資料", compliance.notificationReference || "未記録", compliance.notificationConfirmed],
+      ["特記仕様書・案件資料", compliance.specificationReference || "未記録", compliance.specificationConfirmed],
+      ["価格根拠確認", compliance.priceSourcesConfirmed ? "確認済み" : "未確認", compliance.priceSourcesConfirmed]
+    ].map(([label, value, confirmed]) => `<tr><td>${h(label)}</td><td>${h(value)}</td><td>${confirmed ? "確認済み" : "未確認"}</td></tr>`).join("");
     const header = (title) => `<header class="report-page-header"><div><p>測量・調査・設計業務 提出用帳票</p><h1>${h(title)}</h1><span>令和${current.fiscalYear - 2018}年度／${h(authority)}</span></div><div class="report-header-meta"><span>${h(issueDate)}</span></div></header>`;
     const footer = (label) => `<footer class="report-page-footer"><span>${h(estimate.projectName || "総合業務積算")}</span><span>参考試算・公式資料要照合 ／ ${h(label)}</span></footer>`;
     const info = estimate.projectInfo || {};
@@ -579,7 +701,8 @@
       ["測量業務価格", t.surveyBusinessPrice], ["調査計画（測量方式）業務価格", t.surveyPlanningBusinessPrice], ["設計・調査計画・解析業務価格", t.designBusinessPrice], ["地質一般調査業務価格", t.geologyBusinessPrice], ["総合業務価格", t.businessPrice], ["消費税", t.tax], ["税込合計", t.total]
     ].map(([label, value], index) => `<tr${index >= 3 ? ' class="total-row"' : ""}><td>${h(label)}</td><td>${money(value)}</td></tr>`).join("");
     const pages = `<section class="report-page">${header("総 合 積 算 総 括 表")}<dl class="report-project-meta">${projectRows}</dl><table class="report-table summary-report-table"><thead><tr><th>業務区分</th><th>金額</th></tr></thead><tbody>${summaryRows}</tbody></table><p class="report-caption">地質一般調査諸経費率：${t.geologyTarget ? `${t.geologyOverheadRate.toFixed(1)}%` : "—"} ／ 総合業務価格調整：${money(t.adjustment)}</p>${footer("総合積算総括表")}</section>
-      <section class="report-page report-long-table">${header("業 務 費 内 訳 書")}<table class="report-table breakdown-report-table"><thead><tr><th>No.</th><th>業務区分</th><th>作業</th><th>積算条件・数量</th><th>職種</th><th>人工</th><th>日額</th><th>人件費</th></tr></thead><tbody>${rows || '<tr><td colspan="8" class="empty-report-cell">積算内訳がありません</td></tr>'}</tbody></table><section class="report-note-block"><h2>積上げ費用</h2><p>設計等直接経費 ${money(t.designDirectExpenses)}／電子成果品 ${money(t.electronic)}／地質直接調査費（人件費以外） ${money(t.geologyDirectNonLabor)}／地質間接調査費 ${money(t.geologyIndirect)}／諸経費対象外 ${money(t.geologyExcluded)}</p></section><section class="report-note-block source-note"><h2>出典</h2><ul>${sourceRows}</ul></section><p class="report-disclaimer"><strong>参考試算用・公式帳票ではありません。</strong> 数量条件、追加・控除歩掛、市場単価、機械・材料、運搬・仮設、旅費、特記仕様、発注機関の端数運用を最新の公式資料と照合してください。</p>${footer("業務費内訳書")}</section>`;
+      <section class="report-page report-long-table">${header("業 務 費 内 訳 書")}<table class="report-table breakdown-report-table"><thead><tr><th>No.</th><th>業務区分</th><th>作業</th><th>積算条件・数量</th><th>職種</th><th>人工</th><th>日額</th><th>人件費</th></tr></thead><tbody>${rows || '<tr><td colspan="8" class="empty-report-cell">積算内訳がありません</td></tr>'}</tbody></table><section class="report-note-block"><h2>積上げ費用</h2><p>設計等直接経費 ${money(t.designDirectExpenses)}／電子成果品 ${money(t.electronic)}／地質直接調査費（人件費以外） ${money(t.geologyDirectNonLabor)}／地質間接調査費 ${money(t.geologyIndirect)}／諸経費対象外 ${money(t.geologyExcluded)}</p></section><section class="report-note-block source-note"><h2>出典</h2><ul>${sourceRows}</ul></section><p class="report-disclaimer"><strong>参考試算用・公式帳票ではありません。</strong> 数量条件、追加・控除歩掛、市場単価、機械・材料、運搬・仮設、旅費、特記仕様、発注機関の端数運用を最新の公式資料と照合してください。</p>${footer("業務費内訳書")}</section>
+      <section class="report-page report-long-table">${header("適 用 条 件 ・ 積 上 費 用 台 帳")}<h2>適用基準・通知・特記仕様</h2><table class="report-table"><thead><tr><th>確認対象</th><th>記録</th><th>状態</th></tr></thead><tbody>${complianceRows}</tbody></table><h2>市場単価・材料・機械・運搬・個別見積</h2><table class="report-table"><thead><tr><th>No.</th><th>区分</th><th>名称・規格</th><th>数量</th><th>単価</th><th>金額</th><th>根拠</th></tr></thead><tbody>${additionalRows || '<tr><td colspan="7" class="empty-report-cell">根拠付き積上げ費用はありません</td></tr>'}</tbody></table>${footer("適用条件・積上費用台帳")}</section>`;
     const printDocument = $("printDocument");
     printDocument.dataset.mode = "consulting";
     printDocument.innerHTML = pages;
@@ -592,7 +715,47 @@
     window.print();
   }
 
+  const referenceItemLabels = {
+    surveyBusinessPrice: "測量業務価格", designLabor: "設計直接人件費", designBusinessPrice: "設計業務価格",
+    surveyPlanningLabor: "調査計画直接人件費", surveyPlanningBusinessPrice: "調査計画業務価格",
+    geologyLabor: "地質直接人件費", geologyBusinessPrice: "地質業務価格", businessPrice: "業務価格", tax: "消費税", total: "税込合計"
+  };
+
+  function downloadReferenceTemplate() {
+    const template = { schemaVersion: 1, caseId: "anonymous-case-001", fiscalYear: state().fiscalYear, expectedTotals: Object.fromEntries(referenceCaseEngine.allowedItems.map((key) => [key, 0])) };
+    const url = URL.createObjectURL(new Blob([JSON.stringify(template, null, 2)], { type: "application/json" }));
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = "匿名化正解積算_照合ひな形.json";
+    anchor.click();
+    URL.revokeObjectURL(url);
+  }
+
+  async function compareReferenceFile(file) {
+    try {
+      const comparison = referenceCaseEngine.compare(JSON.parse(await file.text()), currentResult().totals);
+      if (!comparison.valid) throw new Error(comparison.reason);
+      $("referenceCaseStatus").textContent = comparison.matched ? "全費目一致" : `${comparison.matchedCount}/${comparison.totalCount}件一致`;
+      $("referenceCaseStatus").classList.toggle("verified", comparison.matched);
+      $("referenceCaseResult").innerHTML = `<table><thead><tr><th>費目</th><th>正解</th><th>現在値</th><th>差額</th><th>判定</th></tr></thead><tbody>${comparison.rows.map((row) => `<tr><td>${h(referenceItemLabels[row.item] || row.item)}</td><td>${money(row.expected)}</td><td>${money(row.actual)}</td><td>${money(row.difference)}</td><td class="${row.matched ? "matched" : "mismatch"}">${row.matched ? "一致" : "不一致"}</td></tr>`).join("")}</tbody></table><p class="field-note">照合ファイルはブラウザー内だけで処理し、保存・送信しません。</p>`;
+    } catch (error) {
+      $("referenceCaseStatus").textContent = "照合不可";
+      $("referenceCaseStatus").classList.remove("verified");
+      $("referenceCaseResult").innerHTML = `<p class="validation-warning">${h(error?.message || "正解積算JSONを読み込めませんでした。")}</p>`;
+    }
+  }
+
   function bindEvents() {
+    $("openReferenceCaseButton").addEventListener("click", () => $("referenceCaseFileInput").click());
+    $("downloadReferenceCaseTemplateButton").addEventListener("click", downloadReferenceTemplate);
+    $("referenceCaseFileInput").addEventListener("change", (event) => { const file = event.target.files?.[0]; if (file) compareReferenceFile(file); event.target.value = ""; });
+    $("consultingStandardSystem").addEventListener("change", (event) => { state().compliance.standardSystem = event.target.value; renderCompliance(); updateAndRender(); });
+    $("consultingRegionalAuthority").addEventListener("change", (event) => { state().compliance.regionalAuthority = event.target.value; state().compliance.notificationConfirmed = false; renderCompliance(); updateAndRender(); });
+    $("consultingNotificationReference").addEventListener("input", (event) => { state().compliance.notificationReference = event.target.value; state().compliance.notificationConfirmed = false; $("consultingNotificationConfirmed").checked = false; updateComplianceStatus(); updateAndRender(); });
+    $("consultingSpecificationReference").addEventListener("input", (event) => { state().compliance.specificationReference = event.target.value; state().compliance.specificationConfirmed = false; $("consultingSpecificationConfirmed").checked = false; updateComplianceStatus(); updateAndRender(); });
+    $("consultingNotificationConfirmed").addEventListener("change", (event) => { state().compliance.notificationConfirmed = event.target.checked; renderCompliance(); updateAndRender(); });
+    $("consultingSpecificationConfirmed").addEventListener("change", (event) => { state().compliance.specificationConfirmed = event.target.checked; renderCompliance(); updateAndRender(); });
+    $("consultingPriceSourcesConfirmed").addEventListener("change", (event) => { state().compliance.priceSourcesConfirmed = event.target.checked; renderCompliance(); updateAndRender(); });
     $("consultingServiceType").addEventListener("change", () => renderServiceControls(true));
     $("consultingTaskTemplate").addEventListener("change", () => { $("consultingTaskName").value = $("consultingTaskTemplate").value; });
     $("consultingPresetSearch").addEventListener("input", renderPresets);
@@ -602,11 +765,32 @@
     $("consultingDays").addEventListener("input", (event) => enforceDecimalInput(event.target, 3, engine.normalizeDays, true));
     $("consultingQuantityFields").addEventListener("input", (event) => {
       if (!event.target.classList.contains("consulting-rule-quantity")) return;
-      const integer = event.target.step === "1";
-      enforceDecimalInput(event.target, integer ? 0 : 3, (value) => integer ? Math.max(0, Math.floor(Number(value) || 0)) : engine.roundHalfUp(Math.max(0, Number(value) || 0), 3), true);
+      const decimals = Number(event.target.dataset.quantityDecimals || 0);
+      const integer = decimals === 0;
+      enforceDecimalInput(event.target, decimals, (value) => integer ? Math.max(0, Math.floor(Number(value) || 0)) : engine.roundHalfUp(Math.max(0, Number(value) || 0), decimals), true);
     });
     $("consultingConditionFields").addEventListener("input", updateConditionSummary);
     $("consultingConditionFields").addEventListener("change", updateConditionSummary);
+    $("consultingConditionFields").addEventListener("change", (event) => {
+      if (event.target.id !== "consultingMarketUnit") return;
+      const input = document.querySelector("#consultingMarketQuantity");
+      const note = document.querySelector("#consultingMarketQuantityRule");
+      const domain = engine.inputDomainForUnit(event.target.value);
+      if (!input || !note) return;
+      input.disabled = !event.target.value;
+      input.value = "";
+      input.min = String(domain.min);
+      input.step = String(domain.step);
+      input.inputMode = domain.integer ? "numeric" : "decimal";
+      input.dataset.quantityDecimals = String(domain.decimals);
+      note.textContent = event.target.value ? `${event.target.value}：${domain.label}` : "単位に応じて整数・小数を制限します。";
+    });
+    $("consultingConditionFields").addEventListener("input", (event) => {
+      if (event.target.id !== "consultingMarketQuantity") return;
+      const unit = document.querySelector("#consultingMarketUnit")?.value || "";
+      const domain = engine.inputDomainForUnit(unit);
+      enforceDecimalInput(event.target, domain.decimals, (value) => domain.integer ? Math.max(0, Math.floor(Number(value) || 0)) : engine.roundHalfUp(Math.max(0, Number(value) || 0), domain.decimals), true);
+    });
     $("consultingConditionFields").addEventListener("click", (event) => {
       const button = event.target.closest(".consulting-parameter-value");
       if (!button) return;
@@ -646,6 +830,19 @@
     $("projectName").addEventListener("input", () => { $("consultingProjectName").value = $("projectName").value; });
     $("addConsultingLineButton").addEventListener("click", addLine);
     $("addConsultingPresetButton").addEventListener("click", addPreset);
+    $("consultingAdditionalUnit").addEventListener("change", () => configureDomainInput($("consultingAdditionalUnit"), $("consultingAdditionalQuantity"), $("consultingAdditionalQuantityRule")));
+    $("consultingAdditionalQuantity").addEventListener("input", (event) => {
+      const domain = engine.inputDomainForUnit($("consultingAdditionalUnit").value);
+      enforceDecimalInput(event.target, domain.decimals, (value) => domain.integer ? Math.max(0, Math.floor(Number(value) || 0)) : engine.roundHalfUp(Math.max(0, Number(value) || 0), domain.decimals), true);
+    });
+    $("addConsultingAdditionalCost").addEventListener("click", addAdditionalCost);
+    $("consultingAdditionalCostBody").addEventListener("click", (event) => {
+      const button = event.target.closest(".delete-additional-cost");
+      if (!button) return;
+      const row = button.closest("tr[data-additional-cost]");
+      state().additionalCosts = state().additionalCosts.filter((entry) => entry.id !== row?.dataset.additionalCost);
+      updateAndRender();
+    });
     document.querySelectorAll(".consulting-cost").forEach((input) => input.addEventListener("input", (event) => { state().costs[event.target.dataset.cost] = Math.max(0, Math.floor(Number(event.target.value) || 0)); updateAndRender(); }));
     $("consultingElectronicMode").addEventListener("change", (event) => { state().options.electronicMode = event.target.value; updateAndRender(); });
     $("consultingIncludeSurvey").addEventListener("change", (event) => { state().options.includeSurvey = event.target.checked; updateAndRender(); });

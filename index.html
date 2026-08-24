@@ -7,7 +7,7 @@
   <meta name="description" content="設計、測量、調査・計画、地質を年度別技術者単価と根拠表示付きで計算するWeb業務積算ソフト">
   <meta name="author" content="株式会社アイズ測量">
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="styles.css?v=20260824-2">
+  <link rel="stylesheet" href="styles.css?v=20260824-3">
 </head>
 <body data-business-scope="design">
   <header class="app-header">
@@ -225,6 +225,22 @@
         <div><strong id="consultingScopeTitle">設計業務の年度別技術者単価と計算方式</strong><span id="consultingScopeDescription">土木設計・調査計画を設計方式で計算します。歩掛を確認できない作業の人工は自動推定しません。</span></div>
       </section>
 
+      <section class="card no-print consulting-compliance-card">
+        <div class="card-title-row"><div><p class="section-kicker">APPLICABILITY GATE</p><h2>適用基準・通知・特記仕様の確認</h2></div><span id="consultingComplianceBadge" class="badge">未確認</span></div>
+        <div class="compliance-grid">
+          <label class="field"><span>積算基準体系</span><select id="consultingStandardSystem"></select><small id="consultingStandardSystemNote"></small></label>
+          <label class="field"><span>地方整備局等・発注機関</span><select id="consultingRegionalAuthority"></select><small id="consultingRegionalAuthorityLink"></small></label>
+          <label class="field"><span>適用通知・運用資料</span><input id="consultingNotificationReference" type="text" placeholder="通知名、URL、発出日、適用開始日"></label>
+          <label class="field"><span>特記仕様書・案件資料</span><input id="consultingSpecificationReference" type="text" placeholder="ファイル名、資料番号、版、該当ページ"></label>
+        </div>
+        <div class="compliance-checks">
+          <label class="check"><input id="consultingNotificationConfirmed" type="checkbox"><span>発注機関の適用通知・端数運用を確認した</span></label>
+          <label class="check"><input id="consultingSpecificationConfirmed" type="checkbox"><span>特記仕様書の適用範囲・追加・控除条件を確認した</span></label>
+          <label class="check"><input id="consultingPriceSourcesConfirmed" type="checkbox"><span>市場・材料・機械・運搬・見積の単価根拠を確認した</span></label>
+        </div>
+        <p id="consultingComplianceStatus" class="field-note">確認内容は案件データと帳票へ保存します。未確認のままでも試算できますが、提出前チェックに残ります。</p>
+      </section>
+
       <div class="workspace-grid consulting-workspace">
         <div class="workspace-main">
           <section class="card add-card no-print">
@@ -275,6 +291,21 @@
               <label class="field" data-consulting-scope="geology"><span>地質一般：間接調査費</span><input class="consulting-cost" data-cost="geologyIndirect" type="number" min="0" step="1"></label>
               <label class="field" data-consulting-scope="geology"><span>地質一般：諸経費対象外費用</span><input class="consulting-cost" data-cost="geologyExcluded" type="number" min="0" step="1"></label>
             </div>
+            <details class="additional-cost-entry" open>
+              <summary>市場単価・材料・機械・運搬・個別見積を根拠付きで追加</summary>
+              <div class="additional-cost-grid">
+                <label class="field"><span>費用区分</span><select id="consultingAdditionalCategory"></select></label>
+                <label class="field"><span>計上先</span><select id="consultingAdditionalBucket"></select></label>
+                <label class="field span-2"><span>名称・規格</span><input id="consultingAdditionalName" type="text" placeholder="例：ボーリング機械損料 φ66mm"></label>
+                <label class="field"><span>単位</span><select id="consultingAdditionalUnit"><option value="">選択してください</option><option>m</option><option>m²</option><option>km</option><option>km²</option><option>ha</option><option>m³</option><option>孔</option><option>回</option><option>日</option><option>箇所</option><option>本</option><option>台</option><option>t</option><option>式</option></select></label>
+                <label class="field"><span>数量</span><input id="consultingAdditionalQuantity" type="number" placeholder="単位を先に選択" disabled><small id="consultingAdditionalQuantityRule">単位に応じて制限</small></label>
+                <label class="field"><span>単価（円）</span><input id="consultingAdditionalUnitPrice" type="number" min="1" step="1" inputmode="numeric" placeholder="未入力"></label>
+                <label class="field"><span>根拠日</span><input id="consultingAdditionalSourceDate" type="date"></label>
+                <label class="field span-2"><span>単価根拠（必須）</span><input id="consultingAdditionalSource" type="text" placeholder="刊行物名・年月・ページ、見積番号・見積先、発注者資料名"></label>
+                <button id="addConsultingAdditionalCost" class="button primary" type="button">根拠付き費用を追加</button>
+              </div>
+              <div class="table-scroll"><table class="estimate-table additional-cost-table"><thead><tr><th>区分・名称</th><th>計上先</th><th>数量</th><th>単価</th><th>金額</th><th>根拠</th><th><span class="sr-only">操作</span></th></tr></thead><tbody id="consultingAdditionalCostBody"></tbody></table></div>
+            </details>
             <div class="option-row consulting-options">
               <label class="field inline-select" data-consulting-scope="design-planning"><span>電子成果品作成費</span><select id="consultingElectronicMode"><option value="none">計上しない</option><option value="detailed">概略・予備・詳細設計</option><option value="other">その他の設計業務</option></select></label>
               <label class="check"><input id="consultingIncludeSurvey" type="checkbox"><span>現在の測量積算を合算</span></label>
@@ -488,7 +519,8 @@
           <li><strong>諸経費と消費税を計算</strong><span>成果検定費を除く対象額で諸経費率を算定し、業務価格を千円単位に調整します。</span></li>
         </ol>
         <div class="callout"><strong>PDF・写真から始める場合</strong><br>「PDF・写真から取込み」で資料を読み取り、確認・修正画面で業務名、発注者、担当部署、場所、期間、元の文章、ページ、単位、数量、職種、人工を確認します。低確信度候補、金額、年度・見積提出先は初期選択しません。確認ボタンを押すまで積算データは変更されません。</div>
-        <div class="callout"><strong>数量の入力桁</strong><br>点・回・箇所・業務・測線・本・枚・日・m²などは整数だけ入力できます。km・km²・時間などの連続量は小数第3位までです。画面入力、貼り付け、保存済みJSONの読込みでも同じ規則を適用します。</div>
+        <div class="callout"><strong>数量の入力桁</strong><br>点・回・箇所・業務・測線・本・枚・日など、数えられる数量は整数だけ入力できます。m・km・m²・km²・ha・m³・t・時間などの連続量は小数第3位までです。測量134項目×3年度と、設計・調査計画・地質1,393歩掛の全項目に入力規則を明示し、画面入力、PDF取込み、保存済みJSONの読込みでも同じ規則を適用します。</div>
+        <div class="callout"><strong>低確度・未照合63ページの扱い</strong><br>年度統合版777ページのうち、国土交通省本省資料との対応が低確度または未照合だった63ページを個別台帳化しました。48ページは計算表なし、15ページは表ありです。63ページすべてを自動計算から除外し、公式改定資料の系統を確認できた表も、表単位の対応検証が終わるまでは選択・補正に使いません。</div>
         <div class="callout"><strong>測量の作業規程上の分類</strong><br>第2編「基準点測量」、第3編「地形測量及び写真測量」、第4編「地形測量及び写真測量（三次元点群測量）」、第5編「応用測量」に分けています。空中写真・航空レーザ・UAV・地上レーザは第3編／第4編、深浅測量は第5編の河川測量内です。「共通」は積算基準の共通費目で、作業規程の測量種別とは別に表示します。</div>
         <div class="formula-grid">
           <div><span>諸経費率</span><code>Z = 288.50 × X<sup>-0.084</sup></code><small>50万円以下95.8%、1億円超61.4%、中間は小数1位四捨五入</small></div>
@@ -504,6 +536,12 @@
           <strong>数量の読み方（2級基準点測量の例）</strong>
           <p>「新点10点」は標準歩掛のまとまりです。令和8年度単価では、標準10点の直接費3,448,507円 ÷ 10点 → 1点当り344,800円（有効4桁止め）。10点を積算すると直接作業費は3,448,000円です。34万4,800円を10点総額として扱いません。</p>
         </div>
+        <section class="reference-case-audit" aria-labelledby="referenceCaseTitle">
+          <div class="card-title-row"><div><p class="section-kicker">REFERENCE CASE CHECK</p><h3 id="referenceCaseTitle">匿名化した正解積算との費目別照合</h3></div><span id="referenceCaseStatus" class="badge">未照合</span></div>
+          <p>顧客名・案件名・所在地などを削除した正解積算JSONを読み込み、現在の計算結果と費目ごとに1円単位で照合します。正解案件を内蔵して一致を装うことはしません。</p>
+          <div class="inline-actions no-print"><button id="openReferenceCaseButton" class="button" type="button">匿名化JSONを読み込んで照合</button><button id="downloadReferenceCaseTemplateButton" class="button" type="button">ひな形を保存</button><input id="referenceCaseFileInput" type="file" accept="application/json,.json" hidden></div>
+          <div id="referenceCaseResult" class="reference-case-result"><p class="muted">正解積算ファイルが未提供のため、実案件一致は未検証です。</p></div>
+        </section>
         <section class="guide-source-ledger" aria-labelledby="guideSourceLedgerTitle">
           <div class="card-title-row source-ledger-heading"><div><p class="section-kicker">SURVEY SOURCE PDF</p><h3 id="guideSourceLedgerTitle">測量項目で使用する規定書・PDF</h3></div><label class="field inline-select"><span>表示年度</span><select id="guideSourceYear"><option value="2026">令和8年度</option><option value="2025">令和7年度</option><option value="2024">令和6年度</option></select></label></div>
           <p id="guideSourceLedgerSummary" class="source-ledger-lead"></p>
@@ -518,13 +556,15 @@
               <table class="standards-table">
                 <thead><tr><th>積算基準体系</th><th>主な対象</th><th>現在の対応</th></tr></thead>
                 <tbody>
-                  <tr><td><a href="https://www.mlit.go.jp/tec/gyoumu_sekisan.html" target="_blank" rel="noopener noreferrer">国土交通省・設計業務等標準積算基準</a></td><td>測量、土木設計、調査計画、地質</td><td><span class="scope-status partial">R6～R8年度別</span>国交省24資料を台帳化。測量マスターに加え、設計・調査計画・地質の職種別標準歩掛735表を収録。市場単価・機械・材料・個別補正は別途照合</td></tr>
+                  <tr><td><a href="https://www.mlit.go.jp/tec/gyoumu_sekisan.html" target="_blank" rel="noopener noreferrer">国土交通省・設計業務等標準積算基準</a></td><td>測量、土木設計、調査計画、地質</td><td><span class="scope-status partial">R6～R8年度別</span>国交省掲載152 PDF・3,054ページを取得台帳化。測量134項目と、設計・調査計画・地質の職種別歩掛1,393行を収録。適用通知・特記仕様と根拠付き積上費用は案件ごとに確認</td></tr>
                   <tr><td><a href="https://www.mlit.go.jp/kowan/kowan_fr5_000019.html" target="_blank" rel="noopener noreferrer">国土交通省・港湾請負工事積算基準</a></td><td>港湾の測量・調査、船舶・機械損料、水中部調査</td><td><span class="scope-status pending">別体系・未収録</span></td></tr>
+                  <tr><td><a href="https://www.mlit.go.jp/koku/koku_tk9_000006.html" target="_blank" rel="noopener noreferrer">国土交通省・空港土木工事共通仕様書等</a></td><td>空港土木の調査・設計・測量</td><td><span class="scope-status pending">別体系・未収録</span></td></tr>
                   <tr><td><a href="https://www-2.kkr.mlit.go.jp/land/sekisannkijunn1.html" target="_blank" rel="noopener noreferrer">用地調査等業務費積算基準</a></td><td>権利、建物、営業、土地評価、補償説明等</td><td><span class="scope-status pending">別体系・未収録</span></td></tr>
                   <tr><td><a href="https://www.maff.go.jp/j/nousin/sekkei/sekisan_kijun/index.html" target="_blank" rel="noopener noreferrer">農林水産省・土地改良工事積算基準</a></td><td>農業農村の調査・測量・設計</td><td><span class="scope-status pending">別体系・未収録</span></td></tr>
                   <tr><td><a href="https://www.mlit.go.jp/mizukokudo/sewerage/mizukokudo_sewerage_tk_001075.html" target="_blank" rel="noopener noreferrer">下水道用設計標準歩掛表</a></td><td>下水道計画、管路、処理場・ポンプ場設計</td><td><span class="scope-status pending">別体系・未収録</span></td></tr>
                   <tr><td><a href="https://www.mlit.go.jp/mizukokudo/watersupply/stf_seisakunitsuite_bunya_topics_bukyoku_kenkou_suido_yosan_01_00001.html" target="_blank" rel="noopener noreferrer">水道関係基準</a></td><td>水道施設・管路等</td><td><span class="scope-status pending">別体系・未収録</span></td></tr>
-                  <tr><td>森林、地籍、土地区画整理、NEXCO、防衛省等</td><td>各機関・事業固有の業務</td><td><span class="scope-status pending">個別体系・未収録</span></td></tr>
+                  <tr><td><a href="https://www.rinya.maff.go.jp/j/sekou/gijutu/tyousasankou.html" target="_blank" rel="noopener noreferrer">林野庁・調査等業務の積算資料</a></td><td>治山・林道等の調査、測量、設計</td><td><span class="scope-status pending">別体系・未収録</span></td></tr>
+                  <tr><td>地籍、土地区画整理、NEXCO、防衛省等</td><td>各機関・事業固有の業務</td><td><span class="scope-status pending">個別体系・未収録</span></td></tr>
                 </tbody>
               </table>
             </div>
@@ -602,20 +642,22 @@
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <script src="data/prefectures.js?v=20260823-1"></script>
-  <script src="data/national-standard-masters.js?v=20260824-1"></script>
+  <script src="data/national-standard-masters.js?v=20260824-2"></script>
   <script src="data/official-role-prices.js?v=20260822-1"></script>
   <script src="data/official-source-catalog.js?v=20260824-1"></script>
   <script src="data/consulting-master.js?v=20260823-1"></script>
   <script src="data/consulting-standard-walks.js?v=20260824-1"></script>
   <script src="data/consulting-condition-rules.js?v=20260824-2"></script>
-  <script src="data/consulting-rule-pack.js?v=20260824-2"></script>
+  <script src="data/consulting-rule-pack.js?v=20260824-3"></script>
+  <script src="data/estimation-compliance-catalog.js?v=20260824-2"></script>
   <script src="data/verified-work-item-expansions.js?v=20260823-1"></script>
-  <script src="engine.js?v=20260823-2"></script>
-  <script src="consulting-engine.js?v=20260824-2"></script>
+  <script src="engine.js?v=20260824-1"></script>
+  <script src="consulting-engine.js?v=20260824-3"></script>
+  <script src="reference-case-engine.js?v=20260824-1"></script>
   <script src="document-import-engine.js?v=20260823-2"></script>
   <script src="document-reader.js?v=20260823-1"></script>
   <script src="app.js?v=20260824-1"></script>
-  <script src="consulting.js?v=20260824-5"></script>
+  <script src="consulting.js?v=20260824-6"></script>
   <script src="document-import.js?v=20260823-9"></script>
   <script src="analytics.js?v=20260823-1"></script>
 </body>

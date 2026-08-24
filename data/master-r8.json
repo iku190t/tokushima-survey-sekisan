@@ -96,7 +96,7 @@
   "safetyRates": [
     {
       "name": "補正なし",
-      "rate": 0.0
+      "rate": 0
     },
     {
       "name": "大市街地",
@@ -142,7 +142,16 @@
         "standardPage": 21,
         "ratioPage": null
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "回",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "1-1-2",
@@ -170,7 +179,16 @@
         "standardPage": 21,
         "ratioPage": null
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "回",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "1-1-3",
@@ -198,7 +216,16 @@
         "standardPage": 21,
         "ratioPage": null
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "回",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "1-1-4",
@@ -226,7 +253,16 @@
         "standardPage": 21,
         "ratioPage": null
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "機関",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "1-1-5",
@@ -254,17 +290,26 @@
         "standardPage": 21,
         "ratioPage": null
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "回",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "2-1-1",
       "name": "1級基準点測量 新点5点",
       "category": "基準点測量",
       "standard": "新 点 5点",
-      "standardQuantity": 5.0,
+      "standardQuantity": 5,
       "unit": "点",
       "laborDays": {
-        "surveyChief": 2.0,
+        "surveyChief": 2,
         "surveyEngineer": 11.5,
         "surveyAssistantEngineer": 12.5,
         "surveyAssistant": 1.5
@@ -359,14 +404,23 @@
         "standardPage": 22,
         "ratioPage": 105
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "点",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "2-2-1-1",
       "name": "2級基準点測量 新点10点 伐採有り",
       "category": "基準点測量",
       "standard": "新 点 10点",
-      "standardQuantity": 10.0,
+      "standardQuantity": 10,
       "unit": "点",
       "laborDays": {
         "surveyChief": 3.5,
@@ -464,21 +518,30 @@
         "standardPage": 23,
         "ratioPage": 105
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "点",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "2-2-1-2",
       "name": "2級基準点測量 新点10点 伐採なし",
       "category": "基準点測量",
       "standard": "新 点 10点",
-      "standardQuantity": 10.0,
+      "standardQuantity": 10,
       "unit": "点",
       "laborDays": {
         "surveyChief": 3.5,
         "surveyEngineer": 19.5,
         "surveyAssistantEngineer": 27.5,
         "surveyWorker": 10.5,
-        "surveyAssistant": 0.0
+        "surveyAssistant": 0
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.11,
@@ -570,19 +633,28 @@
         "standardPage": 23,
         "ratioPage": 105
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "点",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "2-3-1-1",
       "name": "3級基準点測量 新点20点 伐採有り 永久標識設置有り",
       "category": "基準点測量",
       "standard": "新 点 20点",
-      "standardQuantity": 20.0,
+      "standardQuantity": 20,
       "unit": "点",
       "laborDays": {
-        "surveyChief": 3.0,
-        "surveyEngineer": 18.0,
-        "surveyAssistantEngineer": 19.0,
+        "surveyChief": 3,
+        "surveyEngineer": 18,
+        "surveyAssistantEngineer": 19,
         "surveyAssistant": 15.5,
         "surveyWorker": 1.5
       },
@@ -676,19 +748,28 @@
         "standardPage": 24,
         "ratioPage": 105
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "点",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "2-3-1-2",
       "name": "3級基準点測量 新点20点 伐採有り 永久標識設置なし",
       "category": "基準点測量",
       "standard": "新 点 20点",
-      "standardQuantity": 20.0,
+      "standardQuantity": 20,
       "unit": "点",
       "laborDays": {
-        "surveyChief": 3.0,
-        "surveyEngineer": 18.0,
-        "surveyAssistantEngineer": 19.0,
+        "surveyChief": 3,
+        "surveyEngineer": 18,
+        "surveyAssistantEngineer": 19,
         "surveyAssistant": 15.5,
         "surveyWorker": 1.5
       },
@@ -782,21 +863,30 @@
         "standardPage": 24,
         "ratioPage": 105
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "点",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "2-3-1-3",
       "name": "3級基準点測量 新点20点 伐採なし 永久標識設置有り",
       "category": "基準点測量",
       "standard": "新 点 20点",
-      "standardQuantity": 20.0,
+      "standardQuantity": 20,
       "unit": "点",
       "laborDays": {
-        "surveyChief": 3.0,
+        "surveyChief": 3,
         "surveyEngineer": 16.5,
         "surveyAssistantEngineer": 17.5,
         "surveyAssistant": 15.5,
-        "surveyWorker": 0.0
+        "surveyWorker": 0
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.025,
@@ -888,21 +978,30 @@
         "standardPage": 24,
         "ratioPage": 105
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "点",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "2-3-1-4",
       "name": "3級基準点測量 新点20点 伐採なし 永久標識設置なし",
       "category": "基準点測量",
       "standard": "新 点 20点",
-      "standardQuantity": 20.0,
+      "standardQuantity": 20,
       "unit": "点",
       "laborDays": {
-        "surveyChief": 3.0,
+        "surveyChief": 3,
         "surveyEngineer": 16.5,
         "surveyAssistantEngineer": 17.5,
         "surveyAssistant": 15.5,
-        "surveyWorker": 0.0
+        "surveyWorker": 0
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.025,
@@ -994,20 +1093,29 @@
         "standardPage": 24,
         "ratioPage": 105
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "点",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "2-4-1-1",
       "name": "4級基準点測量 新点35点 永久標識設置なし 伐採有り",
       "category": "基準点測量",
       "standard": "新 点 35点 永久標識 設置なし",
-      "standardQuantity": 35.0,
+      "standardQuantity": 35,
       "unit": "点",
       "laborDays": {
-        "surveyChief": 1.0,
+        "surveyChief": 1,
         "surveyEngineer": 8.5,
         "surveyAssistantEngineer": 8.5,
-        "surveyAssistant": 8.0,
+        "surveyAssistant": 8,
         "surveyWorker": 0.5
       },
       "precisionExcludedLaborDays": {},
@@ -1100,21 +1208,30 @@
         "standardPage": 25,
         "ratioPage": 105
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "点",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "2-4-1-2",
       "name": "4級基準点測量 新点35点 永久標識設置なし 伐採なし",
       "category": "基準点測量",
       "standard": "新 点 35点 永久標識 設置なし",
-      "standardQuantity": 35.0,
+      "standardQuantity": 35,
       "unit": "点",
       "laborDays": {
-        "surveyChief": 1.0,
-        "surveyEngineer": 8.0,
-        "surveyAssistantEngineer": 8.0,
-        "surveyAssistant": 8.0,
-        "surveyWorker": 0.0
+        "surveyChief": 1,
+        "surveyEngineer": 8,
+        "surveyAssistantEngineer": 8,
+        "surveyAssistant": 8,
+        "surveyWorker": 0
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.03,
@@ -1206,19 +1323,28 @@
         "standardPage": 25,
         "ratioPage": 105
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "点",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "2-5-1",
       "name": "基準点設置 新点10点 地上埋設(普通)",
       "category": "基準点測量",
       "standard": "新 点 10点 地上埋設 (普通)",
-      "standardQuantity": 10.0,
+      "standardQuantity": 10,
       "unit": "点",
       "laborDays": {
-        "surveyEngineer": 1.0,
-        "surveyAssistantEngineer": 6.0,
-        "surveyWorker": 12.0
+        "surveyEngineer": 1,
+        "surveyAssistantEngineer": 6,
+        "surveyWorker": 12
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.015,
@@ -1248,19 +1374,28 @@
         "standardPage": 26,
         "ratioPage": 105
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "点",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "2-5-2",
       "name": "基準点設置 新点10点 地上埋設(上面舗装)",
       "category": "基準点測量",
       "standard": "新 点 10点 地上埋設 (上面舗装)",
-      "standardQuantity": 10.0,
+      "standardQuantity": 10,
       "unit": "点",
       "laborDays": {
-        "surveyEngineer": 1.0,
-        "surveyAssistantEngineer": 6.0,
-        "surveyWorker": 12.0
+        "surveyEngineer": 1,
+        "surveyAssistantEngineer": 6,
+        "surveyWorker": 12
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.015,
@@ -1290,19 +1425,28 @@
         "standardPage": 26,
         "ratioPage": 105
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "点",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "2-5-3",
       "name": "基準点設置 新点10点 地下埋設",
       "category": "基準点測量",
       "standard": "新 点 10点 地下埋設",
-      "standardQuantity": 10.0,
+      "standardQuantity": 10,
       "unit": "点",
       "laborDays": {
-        "surveyEngineer": 1.0,
-        "surveyAssistantEngineer": 6.0,
-        "surveyWorker": 12.0
+        "surveyEngineer": 1,
+        "surveyAssistantEngineer": 6,
+        "surveyWorker": 12
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.015,
@@ -1332,17 +1476,26 @@
         "standardPage": 27,
         "ratioPage": 105
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "点",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "2-5-4",
       "name": "基準点設置 新点10点 屋上埋設",
       "category": "基準点測量",
       "standard": "新点10点 屋上埋設",
-      "standardQuantity": 10.0,
+      "standardQuantity": 10,
       "unit": "点",
       "laborDays": {
-        "surveyEngineer": 1.0,
+        "surveyEngineer": 1,
         "surveyAssistantEngineer": 4.5,
         "surveyWorker": 4.5
       },
@@ -1374,19 +1527,28 @@
         "standardPage": 27,
         "ratioPage": 105
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "点",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "2-5-5",
       "name": "基準点設置 新点10点 コンクリート杭設置",
       "category": "基準点測量",
       "standard": "新 点 10点 コンクリート杭 設置",
-      "standardQuantity": 10.0,
+      "standardQuantity": 10,
       "unit": "点",
       "laborDays": {
-        "surveyEngineer": 1.0,
-        "surveyAssistantEngineer": 5.0,
-        "surveyWorker": 5.0
+        "surveyEngineer": 1,
+        "surveyAssistantEngineer": 5,
+        "surveyWorker": 5
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.02,
@@ -1407,19 +1569,28 @@
         "standardPage": 28,
         "ratioPage": 105
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "点",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "3-1-1",
       "name": "水準測量 1級水準測量観測(レベル等による)",
       "category": "水準測量",
       "standard": "1級水準 測量観測 100km",
-      "standardQuantity": 100.0,
+      "standardQuantity": 100,
       "unit": "km",
       "laborDays": {
-        "surveyChief": 2.0,
+        "surveyChief": 2,
         "surveyEngineer": 29.5,
-        "surveyAssistantEngineer": 54.0,
+        "surveyAssistantEngineer": 54,
         "surveyAssistant": 120.5
       },
       "precisionExcludedLaborDays": {},
@@ -1441,19 +1612,28 @@
         "standardPage": 29,
         "ratioPage": 105
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "3-1-2",
       "name": "水準測量 2級水準測量観測(レベル等による)",
       "category": "水準測量",
       "standard": "2級水準 測量観測 30km",
-      "standardQuantity": 30.0,
+      "standardQuantity": 30,
       "unit": "km",
       "laborDays": {
         "surveyChief": 1.5,
         "surveyEngineer": 8.5,
-        "surveyAssistantEngineer": 15.0,
+        "surveyAssistantEngineer": 15,
         "surveyAssistant": 31.5
       },
       "precisionExcludedLaborDays": {},
@@ -1475,14 +1655,23 @@
         "standardPage": 30,
         "ratioPage": 105
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "3-1-3",
       "name": "水準測量 3級水準測量観測(レベル等による)",
       "category": "水準測量",
       "standard": "3級水準 測量観測 5km",
-      "standardQuantity": 5.0,
+      "standardQuantity": 5,
       "unit": "km",
       "laborDays": {
         "surveyChief": 0.2,
@@ -1509,14 +1698,23 @@
         "standardPage": 31,
         "ratioPage": 105
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "3-1-4",
       "name": "水準測量 4級水準測量観測(レベル等による)",
       "category": "水準測量",
       "standard": "4級水準 測量観測 2km",
-      "standardQuantity": 2.0,
+      "standardQuantity": 2,
       "unit": "km",
       "laborDays": {
         "surveyChief": 0.1,
@@ -1543,20 +1741,29 @@
         "standardPage": 32,
         "ratioPage": 105
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "3-2-1",
       "name": "水準点設置 水準点設置(永久標識)",
       "category": "水準測量",
       "standard": "新点 8点",
-      "standardQuantity": 8.0,
+      "standardQuantity": 8,
       "unit": "点",
       "laborDays": {
         "surveyEngineer": 1.5,
-        "surveyAssistantEngineer": 6.0,
+        "surveyAssistantEngineer": 6,
         "surveyAssistant": 2.5,
-        "surveyWorker": 5.0
+        "surveyWorker": 5
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.02,
@@ -1577,14 +1784,23 @@
         "standardPage": 33,
         "ratioPage": 105
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "点",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "3-2-2",
       "name": "水準点設置 水準点設置(永久標識以外)",
       "category": "水準測量",
       "standard": "新点 6点",
-      "standardQuantity": 6.0,
+      "standardQuantity": 6,
       "unit": "点",
       "laborDays": {
         "surveyEngineer": 0.3,
@@ -1611,14 +1827,23 @@
         "standardPage": 34,
         "ratioPage": 105
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "点",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "4-1-1",
       "name": "路線測量 作業計画",
       "category": "路線測量",
       "standard": "1業務 当り",
-      "standardQuantity": 1.0,
+      "standardQuantity": 1,
       "unit": "業務",
       "laborDays": {
         "surveyChief": 0.6,
@@ -1626,9 +1851,9 @@
         "surveyAssistantEngineer": 0.6
       },
       "precisionExcludedLaborDays": {},
-      "machineRate": 0.0,
-      "communicationRate": 0.0,
-      "materialRate": 0.0,
+      "machineRate": 0,
+      "communicationRate": 0,
+      "materialRate": 0,
       "precisionRate": 0.1,
       "precisionEligible": false,
       "precisionRateOptions": null,
@@ -1640,14 +1865,23 @@
         "standardPage": 36,
         "ratioPage": 105
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "業務",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "4-1-2",
       "name": "路線測量 現地踏査",
       "category": "路線測量",
       "standard": "1km当り",
-      "standardQuantity": 1.0,
+      "standardQuantity": 1,
       "unit": "km",
       "laborDays": {
         "surveyEngineer": 1.6,
@@ -1655,7 +1889,7 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.015,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.065,
       "precisionRate": 0.1,
       "precisionEligible": false,
@@ -1673,7 +1907,7 @@
             },
             {
               "label": "大市街地／平地",
-              "rate": 1.0
+              "rate": 1
             },
             {
               "label": "市街地甲／平地",
@@ -1761,23 +1995,32 @@
         "standardPage": 36,
         "ratioPage": 105
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "4-1-3",
       "name": "路線測量 伐採",
       "category": "路線測量",
       "standard": "1km当り",
-      "standardQuantity": 1.0,
+      "standardQuantity": 1,
       "unit": "km",
       "laborDays": {
         "surveyAssistantEngineer": 2.3,
-        "surveyAssistant": 3.0,
+        "surveyAssistant": 3,
         "surveyWorker": 4.7
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.01,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.015,
       "precisionRate": 0.1,
       "precisionEligible": false,
@@ -1795,7 +2038,7 @@
             },
             {
               "label": "大市街地／平地",
-              "rate": 1.0
+              "rate": 1
             },
             {
               "label": "市街地甲／平地",
@@ -1883,23 +2126,32 @@
         "standardPage": 37,
         "ratioPage": 105
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "4-1-4",
       "name": "路線測量 線形決定(条件点の観測)",
       "category": "路線測量",
       "standard": "10点 当り",
-      "standardQuantity": 10.0,
+      "standardQuantity": 10,
       "unit": "点",
       "laborDays": {
-        "surveyEngineer": 1.0,
+        "surveyEngineer": 1,
         "surveyAssistantEngineer": 1.2,
         "surveyAssistant": 0.7
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.055,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.05,
       "precisionRate": 0.1,
       "precisionEligible": true,
@@ -1931,14 +2183,23 @@
         "standardPage": 37,
         "ratioPage": 106
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "点",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "4-1-5",
       "name": "路線測量 線形決定",
       "category": "路線測量",
       "standard": "1km 当り",
-      "standardQuantity": 1.0,
+      "standardQuantity": 1,
       "unit": "km",
       "laborDays": {
         "surveyChief": 0.4,
@@ -1947,7 +2208,7 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.01,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.02,
       "precisionRate": 0.1,
       "precisionEligible": true,
@@ -1965,7 +2226,7 @@
             },
             {
               "label": "大市街地／平地",
-              "rate": 1.0
+              "rate": 1
             },
             {
               "label": "市街地甲／平地",
@@ -2035,23 +2296,32 @@
         "standardPage": 38,
         "ratioPage": 106
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "4-1-6",
       "name": "路線測量 IP設置",
       "category": "路線測量",
       "standard": "1km 当り クロソイド 曲 線 1ヶ所 を含む",
-      "standardQuantity": 1.0,
+      "standardQuantity": 1,
       "unit": "km",
       "laborDays": {
         "surveyEngineer": 2.6,
         "surveyAssistantEngineer": 2.4,
-        "surveyAssistant": 1.0
+        "surveyAssistant": 1
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.05,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.035,
       "precisionRate": 0.1,
       "precisionEligible": true,
@@ -2069,7 +2339,7 @@
             },
             {
               "label": "大市街地／平地",
-              "rate": 1.0
+              "rate": 1
             },
             {
               "label": "市街地甲／平地",
@@ -2187,14 +2457,23 @@
         "standardPage": 38,
         "ratioPage": 106
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "4-1-7",
       "name": "路線測量 中心線測量",
       "category": "路線測量",
       "standard": "1km 当り クロソイド 曲 線 1ヶ所 を含む",
-      "standardQuantity": 1.0,
+      "standardQuantity": 1,
       "unit": "km",
       "laborDays": {
         "surveyEngineer": 4.3,
@@ -2203,7 +2482,7 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.015,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.06,
       "precisionRate": 0.1,
       "precisionEligible": true,
@@ -2287,14 +2566,23 @@
         "standardPage": 39,
         "ratioPage": 106
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "4-1-8",
       "name": "路線測量 仮BM設置測量",
       "category": "路線測量",
       "standard": "1km 当り",
-      "standardQuantity": 1.0,
+      "standardQuantity": 1,
       "unit": "km",
       "laborDays": {
         "surveyEngineer": 1.4,
@@ -2303,7 +2591,7 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.02,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.02,
       "precisionRate": 0.1,
       "precisionEligible": true,
@@ -2335,14 +2623,23 @@
         "standardPage": 39,
         "ratioPage": 106
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "4-1-9",
       "name": "路線測量 縦断測量",
       "category": "路線測量",
       "standard": "1km",
-      "standardQuantity": 1.0,
+      "standardQuantity": 1,
       "unit": "km",
       "laborDays": {
         "surveyEngineer": 2.9,
@@ -2351,7 +2648,7 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.02,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.03,
       "precisionRate": 0.1,
       "precisionEligible": true,
@@ -2369,7 +2666,7 @@
             },
             {
               "label": "大市街地／平地",
-              "rate": 1.0
+              "rate": 1
             },
             {
               "label": "市街地甲／平地",
@@ -2457,14 +2754,23 @@
         "standardPage": 40,
         "ratioPage": 106
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "4-1-10",
       "name": "路線測量 横断測量",
       "category": "路線測量",
       "standard": "1km 当り 幅 60m クロソイド 曲 線 1ヶ所 を含む",
-      "standardQuantity": 1.0,
+      "standardQuantity": 1,
       "unit": "km",
       "laborDays": {
         "surveyEngineer": 10.3,
@@ -2473,7 +2779,7 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.025,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.025,
       "precisionRate": 0.1,
       "precisionEligible": true,
@@ -2491,7 +2797,7 @@
             },
             {
               "label": "大市街地／平地",
-              "rate": 1.0
+              "rate": 1
             },
             {
               "label": "市街地甲／平地",
@@ -2609,7 +2915,16 @@
         "standardPage": 40,
         "ratioPage": 106
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "4-1-11",
@@ -2621,11 +2936,11 @@
       "laborDays": {
         "surveyEngineer": 1.4,
         "surveyAssistantEngineer": 1.5,
-        "surveyAssistant": 1.0
+        "surveyAssistant": 1
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.025,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.085,
       "precisionRate": 0.1,
       "precisionEligible": true,
@@ -2643,7 +2958,7 @@
             },
             {
               "label": "大市街地／平地",
-              "rate": 1.0
+              "rate": 1
             },
             {
               "label": "市街地甲／平地",
@@ -2731,7 +3046,16 @@
         "standardPage": 41,
         "ratioPage": 106
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "4-1-12",
@@ -2747,7 +3071,7 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.025,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.05,
       "precisionRate": 0.1,
       "precisionEligible": true,
@@ -2765,7 +3089,7 @@
             },
             {
               "label": "大市街地／平地",
-              "rate": 1.0
+              "rate": 1
             },
             {
               "label": "市街地甲／平地",
@@ -2853,14 +3177,23 @@
         "standardPage": 41,
         "ratioPage": 106
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "4-1-13",
       "name": "路線測量 用地幅杭設置測量",
       "category": "路線測量",
       "standard": "1km 当り",
-      "standardQuantity": 1.0,
+      "standardQuantity": 1,
       "unit": "km",
       "laborDays": {
         "surveyEngineer": 5.1,
@@ -2869,7 +3202,7 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.05,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.065,
       "precisionRate": 0.1,
       "precisionEligible": false,
@@ -2887,7 +3220,7 @@
             },
             {
               "label": "大市街地／平地",
-              "rate": 1.0
+              "rate": 1
             },
             {
               "label": "市街地甲／平地",
@@ -2975,14 +3308,23 @@
         "standardPage": 42,
         "ratioPage": 106
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "5-1-1",
       "name": "河川測量 作業計画",
       "category": "河川測量",
       "standard": "1業務当り",
-      "standardQuantity": 1.0,
+      "standardQuantity": 1,
       "unit": "業務",
       "laborDays": {
         "surveyChief": 1.1,
@@ -2990,9 +3332,9 @@
         "surveyAssistantEngineer": 0.4
       },
       "precisionExcludedLaborDays": {},
-      "machineRate": 0.0,
-      "communicationRate": 0.0,
-      "materialRate": 0.0,
+      "machineRate": 0,
+      "communicationRate": 0,
+      "materialRate": 0,
       "precisionRate": 0.1,
       "precisionEligible": false,
       "precisionRateOptions": null,
@@ -3004,14 +3346,23 @@
         "standardPage": 46,
         "ratioPage": 106
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "業務",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "5-1-2",
       "name": "河川測量 現地踏査",
       "category": "河川測量",
       "standard": "流心延長 1km当り",
-      "standardQuantity": 1.0,
+      "standardQuantity": 1,
       "unit": "km",
       "laborDays": {
         "surveyChief": 0.1,
@@ -3021,7 +3372,7 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.01,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.06,
       "precisionRate": 0.1,
       "precisionEligible": false,
@@ -3034,24 +3385,33 @@
         "standardPage": 46,
         "ratioPage": 106
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "5-1-3",
       "name": "河川測量 距離標設置測量",
       "category": "河川測量",
       "standard": "10点当り",
-      "standardQuantity": 10.0,
+      "standardQuantity": 10,
       "unit": "点",
       "laborDays": {
-        "surveyEngineer": 1.0,
+        "surveyEngineer": 1,
         "surveyAssistantEngineer": 2.9,
         "surveyAssistant": 2.5,
         "surveyWorker": 1.9
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.06,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.22,
       "precisionRate": 0.1,
       "precisionEligible": true,
@@ -3064,14 +3424,23 @@
         "standardPage": 47,
         "ratioPage": 106
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "点",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "5-1-4",
       "name": "河川測量 水準基標測量",
       "category": "河川測量",
       "standard": "測量延長 10km当り",
-      "standardQuantity": 10.0,
+      "standardQuantity": 10,
       "unit": "km",
       "laborDays": {
         "surveyChief": 0.3,
@@ -3081,7 +3450,7 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.055,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.005,
       "precisionRate": 0.1,
       "precisionEligible": true,
@@ -3094,14 +3463,23 @@
         "standardPage": 47,
         "ratioPage": 106
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "5-1-5",
       "name": "河川測量 河川定期縦断測量 直接水準",
       "category": "河川測量",
       "standard": "流心延長 1km当り 縦 1/100 横 1/1,000",
-      "standardQuantity": 1.0,
+      "standardQuantity": 1,
       "unit": "km",
       "laborDays": {
         "surveyEngineer": 1.1,
@@ -3111,7 +3489,7 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.025,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.055,
       "precisionRate": 0.1,
       "precisionEligible": true,
@@ -3124,25 +3502,34 @@
         "standardPage": 48,
         "ratioPage": 106
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "5-1-6",
       "name": "河川測量 河川定期横断測量 直接水準(平地)",
       "category": "河川測量",
       "standard": "幅 400m 10本当り 縦 1/100 横 1/200~ 1/1,000",
-      "standardQuantity": 10.0,
+      "standardQuantity": 10,
       "unit": "本",
       "laborDays": {
         "surveyChief": 0.2,
-        "surveyEngineer": 7.0,
+        "surveyEngineer": 7,
         "surveyAssistantEngineer": 11.2,
-        "surveyAssistant": 10.0,
+        "surveyAssistant": 10,
         "surveyWorker": 4.8
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.02,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.01,
       "precisionRate": 0.1,
       "precisionEligible": true,
@@ -3155,21 +3542,30 @@
         "standardPage": 49,
         "ratioPage": 106
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "本",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "5-1-7",
       "name": "河川測量 河川定期横断測量 複写",
       "category": "河川測量",
       "standard": "10断面当り",
-      "standardQuantity": 10.0,
+      "standardQuantity": 10,
       "unit": "断面",
       "laborDays": {
         "surveyAssistant": 0.8
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.08,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.11,
       "precisionRate": 0.1,
       "precisionEligible": true,
@@ -3182,25 +3578,34 @@
         "standardPage": 50,
         "ratioPage": 106
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "断面",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "5-1-8",
       "name": "河川測量 河川定期横断測量 直接水準(山地)",
       "category": "河川測量",
       "standard": "幅 100m 10本当り 縦 1/100 横 1/200~ 1/1,000",
-      "standardQuantity": 10.0,
+      "standardQuantity": 10,
       "unit": "本",
       "laborDays": {
         "surveyChief": 0.2,
-        "surveyEngineer": 4.0,
+        "surveyEngineer": 4,
         "surveyAssistantEngineer": 8.2,
         "surveyAssistant": 1.2,
         "surveyWorker": 1.3
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.03,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.015,
       "precisionRate": 0.1,
       "precisionEligible": true,
@@ -3213,14 +3618,23 @@
         "standardPage": 51,
         "ratioPage": 106
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "本",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "5-1-9",
       "name": "河川測量 河川定期横断測量 間接水準(山地)",
       "category": "河川測量",
       "standard": "幅 100m 10本当り 縦 1/100 横 1/200~ 1/1,000",
-      "standardQuantity": 10.0,
+      "standardQuantity": 10,
       "unit": "本",
       "laborDays": {
         "surveyEngineer": 2.4,
@@ -3230,7 +3644,7 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.04,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.02,
       "precisionRate": 0.1,
       "precisionEligible": true,
@@ -3243,25 +3657,34 @@
         "standardPage": 52,
         "ratioPage": 106
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "本",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "5-1-10",
       "name": "河川測量 法線測量",
       "category": "河川測量",
       "standard": "測量延長 1km当り",
-      "standardQuantity": 1.0,
+      "standardQuantity": 1,
       "unit": "km",
       "laborDays": {
         "surveyChief": 0.4,
         "surveyEngineer": 3.2,
         "surveyAssistantEngineer": 3.9,
         "surveyAssistant": 2.5,
-        "surveyWorker": 2.0
+        "surveyWorker": 2
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.05,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.04,
       "precisionRate": 0.1,
       "precisionEligible": true,
@@ -3274,14 +3697,23 @@
         "standardPage": 53,
         "ratioPage": 106
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "6-1-1",
       "name": "深浅測量 作業計画",
       "category": "深浅測量",
       "standard": "1業務当り",
-      "standardQuantity": 1.0,
+      "standardQuantity": 1,
       "unit": "業務",
       "laborDays": {
         "surveyChief": 0.5,
@@ -3289,9 +3721,9 @@
         "surveyAssistantEngineer": 0.4
       },
       "precisionExcludedLaborDays": {},
-      "machineRate": 0.0,
-      "communicationRate": 0.0,
-      "materialRate": 0.0,
+      "machineRate": 0,
+      "communicationRate": 0,
+      "materialRate": 0,
       "precisionRate": 0.09,
       "precisionEligible": false,
       "precisionRateOptions": null,
@@ -3303,14 +3735,23 @@
         "standardPage": 55,
         "ratioPage": 106
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "業務",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "6-2-1-1",
       "name": "深浅測量 ダム・貯水池深浅測量",
       "category": "深浅測量",
       "standard": "水面幅150m 10測線当り 深浅間隔5m",
-      "standardQuantity": 10.0,
+      "standardQuantity": 10,
       "unit": "測線",
       "laborDays": {
         "surveyChief": 0.4,
@@ -3322,7 +3763,7 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.02,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.02,
       "precisionRate": 0.09,
       "precisionEligible": true,
@@ -3342,14 +3783,23 @@
         "standardPage": 56,
         "ratioPage": 106
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "測線",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "6-2-1-2",
       "name": "深浅測量 ダム・貯水池深浅測量+音響測深機",
       "category": "深浅測量",
       "standard": "水面幅150m 10測線当り 深浅間隔5m",
-      "standardQuantity": 10.0,
+      "standardQuantity": 10,
       "unit": "測線",
       "laborDays": {
         "surveyChief": 0.4,
@@ -3361,7 +3811,7 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.03,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.025,
       "precisionRate": 0.09,
       "precisionEligible": true,
@@ -3381,14 +3831,23 @@
         "standardPage": 56,
         "ratioPage": 106
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "測線",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "6-3-1-1",
       "name": "深浅測量 河川深浅測量",
       "category": "深浅測量",
       "standard": "水面幅100m 10測線当り 深浅間隔5m",
-      "standardQuantity": 10.0,
+      "standardQuantity": 10,
       "unit": "測線",
       "laborDays": {
         "surveyChief": 0.4,
@@ -3400,7 +3859,7 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.025,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.025,
       "precisionRate": 0.09,
       "precisionEligible": true,
@@ -3420,14 +3879,23 @@
         "standardPage": 58,
         "ratioPage": 106
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "測線",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "6-3-1-2",
       "name": "深浅測量 河川深浅測量+音響測深機",
       "category": "深浅測量",
       "standard": "水面幅100m 10測線当り 深浅間隔5m",
-      "standardQuantity": 10.0,
+      "standardQuantity": 10,
       "unit": "測線",
       "laborDays": {
         "surveyChief": 0.4,
@@ -3439,7 +3907,7 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.04,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.025,
       "precisionRate": 0.09,
       "precisionEligible": true,
@@ -3459,14 +3927,23 @@
         "standardPage": 58,
         "ratioPage": 106
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "測線",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "6-4-1-1",
       "name": "深浅測量 海岸深浅測量",
       "category": "深浅測量",
       "standard": "水面幅700m 10測線当り",
-      "standardQuantity": 10.0,
+      "standardQuantity": 10,
       "unit": "測線",
       "laborDays": {
         "surveyChief": 0.2,
@@ -3478,7 +3955,7 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.03,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.025,
       "precisionRate": 0.09,
       "precisionEligible": true,
@@ -3498,14 +3975,23 @@
         "standardPage": 60,
         "ratioPage": 107
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "測線",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "6-4-1-2",
       "name": "深浅測量 海岸深浅測量+音響測深機",
       "category": "深浅測量",
       "standard": "水面幅700m 10測線当り",
-      "standardQuantity": 10.0,
+      "standardQuantity": 10,
       "unit": "測線",
       "laborDays": {
         "surveyChief": 0.2,
@@ -3517,7 +4003,7 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.05,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.025,
       "precisionRate": 0.09,
       "precisionEligible": true,
@@ -3537,14 +4023,23 @@
         "standardPage": 60,
         "ratioPage": 107
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "測線",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "7-1-1-1",
       "name": "用地測量 作業計画 作業計画",
       "category": "用地測量",
       "standard": "作 業 計 画 1 業 務 当 り",
-      "standardQuantity": 1.0,
+      "standardQuantity": 1,
       "unit": "業務",
       "laborDays": {
         "surveyChief": 0.8,
@@ -3552,9 +4047,9 @@
         "surveyAssistantEngineer": 1.1
       },
       "precisionExcludedLaborDays": {},
-      "machineRate": 0.0,
-      "communicationRate": 0.0,
-      "materialRate": 0.0,
+      "machineRate": 0,
+      "communicationRate": 0,
+      "materialRate": 0,
       "precisionRate": 0.07,
       "precisionEligible": false,
       "precisionRateOptions": null,
@@ -3566,23 +4061,32 @@
         "standardPage": 62,
         "ratioPage": 107
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "業務",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "7-1-1-2",
       "name": "用地測量 作業計画 現地踏査",
       "category": "用地測量",
       "standard": "現 地 踏 査 1 業 務 当 り",
-      "standardQuantity": 1.0,
+      "standardQuantity": 1,
       "unit": "業務",
       "laborDays": {
-        "surveyChief": 1.0,
-        "surveyEngineer": 1.0,
-        "surveyAssistantEngineer": 1.0
+        "surveyChief": 1,
+        "surveyEngineer": 1,
+        "surveyAssistantEngineer": 1
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.01,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.035,
       "precisionRate": 0.07,
       "precisionEligible": false,
@@ -3600,7 +4104,7 @@
             },
             {
               "label": "大市街地",
-              "rate": 1.0
+              "rate": 1
             },
             {
               "label": "市街地甲",
@@ -3630,14 +4134,23 @@
         "standardPage": 62,
         "ratioPage": 107
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "業務",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "7-1-2-1",
       "name": "用地測量 資料調査 公図等の転写 (地積測量図以外の公図等の転写)",
       "category": "用地測量",
       "standard": "公図等の転写 (地積測量図 以外の公図等 の転写) 10,000m2当り",
-      "standardQuantity": 10000.0,
+      "standardQuantity": 10000,
       "unit": "m²",
       "laborDays": {
         "surveyAssistantEngineer": 0.7,
@@ -3645,7 +4158,7 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.005,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.02,
       "precisionRate": 0.07,
       "precisionEligible": false,
@@ -3663,7 +4176,7 @@
             },
             {
               "label": "大市街地",
-              "rate": 1.0
+              "rate": 1
             },
             {
               "label": "市街地甲",
@@ -3693,14 +4206,23 @@
         "standardPage": 63,
         "ratioPage": 107
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "m2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "7-1-2-2",
       "name": "用地測量 資料調査 地積測量図転写 (地積測量図のみの転写)",
       "category": "用地測量",
       "standard": "地 積 測 量 図 転 写 (地積測量図 のみの転写) 10,000m2当り",
-      "standardQuantity": 10000.0,
+      "standardQuantity": 10000,
       "unit": "m²",
       "laborDays": {
         "surveyAssistantEngineer": 0.6,
@@ -3708,7 +4230,7 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.01,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.005,
       "precisionRate": 0.07,
       "precisionEligible": false,
@@ -3726,7 +4248,7 @@
             },
             {
               "label": "大市街地",
-              "rate": 1.0
+              "rate": 1
             },
             {
               "label": "市街地甲",
@@ -3756,14 +4278,23 @@
         "standardPage": 63,
         "ratioPage": 107
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "m2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "7-1-2-3",
       "name": "用地測量 資料調査 土地の登記記録調査",
       "category": "用地測量",
       "standard": "土 地 の 登記記録調査 10,000m2当り",
-      "standardQuantity": 10000.0,
+      "standardQuantity": 10000,
       "unit": "m²",
       "laborDays": {
         "surveyAssistantEngineer": 0.9,
@@ -3771,7 +4302,7 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.005,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.005,
       "precisionRate": 0.07,
       "precisionEligible": false,
@@ -3789,7 +4320,7 @@
             },
             {
               "label": "大市街地",
-              "rate": 1.0
+              "rate": 1
             },
             {
               "label": "市街地甲",
@@ -3819,14 +4350,23 @@
         "standardPage": 63,
         "ratioPage": 107
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "m2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "7-1-2-4",
       "name": "用地測量 資料調査 建物の登記記録調査",
       "category": "用地測量",
       "standard": "建 物 の 登記記録調査 1 0 戸 当 り",
-      "standardQuantity": 10.0,
+      "standardQuantity": 10,
       "unit": "戸",
       "laborDays": {
         "surveyAssistantEngineer": 0.2,
@@ -3834,7 +4374,7 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.01,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.005,
       "precisionRate": 0.07,
       "precisionEligible": false,
@@ -3847,14 +4387,23 @@
         "standardPage": 63,
         "ratioPage": 107
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "戸",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "7-1-2-5",
       "name": "用地測量 資料調査 権利者確認調査(当初)",
       "category": "用地測量",
       "standard": "権 利 者 確 認 調 査 ( 当 初 ) 10,000m2当り",
-      "standardQuantity": 10000.0,
+      "standardQuantity": 10000,
       "unit": "m²",
       "laborDays": {
         "surveyAssistantEngineer": 0.9,
@@ -3862,8 +4411,8 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.005,
-      "communicationRate": 0.0,
-      "materialRate": 0.0,
+      "communicationRate": 0,
+      "materialRate": 0,
       "precisionRate": 0.07,
       "precisionEligible": false,
       "precisionRateOptions": null,
@@ -3880,7 +4429,7 @@
             },
             {
               "label": "大市街地",
-              "rate": 1.0
+              "rate": 1
             },
             {
               "label": "市街地甲",
@@ -3910,14 +4459,23 @@
         "standardPage": 64,
         "ratioPage": 107
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "m2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "7-1-2-6",
       "name": "用地測量 資料調査 権利者確認調査(追跡)",
       "category": "用地測量",
       "standard": "権 利 者 確 認 調 査 ( 追 跡 ) 1 0 人 当 り",
-      "standardQuantity": 10.0,
+      "standardQuantity": 10,
       "unit": "人",
       "laborDays": {
         "surveyAssistantEngineer": 2.8,
@@ -3925,8 +4483,8 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.005,
-      "communicationRate": 0.0,
-      "materialRate": 0.0,
+      "communicationRate": 0,
+      "materialRate": 0,
       "precisionRate": 0.07,
       "precisionEligible": false,
       "precisionRateOptions": null,
@@ -3938,22 +4496,31 @@
         "standardPage": 64,
         "ratioPage": 107
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "人",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "7-1-2-7",
       "name": "用地測量 資料調査 公図等転写連続図作成",
       "category": "用地測量",
       "standard": "公 図 等 転 写 連 続 図 作 成 10,000m2当り",
-      "standardQuantity": 10000.0,
+      "standardQuantity": 10000,
       "unit": "m²",
       "laborDays": {
         "surveyAssistantEngineer": 0.5,
         "surveyAssistant": 0.5
       },
       "precisionExcludedLaborDays": {},
-      "machineRate": 0.0,
-      "communicationRate": 0.0,
+      "machineRate": 0,
+      "communicationRate": 0,
       "materialRate": 0.01,
       "precisionRate": 0.07,
       "precisionEligible": false,
@@ -3966,14 +4533,23 @@
         "standardPage": 64,
         "ratioPage": 107
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "m2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "7-1-3-1",
       "name": "用地測量 境界確認 復元測量",
       "category": "用地測量",
       "standard": "復 元 測 量 10,000m2当り",
-      "standardQuantity": 10000.0,
+      "standardQuantity": 10000,
       "unit": "m²",
       "laborDays": {
         "surveyEngineer": 2.2,
@@ -3983,7 +4559,7 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.05,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.03,
       "precisionRate": 0.07,
       "precisionEligible": true,
@@ -4001,7 +4577,7 @@
             },
             {
               "label": "大市街地",
-              "rate": 1.0
+              "rate": 1
             },
             {
               "label": "市街地甲",
@@ -4031,24 +4607,33 @@
         "standardPage": 65,
         "ratioPage": 107
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "m2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "7-1-3-2",
       "name": "用地測量 境界確認 境界確認",
       "category": "用地測量",
       "standard": "境 界 確 認 10,000m2当り",
-      "standardQuantity": 10000.0,
+      "standardQuantity": 10000,
       "unit": "m²",
       "laborDays": {
-        "surveyChief": 1.0,
+        "surveyChief": 1,
         "surveyEngineer": 1.7,
         "surveyAssistantEngineer": 1.7,
-        "surveyAssistant": 1.0
+        "surveyAssistant": 1
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.005,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.04,
       "precisionRate": 0.07,
       "precisionEligible": false,
@@ -4066,7 +4651,7 @@
             },
             {
               "label": "大市街地",
-              "rate": 1.0
+              "rate": 1
             },
             {
               "label": "市街地甲",
@@ -4096,14 +4681,23 @@
         "standardPage": 65,
         "ratioPage": 107
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "m2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "7-1-3-3",
       "name": "用地測量 境界確認 土地境界確認書作成",
       "category": "用地測量",
       "standard": "土 地 境 界 確 認 書 作 成 10,000m2当り",
-      "standardQuantity": 10000.0,
+      "standardQuantity": 10000,
       "unit": "m²",
       "laborDays": {
         "surveyAssistantEngineer": 1.2,
@@ -4111,7 +4705,7 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.01,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.005,
       "precisionRate": 0.07,
       "precisionEligible": false,
@@ -4129,7 +4723,7 @@
             },
             {
               "label": "大市街地",
-              "rate": 1.0
+              "rate": 1
             },
             {
               "label": "市街地甲",
@@ -4159,14 +4753,23 @@
         "standardPage": 65,
         "ratioPage": 107
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "m2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "7-1-4-1",
       "name": "用地測量 境界測量 補助基準点の設置",
       "category": "用地測量",
       "standard": "補助基準点の 設 置 10,000m2当り",
-      "standardQuantity": 10000.0,
+      "standardQuantity": 10000,
       "unit": "m²",
       "laborDays": {
         "surveyEngineer": 1.2,
@@ -4176,7 +4779,7 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.045,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.03,
       "precisionRate": 0.07,
       "precisionEligible": true,
@@ -4194,7 +4797,7 @@
             },
             {
               "label": "大市街地",
-              "rate": 1.0
+              "rate": 1
             },
             {
               "label": "市街地甲",
@@ -4224,14 +4827,23 @@
         "standardPage": 66,
         "ratioPage": 107
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "m2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "7-1-4-2",
       "name": "用地測量 境界測量 境界測量",
       "category": "用地測量",
       "standard": "境 界 測 量 10,000m2当り",
-      "standardQuantity": 10000.0,
+      "standardQuantity": 10000,
       "unit": "m²",
       "laborDays": {
         "surveyEngineer": 2.1,
@@ -4241,7 +4853,7 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.045,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.02,
       "precisionRate": 0.07,
       "precisionEligible": false,
@@ -4259,7 +4871,7 @@
             },
             {
               "label": "大市街地",
-              "rate": 1.0
+              "rate": 1
             },
             {
               "label": "市街地甲",
@@ -4289,14 +4901,23 @@
         "standardPage": 66,
         "ratioPage": 107
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "m2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "7-1-4-3",
       "name": "用地測量 境界測量 用地境界仮杭設置",
       "category": "用地測量",
       "standard": "用 地 境 界 仮 杭 設 置 10,000m2当り",
-      "standardQuantity": 10000.0,
+      "standardQuantity": 10000,
       "unit": "m²",
       "laborDays": {
         "surveyEngineer": 1.1,
@@ -4306,7 +4927,7 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.045,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.05,
       "precisionRate": 0.07,
       "precisionEligible": false,
@@ -4324,7 +4945,7 @@
             },
             {
               "label": "大市街地",
-              "rate": 1.0
+              "rate": 1
             },
             {
               "label": "市街地甲",
@@ -4354,14 +4975,23 @@
         "standardPage": 66,
         "ratioPage": 107
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "m2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "7-1-4-4",
       "name": "用地測量 境界測量 用地境界杭設置",
       "category": "用地測量",
       "standard": "用 地 境 界 杭 設 置 1 0 本 当 り",
-      "standardQuantity": 10.0,
+      "standardQuantity": 10,
       "unit": "本",
       "laborDays": {
         "surveyAssistantEngineer": 1.7,
@@ -4370,7 +5000,7 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.07,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.255,
       "precisionRate": 0.07,
       "precisionEligible": false,
@@ -4383,14 +5013,23 @@
         "standardPage": 66,
         "ratioPage": 107
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "本",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "7-1-5",
       "name": "用地測量 境界点間測量",
       "category": "用地測量",
       "standard": "境 界 点 間 測 量 10,000m2当り",
-      "standardQuantity": 10000.0,
+      "standardQuantity": 10000,
       "unit": "m²",
       "laborDays": {
         "surveyEngineer": 1.4,
@@ -4399,7 +5038,7 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.06,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.025,
       "precisionRate": 0.07,
       "precisionEligible": true,
@@ -4417,7 +5056,7 @@
             },
             {
               "label": "大市街地",
-              "rate": 1.0
+              "rate": 1
             },
             {
               "label": "市街地甲",
@@ -4447,14 +5086,23 @@
         "standardPage": 67,
         "ratioPage": 107
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "m2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "7-1-6",
       "name": "用地測量 面積計算",
       "category": "用地測量",
       "standard": "面 積 計 算 10,000m2当り",
-      "standardQuantity": 10000.0,
+      "standardQuantity": 10000,
       "unit": "m²",
       "laborDays": {
         "surveyEngineer": 2.2,
@@ -4462,9 +5110,9 @@
         "surveyAssistant": 2.2
       },
       "precisionExcludedLaborDays": {},
-      "machineRate": 0.0,
-      "communicationRate": 0.0,
-      "materialRate": 0.0,
+      "machineRate": 0,
+      "communicationRate": 0,
+      "materialRate": 0,
       "precisionRate": 0.07,
       "precisionEligible": true,
       "precisionRateOptions": null,
@@ -4481,7 +5129,7 @@
             },
             {
               "label": "大市街地",
-              "rate": 1.0
+              "rate": 1
             },
             {
               "label": "市街地甲",
@@ -4511,14 +5159,23 @@
         "standardPage": 67,
         "ratioPage": 107
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "m2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "7-1-7-1",
       "name": "用地測量 用地実測図原図等の作成 用地実測図原図作成",
       "category": "用地測量",
       "standard": "用 地 実 測 図 原 図 作 成 10,000m2当り ( 縮 尺 1 /5 00 )",
-      "standardQuantity": 10000.0,
+      "standardQuantity": 10000,
       "unit": "m²",
       "laborDays": {
         "surveyEngineer": 1.3,
@@ -4526,9 +5183,9 @@
         "surveyAssistant": 1.7
       },
       "precisionExcludedLaborDays": {},
-      "machineRate": 0.0,
-      "communicationRate": 0.0,
-      "materialRate": 0.0,
+      "machineRate": 0,
+      "communicationRate": 0,
+      "materialRate": 0,
       "precisionRate": 0.07,
       "precisionEligible": true,
       "precisionRateOptions": null,
@@ -4559,14 +5216,23 @@
         "standardPage": 68,
         "ratioPage": 107
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "m2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "7-1-7-2",
       "name": "用地測量 用地実測図原図等の作成 用地現況測量(建物等)",
       "category": "用地測量",
       "standard": "用 地 現 況 測 量 ( 建 物 等 ) 10,000m2当り",
-      "standardQuantity": 10000.0,
+      "standardQuantity": 10000,
       "unit": "m²",
       "laborDays": {
         "surveyEngineer": 0.9,
@@ -4576,7 +5242,7 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.045,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.02,
       "precisionRate": 0.07,
       "precisionEligible": true,
@@ -4589,14 +5255,23 @@
         "standardPage": 68,
         "ratioPage": 107
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "m2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "7-1-7-3",
       "name": "用地測量 用地実測図原図等の作成 用地平面図作成",
       "category": "用地測量",
       "standard": "用 地 平 面 図 作 成 10,000m2当り ( 縮 尺 1 /5 00 )",
-      "standardQuantity": 10000.0,
+      "standardQuantity": 10000,
       "unit": "m²",
       "laborDays": {
         "surveyEngineer": 0.5,
@@ -4604,8 +5279,8 @@
         "surveyAssistant": 0.9
       },
       "precisionExcludedLaborDays": {},
-      "machineRate": 0.0,
-      "communicationRate": 0.0,
+      "machineRate": 0,
+      "communicationRate": 0,
       "materialRate": 0.005,
       "precisionRate": 0.07,
       "precisionEligible": true,
@@ -4637,23 +5312,32 @@
         "standardPage": 68,
         "ratioPage": 107
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "m2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "7-1-7-4",
       "name": "用地測量 用地実測図原図等の作成 土地調書作成",
       "category": "用地測量",
       "standard": "土 地 調 書 作 成 10,000m2当り",
-      "standardQuantity": 10000.0,
+      "standardQuantity": 10000,
       "unit": "m²",
       "laborDays": {
         "surveyAssistantEngineer": 0.9,
         "surveyAssistant": 0.9
       },
       "precisionExcludedLaborDays": {},
-      "machineRate": 0.0,
-      "communicationRate": 0.0,
-      "materialRate": 0.0,
+      "machineRate": 0,
+      "communicationRate": 0,
+      "materialRate": 0,
       "precisionRate": 0.07,
       "precisionEligible": false,
       "precisionRateOptions": null,
@@ -4670,7 +5354,7 @@
             },
             {
               "label": "大市街地",
-              "rate": 1.0
+              "rate": 1
             },
             {
               "label": "市街地甲",
@@ -4700,14 +5384,23 @@
         "standardPage": 68,
         "ratioPage": 107
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "m2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "7-3-1",
       "name": "用地測量 公共用地境界確定協議 公共用地管理者との打合せ",
       "category": "用地測量",
       "standard": "公共用地管理 者との打合せ 1 業 務 当 り",
-      "standardQuantity": 1.0,
+      "standardQuantity": 1,
       "unit": "業務",
       "laborDays": {
         "surveyChief": 1.1,
@@ -4716,7 +5409,7 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.005,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.005,
       "precisionRate": 0.07,
       "precisionEligible": false,
@@ -4729,14 +5422,23 @@
         "standardPage": 70,
         "ratioPage": 107
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "業務",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "7-3-2",
       "name": "用地測量 公共用地境界確定協議 現況実測平面図作成",
       "category": "用地測量",
       "standard": "現 況 実 測 平 面 図 作 成 10,000m2当り ( 縮 尺 1 /5 00 )",
-      "standardQuantity": 10000.0,
+      "standardQuantity": 10000,
       "unit": "m²",
       "laborDays": {
         "surveyEngineer": 1.6,
@@ -4745,7 +5447,7 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.05,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.025,
       "precisionRate": 0.07,
       "precisionEligible": true,
@@ -4763,7 +5465,7 @@
             },
             {
               "label": "大市街地",
-              "rate": 1.0
+              "rate": 1
             },
             {
               "label": "市街地甲",
@@ -4811,14 +5513,23 @@
         "standardPage": 70,
         "ratioPage": 108
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "m2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "7-3-3",
       "name": "用地測量 公共用地境界確定協議 横断面図作成",
       "category": "用地測量",
       "standard": "横 断 面 図 作 成 1 km 当 り",
-      "standardQuantity": 1.0,
+      "standardQuantity": 1,
       "unit": "km",
       "laborDays": {
         "surveyEngineer": 2.5,
@@ -4828,7 +5539,7 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.035,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.015,
       "precisionRate": 0.07,
       "precisionEligible": true,
@@ -4846,7 +5557,7 @@
             },
             {
               "label": "大市街地",
-              "rate": 1.0
+              "rate": 1
             },
             {
               "label": "市街地甲",
@@ -4876,14 +5587,23 @@
         "standardPage": 70,
         "ratioPage": 108
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "7-3-4",
       "name": "用地測量 公共用地境界確定協議 依頼書作成",
       "category": "用地測量",
       "standard": "依 頼 書 作 成 1 km 当 り",
-      "standardQuantity": 1.0,
+      "standardQuantity": 1,
       "unit": "km",
       "laborDays": {
         "surveyChief": 0.6,
@@ -4891,9 +5611,9 @@
         "surveyAssistantEngineer": 1.4
       },
       "precisionExcludedLaborDays": {},
-      "machineRate": 0.0,
-      "communicationRate": 0.0,
-      "materialRate": 0.0,
+      "machineRate": 0,
+      "communicationRate": 0,
+      "materialRate": 0,
       "precisionRate": 0.07,
       "precisionEligible": false,
       "precisionRateOptions": null,
@@ -4905,23 +5625,32 @@
         "standardPage": 70,
         "ratioPage": 108
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "7-3-5",
       "name": "用地測量 公共用地境界確定協議 協議書作成",
       "category": "用地測量",
       "standard": "協 議 書 作 成 1 km 当 り",
-      "standardQuantity": 1.0,
+      "standardQuantity": 1,
       "unit": "km",
       "laborDays": {
         "surveyChief": 1.8,
         "surveyEngineer": 1.8,
-        "surveyAssistantEngineer": 3.0
+        "surveyAssistantEngineer": 3
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.005,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.005,
       "precisionRate": 0.07,
       "precisionEligible": false,
@@ -4934,27 +5663,36 @@
         "standardPage": 70,
         "ratioPage": 108
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "8-2-1-1",
       "name": "撮影 撮影(デジタル) 撮影計画",
       "category": "空中写真測量",
       "standard": "100km²",
-      "standardQuantity": 100.0,
+      "standardQuantity": 100,
       "unit": "km²",
       "laborDays": {
         "surveyChief": 0.2,
         "surveyEngineer": 1.2,
         "surveyAssistantEngineer": 1.2,
         "surveyAssistant": 0.5,
-        "pilot": 1.0,
-        "mechanic": 1.0,
-        "cameraOperator": 1.0
+        "pilot": 1,
+        "mechanic": 1,
+        "cameraOperator": 1
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.005,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.005,
       "precisionRate": 0.05,
       "precisionEligible": true,
@@ -4967,7 +5705,16 @@
         "standardPage": 83,
         "ratioPage": 108
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "8-2-1-2",
@@ -4995,7 +5742,16 @@
       "reviewRequired": false,
       "pricingMode": "manualUnitPrice",
       "manualCostComponent": "machine",
-      "manualCostNote": "総運航費は撮影の積算方式により算定した1時間当り額を入力"
+      "manualCostNote": "総運航費は撮影の積算方式により算定した1時間当り額を入力",
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "時間",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "8-2-1-3",
@@ -5023,24 +5779,33 @@
       "reviewRequired": false,
       "pricingMode": "manualUnitPrice",
       "manualCostComponent": "machine",
-      "manualCostNote": "撮影費は撮影の積算方式により算定した1時間当り額を入力"
+      "manualCostNote": "撮影費は撮影の積算方式により算定した1時間当り額を入力",
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "時間",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "8-2-1-4",
       "name": "撮影 撮影(デジタル) 滞留",
       "category": "空中写真測量",
       "standard": "1日",
-      "standardQuantity": 1.0,
+      "standardQuantity": 1,
       "unit": "日",
       "laborDays": {
-        "pilot": 1.0,
-        "mechanic": 1.0,
-        "cameraOperator": 1.0
+        "pilot": 1,
+        "mechanic": 1,
+        "cameraOperator": 1
       },
       "precisionExcludedLaborDays": {},
-      "machineRate": 0.0,
+      "machineRate": 0,
       "communicationRate": 0.01,
-      "materialRate": 0.0,
+      "materialRate": 0,
       "precisionRate": 0.05,
       "precisionEligible": true,
       "precisionRateOptions": null,
@@ -5052,24 +5817,33 @@
         "standardPage": 83,
         "ratioPage": 108
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "日",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "8-2-1-5",
       "name": "撮影 撮影(デジタル) GNSS/IMU計算",
       "category": "空中写真測量",
       "standard": "100枚",
-      "standardQuantity": 100.0,
+      "standardQuantity": 100,
       "unit": "枚",
       "laborDays": {
         "surveyChief": 0.1,
-        "surveyEngineer": 1.0,
+        "surveyEngineer": 1,
         "surveyAssistantEngineer": 0.8
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.01,
-      "communicationRate": 0.0,
-      "materialRate": 0.0,
+      "communicationRate": 0,
+      "materialRate": 0,
       "precisionRate": 0.05,
       "precisionEligible": true,
       "precisionRateOptions": null,
@@ -5081,23 +5855,32 @@
         "standardPage": 83,
         "ratioPage": 108
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "枚",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "8-2-1-6",
       "name": "撮影 撮影(デジタル) 数値写真作成",
       "category": "空中写真測量",
       "standard": "100枚",
-      "standardQuantity": 100.0,
+      "standardQuantity": 100,
       "unit": "枚",
       "laborDays": {
         "surveyEngineer": 0.3,
         "surveyAssistantEngineer": 1.8,
-        "surveyAssistant": 1.0
+        "surveyAssistant": 1
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.51,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.155,
       "precisionRate": 0.05,
       "precisionEligible": true,
@@ -5110,20 +5893,29 @@
         "standardPage": 83,
         "ratioPage": 108
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "枚",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "8-3-1",
       "name": "標定点及び同時調整 対空標識の設置 (写真縮尺 1/10,000~12,500)",
       "category": "空中写真測量",
       "standard": "15点",
-      "standardQuantity": 15.0,
+      "standardQuantity": 15,
       "unit": "点",
       "laborDays": {
-        "surveyEngineer": 3.0,
+        "surveyEngineer": 3,
         "surveyAssistantEngineer": 6.5,
         "surveyAssistant": 8.5,
-        "surveyWorker": 2.0
+        "surveyWorker": 2
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.01,
@@ -5199,23 +5991,32 @@
         "standardPage": 84,
         "ratioPage": 108
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "点",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "8-3-2",
       "name": "標定点測量及び同時調整 標定点測量",
       "category": "空中写真測量",
       "standard": "5点",
-      "standardQuantity": 5.0,
+      "standardQuantity": 5,
       "unit": "点",
       "laborDays": {
-        "surveyEngineer": 4.0,
-        "surveyAssistantEngineer": 4.0,
-        "surveyAssistant": 3.0
+        "surveyEngineer": 4,
+        "surveyAssistantEngineer": 4,
+        "surveyAssistant": 3
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.1,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.005,
       "precisionRate": 0.02,
       "precisionEligible": true,
@@ -5307,17 +6108,26 @@
         "standardPage": 84,
         "ratioPage": 108
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "点",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "8-3-3",
       "name": "標定点測量及び同時調整 簡易水準測量",
       "category": "空中写真測量",
       "standard": "10km",
-      "standardQuantity": 10.0,
+      "standardQuantity": 10,
       "unit": "km",
       "laborDays": {
-        "surveyEngineer": 2.0,
+        "surveyEngineer": 2,
         "surveyAssistantEngineer": 2.5,
         "surveyAssistant": 2.5
       },
@@ -5415,24 +6225,33 @@
         "standardPage": 85,
         "ratioPage": 108
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "8-3-5",
       "name": "標定点測量及び同時調整 同時調整",
       "category": "空中写真測量",
       "standard": "100km2",
-      "standardQuantity": 100.0,
+      "standardQuantity": 100,
       "unit": "km²",
       "laborDays": {
         "surveyEngineer": 0.8,
         "surveyAssistantEngineer": 2.8,
-        "surveyAssistant": 1.0
+        "surveyAssistant": 1
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.34,
-      "communicationRate": 0.0,
-      "materialRate": 0.0,
+      "communicationRate": 0,
+      "materialRate": 0,
       "precisionRate": 0.05,
       "precisionEligible": true,
       "precisionRateOptions": null,
@@ -5444,14 +6263,23 @@
         "standardPage": 87,
         "ratioPage": 108
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "8-4-1-1",
       "name": "数値図化 数値図化 レベル1,000 作業計画",
       "category": "空中写真測量",
       "standard": "1.0km²",
-      "standardQuantity": 1.0,
+      "standardQuantity": 1,
       "unit": "km²",
       "laborDays": {
         "surveyChief": 0.5,
@@ -5460,8 +6288,8 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.01,
-      "communicationRate": 0.0,
-      "materialRate": 0.0,
+      "communicationRate": 0,
+      "materialRate": 0,
       "precisionRate": 0.07,
       "precisionEligible": true,
       "precisionRateOptions": null,
@@ -5512,18 +6340,27 @@
         "standardPage": 88,
         "ratioPage": 108
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "8-4-1-2",
       "name": "数値図化 数値図化 レベル1,000 現地調査",
       "category": "空中写真測量",
       "standard": "1.0km²",
-      "standardQuantity": 1.0,
+      "standardQuantity": 1,
       "unit": "km²",
       "laborDays": {
         "surveyEngineer": 2.5,
-        "surveyAssistantEngineer": 5.0
+        "surveyAssistantEngineer": 5
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.03,
@@ -5579,23 +6416,32 @@
         "standardPage": 88,
         "ratioPage": 108
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "8-4-1-3",
       "name": "数値図化 数値図化 レベル1,000 数値図化",
       "category": "空中写真測量",
       "standard": "1.0km²",
-      "standardQuantity": 1.0,
+      "standardQuantity": 1,
       "unit": "km²",
       "laborDays": {
         "surveyEngineer": 3.5,
         "surveyAssistantEngineer": 7.5,
-        "surveyAssistant": 2.0
+        "surveyAssistant": 2
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.365,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.005,
       "precisionRate": 0.07,
       "precisionEligible": true,
@@ -5647,23 +6493,32 @@
         "standardPage": 88,
         "ratioPage": 108
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "8-4-1-4",
       "name": "数値図化 数値図化 レベル1,000 数値編集",
       "category": "空中写真測量",
       "standard": "1.0km²",
-      "standardQuantity": 1.0,
+      "standardQuantity": 1,
       "unit": "km²",
       "laborDays": {
-        "surveyEngineer": 3.0,
-        "surveyAssistantEngineer": 9.0,
+        "surveyEngineer": 3,
+        "surveyAssistantEngineer": 9,
         "surveyAssistant": 0.5
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.115,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.005,
       "precisionRate": 0.07,
       "precisionEligible": true,
@@ -5715,19 +6570,28 @@
         "standardPage": 88,
         "ratioPage": 108
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "8-4-1-5",
       "name": "数値図化 数値図化 レベル1,000 補測編集",
       "category": "空中写真測量",
       "standard": "1.0km²",
-      "standardQuantity": 1.0,
+      "standardQuantity": 1,
       "unit": "km²",
       "laborDays": {
-        "surveyEngineer": 1.0,
+        "surveyEngineer": 1,
         "surveyAssistantEngineer": 2.5,
-        "surveyAssistant": 1.0
+        "surveyAssistant": 1
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.075,
@@ -5783,14 +6647,23 @@
         "standardPage": 88,
         "ratioPage": 108
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "8-4-1-6",
       "name": "数値図化 数値図化 レベル1,000 数値地形図データ ファイルの作成",
       "category": "空中写真測量",
       "standard": "1.0km²",
-      "standardQuantity": 1.0,
+      "standardQuantity": 1,
       "unit": "km²",
       "laborDays": {
         "surveyEngineer": 0.5,
@@ -5798,8 +6671,8 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.145,
-      "communicationRate": 0.0,
-      "materialRate": 0.0,
+      "communicationRate": 0,
+      "materialRate": 0,
       "precisionRate": 0.07,
       "precisionEligible": true,
       "precisionRateOptions": null,
@@ -5815,24 +6688,33 @@
         "standardPage": 88,
         "ratioPage": 108
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "8-4-2-1",
       "name": "数値図化 数値図化 レベル2,500 作業計画",
       "category": "空中写真測量",
       "standard": "20.0km²",
-      "standardQuantity": 20.0,
+      "standardQuantity": 20,
       "unit": "km²",
       "laborDays": {
         "surveyChief": 1.5,
         "surveyEngineer": 1.5,
-        "surveyAssistantEngineer": 1.0
+        "surveyAssistantEngineer": 1
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.005,
-      "communicationRate": 0.0,
-      "materialRate": 0.0,
+      "communicationRate": 0,
+      "materialRate": 0,
       "precisionRate": 0.03,
       "precisionEligible": true,
       "precisionRateOptions": null,
@@ -5883,18 +6765,27 @@
         "standardPage": 89,
         "ratioPage": 108
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "8-4-2-2",
       "name": "数値図化 数値図化 レベル2,500 現地調査",
       "category": "空中写真測量",
       "standard": "20.0km²",
-      "standardQuantity": 20.0,
+      "standardQuantity": 20,
       "unit": "km²",
       "laborDays": {
         "surveyEngineer": 11.5,
-        "surveyAssistantEngineer": 19.0
+        "surveyAssistantEngineer": 19
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.02,
@@ -5950,23 +6841,32 @@
         "standardPage": 89,
         "ratioPage": 108
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "8-4-2-3",
       "name": "数値図化 数値図化 レベル2,500 数値図化",
       "category": "空中写真測量",
       "standard": "20.0km²",
-      "standardQuantity": 20.0,
+      "standardQuantity": 20,
       "unit": "km²",
       "laborDays": {
         "surveyEngineer": 12.5,
         "surveyAssistantEngineer": 26.5,
-        "surveyAssistant": 7.0
+        "surveyAssistant": 7
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.51,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.005,
       "precisionRate": 0.03,
       "precisionEligible": true,
@@ -6018,24 +6918,33 @@
         "standardPage": 89,
         "ratioPage": 108
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "8-4-2-4",
       "name": "数値図化 数値図化 レベル2,500 数値編集",
       "category": "空中写真測量",
       "standard": "20.0km²",
-      "standardQuantity": 20.0,
+      "standardQuantity": 20,
       "unit": "km²",
       "laborDays": {
         "surveyEngineer": 9.5,
-        "surveyAssistantEngineer": 28.0,
-        "surveyAssistant": 12.0
+        "surveyAssistantEngineer": 28,
+        "surveyAssistant": 12
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.125,
-      "communicationRate": 0.0,
-      "materialRate": 0.0,
+      "communicationRate": 0,
+      "materialRate": 0,
       "precisionRate": 0.03,
       "precisionEligible": true,
       "precisionRateOptions": null,
@@ -6086,19 +6995,28 @@
         "standardPage": 89,
         "ratioPage": 108
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "8-4-2-5",
       "name": "数値図化 数値図化 レベル2,500 補測編集",
       "category": "空中写真測量",
       "standard": "20.0km²",
-      "standardQuantity": 20.0,
+      "standardQuantity": 20,
       "unit": "km²",
       "laborDays": {
         "surveyEngineer": 5.5,
         "surveyAssistantEngineer": 7.5,
-        "surveyAssistant": 4.0
+        "surveyAssistant": 4
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.075,
@@ -6154,23 +7072,32 @@
         "standardPage": 89,
         "ratioPage": 108
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "8-4-2-6",
       "name": "数値図化 数値図化 レベル2,500 数値地形図データ ファイルの作成",
       "category": "空中写真測量",
       "standard": "20.0km²",
-      "standardQuantity": 20.0,
+      "standardQuantity": 20,
       "unit": "km²",
       "laborDays": {
-        "surveyEngineer": 2.0,
+        "surveyEngineer": 2,
         "surveyAssistantEngineer": 1.5
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.215,
-      "communicationRate": 0.0,
-      "materialRate": 0.0,
+      "communicationRate": 0,
+      "materialRate": 0,
       "precisionRate": 0.03,
       "precisionEligible": true,
       "precisionRateOptions": null,
@@ -6186,14 +7113,23 @@
         "standardPage": 89,
         "ratioPage": 109
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "9-1-1",
       "name": "現地測量 (S=1/500) 現地測量(作業計画)",
       "category": "現地測量",
       "standard": "1業務（縮尺1/500）",
-      "standardQuantity": 1.0,
+      "standardQuantity": 1,
       "unit": "業務",
       "laborDays": {
         "surveyEngineer": 0.2,
@@ -6201,9 +7137,9 @@
         "surveyAssistant": 0.3
       },
       "precisionExcludedLaborDays": {},
-      "machineRate": 0.0,
-      "communicationRate": 0.0,
-      "materialRate": 0.0,
+      "machineRate": 0,
+      "communicationRate": 0,
+      "materialRate": 0,
       "precisionRate": 0.05,
       "precisionEligible": false,
       "precisionRateOptions": null,
@@ -6276,7 +7212,7 @@
             },
             {
               "label": "1/250 市街地甲／平地",
-              "rate": 1.0
+              "rate": 1
             },
             {
               "label": "1/250 市街地乙／平地",
@@ -6380,7 +7316,7 @@
             },
             {
               "label": "1/500 原野／高山地",
-              "rate": 1.0
+              "rate": 1
             },
             {
               "label": "1/500 森林／丘陵地",
@@ -6452,7 +7388,7 @@
             },
             {
               "label": "1/1000 森林／高山地",
-              "rate": 1.0
+              "rate": 1
             }
           ]
         }
@@ -6462,7 +7398,16 @@
         "standardPage": 91,
         "ratioPage": 109
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "業務",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "9-1-2",
@@ -6557,7 +7502,7 @@
             },
             {
               "label": "1/250 市街地甲／平地",
-              "rate": 1.0
+              "rate": 1
             },
             {
               "label": "1/250 市街地乙／平地",
@@ -6661,7 +7606,7 @@
             },
             {
               "label": "1/500 原野／高山地",
-              "rate": 1.0
+              "rate": 1
             },
             {
               "label": "1/500 森林／丘陵地",
@@ -6733,7 +7678,7 @@
             },
             {
               "label": "1/1000 森林／高山地",
-              "rate": 1.0
+              "rate": 1
             }
           ]
         }
@@ -6749,24 +7694,33 @@
         "standardPage": 91,
         "ratioPage": 109
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "10-2-1-1",
       "name": "航空レーザ測量 数値図化 レベル1,000全体計画",
       "category": "航空レーザ測量",
       "standard": "100km²",
-      "standardQuantity": 100.0,
+      "standardQuantity": 100,
       "unit": "km²",
       "laborDays": {
         "surveyChief": 0.5,
-        "surveyEngineer": 1.0,
+        "surveyEngineer": 1,
         "surveyAssistantEngineer": 0.5
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.01,
-      "communicationRate": 0.0,
-      "materialRate": 0.0,
+      "communicationRate": 0,
+      "materialRate": 0,
       "precisionRate": 0.03,
       "precisionEligible": true,
       "precisionRateOptions": null,
@@ -6782,14 +7736,23 @@
         "standardPage": 99,
         "ratioPage": 109
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "10-2-1-2",
       "name": "航空レーザ測量 数値図化 レベル1,000計測計画",
       "category": "航空レーザ測量",
       "standard": "100km²",
-      "standardQuantity": 100.0,
+      "standardQuantity": 100,
       "unit": "km²",
       "laborDays": {
         "surveyEngineer": 0.3,
@@ -6800,7 +7763,7 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.085,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.045,
       "precisionRate": 0.03,
       "precisionEligible": true,
@@ -6817,7 +7780,16 @@
         "standardPage": 99,
         "ratioPage": 109
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "10-2-1-3",
@@ -6845,7 +7817,16 @@
       "reviewRequired": false,
       "pricingMode": "manualUnitPrice",
       "manualCostComponent": "machine",
-      "manualCostNote": "総運航費は航空レーザ測量の積算方式により算定した1時間当り額を入力"
+      "manualCostNote": "総運航費は航空レーザ測量の積算方式により算定した1時間当り額を入力",
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "時間",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "10-2-1-4",
@@ -6873,24 +7854,33 @@
       "reviewRequired": false,
       "pricingMode": "manualUnitPrice",
       "manualCostComponent": "machine",
-      "manualCostNote": "計測費は航空レーザ測量の積算方式により算定した1時間当り額を入力"
+      "manualCostNote": "計測費は航空レーザ測量の積算方式により算定した1時間当り額を入力",
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "時間",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "10-2-1-5",
       "name": "航空レーザ測量 数値図化 レベル1,000滞留",
       "category": "航空レーザ測量",
       "standard": "1日",
-      "standardQuantity": 1.0,
+      "standardQuantity": 1,
       "unit": "日",
       "laborDays": {
-        "pilot": 1.0,
-        "mechanic": 1.0,
-        "cameraOperator": 1.0
+        "pilot": 1,
+        "mechanic": 1,
+        "cameraOperator": 1
       },
       "precisionExcludedLaborDays": {},
-      "machineRate": 0.0,
+      "machineRate": 0,
       "communicationRate": 0.015,
-      "materialRate": 0.0,
+      "materialRate": 0,
       "precisionRate": 0.03,
       "precisionEligible": true,
       "precisionRateOptions": null,
@@ -6906,22 +7896,31 @@
         "standardPage": 99,
         "ratioPage": 109
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "日",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "10-2-1-6",
       "name": "航空レーザ測量 数値図化 レベル1,000調整点の設置",
       "category": "航空レーザ測量",
       "standard": "10箇所",
-      "standardQuantity": 10.0,
+      "standardQuantity": 10,
       "unit": "箇所",
       "laborDays": {
-        "surveyAssistantEngineer": 5.0,
+        "surveyAssistantEngineer": 5,
         "surveyAssistant": 7.5
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.35,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.01,
       "precisionRate": 0.03,
       "precisionEligible": true,
@@ -6938,23 +7937,32 @@
         "standardPage": 99,
         "ratioPage": 109
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "箇所",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "10-2-1-7",
       "name": "航空レーザ測量 数値図化 レベル1,000点群データ及び オリジナルデータ作成",
       "category": "航空レーザ測量",
       "standard": "100km²",
-      "standardQuantity": 100.0,
+      "standardQuantity": 100,
       "unit": "km²",
       "laborDays": {
-        "surveyEngineer": 15.0,
-        "surveyAssistantEngineer": 30.0
+        "surveyEngineer": 15,
+        "surveyAssistantEngineer": 30
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.095,
-      "communicationRate": 0.0,
-      "materialRate": 0.0,
+      "communicationRate": 0,
+      "materialRate": 0,
       "precisionRate": 0.03,
       "precisionEligible": true,
       "precisionRateOptions": null,
@@ -6970,23 +7978,32 @@
         "standardPage": 99,
         "ratioPage": 109
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "10-2-1-8",
       "name": "航空レーザ測量 数値図化 レベル1,000グラウンドデー タ作成",
       "category": "航空レーザ測量",
       "standard": "100km²",
-      "standardQuantity": 100.0,
+      "standardQuantity": 100,
       "unit": "km²",
       "laborDays": {
-        "surveyEngineer": 20.0,
-        "surveyAssistantEngineer": 60.0,
-        "surveyAssistant": 40.0
+        "surveyEngineer": 20,
+        "surveyAssistantEngineer": 60,
+        "surveyAssistant": 40
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.1,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.015,
       "precisionRate": 0.03,
       "precisionEligible": true,
@@ -7003,23 +8020,32 @@
         "standardPage": 99,
         "ratioPage": 109
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "10-2-1-9",
       "name": "航空レーザ測量 数値図化 レベル1,000グリッド(標 高)データ作成",
       "category": "航空レーザ測量",
       "standard": "100km²",
-      "standardQuantity": 100.0,
+      "standardQuantity": 100,
       "unit": "km²",
       "laborDays": {
-        "surveyEngineer": 2.0,
-        "surveyAssistantEngineer": 10.0
+        "surveyEngineer": 2,
+        "surveyAssistantEngineer": 10
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.095,
-      "communicationRate": 0.0,
-      "materialRate": 0.0,
+      "communicationRate": 0,
+      "materialRate": 0,
       "precisionRate": 0.03,
       "precisionEligible": true,
       "precisionRateOptions": null,
@@ -7035,23 +8061,32 @@
         "standardPage": 99,
         "ratioPage": 109
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "10-2-1-10",
       "name": "航空レーザ測量 数値図化 レベル1,000等高線データ作 成",
       "category": "航空レーザ測量",
       "standard": "100km²",
-      "standardQuantity": 100.0,
+      "standardQuantity": 100,
       "unit": "km²",
       "laborDays": {
-        "surveyEngineer": 3.0,
-        "surveyAssistantEngineer": 9.0
+        "surveyEngineer": 3,
+        "surveyAssistantEngineer": 9
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.095,
-      "communicationRate": 0.0,
-      "materialRate": 0.0,
+      "communicationRate": 0,
+      "materialRate": 0,
       "precisionRate": 0.03,
       "precisionEligible": true,
       "precisionRateOptions": null,
@@ -7067,14 +8102,23 @@
         "standardPage": 99,
         "ratioPage": 109
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "10-2-1-11",
       "name": "航空レーザ測量 数値図化 レベル1,000成果データファ イルの作成",
       "category": "航空レーザ測量",
       "standard": "100km²",
-      "standardQuantity": 100.0,
+      "standardQuantity": 100,
       "unit": "km²",
       "laborDays": {
         "surveyChief": 0.5,
@@ -7083,7 +8127,7 @@
       },
       "precisionExcludedLaborDays": {},
       "machineRate": 0.09,
-      "communicationRate": 0.0,
+      "communicationRate": 0,
       "materialRate": 0.02,
       "precisionRate": 0.03,
       "precisionEligible": true,
@@ -7100,7 +8144,16 @@
         "standardPage": 99,
         "ratioPage": 109
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "10-2-2-1",
@@ -7135,7 +8188,16 @@
       },
       "reviewRequired": false,
       "manualCostRequired": true,
-      "manualCostNote": "機械経費等と精度管理費係数は基準書により別途計上"
+      "manualCostNote": "機械経費等と精度管理費係数は基準書により別途計上",
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "10-2-2-2",
@@ -7172,7 +8234,16 @@
       },
       "reviewRequired": false,
       "manualCostRequired": true,
-      "manualCostNote": "機械経費等と精度管理費係数は基準書により別途計上"
+      "manualCostNote": "機械経費等と精度管理費係数は基準書により別途計上",
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "10-2-2-3",
@@ -7201,7 +8272,16 @@
       "pricingMode": "manualUnitPrice",
       "manualCostComponent": "machine",
       "manualCostRequired": true,
-      "manualCostNote": "基準書の積算方式により別途算定。精度管理費係数も別途設定"
+      "manualCostNote": "基準書の積算方式により別途算定。精度管理費係数も別途設定",
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "時間",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "10-2-2-4",
@@ -7230,7 +8310,16 @@
       "pricingMode": "manualUnitPrice",
       "manualCostComponent": "machine",
       "manualCostRequired": true,
-      "manualCostNote": "基準書の積算方式により別途算定。精度管理費係数も別途設定"
+      "manualCostNote": "基準書の積算方式により別途算定。精度管理費係数も別途設定",
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "時間",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "10-2-2-5",
@@ -7259,7 +8348,16 @@
       "pricingMode": "manualUnitPrice",
       "manualCostComponent": "machine",
       "manualCostRequired": true,
-      "manualCostNote": "基準書の積算方式により別途算定。精度管理費係数も別途設定"
+      "manualCostNote": "基準書の積算方式により別途算定。精度管理費係数も別途設定",
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "日",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "10-2-2-6",
@@ -7293,7 +8391,16 @@
       },
       "reviewRequired": false,
       "manualCostRequired": true,
-      "manualCostNote": "機械経費等と精度管理費係数は基準書により別途計上"
+      "manualCostNote": "機械経費等と精度管理費係数は基準書により別途計上",
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "10-2-2-7",
@@ -7327,7 +8434,16 @@
       },
       "reviewRequired": false,
       "manualCostRequired": true,
-      "manualCostNote": "機械経費等と精度管理費係数は基準書により別途計上"
+      "manualCostNote": "機械経費等と精度管理費係数は基準書により別途計上",
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "10-2-2-8",
@@ -7362,7 +8478,16 @@
       },
       "reviewRequired": false,
       "manualCostRequired": true,
-      "manualCostNote": "機械経費等と精度管理費係数は基準書により別途計上"
+      "manualCostNote": "機械経費等と精度管理費係数は基準書により別途計上",
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "10-2-2-9",
@@ -7396,7 +8521,16 @@
       },
       "reviewRequired": false,
       "manualCostRequired": true,
-      "manualCostNote": "機械経費等と精度管理費係数は基準書により別途計上"
+      "manualCostNote": "機械経費等と精度管理費係数は基準書により別途計上",
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "10-2-2-10",
@@ -7430,7 +8564,16 @@
       },
       "reviewRequired": false,
       "manualCostRequired": true,
-      "manualCostNote": "機械経費等と精度管理費係数は基準書により別途計上"
+      "manualCostNote": "機械経費等と精度管理費係数は基準書により別途計上",
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "10-2-2-11",
@@ -7465,7 +8608,16 @@
       },
       "reviewRequired": false,
       "manualCostRequired": true,
-      "manualCostNote": "機械経費等と精度管理費係数は基準書により別途計上"
+      "manualCostNote": "機械経費等と精度管理費係数は基準書により別途計上",
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "11-1-1",
@@ -7495,7 +8647,16 @@
         "standardPage": 102,
         "ratioPage": null
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "業務",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "11-1-2",
@@ -7536,6 +8697,15 @@
         "b": 93,
         "unit": 1000,
         "precisionMachineShare": 0.7
+      },
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
       }
     },
     {
@@ -7564,7 +8734,16 @@
         "standardPage": 103,
         "ratioPage": null
       },
-      "reviewRequired": false
+      "reviewRequired": false,
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "業務",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "11-2-2",
@@ -7605,6 +8784,15 @@
         "b": 219,
         "unit": 1000,
         "precisionMachineShare": 0.75
+      },
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
       }
     },
     {
@@ -7636,7 +8824,16 @@
       },
       "reviewRequired": false,
       "manualCostRequired": true,
-      "manualCostNote": "機械経費等と精度管理費係数は別途計上"
+      "manualCostNote": "機械経費等と精度管理費係数は別途計上",
+      "quantityDecimals": 0,
+      "quantityInput": {
+        "unit": "業務",
+        "kind": "integer",
+        "decimals": 0,
+        "step": 1,
+        "min": 1,
+        "status": "audited-2026-08-24"
+      }
     },
     {
       "code": "11-3-2",
@@ -7672,7 +8869,16 @@
       },
       "reviewRequired": false,
       "manualCostRequired": true,
-      "manualCostNote": "機械経費等と精度管理費係数は別途計上"
+      "manualCostNote": "機械経費等と精度管理費係数は別途計上",
+      "quantityDecimals": 3,
+      "quantityInput": {
+        "unit": "km2",
+        "kind": "decimal",
+        "decimals": 3,
+        "step": 0.001,
+        "min": 0.001,
+        "status": "audited-2026-08-24"
+      }
     }
   ],
   "sources": [

@@ -11,6 +11,7 @@ function close(actual, expected, message) {
 }
 
 assert.strictEqual(master.workItems.length, 134, "令和8年度の収録項目数（率表108項目＋共通・別途算定26項目）");
+assert.ok(master.workItems.every((item) => item.quantityInput?.status === "audited-2026-08-24" && item.quantityDecimals === item.quantityInput.decimals), "測量全134項目に単位別の整数・小数桁規則を明示する");
 assert.ok(master.workItems.every((item) => Object.keys(item.laborDays).length || item.pricingMode === "manualUnitPrice"), "全項目に労務構成または個別単価入力方式がある");
 assert.deepStrictEqual(
   [master.workItems.find((item) => item.code === "6-2-1-1").standardQuantity, master.workItems.find((item) => item.code === "6-2-1-1").unit],

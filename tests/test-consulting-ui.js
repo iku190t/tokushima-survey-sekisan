@@ -23,6 +23,10 @@ for (const file of ["data/consulting-master.js", "consulting-engine.js", "consul
 assert.ok(html.includes('src="data/consulting-standard-walks.js?v='), "年度別の設計・調査計画・地質標準歩掛を読み込む");
 assert.ok(html.includes('src="data/consulting-condition-rules.js?v=') && html.includes('id="consultingConditionFields"'), "補正・適用条件データと動的入力欄を読み込む");
 assert.ok(html.includes('src="data/consulting-rule-pack.js?v='), "国交省ページ照合済み規則パックを読み込む");
+assert.ok(html.includes('src="data/estimation-compliance-catalog.js?v=') && html.includes('id="consultingRegionalAuthority"'), "積算基準体系と地方整備局等の確認台帳を読み込む");
+assert.ok(html.includes('id="consultingNotificationReference"') && html.includes('id="consultingSpecificationReference"') && ui.includes("priceSourcesConfirmed"), "適用通知・特記仕様・価格根拠を個別確認する");
+assert.ok(html.includes('id="consultingAdditionalCostBody"') && ui.includes("additionalCosts") && engine.includes("additionalAmount"), "市場単価・材料・機械・運搬・個別見積を根拠付きで計上する");
+assert.ok(html.includes('src="reference-case-engine.js?v=') && html.includes('id="referenceCaseFileInput"') && ui.includes("compareReferenceFile"), "匿名化した正解積算を費目別照合する");
 assert.ok(html.includes('src="data/official-source-catalog.js?v='), "国交省年度別8資料の台帳を読み込む");
 for (const type of ["土木設計業務", "調査・計画業務", "地質解析等調査業務", "地質一般調査業務"]) assert.ok(master.includes(type), `${type}を区分する`);
 for (const task of ["設計条件の確認", "施工計画", "資料整理とりまとめ", "孔内水平載荷試験", "地下水位観測", "土質・岩石試験"]) assert.ok(master.includes(task), `${task}を詳細項目として選べる`);
