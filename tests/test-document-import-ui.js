@@ -79,6 +79,8 @@ assert.ok(ui.includes("pointerPdfDrag") && ui.includes("finishPointerPdfDrag") &
 assert.ok(ui.includes("manualSourceLineIds") && ui.includes("manualItemLineId") && ui.includes("manualQuantityLineId") && ui.includes("manualConsultingTaskLineId") && ui.includes("manualConsultingDaysLineId"), "測量・設計等の別セルを同じ候補へ関連付ける");
 assert.ok(ui.includes("manualUnitLineId") && ui.includes("convertSurveyQuantity") && ui.includes("sourceUnitLabel"), "単位セルを別に対応付けて資料数量を積算数量へ換算する");
 assert.ok(ui.includes("applyPdfClickSelection") && ui.includes("target.item.applied = true"), "PDF画面から直接追加し、追加済み行を二重反映から保護する");
+assert.ok(ui.includes("draggedPdfLines") && ui.includes('button.dataset.dragged = draggedPdfLines.has(lineId)') && ui.includes("updatePdfRowStatuses"), "ドラッグ済み文字ブロックと項目行の状態をスクロール後も保持する");
+assert.ok(ui.includes("項目追加済み｜数量未入力") && ui.includes("入力完了") && ui.includes("pdfPreviewRows"), "PDF行全体へ項目追加済み・数量未入力・入力完了を区別表示する");
 assert.ok(ui.includes("editablePdfTargets") && ui.includes("openSelectedTargetEditor") && ui.includes('data-pdf-edit-target='), "反映待ちへ追加した項目をクリックして変更画面を開ける");
 assert.ok(ui.includes("clickTargetBusinessLabel") && ui.includes('class="pdf-business-badge"'), "反映待ちカードに4業務区分を表示する");
 assert.ok(ui.includes('data-pdf-remove-target=') && ui.includes("target.item.selected = false"), "反映待ちカードを1件ずつ外せる");
@@ -105,6 +107,7 @@ assert.ok(consulting.includes("ezsekisan:consultingimport") && consulting.includ
 assert.ok(!app.includes("sourceText: String(entry.sourceText") && !consulting.includes("sourceText: String(entry.sourceText"), "抽出原文を保存JSONへ残さない");
 assert.ok(css.includes(".import-review-dialog") && css.includes(".import-candidate[data-confidence=\"low\"]"), "確認画面と低確信度警告の表示がある");
 assert.ok(css.includes('.pdf-line-hotspot[data-mapped="false"]') && css.includes(".pdf-manual-mapper"), "未判定行と右側反映先エディターを視覚的に区別する");
+assert.ok(css.includes('.pdf-line-hotspot[data-dragged="true"]') && css.includes('.pdf-row-status-highlight[data-status="missing"]') && css.includes('.pdf-row-status-highlight[data-status="complete"]'), "ドラッグ済みブロックの濃い緑枠と行単位の進捗表示を備える");
 assert.ok(!css.includes(".pdf-drag-dock") && css.includes(".pdf-field-drop-target.drag-over"), "実入力欄だけをドラッグ先として視覚表示する");
 assert.ok(css.includes(".pdf-click-sidebar { position: sticky; top: 18px; align-self: start;") && css.includes(".pdf-pending-panel { display: grid;"), "入力エディターをPDF上端に固定し、反映待ちを独立配置する");
 assert.ok(css.includes(".pdf-click-workbench { margin: 18px 0 0;") && css.includes("grid-template-columns: minmax(0,1fr) clamp(330px,22vw,390px)"), "PDF作業画面の重複余白を除き横幅を広く使う");

@@ -410,7 +410,7 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
 .pdf-click-page > header { display: flex; justify-content: space-between; margin-bottom: 6px; color: #43564e; font-size: 10px; font-weight: 800; }
 .pdf-click-stage { position: relative; overflow: hidden; width: 100%; background: #fff; box-shadow: 0 4px 16px rgba(0,0,0,.13); }
 .pdf-click-stage img { display: block; width: 100%; height: auto; }
-.pdf-line-hotspot { position: absolute; min-width: 12px; min-height: 10px; padding: 0; color: transparent; background: rgba(225,164,47,.09); border: 2px solid rgba(196,126,17,.68); border-radius: 3px; cursor: grab; transition: background .14s, border-color .14s, box-shadow .14s, opacity .14s; }
+.pdf-line-hotspot { position: absolute; z-index: 2; min-width: 12px; min-height: 10px; padding: 0; color: transparent; background: rgba(225,164,47,.09); border: 2px solid rgba(196,126,17,.68); border-radius: 3px; cursor: grab; transition: background .14s, border-color .14s, box-shadow .14s, opacity .14s; }
 .pdf-line-hotspot:active { cursor: grabbing; }
 .pdf-line-hotspot[data-dragging="true"] { opacity: .38; }
 .pdf-line-hotspot:hover, .pdf-line-hotspot:focus-visible { color: transparent; background: rgba(125,188,157,.22); border-color: #1d6c52; box-shadow: 0 0 0 2px rgba(29,108,82,.2); outline: 0; }
@@ -418,8 +418,15 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
 .pdf-line-hotspot[data-confidence="low"] { background: rgba(199,78,61,.08); border-color: rgba(185,72,58,.7); border-style: dashed; }
 .pdf-line-hotspot[data-mapped="false"] { background: rgba(45,112,166,.035); border-color: rgba(42,105,157,.44); border-style: dashed; }
 .pdf-line-hotspot[data-mapped="false"]:hover, .pdf-line-hotspot[data-mapped="false"]:focus-visible { background: rgba(45,112,166,.16); border-color: #256b9e; }
-.pdf-line-hotspot[data-applied="true"] { background: rgba(29,108,82,.16); border-color: rgba(29,108,82,.42); border-style: solid; cursor: default; }
+.pdf-line-hotspot[data-dragged="true"] { background: rgba(20,143,100,.28); border: 3px solid #087454; box-shadow: 0 0 0 2px rgba(8,116,84,.26); }
+.pdf-line-hotspot[data-dragged="true"]::after, .pdf-line-hotspot[data-applied="true"]::after { content: "✓"; position: absolute; top: -9px; right: -9px; display: grid; place-items: center; width: 15px; height: 15px; color: #fff; background: #087454; border: 2px solid #fff; border-radius: 50%; font: 900 9px/1 sans-serif; }
+.pdf-line-hotspot[data-applied="true"] { background: rgba(20,143,100,.24); border: 3px solid #087454; border-style: solid; box-shadow: 0 0 0 2px rgba(8,116,84,.2); cursor: default; }
 .pdf-line-hotspot[data-ignored="true"] { background: rgba(92,101,97,.035); border-color: rgba(92,101,97,.28); opacity: .55; }
+.pdf-row-status-highlight { position: absolute; z-index: 1; display: none; pointer-events: none; border-radius: 3px; }
+.pdf-row-status-highlight > span { position: absolute; right: 2px; bottom: calc(100% + 2px); padding: 2px 6px; color: #fff; background: #177257; border-radius: 999px; font-size: 8px; font-weight: 900; line-height: 1.35; white-space: nowrap; box-shadow: 0 1px 3px rgba(0,0,0,.22); }
+.pdf-row-status-highlight[data-status="missing"] { display: block; background: rgba(95,190,151,.16); border: 2px dashed #268161; box-shadow: inset 0 0 0 1px rgba(255,255,255,.7); }
+.pdf-row-status-highlight[data-status="missing"] > span { background: #8a6a12; }
+.pdf-row-status-highlight[data-status="complete"] { display: block; background: rgba(23,143,96,.22); border: 2px solid #087454; box-shadow: 0 0 0 2px rgba(8,116,84,.14); }
 .pdf-click-sidebar { position: sticky; top: 18px; align-self: start; display: grid; gap: 12px; max-height: 78vh; overflow: auto; }
 .pdf-click-summary { padding: 15px; color: #fff; background: var(--green-dark); border-radius: 11px; }
 .pdf-click-summary span, .pdf-click-summary strong { display: block; }

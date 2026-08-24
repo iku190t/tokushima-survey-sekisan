@@ -55,7 +55,9 @@ for (const id of ["guideSourceYear", "guideSourceLedgerSummary", "guideSourceLed
 assert.ok(app.includes("renderGuideSourceLedger") && app.includes("surveySourceUsage") && app.includes("surveyMaster.sourceLinks"), "測量マスターが実際に使用・照合するPDFだけを年度別表示する");
 assert.ok(app.includes('String(entry.label || "").includes("第1編 測量業務")') && app.includes("現行全編の項目別ページ未対応"), "測量明細は国交省基準書本体へリンクし、未対応の県版ページを流用しない");
 assert.ok(app.includes("公式PDF・計算根拠一覧") && app.includes("sourceTableHtml(master)"), "測量の積算条件書にもPDF名・用途・頁数・確認状態の一覧表を出す");
-assert.ok(html.includes('id="selectedItemSourceBody"') && html.includes("この測量項目で使用する規定書・PDF"), "測量項目の選択直下に規定書PDF一覧表を表示する");
+const surveyCostCardIndex = html.indexOf('class="card business-cost-card no-print"');
+const surveySourceCardIndex = html.indexOf('class="card source-card consulting-source-card survey-source-card"');
+assert.ok(html.includes('id="selectedItemSourceBody"') && html.includes("選択中の測量項目で使用する規定書・PDF") && surveySourceCardIndex > surveyCostCardIndex, "測量の計算根拠を他3業務と同じ下部カードへ配置する");
 assert.ok(app.includes("selectedSurveySourceRows") && app.includes("基準書本体・歩掛") && app.includes("作業規程上の分類"), "選択した測量項目を国交省基準書本体・年度積算基準・技術者単価・作業規程へ対応付ける");
 assert.ok(html.includes("航空局の空港設計・調査とは別") && html.includes("港湾請負工事積算基準") && html.includes("船舶損料"), "航空測量・深浅測量と空港・港湾船舶の別基準を明示する");
 assert.ok(html.includes('id="validationPanel"'), "提出前チェックがある");

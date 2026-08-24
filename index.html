@@ -7,7 +7,7 @@
   <meta name="description" content="設計、測量、調査・計画、地質を年度別技術者単価と根拠表示付きで計算するWeb業務積算ソフト">
   <meta name="author" content="株式会社アイズ測量">
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="styles.css?v=20260824-13">
+  <link rel="stylesheet" href="styles.css?v=20260824-14">
 </head>
 <body data-business-scope="design">
   <header class="app-header">
@@ -128,10 +128,6 @@
               <label class="field"><span>補助検索</span><input id="surveyItemSearch" type="search" placeholder="例：新点、現地踏査、UAV"></label>
             </details>
             <p id="selectedItemMeta" class="field-note"></p>
-            <div class="selected-item-sources" aria-live="polite">
-              <strong>この測量項目で使用する規定書・PDF</strong>
-              <div class="standards-table-wrap"><table class="standards-table survey-source-table"><thead><tr><th>用途</th><th>規定書・公式資料</th><th>該当箇所</th></tr></thead><tbody id="selectedItemSourceBody"></tbody></table></div>
-            </div>
           </section>
 
           <section class="card table-card business-detail-card">
@@ -186,6 +182,12 @@
               <label class="check"><input id="adjustBusinessPrice" type="checkbox"><span>業務価格を千円止め</span></label>
               <label class="field inline-select"><span>安全費</span><select id="safetyRate"></select></label>
             </div>
+          </section>
+
+          <section class="card source-card consulting-source-card survey-source-card">
+            <p class="section-kicker">OFFICIAL SOURCES</p><h2>計算根拠</h2>
+            <p class="field-note">選択中の測量項目で使用する規定書・PDFを表示します。</p>
+            <div class="standards-table-wrap" aria-live="polite"><table class="standards-table survey-source-table"><thead><tr><th>用途</th><th>規定書・公式資料</th><th>該当箇所</th></tr></thead><tbody id="selectedItemSourceBody"></tbody></table></div>
           </section>
         </div>
 
@@ -667,7 +669,7 @@
   <script src="document-reader.js?v=20260823-1"></script>
   <script src="app.js?v=20260824-11"></script>
   <script src="consulting.js?v=20260824-16"></script>
-  <script src="document-import.js?v=20260824-18"></script>
+  <script src="document-import.js?v=20260824-19"></script>
   <script src="analytics.js?v=20260823-1"></script>
 </body>
 </html>
