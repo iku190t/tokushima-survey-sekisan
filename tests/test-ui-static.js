@@ -96,6 +96,9 @@ assert.ok(html.includes('id="newItemQuantityLabel"') && app.includes('`積算数
 assert.ok(html.includes('id="surveyConditionFields" class="consulting-condition-fields"') && html.includes('id="surveyPresetStatus"'), "測量も設計等と同じ位置へ適用範囲・条件表・補正と入力状態を表示する");
 assert.ok(app.includes("renderSurveyConditionFields") && app.includes("surveyPresetValidation") && app.includes("correctionSelections: validation.correctionSelections"), "測量の追加前条件を表示・必須検査し、選択補正を明細へ保存する");
 assert.ok(app.includes("showMissingInputPopup") && app.includes("focusSelector") && app.includes("missing-input-focus") && !app.includes('$("addItemButton").disabled = !validation.valid'), "測量の追加ボタンを押した時に不足項目を表示して該当欄へ移動する");
+assert.ok(app.includes("defaultConditionMemory") && app.includes("normalizedConditionMemory") && app.includes('survey: { values: {} }'), "4業務別の条件継承メモリーを案件内へ保存する");
+assert.ok(app.includes("data-condition-label") && app.includes("applySurveyConditionMemory") && app.includes("rememberSurveyConditionSelections"), "測量は率ではなく条件名を記憶し、次の対応項目へ継承する");
+assert.ok(app.includes("defaultWorkflowState") && app.includes("normalizedWorkflowState") && app.includes("getWorkflowState"), "案件内の年度・作業選択・PDF絞込み状態を復元できる");
 assert.ok(!html.includes("consulting-condition-check") && !html.includes("表示した適用範囲、条件表、補正式を確認し") && !consulting.includes("consultingConditionsConfirmed"), "4業務で形式的な確認チェックを使わない");
 assert.ok(!html.includes('id="regulationGroupSelect"'), "測量の最初の選択を編番号プルダウンへ戻さない");
 for (const keyword of ["基準点", "水準", "現地", "写真", "UAV・レーザ", "路線", "河川", "用地", "深浅"]) assert.ok(app.includes(`label: "${keyword}"`), `${keyword}キーワードを年度マスターの収録項目へ対応させる`);

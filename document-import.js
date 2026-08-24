@@ -78,6 +78,25 @@
     return Number(app.getEstimate()?.consulting?.fiscalYear || activeMaster()?.fiscalYear || 2026);
   }
 
+  function manualWorkflowState() {
+    return app.getWorkflowState().documentImport;
+  }
+
+  function rememberManualWorkflow() {
+    const workflow = manualWorkflowState();
+    const kind = $("pdfManualKind").value || workflow.kind || "survey";
+    workflow.kind = kind;
+    workflow.keywords = Object.assign(workflow.keywords || {}, activeManualKeywords);
+    if (kind === "survey") {
+      workflow.surveyRegulationGroup = $("pdfManualSurveyRegulationGroup").value || "";
+      workflow.surveyCategory = $("pdfManualSurveyCategory").value || "";
+    } else if (isConsultingBusinessKind(kind)) {
+      workflow.consultingGroups = workflow.consultingGroups || {};
+      workflow.consultingGroups[kind] = $("pdfManualConsultingRuleGroup").value || "";
+    }
+    app.saveDraft();
+  }
+
   function keywordMatchesCode(definition, code, definitions) {
     if (!definition || definition.id === "all") return true;
     if (definition.fallback) return !definitions.some((entry) => entry.id !== "all" && !entry.fallback && entry.prefixes.some((prefix) => code.startsWith(prefix)));
@@ -378,20 +397,36 @@
     updateManualAddButtonState();
   }
 
+  function restoreManualWorkflow() {
+    const workflow = manualWorkflowState();
+    Object.assign(activeManualKeywords, workflow.keywords || {});
+    const kind = [...$("pdfManualKind").options].some((option) => option.value === workflow.kind) ? workflow.kind : "survey";
+    $("pdfManualKind").value = kind;
+    updateManualKind();
+    if (kind === "survey") {
+      const group = workflow.surveyRegulationGroup || "";
+      if ([...$("pdfManualSurveyRegulationGroup").options].some((option) => option.value === group)) $("pdfManualSurveyRegulationGroup").value = group;
+      populateManualSurveyCategories();
+      const category = workflow.surveyCategory || "";
+      if ([...$("pdfManualSurveyCategory").options].some((option) => option.value === category)) $("pdfManualSurveyCategory").value = category;
+      populateManualSurveyItems();
+    } else if (isConsultingBusinessKind(kind)) {
+      const group = workflow.consultingGroups?.[kind] || "";
+      if ([...$("pdfManualConsultingRuleGroup").options].some((option) => option.value === group)) {
+        $("pdfManualConsultingRuleGroup").value = group;
+        updateManualConsultingItemsForGroup();
+      }
+    }
+  }
+
   function showEmptyManualMapper() {
-    $("pdfManualKind").value = "survey";
     $("pdfManualKind").disabled = false;
     $("pdfManualHeadingText").textContent = "PDFから項目・数量・単位を入れる";
-    $("pdfManualSurveyRegulationGroup").innerHTML = surveyRegulationGroupOptions("", "survey");
-    $("pdfManualSurveyRegulationGroup").value = "";
-    $("pdfManualSurveyCategory").innerHTML = surveyCategoryOptions("", "survey", "");
-    $("pdfManualSurveyCategory").value = "";
-    populateManualSurveyItems();
     $("addPdfManualCandidateButton").textContent = "反映待ちへ追加";
     $("addPdfManualCandidateButton").disabled = true;
     $("addPdfManualCandidateButton").classList.remove("is-ready");
     $("ignorePdfManualLineButton").disabled = true;
-    updateManualKind();
+    restoreManualWorkflow();
     clearManualInputValues();
     updateManualAddButtonState();
     $("pdfManualMapper").hidden = false;
@@ -1209,6 +1244,7 @@
     $("pdfManualKind").addEventListener("change", () => {
       updateManualKind();
       clearManualInputValues();
+      rememberManualWorkflow();
     });
     $("pdfManualKeywordList").addEventListener("click", (event) => {
       const button = event.target.closest("[data-pdf-manual-keyword]");
@@ -1225,9 +1261,10 @@
         $("pdfManualConsultingRuleGroup").value = "";
         updateManualConsultingTasks();
       }
+      rememberManualWorkflow();
     });
-    $("pdfManualSurveyRegulationGroup").addEventListener("change", populateManualSurveyCategories);
-    $("pdfManualSurveyCategory").addEventListener("change", populateManualSurveyItems);
+    $("pdfManualSurveyRegulationGroup").addEventListener("change", () => { populateManualSurveyCategories(); rememberManualWorkflow(); });
+    $("pdfManualSurveyCategory").addEventListener("change", () => { populateManualSurveyItems(); rememberManualWorkflow(); });
     $("pdfManualSurveyCode").addEventListener("change", () => {
       $("pdfManualSurveySourceUnit").value = "";
       updateManualSurveyRule();
@@ -1243,7 +1280,7 @@
     });
     $("pdfManualConsultingDays").addEventListener("input", (event) => { enforceDecimalInput(event.target, 3, (value) => Math.round(Math.max(0, Number(value) || 0) * 1000) / 1000); updatePdfRowStatuses(); });
     $("pdfManualConsultingRole").addEventListener("change", updatePdfRowStatuses);
-    $("pdfManualConsultingRuleGroup").addEventListener("change", () => updateManualConsultingItemsForGroup());
+    $("pdfManualConsultingRuleGroup").addEventListener("change", () => { updateManualConsultingItemsForGroup(); rememberManualWorkflow(); });
     $("pdfManualConsultingTaskTemplate").addEventListener("change", () => { syncManualConsultingRule(); updateManualAddButtonState(); updatePdfRowStatuses(); });
     $("pdfManualMetadataValue").addEventListener("input", updateManualAddButtonState);
     $("addPdfManualCandidateButton").addEventListener("click", addManualCandidate);
@@ -1312,6 +1349,9 @@
     await analyzeFile(file);
   }
 
+  restoreManualWorkflow();
   bindEvents();
+  document.addEventListener("ezsekisan:estimatechange", () => { if (!currentAnalysis) restoreManualWorkflow(); });
+  document.addEventListener("ezsekisan:draftrestored", restoreManualWorkflow);
   loadQaImportFixture().catch((error) => app.notify(error.message || "QA用PDFを読み込めませんでした"));
 })();

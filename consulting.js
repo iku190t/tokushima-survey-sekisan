@@ -64,6 +64,20 @@
     ]
   };
 
+  function workflowState() {
+    return app.getWorkflowState().consulting;
+  }
+
+  function scopeConditionMemory() {
+    return app.getConditionMemory(activeConsultingScope).values;
+  }
+
+  function syncScopeWorkflow() {
+    const workflow = workflowState();
+    Object.assign(activeConsultingKeywords, workflow.keywords || {});
+    $("consultingPresetSearch").value = workflow.searches?.[activeConsultingScope] || "";
+  }
+
   function keywordDefinitions() {
     return consultingKeywordDefinitions[activeConsultingScope] || consultingKeywordDefinitions.design;
   }
@@ -208,7 +222,7 @@
       presetMatchesKeyword(preset)
       && (!query || `${preset.label} ${preset.standardUnit || ""} ${preset.source || ""}`.toLocaleLowerCase("ja").includes(query))
     );
-    const previousGroup = $("consultingRuleGroup").value;
+    const previousGroup = $("consultingRuleGroup").value || workflowState().groups?.[activeConsultingScope] || "";
     const groups = [...new Map(candidates.map((preset) => {
       const group = presetGroup(preset);
       return [group.id, group];
@@ -217,6 +231,7 @@
       ? groups.map((group) => `<option value="${h(group.id)}">${h(group.label)}</option>`).join("")
       : '<option value="">該当項目なし</option>';
     if (groups.some((group) => group.id === previousGroup)) $("consultingRuleGroup").value = previousGroup;
+    workflowState().groups[activeConsultingScope] = $("consultingRuleGroup").value;
     const selectedGroup = $("consultingRuleGroup").value;
     const previousPreset = $("consultingPreset").value;
     visiblePresets = candidates.filter((preset) => presetGroup(preset).id === selectedGroup);
@@ -329,8 +344,30 @@
     const selectedParameter = parameterTables ? `<div id="consultingSelectedParameter" class="selected-parameter">条件表の該当値をクリックしてください。複数の増減率は加算し、補正係数は乗算します。</div>` : "";
     const market = preset.serviceType === "geologyGeneral" ? `<fieldset class="consulting-market-fields"><legend>市場単価による積算</legend><label class="field"><span>市場単価（円／選択単位）</span><input id="consultingMarketUnitPrice" type="number" min="1" step="1" inputmode="numeric" placeholder="見積・刊行物の採用単価"></label><label class="field span-2"><span>単価根拠（必須）</span><input id="consultingMarketSource" type="text" placeholder="例：物価資料2026年8月号 p.00／見積書A-01 2026-08-20"></label><small>市場単価は公開基準から推定せず、発注者指定資料・刊行物・見積の名称、年月、ページ又は見積番号を保存します。</small></fieldset>` : "";
     $("consultingConditionFields").innerHTML = `${curated}<fieldset><legend>国交省基準の適用条件・原文</legend>${conditionRule ? "<p>上の構造化済み条件を計算に使用します。重複する原文条件は二重加算しません。</p>" : adjustments || "<p>自動抽出された定率加減条件はありません。</p>"}${parameterTables}${selectedParameter}${formulas}${applicability}${market}</fieldset>`;
+    applyInheritedConditions(conditionRule);
     $("addConsultingPresetButton").textContent = "追加";
     updatePresetAddState();
+  }
+
+  function applyInheritedConditions(conditionRule) {
+    if (!conditionRule) return;
+    const memory = scopeConditionMemory();
+    document.querySelectorAll(".consulting-rule-condition").forEach((input) => {
+      if (!Object.prototype.hasOwnProperty.call(memory, input.dataset.conditionId)) return;
+      if (input.type === "checkbox") input.checked = Boolean(memory[input.dataset.conditionId]);
+      else if ([...input.options].some((option) => option.value === String(memory[input.dataset.conditionId]))) input.value = String(memory[input.dataset.conditionId]);
+    });
+    updateConditionSummary();
+  }
+
+  function rememberCurrentConditions() {
+    const memory = scopeConditionMemory();
+    document.querySelectorAll(".consulting-rule-condition").forEach((input) => {
+      if (input.type === "checkbox") memory[input.dataset.conditionId] = input.checked;
+      else if (input.value === "") delete memory[input.dataset.conditionId];
+      else memory[input.dataset.conditionId] = input.value;
+    });
+    app.saveDraft();
   }
 
   function presetInputValidation() {
@@ -502,6 +539,7 @@
   }
 
   function renderAll() {
+    syncScopeWorkflow();
     renderScopeLabels();
     renderYearAndProject();
     renderServiceControls(false);
@@ -838,15 +876,27 @@
     $("referenceCaseFileInput").addEventListener("change", (event) => { const file = event.target.files?.[0]; if (file) compareReferenceFile(file); event.target.value = ""; });
     $("consultingServiceType").addEventListener("change", () => renderServiceControls(true));
     $("consultingTaskTemplate").addEventListener("change", () => { $("consultingTaskName").value = $("consultingTaskTemplate").value; });
-    $("consultingPresetSearch").addEventListener("input", renderPresets);
+    $("consultingPresetSearch").addEventListener("input", () => {
+      workflowState().searches[activeConsultingScope] = $("consultingPresetSearch").value;
+      renderPresets();
+      app.saveDraft();
+    });
     $("consultingKeywordList").addEventListener("click", (event) => {
       const button = event.target.closest("[data-consulting-keyword]");
       if (!button) return;
       activeConsultingKeywords[activeConsultingScope] = button.dataset.consultingKeyword;
+      workflowState().keywords[activeConsultingScope] = button.dataset.consultingKeyword;
+      workflowState().groups[activeConsultingScope] = "";
       $("consultingPresetSearch").value = "";
+      workflowState().searches[activeConsultingScope] = "";
       renderPresets();
+      app.saveDraft();
     });
-    $("consultingRuleGroup").addEventListener("change", renderPresets);
+    $("consultingRuleGroup").addEventListener("change", () => {
+      workflowState().groups[activeConsultingScope] = $("consultingRuleGroup").value;
+      renderPresets();
+      app.saveDraft();
+    });
     $("consultingPreset").addEventListener("change", renderPresetRule);
     $("consultingRole").addEventListener("change", renderRoleMeta);
     $("consultingDays").addEventListener("input", (event) => enforceDecimalInput(event.target, 3, engine.normalizeDays, true));
@@ -857,7 +907,10 @@
       enforceDecimalInput(event.target, decimals, (value) => integer ? Math.max(0, Math.floor(Number(value) || 0)) : engine.roundHalfUp(Math.max(0, Number(value) || 0), decimals), true);
     });
     $("consultingConditionFields").addEventListener("input", updateConditionSummary);
-    $("consultingConditionFields").addEventListener("change", updateConditionSummary);
+    $("consultingConditionFields").addEventListener("change", (event) => {
+      if (event.target.classList.contains("consulting-rule-condition")) rememberCurrentConditions();
+      updateConditionSummary();
+    });
     $("consultingQuantityFields").addEventListener("change", (event) => {
       if (event.target.id !== "consultingMarketUnit") return;
       const input = document.querySelector("#consultingMarketQuantity");
@@ -984,7 +1037,6 @@
     document.addEventListener("ezsekisan:businessscope", (event) => {
       if (!["design", "planning", "geology"].includes(event.detail?.scope)) return;
       activeConsultingScope = event.detail.scope;
-      $("consultingPresetSearch").value = "";
       renderAll();
     });
     document.addEventListener("ezsekisan:consultingimport", (event) => importCandidates(event.detail || {}));

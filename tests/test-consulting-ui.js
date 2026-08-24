@@ -63,6 +63,8 @@ assert.ok(engine.includes("alpha / Math.max") && engine.includes("beta / Math.ma
 assert.ok(engine.includes("geologyTarget * geologyOverheadRate"), "地質一般方式を独立計算する");
 assert.ok(engine.includes("surveyPlanningBusinessPrice") && engine.includes("surveyRulesByYear"), "測量職種の調査計画を年度別測量経費方式で計算する");
 assert.ok(app.includes("draft.consulting?.lines?.length"), "設計・調査だけの案件も新規作成時に確認する");
+assert.ok(ui.includes("scopeConditionMemory") && ui.includes("applyInheritedConditions") && ui.includes("rememberCurrentConditions"), "設計・調査計画・地質は業務別に最後の適用条件を次項目へ継承する");
+assert.ok(ui.includes("syncScopeWorkflow") && ui.includes("workflowState().keywords") && ui.includes("workflowState().groups"), "設計等のキーワード・作業区分を案件復元後も維持する");
 assert.ok(app.includes('dataset.mode !== "consulting"'), "総合帳票を測量帳票で上書きしない");
 assert.ok(ui.includes("t.surveyBusinessPrice") && ui.includes("t.designBusinessPrice") && ui.includes("t.geologyBusinessPrice"), "3区分を総合帳票へ合算する");
 assert.ok(ui.includes('header("積 上 費 用 台 帳")') && !ui.includes("適 用 条 件 ・ 積 上 費 用 台 帳"), "設計等帳票から適用通知・特記仕様の確認表を外す");

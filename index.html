@@ -49,20 +49,20 @@
   </nav>
 
   <main>
+    <section id="draftRecoveryPanel" class="draft-recovery no-print" hidden>
+      <div class="draft-recovery-copy">
+        <span class="draft-recovery-icon" aria-hidden="true">↶</span>
+        <div>
+          <strong>前回の自動保存データがあります</strong>
+          <span id="draftRecoveryText">必要な場合だけ復元してください。現在の画面は新規です。</span>
+        </div>
+      </div>
+      <div class="draft-recovery-actions">
+        <button id="dismissDraftButton" class="button" type="button">新規のまま続ける</button>
+        <button id="restoreDraftButton" class="button primary" type="button">前回データを復元</button>
+      </div>
+    </section>
     <section id="estimateView" class="view">
-      <section id="draftRecoveryPanel" class="draft-recovery no-print" hidden>
-        <div class="draft-recovery-copy">
-          <span class="draft-recovery-icon" aria-hidden="true">↶</span>
-          <div>
-            <strong>前回の自動保存データがあります</strong>
-            <span id="draftRecoveryText">必要な場合だけ復元してください。現在の画面は新規です。</span>
-          </div>
-        </div>
-        <div class="draft-recovery-actions">
-          <button id="dismissDraftButton" class="button" type="button">新規のまま続ける</button>
-          <button id="restoreDraftButton" class="button primary" type="button">前回データを復元</button>
-        </div>
-      </section>
       <section class="project-strip business-project-strip">
         <label class="field">
           <span>見積提出先（任意）</span>

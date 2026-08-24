@@ -102,6 +102,8 @@ assert.ok(ui.includes("window.confirm") && ui.includes("changesMaster") && ui.in
 assert.ok(ui.includes("計算単価には影響しません") && ui.includes("getSubmissionJurisdictionCode"), "見積提出先を単価セットから分離する");
 assert.ok(ui.includes("import-survey-code") && ui.includes("import-survey-quantity"), "測量項目と数量を修正できる");
 assert.ok(ui.includes("import-consulting-service") && ui.includes("import-consulting-role") && ui.includes("import-consulting-days"), "設計・調査・地質の区分・職種・人工を修正できる");
+assert.ok(ui.includes("manualWorkflowState") && ui.includes("rememberManualWorkflow") && ui.includes("restoreManualWorkflow"), "PDF取込の業務区分・作業区分・キーワードを同一案件で保存復元する");
+assert.ok(app.includes('new CustomEvent("ezsekisan:draftrestored")') && ui.includes('document.addEventListener("ezsekisan:draftrestored", restoreManualWorkflow)'), "前回データ復元時にPDF取込み状態を再読込する");
 assert.ok(app.includes("function importSurveyLines") && app.includes("SekisanEngine.normalizeQuantity"), "確認済み測量数量を単位別規則で正規化して反映する");
 assert.ok(app.includes("function applyImportedMetadata") && app.includes("defaultProjectInfo"), "確認済み業務基本情報を構造化して反映する");
 for (const key of ["orderingParty", "department", "contactName", "workLocation", "contractPeriod", "documentNumber", "documentDate"]) {

@@ -380,6 +380,8 @@
       report: defaultReportSettings(localDate),
       lines: [],
       consulting: defaultConsultingState(),
+      conditionMemory: defaultConditionMemory(),
+      workflowState: defaultWorkflowState(),
       costs: { travel: 0, roundtrip: 0, baseCost: 0, other: 0, inspection: 0 },
       options: { useElectronicDeliverable: true, useFourSignificantDigits: true, adjustBusinessPrice: true, travelMode: "noLodging", safetyRate: 0, taxRate: masters.find((master) => master.id === defaultMasterId)?.taxRate ?? masters[0]?.taxRate ?? .1 }
     };
@@ -401,6 +403,64 @@
       costs: { designDirectExpenses: 0, geologyDirectNonLabor: 0, geologyIndirect: 0, geologyExcluded: 0 },
       options: { includeSurvey: false, electronicMode: "none", adjustBusinessPrice: false, taxRate: 0.1 }
     };
+  }
+
+  function defaultConditionMemory() {
+    return {
+      survey: { values: {} },
+      design: { values: {} },
+      planning: { values: {} },
+      geology: { values: {} }
+    };
+  }
+
+  function normalizedConditionMemory(saved = {}) {
+    const defaults = defaultConditionMemory();
+    Object.keys(defaults).forEach((scope) => {
+      const values = saved?.[scope]?.values;
+      if (values && typeof values === "object" && !Array.isArray(values)) defaults[scope].values = clone(values);
+    });
+    return defaults;
+  }
+
+  function defaultWorkflowState() {
+    return {
+      survey: { keyword: "all", category: "", search: "" },
+      consulting: {
+        keywords: { design: "all", planning: "all", geology: "all" },
+        groups: { design: "", planning: "", geology: "" },
+        searches: { design: "", planning: "", geology: "" }
+      },
+      documentImport: {
+        kind: "survey",
+        keywords: { design: "all", survey: "all", planning: "all", geology: "all" },
+        surveyRegulationGroup: "",
+        surveyCategory: "",
+        consultingGroups: { design: "", planning: "", geology: "" }
+      }
+    };
+  }
+
+  function normalizedWorkflowState(saved = {}) {
+    const defaults = defaultWorkflowState();
+    defaults.survey = Object.assign(defaults.survey, saved.survey || {});
+    defaults.consulting.keywords = Object.assign(defaults.consulting.keywords, saved.consulting?.keywords || {});
+    defaults.consulting.groups = Object.assign(defaults.consulting.groups, saved.consulting?.groups || {});
+    defaults.consulting.searches = Object.assign(defaults.consulting.searches, saved.consulting?.searches || {});
+    defaults.documentImport = Object.assign(defaults.documentImport, saved.documentImport || {});
+    defaults.documentImport.keywords = Object.assign(defaultWorkflowState().documentImport.keywords, saved.documentImport?.keywords || {});
+    defaults.documentImport.consultingGroups = Object.assign(defaultWorkflowState().documentImport.consultingGroups, saved.documentImport?.consultingGroups || {});
+    return defaults;
+  }
+
+  function conditionMemory(scope) {
+    estimate.conditionMemory = normalizedConditionMemory(estimate.conditionMemory);
+    return estimate.conditionMemory[scope];
+  }
+
+  function workflowState() {
+    estimate.workflowState = normalizedWorkflowState(estimate.workflowState);
+    return estimate.workflowState;
   }
 
   function emptyIssuerProfile() {
@@ -458,6 +518,8 @@
         normalized.consulting.lines = Array.isArray(saved.consulting?.lines) ? saved.consulting.lines : [];
         normalized.consulting.costs = Object.assign(defaultConsultingState().costs, saved.consulting?.costs || {});
         normalized.consulting.options = Object.assign(defaultConsultingState().options, saved.consulting?.options || {});
+        normalized.conditionMemory = normalizedConditionMemory(saved.conditionMemory);
+        normalized.workflowState = normalizedWorkflowState(saved.workflowState);
         normalized.report = Object.assign(defaultReportSettings(normalized.date), saved.report || {});
         normalized.report.sections = Object.assign(defaultReportSettings().sections, saved.report?.sections || {});
         return normalized;
@@ -468,10 +530,12 @@
 
   function hasDraftContent(draft) {
     if (!draft) return false;
+    const hasConditionMemory = JSON.stringify(normalizedConditionMemory(draft.conditionMemory)) !== JSON.stringify(defaultConditionMemory());
+    const hasWorkflowSelection = JSON.stringify(normalizedWorkflowState(draft.workflowState)) !== JSON.stringify(defaultWorkflowState());
     return Boolean(
       draft.projectName?.trim() || draft.memo?.trim() || Object.values(draft.projectInfo || {}).some((value) => String(value || "").trim()) || draft.caseFile?.sources?.length || draft.lines?.length ||
       draft.consulting?.lines?.length || Object.values(draft.consulting?.costs || {}).some((value) => num(value) !== 0) ||
-      Object.values(draft.costs || {}).some((value) => num(value) !== 0)
+      Object.values(draft.costs || {}).some((value) => num(value) !== 0) || hasConditionMemory || hasWorkflowSelection
     );
   }
 
@@ -526,6 +590,7 @@
     editorMasterId = estimate.masterId;
     recoverableDraft = null;
     renderAll();
+    document.dispatchEvent(new CustomEvent("ezsekisan:draftrestored"));
     renderDraftRecovery();
     persistEstimate();
     showToast("前回の自動保存データを復元しました");
@@ -569,9 +634,11 @@
     renderSurveyKeywords(scopedItems);
     const keywordItems = surveyItemsForKeyword(scopedItems);
     const categories = [...new Set(keywordItems.map((item) => item.category))];
-    const previous = $("categorySelect").value;
+    const savedCategory = workflowState().survey.category;
+    const previous = $("categorySelect").value || savedCategory;
     $("categorySelect").innerHTML = (categories.length > 1 ? `<option value="">すべての作業区分</option>` : "") + categories.map((category) => `<option>${h(category)}</option>`).join("");
     $("categorySelect").value = categories.includes(previous) ? previous : (categories.length === 1 ? categories[0] : "");
+    workflowState().survey.category = $("categorySelect").value;
     populateItems();
     $("itemCountBadge").textContent = `${scopedItems.length}項目収録`;
     renderSurveyScopeLabels();
@@ -619,7 +686,7 @@
     const conditionInput = item.conditionFormula
       ? `<label class="field"><span>${h(item.conditionFormula.label)}（${h(item.conditionFormula.unit)}）</span><input id="surveyConditionValue" type="number" min="0" step="0.1" inputmode="decimal" value="${h(item.conditionFormula.default)}"><small>${h(item.conditionFormula.note || "入力値から規定の補正係数を自動計算します。")}</small></label>`
       : "";
-    const correctionInputs = (item.correctionRules || []).map((rule) => `<label class="field"><span>${h(rule.label)}</span><select class="survey-rule-condition" data-rule="${h(rule.id)}"><option value="">選択してください</option>${(rule.options || []).map((option) => `<option value="${h(option.rate)}">${h(option.label)}（${option.rate >= 0 ? "+" : ""}${h(enginePercent(option.rate))}%）</option>`).join("")}</select></label>`).join("");
+    const correctionInputs = (item.correctionRules || []).map((rule) => `<label class="field"><span>${h(rule.label)}</span><select class="survey-rule-condition" data-rule="${h(rule.id)}"><option value="">選択してください</option>${(rule.options || []).map((option) => `<option value="${h(option.rate)}" data-condition-label="${h(option.label)}">${h(option.label)}（${option.rate >= 0 ? "+" : ""}${h(enginePercent(option.rate))}%）</option>`).join("")}</select></label>`).join("");
     const formulas = [];
     if (item.conditionFormula) formulas.push(`${item.conditionFormula.label}：補正係数＝${item.conditionFormula.a}×入力値${item.conditionFormula.b >= 0 ? "+" : ""}${item.conditionFormula.b}`);
     if (item.quantityFormula?.note) formulas.push(item.quantityFormula.note);
@@ -629,6 +696,33 @@
       ? "<p>この作業項目に選択が必要な適用条件・補正はありません。</p>"
       : "";
     $("surveyConditionFields").innerHTML = `<fieldset><legend>測量積算基準の適用範囲・条件表・補正</legend>${conditionInput}${correctionInputs}${applicability}${formulaDetails}${manualNote}${noConditions}</fieldset>`;
+    applySurveyConditionMemory(item);
+  }
+
+  function normalizedConditionLabel(label) {
+    return String(label || "").replace(/^標準[：・]?\s*/, "").replace(/（標準）/g, "").trim();
+  }
+
+  function applySurveyConditionMemory(item) {
+    const memory = conditionMemory("survey").values;
+    for (const rule of item.correctionRules || []) {
+      const saved = memory[rule.id];
+      if (!saved?.label) continue;
+      const select = $("surveyConditionFields").querySelector(`.survey-rule-condition[data-rule="${CSS.escape(rule.id)}"]`);
+      const option = [...(select?.options || [])].find((candidate) => candidate.dataset.conditionLabel
+        && normalizedConditionLabel(candidate.dataset.conditionLabel) === normalizedConditionLabel(saved.label));
+      if (option) select.selectedIndex = option.index;
+    }
+  }
+
+  function rememberSurveyConditionSelections() {
+    const memory = conditionMemory("survey").values;
+    $("surveyConditionFields").querySelectorAll(".survey-rule-condition").forEach((select) => {
+      const selected = select.selectedOptions[0];
+      if (!select.value || !selected?.dataset.conditionLabel) delete memory[select.dataset.rule];
+      else memory[select.dataset.rule] = { label: selected.dataset.conditionLabel, rate: num(select.value) };
+    });
+    scheduleSave();
   }
 
   function enginePercent(rate) {
@@ -1040,6 +1134,9 @@
   }
 
   function renderAll() {
+    const workflow = workflowState();
+    activeSurveyKeyword = workflow.survey.keyword || "all";
+    $("surveyItemSearch").value = workflow.survey.search || "";
     populateMasterSelects();
     populateCategories();
     renderEstimate();
@@ -1290,6 +1387,8 @@
         estimate.consulting.lines = Array.isArray(imported.consulting?.lines) ? imported.consulting.lines : [];
         estimate.consulting.costs = Object.assign(defaultConsultingState().costs, imported.consulting?.costs || {});
         estimate.consulting.options = Object.assign(defaultConsultingState().options, imported.consulting?.options || {});
+        estimate.conditionMemory = normalizedConditionMemory(imported.conditionMemory);
+        estimate.workflowState = normalizedWorkflowState(imported.workflowState);
         estimate.report = Object.assign(defaultReportSettings(estimate.date), imported.report || {});
         estimate.report.sections = Object.assign(defaultReportSettings().sections, imported.report?.sections || {});
         if (estimate.masterId === "r8-tokushima-2026") estimate.masterId = "standard-r8-2026";
@@ -1542,18 +1641,25 @@
       const button = event.target.closest("[data-survey-keyword]");
       if (!button) return;
       activeSurveyKeyword = button.dataset.surveyKeyword;
+      workflowState().survey.keyword = activeSurveyKeyword;
+      workflowState().survey.category = "";
       $("surveyItemSearch").value = "";
+      workflowState().survey.search = "";
       populateCategories();
+      scheduleSave();
     });
-    $("categorySelect").addEventListener("change", populateItems);
-    $("surveyItemSearch").addEventListener("input", populateItems);
+    $("categorySelect").addEventListener("change", () => { workflowState().survey.category = $("categorySelect").value; populateItems(); scheduleSave(); });
+    $("surveyItemSearch").addEventListener("input", () => { workflowState().survey.search = $("surveyItemSearch").value; populateItems(); scheduleSave(); });
     $("itemSelect").addEventListener("change", updateSelectedItemMeta);
     $("newItemQuantity").addEventListener("keydown", blockInvalidQuantityKey);
     $("newItemQuantity").addEventListener("paste", blockInvalidQuantityPaste);
     $("newItemQuantity").addEventListener("input", (event) => { enforceQuantityPrecision(event.target, quantityInputItem(event.target), true); updateSurveyAddState(); });
     $("newItemQuantity").addEventListener("change", (event) => { normalizeQuantityInput(event.target, quantityInputItem(event.target), true); updateSurveyAddState(); });
     $("surveyConditionFields").addEventListener("input", () => updateSurveyAddState());
-    $("surveyConditionFields").addEventListener("change", () => updateSurveyAddState());
+    $("surveyConditionFields").addEventListener("change", (event) => {
+      if (event.target.classList.contains("survey-rule-condition")) rememberSurveyConditionSelections();
+      updateSurveyAddState();
+    });
     $("addItemButton").addEventListener("click", addItem);
     $("jurisdictionSelect").addEventListener("change", (event) => {
       estimate.submissionJurisdictionCode = event.target.value;
@@ -1667,6 +1773,8 @@
     getSurveyRegulationGroups: () => clone(surveyRegulationGroups),
     getSurveyRegulationGroup: (item) => clone(regulationGroupForItem(item)),
     getSurveyRegulationPath: regulationPathForItem,
+    getConditionMemory: (scope) => conditionMemory(scope),
+    getWorkflowState: workflowState,
     saveDraft: scheduleSave,
     notify: showToast,
     canUseDocumentImport,
