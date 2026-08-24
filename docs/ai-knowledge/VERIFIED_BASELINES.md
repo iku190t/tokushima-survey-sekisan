@@ -2272,3 +2272,31 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `app.js` | `F93AB6C988BF11931DAE75DB26B5A5FF5D28D0D9CF7FB4D4EA117ADEF00D4DE4` |
 | `styles.css` | `63E4FB55C97771B4BD38F339FC0100D8886E70CD9A304477E61DFE2AAA629961` |
 | `tests/test-ui-static.js` | `222A8604BA92C13DCFB9452135F081B8EBB3A6849F71A953C1FD5E2986000ADF` |
+
+## B-2026-08-24-23
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-24
+- 実装コミット: `ba86c5e3574edd26ebfdca40eb6bed34d58387e1`
+- 外部知能コミット: この項目を追加するコミット
+- GitHub Pages: `built`、ビルド`1171689307`、コミット`ba86c5e3574edd26ebfdca40eb6bed34d58387e1`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: 4業務の作業追加フローを共通化し、確認チェックを撤去した。測量固有の適用範囲・条件表・補正を追加前に表示し、数量・必須条件・適用範囲の自動検証で追加可否と不足理由を表示する。選択した測量補正は明細へ保存する。
+
+### 合格した試験・実画面確認
+
+- `node --check app.js`、`node --check consulting.js`、`tests/test-*.js`全19本、`git diff --check`合格。
+- ローカル実ブラウザーで設計・測量・調査計画・地質の作業区分、作業項目、計算根拠、数量、条件、追加、状態表示の順序が一致し、確認チェック0件であることを確認した。
+- ローカルで測量`2-1-1`の地域・地形条件が未選択なら追加不可、標準条件選択後は追加可、追加明細へ「標準・指定なし（+0%）」が保存されることを確認した。
+- 公開版で`styles.css?v=20260824-16`、`app.js?v=20260824-13`、確認チェック0件、測量条件未選択時の追加不可と理由表示、標準条件選択後の追加可を確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `5DAE0B5F95A972D9E58088917C5E518C7B1D2DCB4126731C3ADAFF01B3E13B77` |
+| `app.js` | `113AC7347748A188D64E7CF3993CB286C2998B154100AAD75097561F5CD6C60A` |
+| `consulting.js` | `447073562CA06C2550542BB5D81B97A0AF38874244485CC00C7CF76D708989AC` |
+| `styles.css` | `830F9BF9856104050E3793D7C0A4938514439B65CE8E1A597198B6C6F75DB488` |
+| `tests/test-ui-static.js` | `1B69AD8CEEA1F2380DA804ADFBB4DD3E0175AC64EC6B4FB073A047226AE5445B` |
+| `tests/test-consulting-ui.js` | `CDCD11991A17D5C8EB28504BBA7468DF7D1027B87F17D554CAB67C56F84E7473` |
