@@ -80,6 +80,10 @@ assert.ok(ui.includes("manualSourceLineIds") && ui.includes("manualItemLineId") 
 assert.ok(ui.includes("manualUnitLineId") && ui.includes("convertSurveyQuantity") && ui.includes("sourceUnitLabel"), "単位セルを別に対応付けて資料数量を積算数量へ換算する");
 assert.ok(ui.includes("applyPdfClickSelection") && ui.includes("target.item.applied = true"), "PDF画面から直接追加し、追加済み行を二重反映から保護する");
 assert.ok(ui.includes("editablePdfTargets") && ui.includes("openSelectedTargetEditor") && ui.includes('data-pdf-edit-target='), "反映待ちへ追加した項目をクリックして変更画面を開ける");
+assert.ok(ui.includes("clickTargetBusinessLabel") && ui.includes('class="pdf-business-badge"'), "反映待ちカードに4業務区分を表示する");
+assert.ok(ui.includes('data-pdf-remove-target=') && ui.includes("target.item.selected = false"), "反映待ちカードを1件ずつ外せる");
+assert.ok(ui.includes("PDFから${totalAdded}件を追加しました") && !ui.includes("PDF画面を閉じずに次の行を選択できます"), "取込後の長い説明を短い結果表示へ替える");
+assert.ok(app.includes("recentlyImportedSurveyLineIds") && consulting.includes("recentlyImportedConsultingLineIds"), "4業務の追加行を一時強調する");
 assert.ok(ui.includes("currentEditingTarget") && ui.includes('Object.assign(editingTarget.item') && ui.includes('textContent = "変更を保存"'), "変更保存時は候補を重複追加せず既存項目を更新する");
 const directApply = ui.slice(ui.indexOf("function applyPdfClickSelection"), ui.indexOf("function updateSelectionState"));
 assert.ok(!directApply.includes(".view-tab") && !directApply.includes("documentImportDialog"), "PDFからの直接追加は画面を切り替えず確認ダイアログも要求しない");

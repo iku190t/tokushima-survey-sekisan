@@ -1,8 +1,9 @@
 (function (root, factory) {
-  const api = factory();
+  const catalog = typeof module === "object" && module.exports ? require("./data/unit-catalog.js") : root.SekisanUnitCatalog;
+  const api = factory(catalog);
   if (typeof module === "object" && module.exports) module.exports = api;
   root.ConsultingEngine = api;
-})(typeof globalThis !== "undefined" ? globalThis : this, function () {
+})(typeof globalThis !== "undefined" ? globalThis : this, function (unitCatalog) {
   "use strict";
 
   const number = (value, fallback = 0) => {
@@ -18,15 +19,16 @@
   const normalizeDays = (value) => roundHalfUp(Math.max(0, number(value)), 3);
   const normalizeCorrectionFactor = (value) => roundHalfUp(Math.max(0, number(value)), 2);
 
-  const quantityUnitLabels = {
+  const fallbackQuantityUnitLabels = {
     km: "延長（km）", m: "延長（m）", m2: "面積（m²）", km2: "面積（km²）", ha: "面積（ha）", m3: "体積（m³）", t: "重量（t）", 時間: "時間数",
     箇所: "箇所数", 橋: "橋数",
     基: "基数", トンネル: "トンネル数", 日: "日数", ケース: "ケース数", 断面: "断面数",
     坑口: "坑口数", タイプ: "タイプ数", 業務: "業務数", 工法: "工法数", 機関: "機関数",
     孔: "孔数", 回: "回数", 台: "台数", 本: "本数", 観測所: "観測所数", 計器: "計器数", 式: "数量"
   };
-  const integerQuantityUnits = new Set(["箇所", "橋", "基", "トンネル", "日", "ケース", "断面", "坑口", "タイプ", "業務", "工法", "機関", "孔", "回", "台", "本", "観測所", "計器", "式"]);
-  const knownContinuousUnits = new Set(["km", "m", "m2", "km2", "ha", "m3", "t", "時間"]);
+  const quantityUnitLabels = { ...fallbackQuantityUnitLabels, ...(unitCatalog?.quantityLabels || {}) };
+  const integerQuantityUnits = unitCatalog?.integerUnits || new Set(["箇所", "橋", "基", "トンネル", "日", "ケース", "断面", "坑口", "タイプ", "業務", "工法", "機関", "孔", "回", "台", "本", "観測所", "計器", "式"]);
+  const knownContinuousUnits = unitCatalog?.continuousUnits || new Set(["km", "m", "m2", "km2", "ha", "m3", "t", "時間"]);
   const unitAliases = new Map([
     ["㎡", "m2"], ["m²", "m2"], ["m^2", "m2"], ["平方メートル", "m2"],
     ["㎢", "km2"], ["km²", "km2"], ["km^2", "km2"], ["平方キロメートル", "km2"],
@@ -36,11 +38,13 @@
   ]);
 
   function normalizeQuantityUnit(unit) {
+    if (unitCatalog) return unitCatalog.normalize(unit, "式");
     const raw = String(unit || "式").trim();
     return unitAliases.get(raw) || raw;
   }
 
   function inputDomainForUnit(unit, options = {}) {
+    if (unitCatalog) return unitCatalog.inputDomain(unit, options);
     const normalizedUnit = normalizeQuantityUnit(unit);
     const integer = integerQuantityUnits.has(normalizedUnit);
     const known = integer || knownContinuousUnits.has(normalizedUnit);
@@ -134,12 +138,15 @@
         })
       };
     }
-    const pattern = /(\d[\d,]*(?:\.\d+)?)\s*(km2|m2|m3|km|ha|m|t|時間|箇所|橋|基|トンネル|日|ケース|断面|坑口|タイプ|業務|工法|機関|孔|回|台|本|観測所|計器|式)(?=当り)/g;
+    const unitPattern = unitCatalog
+      ? unitCatalog.standardQuantityTokens().map((token) => String(token).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")
+      : "km2|m2|m3|km|ha|m|t|時間|箇所|橋|基|トンネル|日|ケース|断面|坑口|タイプ|業務|工法|機関|孔|回|台|本|観測所|計器|式";
+    const pattern = new RegExp(`(\\d[\\d,]*(?:\\.\\d+)?)\\s*(${unitPattern})(?=当り)`, "g");
     const dimensions = [];
     let match;
     while ((match = pattern.exec(source))) {
       const baseQuantity = Number(match[1].replace(/,/g, ""));
-      const unit = match[2];
+      const unit = normalizeQuantityUnit(match[2]);
       if (!(baseQuantity > 0)) continue;
       const prefixStart = dimensions.length ? dimensions[dimensions.length - 1]._end : 0;
       const prefix = source.slice(prefixStart, match.index).replace(/^当り/, "").replace(/^単位[:：]?/, "");

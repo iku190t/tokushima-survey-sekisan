@@ -174,6 +174,7 @@
   let toastTimer;
   let saveTimer;
   let sessionDirty = false;
+  const recentlyImportedSurveyLineIds = new Set();
 
   function eraLabel(year) {
     return `令和${year - 2018}年度`;
@@ -655,7 +656,7 @@
         <p class="calc-source">${(() => { const source = (master.sourceLinks || []).find((entry) => typeof entry === "object" && String(entry.label || "").includes("第1編 測量業務")) || (master.sourceLinks || [])[0]; const label = source?.label || "国土交通省 標準積算基準書 第1編 測量業務"; const pageText = item.source?.standardPage ? `p.${h(item.source.standardPage)}${item.source.ratioPage ? `／直接経費率 p.${h(item.source.ratioPage)}` : ""}` : "現行全編の項目別ページ未対応"; return source?.url && /^https:\/\//i.test(source.url) ? `出典：<a href="${h(source.url)}" target="_blank" rel="noopener noreferrer">${h(label)}</a> ${pageText}` : `出典：${h(label)} ${pageText}`; })()}</p>
       </div></details>`;
       const importSource = line.importSource ? `<small>資料取込：${h(line.importSource.fileName || "貼付け原文")} p.${h(line.importSource.page || 1)}／${line.importSource.method === "ocr" ? "OCR" : "文字抽出"}／要原文照合</small>` : "";
-      return `<tr data-line-id="${h(line.id)}">
+      return `<tr data-line-id="${h(line.id)}" class="${recentlyImportedSurveyLineIds.has(line.id) ? "recently-imported-line" : ""}">
         <td><select class="line-code table-item-select" aria-label="作業項目を変更">${itemEditorOptions}</select><span class="item-code">クリックして作業項目を変更 ｜ 標準歩掛 ${numberFormat.format(item.standardQuantity)} ${h(item.unit)} 一式＝${yen.format(calculated.standardDirect)}</span>${importSource}${precisionInput}${outside ? `<span class="limit-warning">適用範囲外：${h(item.applicability.note)}</span>` : ""}${item.manualCostNote ? `<span class="limit-warning">${h(item.manualCostNote)}</span>` : ""}${auditDetail}</td>
         <td><input class="table-input line-quantity" type="number" min="${qRule.min}" step="${qRule.step}" inputmode="${qRule.integer ? "numeric" : "decimal"}" data-quantity-decimals="${qRule.decimals}" aria-description="${h(item.unit)}は${h(quantityLabel(qRule))}" value="${h(calculated.quantity)}"><span> ${h(item.unit)}</span><small>${h(quantityLabel(qRule))}</small></td>
         <td>${conditionInput}${rulesInput}<label class="mini-field">手動追加 <span class="percent-wrap"><input class="table-input line-correction" type="number" step=".1" value="${h(num(line.correctionRate) * 100)}"><span>%</span></span></label><small>規定変化率 ${(calculated.ruleCorrectionRate * 100).toFixed(1)}%／適用係数 ${calculated.correctionFactor.toFixed(2)}</small>${item.quantityFormula ? `<small>${h(item.quantityFormula.note)}／数量係数 ${calculated.quantityFactor.toFixed(2)}</small>` : ""}</td>
@@ -980,8 +981,10 @@
       if (!item) { rejected += 1; return; }
       const quantity = window.SekisanEngine.normalizeQuantity(entry.quantity, item, master);
       if (!(quantity > 0)) { rejected += 1; return; }
+      const id = `line-import-${Date.now()}-${added}-${Math.random().toString(16).slice(2)}`;
+      recentlyImportedSurveyLineIds.add(id);
       estimate.lines.push({
-        id: `line-import-${Date.now()}-${added}-${Math.random().toString(16).slice(2)}`,
+        id,
         code: item.code,
         quantity,
         correctionRate: 0,
@@ -1001,6 +1004,10 @@
     if (metadata.projectName) estimate.projectName = String(metadata.projectName).trim().slice(0, 180);
     renderAll();
     scheduleSave();
+    if (recentlyImportedSurveyLineIds.size) setTimeout(() => {
+      recentlyImportedSurveyLineIds.forEach((id) => document.querySelector(`[data-line-id="${CSS.escape(id)}"]`)?.classList.remove("recently-imported-line"));
+      recentlyImportedSurveyLineIds.clear();
+    }, 4500);
     return { added, rejected };
   }
 

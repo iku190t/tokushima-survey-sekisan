@@ -22,6 +22,7 @@
     || Object.values(master.roleGroups).flat().find((entry) => entry.id === roleId);
   let activeConsultingScope = "design";
   let visiblePresets = [];
+  const recentlyImportedConsultingLineIds = new Set();
   const activeConsultingKeywords = { design: "all", planning: "all", geology: "all" };
   const consultingKeywordDefinitions = window.CONSULTING_WORK_CATALOG?.keywordDefinitions || {
     design: [
@@ -346,12 +347,12 @@
       const basis = standard?.quantitySummary || (imported ? "資料記載の人工（要照合）" : "基準外・手動調整");
       const readonly = standard ? " readonly" : "";
       const sourceType = standard?.coverageStatus === "verified-complete" ? "原表確認済み" : "全国標準参考";
-      if (line.lineType === "amount") return `<tr data-consulting-line="${h(line.id)}">
+      if (line.lineType === "amount") return `<tr data-consulting-line="${h(line.id)}" class="${recentlyImportedConsultingLineIds.has(line.id) ? "recently-imported-line" : ""}">
         <td><strong>${h(line.taskName)}</strong><small>${h(line.serviceName)}／市場単価方式${source ? `／出典：${h(source)}` : ""}</small></td>
         <td><strong>${h(basis)}</strong><small>${h(line.quantity)} ${h(line.unit)} × ${money(line.unitPrice)} × ${h(line.correctionFactor)}倍</small><small>単価根拠：${h(sourceLine?.priceSource || "未記録")}</small></td>
         <td>市場単価</td><td>${h(line.quantity)} ${h(line.unit)}</td><td>${money(line.unitPrice)}</td><td><strong>${money(line.amount)}</strong></td>
         <td class="no-print"><button class="icon-button danger-text delete-consulting-line" type="button" aria-label="削除">×</button></td></tr>`;
-      return `<tr data-consulting-line="${h(line.id)}">
+      return `<tr data-consulting-line="${h(line.id)}" class="${recentlyImportedConsultingLineIds.has(line.id) ? "recently-imported-line" : ""}">
         <td><strong>${h(line.taskName)}</strong><small>${h(line.serviceName)}${source ? `／${h(sourceType)}：${h(source)}` : imported ? `／資料取込：${h(imported.fileName || "貼付け原文")} p.${h(imported.page || 1)}（要原文照合）` : "／人工入力"}</small></td>
         <td><strong>${h(basis)}</strong><small>${standard ? incomplete ? standard.conditionRuleId ? "選択した補正規則を反映・人工表原ページは要照合" : "一次試算・補正等未反映" : "原表確認済み条件から自動算出" : "人工を直接入力"}</small></td>
         <td>${h(role?.name || line.role)}</td>
@@ -671,8 +672,10 @@
       if (!selectedService || !roles.some((role) => role.id === entry.role)) { rejected += 1; return; }
       const days = engine.normalizeDays(entry.days);
       if (!(days > 0)) { rejected += 1; return; }
+      const id = `consult-import-${Date.now()}-${added}-${Math.random().toString(16).slice(2)}`;
+      recentlyImportedConsultingLineIds.add(id);
       current.lines.push({
-        id: `consult-import-${Date.now()}-${added}-${Math.random().toString(16).slice(2)}`,
+        id,
         serviceType: selectedService.id,
         taskName: String(entry.taskName || "資料取込作業").trim().slice(0, 120) || "資料取込作業",
         referenceRuleId: String(entry.referenceRuleId || "").slice(0, 120),
@@ -692,6 +695,10 @@
     });
     if (detail?.includeSurvey) current.options.includeSurvey = true;
     if (added || Object.keys(detail?.costs || {}).length) updateAndRender();
+    if (recentlyImportedConsultingLineIds.size) setTimeout(() => {
+      recentlyImportedConsultingLineIds.forEach((id) => document.querySelector(`[data-consulting-line="${CSS.escape(id)}"]`)?.classList.remove("recently-imported-line"));
+      recentlyImportedConsultingLineIds.clear();
+    }, 4500);
     detail.result = { added, rejected };
   }
 

@@ -1,8 +1,9 @@
 (function (root, factory) {
-  const api = factory();
+  const catalog = typeof module === "object" && module.exports ? require("./data/unit-catalog.js") : root.SekisanUnitCatalog;
+  const api = factory(catalog);
   if (typeof module === "object" && module.exports) module.exports = api;
   else root.DocumentImportEngine = api;
-})(typeof self !== "undefined" ? self : this, function () {
+})(typeof self !== "undefined" ? self : this, function (unitCatalog) {
   "use strict";
 
   const FULLWIDTH = "０１２３４５６７８９．，：－＋（）／　";
@@ -39,6 +40,7 @@
   }
 
   function unitAliases(unit) {
+    if (unitCatalog) return unitCatalog.aliasesFor(unit);
     const normalized = compact(unit);
     if (normalized === "km2") return ["km2", "平方km", "平方キロ"];
     if (normalized === "km") return ["km", "キロ"];
@@ -48,6 +50,7 @@
   }
 
   function canonicalUnit(unit) {
+    if (unitCatalog) return unitCatalog.normalize(unit);
     const value = compact(unit).replace(/㎡/g, "m2").replace(/m²/gi, "m2");
     if (value === "平方メートル" || value === "平方m") return "m2";
     if (value === "平方キロメートル" || value === "平方km" || value === "平方キロ") return "km2";
@@ -59,31 +62,50 @@
     const target = canonicalUnit(targetUnit);
     const standardQuantity = Number(item?.standardQuantity);
     const options = [];
-    if (["m2", "km2", "m", "km"].includes(target) && Number.isFinite(standardQuantity) && standardQuantity > 0 && standardQuantity !== 1) {
+    if (Number.isFinite(standardQuantity) && standardQuantity > 0 && standardQuantity !== 1) {
       options.push({ id: "standard", label: `${standardQuantity.toLocaleString("ja-JP", { maximumFractionDigits: 6 })}${targetUnit}`, factor: standardQuantity });
     }
     options.push({ id: "base", label: targetUnit, factor: 1 });
-    if (target === "m2") options.push({ id: "ha", label: "ha", factor: 10000 }, { id: "km2", label: "km²", factor: 1000000 });
-    if (target === "km2") options.push({ id: "ha", label: "ha", factor: 0.01 }, { id: "m2", label: "m²", factor: 0.000001 });
-    if (target === "m") options.push({ id: "km", label: "km", factor: 1000 });
-    if (target === "km") options.push({ id: "m", label: "m", factor: 0.001 });
+    if (unitCatalog) {
+      unitCatalog.compatibleUnits(target).forEach((entry) => {
+        if (entry.id === target || options.some((option) => option.id === entry.id)) return;
+        options.push({ id: entry.id, label: entry.label, factor: unitCatalog.conversionFactor(entry.id, target) });
+      });
+      unitCatalog.definitions.forEach((entry) => {
+        if (entry.id === target || options.some((option) => option.id === entry.id)) return;
+        options.push({ id: entry.id, label: `${entry.label}（固定換算なし）`, factor: null, compatible: false, group: entry.scope === "source-document" ? "資料の件数単位" : "別の積算単位" });
+      });
+    } else {
+      if (target === "m2") options.push({ id: "ha", label: "ha", factor: 10000 }, { id: "km2", label: "km²", factor: 1000000 });
+      if (target === "km2") options.push({ id: "ha", label: "ha", factor: 0.01 }, { id: "m2", label: "m²", factor: 0.000001 });
+      if (target === "m") options.push({ id: "km", label: "km", factor: 1000 });
+      if (target === "km") options.push({ id: "m", label: "m", factor: 0.001 });
+    }
     return options;
   }
 
   function detectSurveyUnitId(text, item) {
     const source = canonicalUnit(normalizeCharacters(text).replace(/[\s,，]/g, ""));
     const options = surveyUnitOptions(item);
+    const target = canonicalUnit(item?.unit || "");
     const standard = options.find((option) => option.id === "standard");
     if (standard) {
       const standardToken = canonicalUnit(`${item.standardQuantity}${item.unit}`);
       if (source.includes(standardToken)) return "standard";
     }
-    if (/(?:^|[^a-z])ha(?:$|[^a-z])/.test(source)) return options.some((option) => option.id === "ha") ? "ha" : "base";
-    if (source.includes("km2")) return options.some((option) => option.id === "km2") ? "km2" : "base";
-    if (source.includes("m2")) return options.some((option) => option.id === "m2") ? "m2" : "base";
-    if (source.includes("km")) return options.some((option) => option.id === "km") ? "km" : "base";
-    if (/(?:^|[^a-z])m(?:$|[^a-z])/.test(source)) return options.some((option) => option.id === "m") ? "m" : "base";
-    const target = canonicalUnit(item?.unit || "");
+    if (unitCatalog) {
+      const detected = unitCatalog.definitions
+        .flatMap((entry) => unitCatalog.aliasesFor(entry.id).map((alias) => ({ id: entry.id, alias: canonicalUnit(alias) })))
+        .filter((entry) => entry.alias && source.includes(entry.alias))
+        .sort((a, b) => b.alias.length - a.alias.length)[0];
+      if (detected) return options.some((option) => option.id === detected.id || (option.id === "base" && target === detected.id)) ? (target === detected.id ? "base" : detected.id) : "";
+    } else {
+      if (/(?:^|[^a-z])ha(?:$|[^a-z])/.test(source)) return options.some((option) => option.id === "ha") ? "ha" : "base";
+      if (source.includes("km2")) return options.some((option) => option.id === "km2") ? "km2" : "base";
+      if (source.includes("m2")) return options.some((option) => option.id === "m2") ? "m2" : "base";
+      if (source.includes("km")) return options.some((option) => option.id === "km") ? "km" : "base";
+      if (/(?:^|[^a-z])m(?:$|[^a-z])/.test(source)) return options.some((option) => option.id === "m") ? "m" : "base";
+    }
     if (target && source.includes(target)) return "base";
     return "";
   }
@@ -92,14 +114,15 @@
     const rawQuantity = Math.max(0, Number(String(value).replace(/,/g, "")) || 0);
     const options = surveyUnitOptions(item);
     const sourceUnit = options.find((option) => option.id === sourceUnitId) || options.find((option) => option.id === "base") || options[0];
-    const quantity = Math.round(rawQuantity * sourceUnit.factor * 1000000) / 1000000;
-    return { rawQuantity, sourceUnitId: sourceUnit.id, sourceUnitLabel: sourceUnit.label, factor: sourceUnit.factor, quantity, unit: item?.unit || "式" };
+    const compatible = Number.isFinite(sourceUnit.factor);
+    const quantity = compatible ? Math.round(rawQuantity * sourceUnit.factor * 1000000) / 1000000 : null;
+    return { rawQuantity, sourceUnitId: sourceUnit.id, sourceUnitLabel: sourceUnit.label, factor: sourceUnit.factor, quantity, unit: item?.unit || "式", compatible };
   }
 
   function scaledSurveyQuantity(line, item) {
     const sourceUnitId = detectSurveyUnitId(line, item);
     const option = surveyUnitOptions(item).find((entry) => entry.id === sourceUnitId);
-    if (!option || option.id === "base") return null;
+    if (!option || option.id === "base" || option.compatible === false) return null;
     const normalized = canonicalUnit(normalizeCharacters(line).replace(/,/g, ""));
     const token = option.id === "standard" ? canonicalUnit(`${item.standardQuantity}${item.unit}`) : canonicalUnit(option.label);
     const index = normalized.indexOf(token);

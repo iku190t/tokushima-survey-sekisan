@@ -157,3 +157,4 @@ assert.ok(analytics.includes('ad_storage: "denied"'), "広告用保存は拒否�
 assert.ok(!app.includes("gtag("), "積算アプリから入力値をAnalyticsイベントへ送らない");
 
 console.log("OK: UI static wiring checks passed");
+assert.ok(html.includes('data/unit-catalog.js') && html.indexOf('data/unit-catalog.js') < html.indexOf('engine.js'), "共通単位台帳を全計算エンジンより先に読み込む");

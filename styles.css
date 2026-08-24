@@ -427,9 +427,13 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
 .pdf-click-summary strong { margin-top: 3px; color: var(--lime); font-size: 25px; }
 .pdf-click-summary p { margin: 7px 0 0; font-size: 10px; line-height: 1.55; }
 .pdf-click-selected-list { display: grid; gap: 7px; max-height: 35vh; overflow: auto; }
-.pdf-click-selected-item { padding: 10px 11px; background: #f7faf8; border: 1px solid var(--line); border-left: 4px solid #3d8c6d; border-radius: 8px; }
-.pdf-click-selected-item[type="button"] { width: 100%; color: var(--ink); text-align: left; cursor: pointer; }
-.pdf-click-selected-item[type="button"]:hover, .pdf-click-selected-item[type="button"]:focus-visible { border-color: var(--green); background: #eef8f3; outline: none; }
+.pdf-click-selected-item { position: relative; display: grid; grid-template-columns: minmax(0,1fr) 26px; gap: 5px; padding: 9px 8px 8px 11px; background: #f7faf8; border: 1px solid var(--line); border-left: 4px solid #3d8c6d; border-radius: 8px; }
+.pdf-pending-edit { min-width: 0; padding: 14px 2px 2px; color: var(--ink); background: transparent; border: 0; text-align: left; cursor: pointer; }
+.pdf-pending-edit:hover, .pdf-pending-edit:focus-visible { color: var(--green-dark); outline: 2px solid rgba(29,108,82,.2); outline-offset: 2px; }
+.pdf-pending-readonly { min-width: 0; padding-top: 14px; }
+.pdf-business-badge { position: absolute; top: 6px; left: 11px; padding: 1px 5px; color: #23684f !important; background: #dff1e8; border-radius: 999px; font-size: 8px !important; font-weight: 800; }
+.pdf-pending-remove { align-self: start; width: 26px; height: 26px; padding: 0; color: #8a3e36; background: #fff; border: 1px solid #e2c7c3; border-radius: 50%; cursor: pointer; }
+.pdf-pending-remove:hover, .pdf-pending-remove:focus-visible { color: #fff; background: #a6473d; outline: none; }
 .pdf-click-selected-item strong, .pdf-click-selected-item span { display: block; }
 .pdf-click-selected-item strong { font-size: 11px; }
 .pdf-click-selected-item span { margin-top: 3px; color: var(--muted); font-size: 9px; line-height: 1.4; }
@@ -439,6 +443,8 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
 .pdf-pending-panel .pdf-click-selected-list { grid-template-columns: repeat(auto-fit,minmax(230px,1fr)); max-height: 260px; }
 .pdf-pending-controls { min-width: 0; }
 .pdf-pending-panel .pdf-click-note { grid-column: 1 / -1; }
+.recently-imported-line { animation: imported-row-highlight 4.5s ease-out both; }
+@keyframes imported-row-highlight { 0%,35% { background: #dff6e9; box-shadow: inset 5px 0 #1c7a58; } 100% { background: transparent; box-shadow: inset 0 0 transparent; } }
 .pdf-field-drop-target.drag-over { background: #cfeee0; border-color: #0d6748; box-shadow: 0 0 0 4px rgba(29,108,82,.2); transform: translateY(-1px); }
 .pdf-manual-mapper { display: grid; gap: 10px; padding: 12px; background: #f1f7f4; border: 1px solid #9dbdae; border-radius: 10px; box-shadow: 0 7px 22px rgba(24,75,58,.1); }
 .pdf-manual-mapper[hidden], .pdf-manual-fields[hidden] { display: none; }

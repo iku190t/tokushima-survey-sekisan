@@ -1,8 +1,9 @@
 (function (root, factory) {
-  const api = factory();
+  const catalog = typeof module === "object" && module.exports ? require("./data/unit-catalog.js") : root.SekisanUnitCatalog;
+  const api = factory(catalog);
   if (typeof module === "object" && module.exports) module.exports = api;
   root.SekisanEngine = api;
-})(typeof globalThis !== "undefined" ? globalThis : this, function () {
+})(typeof globalThis !== "undefined" ? globalThis : this, function (unitCatalog) {
   "use strict";
 
   const number = (value, fallback = 0) => {
@@ -25,10 +26,10 @@
     return Math.floor(source / place) * place;
   }
 
-  const defaultIntegerUnits = new Set(["式", "点", "箇所", "回", "機関", "業務", "戸", "人", "測線", "断面", "本", "枚", "日", "橋", "基", "社", "件", "ケース", "施設", "トンネル"]);
+  const defaultIntegerUnits = unitCatalog?.integerUnits || new Set(["式", "点", "箇所", "回", "機関", "業務", "戸", "人", "測線", "断面", "本", "枚", "筆", "日", "橋", "基", "社", "件", "ケース", "施設", "トンネル"]);
 
   function quantityRule(item, master = {}) {
-    const unit = item?.unit || "式";
+    const unit = unitCatalog?.normalize(item?.unit || "式", "式") || item?.unit || "式";
     const configured = master.quantityRules?.[unit] || {};
     const decimals = Number.isInteger(item?.quantityDecimals)
       ? item.quantityDecimals

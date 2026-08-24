@@ -276,6 +276,10 @@
       return null;
     }
     const converted = analyzer.convertSurveyQuantity($("pdfManualSurveyQuantity").value, $("pdfManualSurveySourceUnit").value, item);
+    if (!converted.compatible) {
+      $("pdfManualSurveyConversion").textContent = `${converted.sourceUnitLabel.replace("（固定換算なし）", "")}から${item.unit}への全国共通換算はありません。PDFの項目に対応する同じ単位の積算項目を選んでください。`;
+      return converted;
+    }
     const raw = quantityFormat.format(converted.rawQuantity);
     const result = quantityFormat.format(window.SekisanEngine.normalizeQuantity(converted.quantity, item, activeMaster()));
     $("pdfManualSurveyConversion").textContent = converted.factor === 1
@@ -299,12 +303,21 @@
     const previous = preferredUnitId || $("pdfManualSurveySourceUnit").value;
     const detected = analyzer.detectSurveyUnitId(sourceText, item);
     const selected = options.some((option) => option.id === previous) ? previous : detected;
-    $("pdfManualSurveySourceUnit").innerHTML = '<option value="">単位を選択してください</option>' + options.map((option) => `<option value="${h(option.id)}" ${option.id === selected ? "selected" : ""}>${h(option.label)}</option>`).join("");
+    const directOptions = options.filter((option) => !option.group);
+    const groupedOptions = [...new Set(options.map((option) => option.group).filter(Boolean))].map((group) => `<optgroup label="${h(group)}">${options.filter((option) => option.group === group).map((option) => `<option value="${h(option.id)}" ${option.id === selected ? "selected" : ""}>${h(option.label)}</option>`).join("")}</optgroup>`).join("");
+    $("pdfManualSurveySourceUnit").innerHTML = '<option value="">単位を選択してください</option>' + directOptions.map((option) => `<option value="${h(option.id)}" ${option.id === selected ? "selected" : ""}>${h(option.label)}</option>`).join("") + groupedOptions;
     const input = $("pdfManualSurveyQuantity");
     const selectedOption = options.find((option) => option.id === $("pdfManualSurveySourceUnit").value) || options.find((option) => option.id === "base") || options[0];
-    input.min = Math.max(0, rule.min / selectedOption.factor);
-    input.step = Math.max(0.000001, rule.step / selectedOption.factor);
-    $("pdfManualSurveyRule").textContent = `資料の数量を${selectedOption.label}で入力します。換算後の${item.unit}は${rule.integer ? "整数" : `小数第${rule.decimals}位まで`}に補正します。`;
+    if (selectedOption.compatible === false) {
+      const sourceDomain = window.SekisanUnitCatalog?.inputDomain(selectedOption.id) || { min: 0.001, step: 0.001, integer: false };
+      input.min = sourceDomain.min;
+      input.step = sourceDomain.step;
+      $("pdfManualSurveyRule").textContent = `${selectedOption.label.replace("（固定換算なし）", "")}は認識できますが、${item.unit}へ固定換算できません。同じ単位の積算項目を選んでください。`;
+    } else {
+      input.min = Math.max(0, rule.min / selectedOption.factor);
+      input.step = Math.max(0.000001, rule.step / selectedOption.factor);
+      $("pdfManualSurveyRule").textContent = `資料の数量を${selectedOption.label}で入力します。換算後の${item.unit}は${rule.integer ? "整数" : `小数第${rule.decimals}位まで`}に補正します。`;
+    }
     updateManualSurveyConversion();
   }
 
@@ -613,6 +626,13 @@
       : target.item.kind === "survey" || target.item.kind === "consulting";
   }
 
+  function clickTargetBusinessLabel(target) {
+    if (target.type === "metadata") return "基本情報";
+    if (target.item.kind === "survey") return "測量";
+    const kind = businessKindForService(target.item.serviceType);
+    return kind === "planning" ? "調査・計画" : kind === "geology" ? "地質" : "設計";
+  }
+
   function sourceLineIdsForTarget(target) {
     const lineIds = [];
     clickLineTargets.forEach((targets, lineId) => {
@@ -676,10 +696,12 @@
     $("pdfClickSelectedList").innerHTML = selected.length
       ? selected.map((target, index) => {
         const detail = `${methodLabel(target.item.method)}／p.${target.item.page}／${confidenceLabel(target.item.confidence)}`;
-        if (!isEditableClickTarget(target)) return `<div class="pdf-click-selected-item"><strong>${h(clickTargetLabel(target))}</strong><span>${h(detail)}／追加後に該当業務画面で変更</span></div>`;
         const key = `target-${index}`;
         editablePdfTargets.set(key, target);
-        return `<button class="pdf-click-selected-item" data-pdf-edit-target="${h(key)}" type="button" title="クリックして変更"><strong>${h(clickTargetLabel(target))}</strong><span>${h(detail)}／クリックして変更</span></button>`;
+        const body = isEditableClickTarget(target)
+          ? `<button class="pdf-pending-edit" data-pdf-edit-target="${h(key)}" type="button" title="クリックして変更"><strong>${h(clickTargetLabel(target))}</strong><span>${h(detail)}／クリックして変更</span></button>`
+          : `<div class="pdf-pending-readonly"><strong>${h(clickTargetLabel(target))}</strong><span>${h(detail)}／追加後に該当業務画面で変更</span></div>`;
+        return `<div class="pdf-click-selected-item"><span class="pdf-business-badge">${h(clickTargetBusinessLabel(target))}</span>${body}<button class="pdf-pending-remove" data-pdf-remove-target="${h(key)}" type="button" title="反映待ちから外す" aria-label="${h(clickTargetLabel(target))}を反映待ちから外す">×</button></div>`;
       }).join("")
       : '<div class="empty-state"><p>まだ選択されていません。</p></div>';
     $("applyPdfSelectionNowButton").disabled = selected.length === 0;
@@ -743,6 +765,7 @@
       if ($("pdfManualSurveyQuantity").value === "") { app.notify("資料の数量を入力してください"); return; }
       if (!$("pdfManualSurveySourceUnit").value) { app.notify("資料の単位を選択してください"); return; }
       const converted = analyzer.convertSurveyQuantity($("pdfManualSurveyQuantity").value, $("pdfManualSurveySourceUnit").value, item);
+      if (!converted.compatible) { app.notify(`${converted.sourceUnitLabel.replace("（固定換算なし）", "")}から${item.unit}へ固定換算できません。同じ単位の積算項目を選んでください`); return; }
       const quantity = window.SekisanEngine.normalizeQuantity(converted.quantity, item, activeMaster());
       if (!(quantity > 0)) { app.notify("換算後の積算数量は0より大きい値を入力してください"); return; }
       if (editingTarget) {
@@ -835,7 +858,7 @@
     payload.selected.forEach((target) => { target.item.selected = false; target.item.applied = true; });
     const totalAdded = metadataResult.applied + surveyResult.added + (detail.result?.added || 0) + Object.keys(payload.costs).length;
     $("lastImportSummary").hidden = false;
-    $("lastImportSummary").innerHTML = `<strong>直近の取込</strong><br>${h(currentFileName)}から、基本情報${metadataResult.applied}件、測量${surveyResult.added}件、設計・調査人工${detail.result?.added || 0}件、積上費用${Object.keys(payload.costs).length}件を反映しました。PDF画面を閉じずに次の行を選択できます。`;
+    $("lastImportSummary").innerHTML = `<strong>PDFから${totalAdded}件を追加しました</strong><br>追加した行は該当する4業務タブで変更できます。`;
     updatePdfClickSelection();
     app.notify(`${totalAdded}件を積算へ反映しました。続けてPDFの行を選べます`);
   }
@@ -1081,6 +1104,14 @@
     $("pdfManualConsultingTaskTemplate").addEventListener("change", syncManualConsultingRule);
     $("addPdfManualCandidateButton").addEventListener("click", addManualCandidate);
     $("pdfClickSelectedList").addEventListener("click", (event) => {
+      const removeButton = event.target.closest("[data-pdf-remove-target]");
+      if (removeButton) {
+        const target = editablePdfTargets.get(removeButton.dataset.pdfRemoveTarget);
+        if (target) target.item.selected = false;
+        closeManualMapper();
+        updatePdfClickSelection();
+        return;
+      }
       const button = event.target.closest("[data-pdf-edit-target]");
       if (!button) return;
       const target = editablePdfTargets.get(button.dataset.pdfEditTarget);
