@@ -1911,3 +1911,31 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `consulting.js` | `881E19AFA79E9077C1D080658ECFD872503B2FEE0391ED08CEA9F4BAB855444C` |
 | `tests/test-ui-static.js` | `C5197766C9667500E744382CE947FAE7CDFF3AB34C6926990D12DD86332D309D` |
 | `tests/test-consulting-ui.js` | `FDF19BB248F7C4DEB869EB40E2243C790F6F49A0537DA40D937334913CD99055` |
+
+## B-2026-08-24-10
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-24
+- 実装コミット: `aa2be68eacc51fe3f097789a296011c9245c2a48`
+- 外部知能コミット: この項目を追加するコミット
+- GitHub Pagesビルド: `1171120305`（`built`、コミット`aa2be68eacc51fe3f097789a296011c9245c2a48`）
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: 4業務の通常入力を「積算基準の作業区分・作業項目・積算数量（単位）・追加」へ統一し、選択項目または地質市場単価の選択単位を数量見出しへ表示する。
+
+### 合格した試験・実画面確認
+
+- `tests/test-*.js`全18本合格、`node --check app.js`、`node --check consulting.js`、`git diff --check`合格。
+- ローカル版で測量の「積算数量（回）」が水準測量選択後に「積算数量（km）」へ変わり、入力制限も整数から小数第3位へ切り替わることを確認した。
+- 設計「積算数量（式）」、調査計画「積算数量（業務）」、地質市場単価の単位未選択・m選択後の「積算数量（m）」、PC横並び・狭幅縦並びを確認した。
+- 公開版4タブで共通ラベル、作業項目連動単位、追加ボタン、ページ全体の横あふれ0、ブラウザー警告・エラー0件を確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `5016083AC85A31A6574853B24CEDB66F0103BB57E5A3BA533CD3A5AC6F3DDA2A` |
+| `styles.css` | `E98418306FA627FE1E2FFEC118E5DF1E75B1F61099301CF371B67DEB043F0BE0` |
+| `app.js` | `FF46B9C6FE15E66C54CF360ED62EE65409F7CDA10964B8BB6EBD6FA864419F8C` |
+| `consulting.js` | `5A1B2030DDF0C50783E0637C3276764B15286314582ABFC3EE9DCD873320EF5B` |
+| `tests/test-ui-static.js` | `9B0DCB78293AD3FCCEBC986C6971C7333192A3A5B0EFAF2CA379219ABDE69015` |
+| `tests/test-consulting-ui.js` | `4C78A330664DEE4E8C88F9CB39E8CDDAF6214CA391CF41718D9EF40EF0660044` |
