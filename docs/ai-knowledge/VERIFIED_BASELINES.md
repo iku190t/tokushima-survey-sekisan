@@ -2300,3 +2300,28 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `styles.css` | `830F9BF9856104050E3793D7C0A4938514439B65CE8E1A597198B6C6F75DB488` |
 | `tests/test-ui-static.js` | `1B69AD8CEEA1F2380DA804ADFBB4DD3E0175AC64EC6B4FB073A047226AE5445B` |
 | `tests/test-consulting-ui.js` | `CDCD11991A17D5C8EB28504BBA7468DF7D1027B87F17D554CAB67C56F84E7473` |
+
+## B-2026-08-24-24
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-24
+- 実装コミット: `e7ec94be765b46e94751a1f08021ddaa7c336382`
+- 外部知能コミット: この項目を追加するコミット
+- GitHub Pages: `built`、ビルド`1171724182`、コミット`e7ec94be765b46e94751a1f08021ddaa7c336382`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: PDF取込の右入力欄をスクロール本文と固定フッターへ分離し、反映待ち追加・対象外の2ボタンを常時表示した。「確定前に必ず確認」カードを撤去してドロップ領域を全幅化し、PDF取込みタブを業務タブ側へ寄せた。
+
+### 合格した試験・実画面確認
+
+- `tests/test-*.js`全19本、`node --check document-import.js`、`git diff --check`合格。
+- ローカル匿名デモPDFで右入力本文の先頭・最下部とも固定フッターと2ボタンが画面内にあり、作業項目だけの選択で追加ボタンが有効化され、反映待ち1件になることを確認した。
+- ローカルで確認案内カード0件、取込カード幅1188px／画面幅1280px、PDF取込みタブ左端464px／地質タブ右端431pxを確認した。
+- 公開版で`styles.css?v=20260824-17`、確認案内カード0件、取込カード全幅、PDF取込みタブ左端464px、右入力本文を最下部までスクロールした状態で確定2ボタンが表示されることを確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `B4B4FD90DE746B7F21F54C2BE0B9F03666836521A95A28FB122E554810F23D59` |
+| `styles.css` | `5358D46F93B162551CBD902EFC62656597D5FF20F57C1B2BBA9DD979CFB05F26` |
+| `tests/test-document-import-ui.js` | `37D68F7A7C13508DE5C7525E7666300E1E7BB73424C9A2B8D364E5038F978EA9` |
