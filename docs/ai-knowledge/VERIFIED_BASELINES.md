@@ -2402,3 +2402,30 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `index.html` | `F2329D9F1E4DB303B8473313E04D75027779F597476A912703B511EBA29F8E77` |
 | `styles.css` | `49A938400F515E6712FA18CC6D74CAB1160485AD4117CDDBDA6CE5DCD0A9C7CA` |
 | `tests/test-document-import-ui.js` | `F9C98F1DFBD9A3EA319AAD0D8CA6A8D6ADAA560690045EF53FA70BF9E8F02DFC` |
+
+## B-2026-08-24-28
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-24
+- 実装コミット: `cd48aa04255b077f472ffd4038a5ed7f6fdeb844`
+- 外部知能コミット: この項目を追加するコミット
+- GitHub Pages: `built`、ビルド`1171835847`、コミット`cd48aa04255b077f472ffd4038a5ed7f6fdeb844`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: PDF右入力欄の重複案内・可視補助見出し・未選択時メッセージを撤去し、パネル寸法を維持したまま主要文字を約1.2倍へ拡大した。換算結果は作業項目・数量・単位が揃った場合だけ表示する。
+
+### 合格した試験・実画面確認
+
+- `node --check document-import.js`、`tests/test-*.js`全19本、`git diff --check`合格。
+- ローカル／公開匿名デモPDFで、右入力欄高さ680px、追加説明・作業区分見出し・数量単位見出し・未選択メッセージ0件を確認した。
+- 見出し14px、キーワード見出し13px、ボタン11px、選択欄・ドロップ見出し12px、説明11pxを確認した。
+- 作業項目だけの選択時は換算欄非表示、数量20・単位「点」入力後は「20点 ＝ 20点（積算へ反映）」を表示し、ブラウザー警告・エラー0件だった。
+- 公開版で`styles.css?v=20260824-20`、`document-import.js?v=20260824-20`を確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `D1EF420DBD8E0B2E8FC17B9A826C34B22B6E976F8EC885DDADAB2B0CBC7CB8FF` |
+| `document-import.js` | `63E1681DA7A0DC741A82879297634343C408B90032F849DFA8F8AF70691C1C55` |
+| `styles.css` | `08B24C065BAAE12C014C51CA5420ED249AC0E3A697C3EC767C231E4BA21B0260` |
+| `tests/test-document-import-ui.js` | `F2B02ADF24E893C29A936235AAF0447BD6BECAF265BDD5081AB0C60A739EB723` |
