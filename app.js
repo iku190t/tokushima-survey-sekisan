@@ -592,17 +592,72 @@
 
   function updateSelectedItemMeta() {
     const item = activeMaster().workItems.find((entry) => entry.code === $("itemSelect").value);
-    if (!item) { $("newItemQuantityLabel").textContent = "積算数量"; $("selectedItemMeta").textContent = ""; renderSelectedSurveySources(null); return; }
+    if (!item) {
+      $("newItemQuantityLabel").textContent = "積算数量";
+      $("selectedItemMeta").innerHTML = "<strong>適用できる測量歩掛がありません。</strong>";
+      $("surveyConditionFields").innerHTML = "";
+      updateSurveyAddState(null);
+      renderSelectedSurveySources(null);
+      return;
+    }
     $("newItemQuantityLabel").textContent = `積算数量（${item.unit}）`;
     $("newItemQuantity").value = item.standardQuantity;
     applyQuantityInputRule($("newItemQuantity"), item);
     const qRule = quantityRule(item);
     const standard = window.SekisanEngine.calculateItem({ masterItem: item, quantity: item.standardQuantity, correctionRate: 0, conditionValue: item.conditionFormula?.default }, activeMaster(), {});
-    const limit = item.applicability ? ` ｜ 適用範囲：${item.applicability.note}` : "";
-    const condition = item.conditionFormula ? ` ｜ 標準条件：${item.conditionFormula.label}${numberFormat.format(item.conditionFormula.default)}${item.conditionFormula.unit}` : "";
-    const manualNote = item.manualCostNote ? ` ｜ 要確認：${item.manualCostNote}` : "";
-    $("selectedItemMeta").textContent = `${regulationPathForItem(item)} ｜ 数量入力：${quantityLabel(qRule)}。標準歩掛は ${numberFormat.format(item.standardQuantity)} ${item.unit} 一式です。標準直接費 ${yen.format(standard.standardDirect)} ÷ ${numberFormat.format(item.standardQuantity)} ${item.unit} → 1${item.unit}当り ${yen.format(standard.standardUnitPrice)}。${condition}${limit}${manualNote}`;
+    $("selectedItemMeta").innerHTML = `<strong>${h(item.name)}</strong><span>標準単位：${numberFormat.format(item.standardQuantity)} ${h(item.unit)}／数量入力：${h(quantityLabel(qRule))}</span><small>${h(regulationPathForItem(item))}</small><small>標準直接費 ${yen.format(standard.standardDirect)} ÷ ${numberFormat.format(item.standardQuantity)} ${h(item.unit)} → 1${h(item.unit)}当り ${yen.format(standard.standardUnitPrice)}</small>`;
+    renderSurveyConditionFields(item);
+    updateSurveyAddState(item);
     renderSelectedSurveySources(item);
+  }
+
+  function renderSurveyConditionFields(item) {
+    const applicability = item.applicability
+      ? `<details class="consulting-applicability"><summary>適用範囲</summary><ol><li>${h(item.applicability.note)}</li></ol></details>`
+      : "";
+    const conditionInput = item.conditionFormula
+      ? `<label class="field"><span>${h(item.conditionFormula.label)}（${h(item.conditionFormula.unit)}）</span><input id="surveyConditionValue" type="number" min="0" step="0.1" inputmode="decimal" value="${h(item.conditionFormula.default)}"><small>${h(item.conditionFormula.note || "入力値から規定の補正係数を自動計算します。")}</small></label>`
+      : "";
+    const correctionInputs = (item.correctionRules || []).map((rule) => `<label class="field"><span>${h(rule.label)}</span><select class="survey-rule-condition" data-rule="${h(rule.id)}"><option value="">選択してください</option>${(rule.options || []).map((option) => `<option value="${h(option.rate)}">${h(option.label)}（${option.rate >= 0 ? "+" : ""}${h(enginePercent(option.rate))}%）</option>`).join("")}</select></label>`).join("");
+    const formulas = [];
+    if (item.conditionFormula) formulas.push(`${item.conditionFormula.label}：補正係数＝${item.conditionFormula.a}×入力値${item.conditionFormula.b >= 0 ? "+" : ""}${item.conditionFormula.b}`);
+    if (item.quantityFormula?.note) formulas.push(item.quantityFormula.note);
+    const formulaDetails = formulas.length ? `<details class="consulting-formula-list"><summary>基準書の補正式・数量式</summary><ol>${formulas.map((formula) => `<li>${h(formula)}</li>`).join("")}</ol></details>` : "";
+    const manualNote = item.manualCostNote ? `<p class="consulting-incomplete-rule">要確認：${h(item.manualCostNote)}</p>` : "";
+    const noConditions = !applicability && !conditionInput && !correctionInputs && !formulaDetails
+      ? "<p>この作業項目に選択が必要な適用条件・補正はありません。</p>"
+      : "";
+    $("surveyConditionFields").innerHTML = `<fieldset><legend>測量積算基準の適用範囲・条件表・補正</legend>${conditionInput}${correctionInputs}${applicability}${formulaDetails}${manualNote}${noConditions}</fieldset>`;
+  }
+
+  function enginePercent(rate) {
+    return Number((num(rate) * 100).toFixed(3));
+  }
+
+  function surveyPresetValidation(item = activeMaster().workItems.find((entry) => entry.code === $("itemSelect").value)) {
+    if (!item) return { valid: false, reason: "作業項目を選択してください。" };
+    if (String($("newItemQuantity").value || "").trim() === "") return { valid: false, reason: "積算数量を入力してください。" };
+    const quantity = window.SekisanEngine.normalizeQuantity($("newItemQuantity").value, item, activeMaster());
+    if (!(quantity > 0)) return { valid: false, reason: "積算数量は0より大きい値を入力してください。" };
+    if (item.applicability?.minimum != null && quantity < Number(item.applicability.minimum)) return { valid: false, reason: `適用範囲は${item.applicability.note}です。` };
+    if (item.applicability?.maximum != null && quantity > Number(item.applicability.maximum)) return { valid: false, reason: `適用範囲は${item.applicability.note}です。` };
+    const correctionSelections = {};
+    for (const rule of item.correctionRules || []) {
+      const select = $("surveyConditionFields").querySelector(`.survey-rule-condition[data-rule="${CSS.escape(rule.id)}"]`);
+      if (!select || select.value === "") return { valid: false, reason: `条件表「${rule.label}」を選択してください。` };
+      correctionSelections[rule.id] = num(select.value);
+    }
+    const conditionInput = $("surveyConditionFields").querySelector("#surveyConditionValue");
+    const conditionValue = conditionInput ? Number(conditionInput.value) : item.conditionFormula?.default;
+    if (conditionInput && (!Number.isFinite(conditionValue) || conditionValue < 0)) return { valid: false, reason: `${item.conditionFormula.label}を入力してください。` };
+    return { valid: true, reason: "必要な数量・条件が入力済みです。追加できます。", quantity, correctionSelections, conditionValue };
+  }
+
+  function updateSurveyAddState(item) {
+    const validation = surveyPresetValidation(item || undefined);
+    $("addItemButton").disabled = !validation.valid;
+    $("surveyPresetStatus").textContent = validation.reason;
+    return validation;
   }
 
   function populateSafetyRates() {
@@ -983,8 +1038,10 @@
     const code = $("itemSelect").value;
     const item = activeMaster().workItems.find((entry) => entry.code === code);
     if (!item) return;
-    const quantity = window.SekisanEngine.normalizeQuantity($("newItemQuantity").value, item, activeMaster());
-    estimate.lines.push({ id: `line-${Date.now()}-${Math.random().toString(16).slice(2)}`, code, quantity, correctionRate: 0, correctionSelections: {}, conditionValue: item.conditionFormula?.default, precisionRate: item.precisionRate, manualUnitPrice: 0 });
+    const validation = updateSurveyAddState(item);
+    if (!validation.valid) { showToast(validation.reason); return; }
+    estimate.lines.push({ id: `line-${Date.now()}-${Math.random().toString(16).slice(2)}`, code, quantity: validation.quantity, correctionRate: 0, correctionSelections: validation.correctionSelections, conditionValue: validation.conditionValue, precisionRate: item.precisionRate, manualUnitPrice: 0 });
+    updateSelectedItemMeta();
     recalculate();
     showToast("作業項目を追加しました");
   }
@@ -1447,8 +1504,10 @@
     $("itemSelect").addEventListener("change", updateSelectedItemMeta);
     $("newItemQuantity").addEventListener("keydown", blockInvalidQuantityKey);
     $("newItemQuantity").addEventListener("paste", blockInvalidQuantityPaste);
-    $("newItemQuantity").addEventListener("input", (event) => enforceQuantityPrecision(event.target, quantityInputItem(event.target), true));
-    $("newItemQuantity").addEventListener("change", (event) => normalizeQuantityInput(event.target, quantityInputItem(event.target), true));
+    $("newItemQuantity").addEventListener("input", (event) => { enforceQuantityPrecision(event.target, quantityInputItem(event.target), true); updateSurveyAddState(); });
+    $("newItemQuantity").addEventListener("change", (event) => { normalizeQuantityInput(event.target, quantityInputItem(event.target), true); updateSurveyAddState(); });
+    $("surveyConditionFields").addEventListener("input", () => updateSurveyAddState());
+    $("surveyConditionFields").addEventListener("change", () => updateSurveyAddState());
     $("addItemButton").addEventListener("click", addItem);
     $("jurisdictionSelect").addEventListener("change", (event) => {
       estimate.submissionJurisdictionCode = event.target.value;

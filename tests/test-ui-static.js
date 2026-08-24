@@ -90,6 +90,9 @@ assert.ok(app.includes("blockInvalidQuantityPaste"), "不正な桁数の貼り�
 assert.ok(app.includes("normalizeQuantityInput"), "数量を単位別規則に正規化する");
 assert.ok(html.includes('id="surveyKeywordList"') && html.includes('id="surveyItemSearch"') && app.includes("surveyKeywordDefinitions"), "測量項目を常時表示キーワードから絞り込める");
 assert.ok(html.includes('id="newItemQuantityLabel"') && app.includes('`積算数量（${item.unit}）`'), "測量の積算数量へ選択作業項目の単位を表示する");
+assert.ok(html.includes('id="surveyConditionFields" class="consulting-condition-fields"') && html.includes('id="surveyPresetStatus"'), "測量も設計等と同じ位置へ適用範囲・条件表・補正と入力状態を表示する");
+assert.ok(app.includes("renderSurveyConditionFields") && app.includes("surveyPresetValidation") && app.includes("correctionSelections: validation.correctionSelections"), "測量の追加前条件を表示・必須検査し、選択補正を明細へ保存する");
+assert.ok(!html.includes("consulting-condition-check") && !html.includes("表示した適用範囲、条件表、補正式を確認し") && !consulting.includes("consultingConditionsConfirmed"), "4業務で形式的な確認チェックを使わない");
 assert.ok(!html.includes('id="regulationGroupSelect"'), "測量の最初の選択を編番号プルダウンへ戻さない");
 for (const keyword of ["基準点", "水準", "現地", "写真", "UAV・レーザ", "路線", "河川", "用地", "深浅"]) assert.ok(app.includes(`label: "${keyword}"`), `${keyword}キーワードを年度マスターの収録項目へ対応させる`);
 assert.ok(html.includes('class="work-name-search"') && (html.match(/名称でさらに絞り込む/g) || []).length === 2, "測量と設計等で文字検索の表示を統一する");
@@ -150,7 +153,7 @@ assert.ok(!html.includes('id="consultingPresetMultiplier"') && html.includes('id
 assert.ok(!html.includes('id="pdfManualSurveyQuantity" type="number" aria-label="資料の数量" value="1"'), "PDF取込数量を1で初期化しない");
 assert.ok(documentImport.includes('$("pdfManualSurveyQuantity").value = "";') && documentImport.includes('$("pdfManualConsultingDays").value = "";'), "PDF取込の数量・人工を空欄へ戻す");
 assert.ok(documentImport.includes('return values.length ? values[values.length - 1][1] : "";'), "PDFに数値がなければ1を補わない");
-assert.ok(consulting.includes("calculateStandardQuantity") && consulting.includes("表示した業務種類・適用範囲・計算条件を確認"), "条件確認と標準数量なしに標準歩掛を追加しない");
+assert.ok(consulting.includes("calculateStandardQuantity") && consulting.includes("presetInputValidation") && consulting.includes("updatePresetAddState"), "必要な条件と標準数量が揃うまで標準歩掛の追加ボタンを有効にしない");
 assert.ok(consulting.includes("CONSULTING_RULE_PACK") && consulting.includes("国交省基準の適用条件") && consulting.includes("source-table-crosschecked"), "国交省ページ照合済みの設計・調査・地質条件を使用する");
 assert.ok(!html.includes('id="analyticsConsent"') && !html.includes('id="analyticsAcceptButton"') && !html.includes('id="analyticsDeclineButton"'), "アクセス解析の同意ポップアップを表示しない");
 assert.ok(!html.includes('id="analyticsSettingsButton"') && !analytics.includes("readConsent") && !analytics.includes("writeConsent"), "アクセス解析の同意保存と設定変更UIを残さない");

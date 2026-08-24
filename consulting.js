@@ -293,13 +293,13 @@
 
   function renderPresetRule() {
     const preset = visiblePresets.find((entry) => entry.id === $("consultingPreset").value);
-    $("consultingConditionsConfirmed").checked = false;
     $("consultingPresetBasis").classList.remove("verified", "reference", "blocked");
     if (!preset) {
       $("consultingPresetBasis").innerHTML = "<strong>適用できる標準歩掛がありません。</strong>";
       $("consultingQuantityFields").innerHTML = "";
       $("consultingConditionFields").innerHTML = "";
       $("addConsultingPresetButton").disabled = true;
+      $("consultingPresetStatus").textContent = "作業項目を選択してください。";
       return;
     }
     const quantityRule = engine.parseStandardQuantity(preset.standardUnit, preset.quantitySpec);
@@ -329,10 +329,43 @@
     const selectedParameter = parameterTables ? `<div id="consultingSelectedParameter" class="selected-parameter">条件表の該当値をクリックしてください。複数の増減率は加算し、補正係数は乗算します。</div>` : "";
     const market = preset.serviceType === "geologyGeneral" ? `<fieldset class="consulting-market-fields"><legend>市場単価による積算</legend><label class="field"><span>市場単価（円／選択単位）</span><input id="consultingMarketUnitPrice" type="number" min="1" step="1" inputmode="numeric" placeholder="見積・刊行物の採用単価"></label><label class="field span-2"><span>単価根拠（必須）</span><input id="consultingMarketSource" type="text" placeholder="例：物価資料2026年8月号 p.00／見積書A-01 2026-08-20"></label><small>市場単価は公開基準から推定せず、発注者指定資料・刊行物・見積の名称、年月、ページ又は見積番号を保存します。</small></fieldset>` : "";
     $("consultingConditionFields").innerHTML = `${curated}<fieldset><legend>国交省基準の適用条件・原文</legend>${conditionRule ? "<p>上の構造化済み条件を計算に使用します。重複する原文条件は二重加算しません。</p>" : adjustments || "<p>自動抽出された定率加減条件はありません。</p>"}${parameterTables}${selectedParameter}${formulas}${applicability}${market}</fieldset>`;
-    $("consultingConditionsConfirmed").disabled = !coverage.canCalculate;
-    $("consultingConditionsLabel").textContent = "表示した適用範囲、条件表、補正式を確認し、該当する条件だけを選択しました";
-    $("addConsultingPresetButton").disabled = !coverage.canCalculate;
     $("addConsultingPresetButton").textContent = "追加";
+    updatePresetAddState();
+  }
+
+  function presetInputValidation() {
+    const preset = visiblePresets.find((entry) => entry.id === $("consultingPreset").value);
+    if (!preset) return { valid: false, reason: "作業項目を選択してください。" };
+    const conditionRule = engine.findConditionRule(preset, conditionRules, state().fiscalYear);
+    const coverage = engine.classifyPresetCoverage(preset, conditionRule);
+    if (!coverage.canCalculate) return { valid: false, reason: coverage.note };
+    if (preset.serviceType === "geologyGeneral") {
+      const marketUnit = String(document.querySelector("#consultingMarketUnit")?.value || "").trim();
+      if (!marketUnit) return { valid: false, reason: "積算単位を選択してください。" };
+      const marketValidation = engine.validateDomainValue(document.querySelector("#consultingMarketQuantity")?.value, marketUnit);
+      if (!marketValidation.valid) return { valid: false, reason: marketValidation.reason || "積算数量を入力してください。" };
+      if (!(Number(document.querySelector("#consultingMarketUnitPrice")?.value) > 0)) return { valid: false, reason: "市場単価を入力してください。" };
+      if (!String(document.querySelector("#consultingMarketSource")?.value || "").trim()) return { valid: false, reason: "市場単価の根拠を入力してください。" };
+    } else {
+      const quantityValues = {};
+      document.querySelectorAll(".consulting-rule-quantity").forEach((input) => { quantityValues[input.dataset.quantityKey] = input.value; });
+      const calculation = engine.calculateStandardQuantity(preset.standardUnit, quantityValues, preset.quantitySpec);
+      if (!calculation.valid) return { valid: false, reason: calculation.reason };
+    }
+    const conditionValues = {};
+    document.querySelectorAll(".consulting-rule-condition").forEach((input) => { conditionValues[input.dataset.conditionId] = input.type === "checkbox" ? input.checked : input.value; });
+    const correction = engine.calculateConditionCorrection(conditionRule, conditionValues);
+    if (!correction.valid) return { valid: false, reason: correction.reason };
+    const formulaModel = document.querySelector("#consultingFormulaModel");
+    if (formulaModel?.value && !document.querySelector("#consultingFormulaResult")?.dataset.factor) return { valid: false, reason: "補正式の変数を入力してください。" };
+    return { valid: true, reason: "必要な数量・条件が入力済みです。追加できます。" };
+  }
+
+  function updatePresetAddState() {
+    const validation = presetInputValidation();
+    $("addConsultingPresetButton").disabled = !validation.valid;
+    $("consultingPresetStatus").textContent = validation.reason;
+    return validation;
   }
 
   function renderLines(result) {
@@ -559,7 +592,8 @@
     const conditionRule = engine.findConditionRule(preset, conditionRules, state().fiscalYear);
     const coverage = engine.classifyPresetCoverage(preset, conditionRule);
     if (!coverage.canCalculate) { app.notify(coverage.note); return; }
-    if (!$("consultingConditionsConfirmed").checked) { app.notify("表示した業務種類・適用範囲・計算条件を確認してください"); return; }
+    const inputValidation = updatePresetAddState();
+    if (!inputValidation.valid) { app.notify(inputValidation.reason); return; }
     const quantityValues = {};
     document.querySelectorAll(".consulting-rule-quantity").forEach((input) => { quantityValues[input.dataset.quantityKey] = input.value; });
     const marketUnit = String(document.querySelector("#consultingMarketUnit")?.value || "").trim();
@@ -846,6 +880,7 @@
       button.classList.toggle("selected");
       const selected = [...document.querySelectorAll(".consulting-parameter-value.selected")];
       target.textContent = selected.length ? `採用値：${selected.map((entry) => entry.textContent.trim()).join("、")}` : "条件表の該当値をクリックしてください。";
+      updatePresetAddState();
     });
     $("consultingConditionFields").addEventListener("change", (event) => {
       if (event.target.id !== "consultingFormulaModel") return;
@@ -872,6 +907,10 @@
       result.dataset.factor = String(factor);
       result.textContent = `${option.textContent}、${option.dataset.variable}=${value} → ${engine.roundHalfUp(factor, 6)}倍`;
     });
+    $("consultingQuantityFields").addEventListener("input", updatePresetAddState);
+    $("consultingQuantityFields").addEventListener("change", updatePresetAddState);
+    $("consultingConditionFields").addEventListener("input", updatePresetAddState);
+    $("consultingConditionFields").addEventListener("change", updatePresetAddState);
     $("consultingFiscalYear").addEventListener("change", (event) => { state().fiscalYear = Number(event.target.value); renderAll(); app.saveDraft(); });
     $("consultingJurisdictionSelect").addEventListener("change", (event) => {
       app.getEstimate().submissionJurisdictionCode = event.target.value;

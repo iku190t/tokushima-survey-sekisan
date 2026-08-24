@@ -14,7 +14,7 @@ const ids = new Set([...html.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1
 const referencedIds = new Set([...ui.matchAll(/\$\("([^"]+)"\)/g)].map((match) => match[1]));
 assert.deepStrictEqual([...referencedIds].filter((id) => !ids.has(id)), [], "consulting.jsから参照するHTML要素が揃う");
 
-for (const id of ["consultingView", "consultingFiscalYear", "consultingEstimateDate", "consultingProjectMemo", "consultingServiceType", "consultingTaskTemplate", "consultingTaskName", "consultingRole", "consultingDays", "consultingItemCountBadge", "consultingKeywordList", "consultingPresetSearch", "consultingRuleGroup", "consultingPreset", "consultingPresetBasis", "consultingQuantityFields", "consultingConditionsConfirmed", "consultingConditionsLabel", "consultingPresetStatus", "consultingLineBody", "consultingSummaryList", "consultingSummaryHeading", "consultingPrintButton"]) {
+for (const id of ["consultingView", "consultingFiscalYear", "consultingEstimateDate", "consultingProjectMemo", "consultingServiceType", "consultingTaskTemplate", "consultingTaskName", "consultingRole", "consultingDays", "consultingItemCountBadge", "consultingKeywordList", "consultingPresetSearch", "consultingRuleGroup", "consultingPreset", "consultingPresetBasis", "consultingQuantityFields", "consultingPresetStatus", "consultingLineBody", "consultingSummaryList", "consultingSummaryHeading", "consultingPrintButton"]) {
   assert.ok(html.includes(`id="${id}"`), `${id}を表示する`);
 }
 for (const file of ["data/consulting-master.js", "consulting-engine.js", "consulting.js"]) {
@@ -49,7 +49,8 @@ assert.ok(!ui.includes("consultingMarketQuantityRule") && !ui.includes('<small c
 assert.ok(ui.includes('aria-description="${h(dimension.label)}。標準') && ui.includes('input.setAttribute("aria-description"'), "削除した補助文の入力規則はアクセシビリティ情報として保持する");
 assert.ok(html.includes('id="addConsultingPresetButton" class="button primary add-button"') && ui.includes('textContent = "追加"'), "追加ボタンの名称と配置を測量に揃える");
 assert.ok(ui.includes("parseStandardQuantity") && ui.includes("calculateStandardQuantity") && ui.includes("quantitySummary"), "標準単位から数量比と職種別人工を自動算出する");
-assert.ok(ui.includes("consultingConditionsConfirmed") && ui.includes("表示した業務種類・適用範囲・計算条件を確認"), "表示した業務種類・適用条件の確認なしに追加しない");
+assert.ok(!html.includes('id="consultingConditionsConfirmed"') && !ui.includes("consultingConditionsConfirmed"), "形式的な確認チェックを表示・要求しない");
+assert.ok(ui.includes("presetInputValidation") && ui.includes("updatePresetAddState") && ui.includes("calculateConditionCorrection"), "必要な数量・条件を自動検査して追加ボタンを制御する");
 assert.ok(ui.includes("familyForPreset") && ui.includes("consulting-parameter-value") && ui.includes("consultingFormulaModel") && ui.includes("compileFormula"), "適用条件表と補正式を歩掛へ結び付ける");
 assert.ok(!html.includes('id="consultingPresetMultiplier"'), "利用者へ補正係数の手計算を要求しない");
 assert.ok(html.includes("基準書にない作業・見積項目を手動調整する"), "人工直接入力を基準外の手動調整へ分離する");
