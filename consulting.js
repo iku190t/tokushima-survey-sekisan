@@ -312,8 +312,8 @@
     $("consultingPresetBasis").innerHTML = `<strong>${h(preset.label)}</strong><span>標準単位：${h(preset.standardUnit || "標準表1式")}／経費体系：${h(preset.costSystem === "survey" ? "測量" : preset.costSystem === "geology" ? "地質一般" : "設計等")}</span><small>${sourceLink(source, `国交省対応ページ（照合${source.confidence === "high" ? "高" : "中"}）`)}</small><small>収録：${h(roleText)}</small>${geologyWarning}`;
     const marketUnits = ["m", "m²", "km", "km²", "ha", "m³", "孔", "回", "日", "箇所", "本", "台", "t", "式"];
     $("consultingQuantityFields").innerHTML = preset.serviceType === "geologyGeneral"
-      ? `<label class="field consulting-market-unit-field"><span>積算単位</span><select id="consultingMarketUnit"><option value="">選択してください</option>${marketUnits.map((unit) => `<option value="${h(unit)}">${h(unit)}</option>`).join("")}</select></label><label class="field"><span id="consultingMarketQuantityLabel">積算数量（単位を選択）</span><input id="consultingMarketQuantity" type="number" inputmode="decimal" placeholder="未入力" disabled><small id="consultingMarketQuantityRule">単位に応じて整数・小数を制限します。</small></label>`
-      : quantityRule.dimensions.map((dimension) => `<label class="field"><span>積算数量（${h(dimension.unit)}）</span><input class="consulting-rule-quantity" aria-label="積算数量（${h(dimension.unit)}）" data-quantity-key="${h(dimension.key)}" data-quantity-unit="${h(dimension.unit)}" data-quantity-decimals="${h(dimension.decimals)}" type="number" min="${h(dimension.min)}" step="${h(dimension.step)}" inputmode="${dimension.integer ? "numeric" : "decimal"}" placeholder="未入力"${coverage.canCalculate ? "" : " disabled"}><small class="quantity-standard">${h(dimension.label)}／標準 ${h(dimension.baseQuantity.toLocaleString("ja-JP"))} ${h(dimension.unit)}当り／${h(dimension.integer ? "整数のみ" : `小数第${dimension.decimals}位まで`)}</small></label>`).join("");
+      ? `<label class="field consulting-market-unit-field"><span>積算単位</span><select id="consultingMarketUnit"><option value="">選択してください</option>${marketUnits.map((unit) => `<option value="${h(unit)}">${h(unit)}</option>`).join("")}</select></label><label class="field"><span id="consultingMarketQuantityLabel">積算数量（単位を選択）</span><input id="consultingMarketQuantity" type="number" inputmode="decimal" aria-description="積算単位を選択してください" placeholder="未入力" disabled></label>`
+      : quantityRule.dimensions.map((dimension) => `<label class="field"><span>積算数量（${h(dimension.unit)}）</span><input class="consulting-rule-quantity" aria-label="積算数量（${h(dimension.unit)}）" aria-description="${h(dimension.label)}。標準 ${h(dimension.baseQuantity.toLocaleString("ja-JP"))} ${h(dimension.unit)}当り。${h(dimension.integer ? "整数のみ" : `小数第${dimension.decimals}位まで`)}" data-quantity-key="${h(dimension.key)}" data-quantity-unit="${h(dimension.unit)}" data-quantity-decimals="${h(dimension.decimals)}" type="number" min="${h(dimension.min)}" step="${h(dimension.step)}" inputmode="${dimension.integer ? "numeric" : "decimal"}" placeholder="未入力"${coverage.canCalculate ? "" : " disabled"}></label>`).join("");
     const curated = conditionRule ? `<fieldset><legend>${h(conditionRule.title)}</legend>${(conditionRule.inputs || []).map((input) => input.type === "select-rate"
       ? `<label class="field"><span>${h(input.label)}</span><select class="consulting-rule-condition" data-condition-id="${h(input.id)}"><option value="">選択してください</option>${(input.options || []).map((option) => `<option value="${h(option.value)}">${h(option.label)}（${option.rate >= 0 ? "+" : ""}${h(option.rate * 100)}%）</option>`).join("")}</select>${input.help ? `<small>${h(input.help)}</small>` : ""}</label>`
       : `<label class="check consulting-rate-check"><input class="consulting-rule-condition" data-condition-id="${h(input.id)}" type="checkbox"><span>${h(input.label)}（${input.rate >= 0 ? "+" : ""}${h(input.rate * 100)}%）${input.help ? `<small>${h(input.help)}</small>` : ""}</span></label>`).join("")}<p class="condition-calculation-note">${h(conditionRule.calculationNote)}</p><p id="consultingConditionSummary" class="quantity-standard">必須条件を選択すると補正率を表示します。</p><ul class="condition-source-list">${(conditionRule.sources || []).map((entry) => `<li><a href="${h(entry.url)}" target="_blank" rel="noopener noreferrer">${h(entry.label)} p.${h(entry.pages.join("・"))}</a></li>`).join("")}</ul></fieldset>` : "";
@@ -792,10 +792,9 @@
     $("consultingQuantityFields").addEventListener("change", (event) => {
       if (event.target.id !== "consultingMarketUnit") return;
       const input = document.querySelector("#consultingMarketQuantity");
-      const note = document.querySelector("#consultingMarketQuantityRule");
       const label = document.querySelector("#consultingMarketQuantityLabel");
       const domain = engine.inputDomainForUnit(event.target.value);
-      if (!input || !note || !label) return;
+      if (!input || !label) return;
       input.disabled = !event.target.value;
       input.value = "";
       input.min = String(domain.min);
@@ -803,7 +802,7 @@
       input.inputMode = domain.integer ? "numeric" : "decimal";
       input.dataset.quantityDecimals = String(domain.decimals);
       label.textContent = event.target.value ? `積算数量（${event.target.value}）` : "積算数量（単位を選択）";
-      note.textContent = event.target.value ? `${event.target.value}：${domain.label}` : "単位に応じて整数・小数を制限します。";
+      input.setAttribute("aria-description", event.target.value ? `${event.target.value}は${domain.label}` : "積算単位を選択してください");
     });
     $("consultingQuantityFields").addEventListener("input", (event) => {
       if (event.target.id !== "consultingMarketQuantity") return;
