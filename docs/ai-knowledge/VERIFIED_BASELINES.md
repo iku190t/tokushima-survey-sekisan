@@ -1963,3 +1963,33 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `index.html` | `5FD6EE91A8E85C7F0601CB39175A503C17B8E2D884DD396080545C50414B53C3` |
 | `consulting.js` | `325A9146B1268BCCFE007F61D491F654540F44CFF362D44985206BE89707FF95` |
 | `tests/test-consulting-ui.js` | `A8A2ABFBE06204EFE3CB08BAB9259A6FF58B8EB33FB4FD5E37C3EF94415A8C11` |
+
+## B-2026-08-24-12
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-24
+- 実装コミット: `2692aeaf6eb94ad3d02503f4241ff266a76c565a`
+- 外部知能コミット: この項目を追加するコミット
+- GitHub Pagesビルド: `1171205263`（`built`、コミット`2692aeaf6eb94ad3d02503f4241ff266a76c565a`）
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: PDF取込の未選択状態で項目・数量・単位を空欄へ戻し、39.21秒の紹介MP4、サムネイル、再生プレーヤー、保存ボタンを使い方画面へ追加した。
+
+### 合格した試験・実画面確認
+
+- `tests/test-*.js`全18本合格、`git diff --check`合格。
+- 紹介MP4を全941フレームまでデコードし、H.264 High、yuv420p、1280×720、24fps、39.21秒、破損なしを確認した。8場面の一覧画像とサムネイルを目視確認した。
+- ローカル／公開版で動画の`readyState=4`、再生時間39.21秒、操作ボタンあり、自動再生なし、警告・エラー0件を確認した。スマートフォン390px幅は1列表示、横あふれ0pxだった。
+- 公開版のPDF取込画面で、未選択時の項目・数量・単位がすべて空文字になることを確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `82E353866EE7BAD5239B3F478D633646DEFA12FCA73A7B0D33DAF93404A96191` |
+| `styles.css` | `11624BE8F8D91AB6CACB738D28F518AA043F501387EB6871F4FB119562F936C6` |
+| `document-import.js` | `F1FCAC30246D75DA3B2B911D2795135A66DC27BE78B7DE060F5C63DEECE6A873` |
+| `tests/test-ui-static.js` | `366F8C0C7239FF3F184A6D079CBE0460CB99BA20D01206EF078BC8D63541C63F` |
+| `tests/test-document-import-ui.js` | `4374879968F1D605C354FD117B63CB313BE38823D64BCBC8F5F53EFFE6854B77` |
+| `media/web-sekisan-introduction.mp4` | `D438C548C1B01ED9955D8229E19711A722185F01BC03CA939B5E777E46186327` |
+| `media/web-sekisan-introduction-thumbnail.jpg` | `16B102CC94C8E9EBB0FF965AD5B1E7AD6735545D05687D3D0A354300C7BAD54D` |
+| `tools/create-intro-video.py` | `CD3FB4267069E5AE93D24C940945F897765F001DC4103193491ACD3312B6134D` |
