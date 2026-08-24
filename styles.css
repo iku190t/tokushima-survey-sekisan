@@ -617,6 +617,7 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
   .manual-source-row { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 720px) {
+  .view-tab[data-view="import"], #importView { display: none !important; }
   .app-header { align-items: flex-start; flex-direction: column; }
   .header-actions { justify-content: flex-start; }
   .save-state { width: 100%; }

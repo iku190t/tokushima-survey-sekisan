@@ -1304,6 +1304,7 @@
 
   async function loadQaImportFixture() {
     if (new URLSearchParams(location.search).get("__qa_import") !== "demo") return;
+    if (app.canUseDocumentImport?.() === false) return;
     document.querySelector('.view-tab[data-view="import"]')?.click();
     const response = await fetch("media/intro-assets/web-sekisan-demo.pdf");
     if (!response.ok) throw new Error(`QA用PDFを取得できません（${response.status}）`);

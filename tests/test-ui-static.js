@@ -18,6 +18,9 @@ const missing = [...referenced].filter((id) => !ids.has(id));
 
 assert.deepStrictEqual(missing, [], `app.jsから参照されるHTML要素が不足: ${missing.join(", ")}`);
 assert.ok(html.includes("<title>web積算｜") && html.includes("<h1>web積算</h1>"), "アプリタイトルをweb積算に統一する");
+assert.ok(html.includes('rel="icon" type="image/png" sizes="32x32" href="assets/icons/web-sekisan-32.png?v=20260824-1"') && html.includes('rel="apple-touch-icon" sizes="180x180" href="assets/icons/web-sekisan-180.png?v=20260824-1"') && html.includes('rel="manifest" href="site.webmanifest?v=20260824-1"'), "ブラウザーとスマホホーム画面へweb積算アイコンを設定する");
+for (const icon of ["assets/icons/web-sekisan-32.png", "assets/icons/web-sekisan-180.png", "assets/icons/web-sekisan-192.png", "assets/icons/web-sekisan-512.png", "site.webmanifest"]) assert.ok(fs.existsSync(path.join(root, icon)), `${icon} が存在する`);
+assert.ok(css.includes('.view-tab[data-view="import"], #importView { display: none !important; }') && app.includes('const MOBILE_IMPORT_QUERY = "(max-width: 720px)"') && app.includes("function enforceMobileImportAvailability") && app.includes('button.dataset.view === "import" && !canUseDocumentImport()') && documentImport.includes("app.canUseDocumentImport?.() === false"), "スマホ幅ではPDF・写真取込のボタン・画面・直接起動を無効にする");
 const businessTabs = [...html.matchAll(/<button class="view-tab(?: active)?" data-view="[^"]+" data-business-scope="([^"]+)"[^>]*>([^<]+)<\/button>/g)].map((match) => [match[1], match[2]]);
 assert.deepStrictEqual(businessTabs, [["design", "設計業務"], ["survey", "測量業務"], ["planning", "調査・計画業務"], ["geology", "地質業務"]], "積算基準の4業務区分を指定順で表示する");
 assert.ok(html.includes('id="consultingView" class="view active"') && !html.includes('id="estimateView" class="view active"'), "初期画面を設計業務にする");

@@ -12,6 +12,7 @@
   const yen = new Intl.NumberFormat("ja-JP", { style: "currency", currency: "JPY", maximumFractionDigits: 0 });
   const numberFormat = new Intl.NumberFormat("ja-JP", { maximumFractionDigits: 3 });
   const defaultDocumentTitle = document.title;
+  const MOBILE_IMPORT_QUERY = "(max-width: 720px)";
   const officialSourceCatalog = window.OFFICIAL_SOURCE_CATALOG || { sources: [] };
   const $ = (id) => document.getElementById(id);
   const clone = (value) => JSON.parse(JSON.stringify(value));
@@ -1486,6 +1487,43 @@
     scheduleSave();
   }
 
+  function canUseDocumentImport() {
+    return !window.matchMedia(MOBILE_IMPORT_QUERY).matches;
+  }
+
+  function activateViewButton(button) {
+    if (!button || (button.dataset.view === "import" && !canUseDocumentImport())) return false;
+    document.querySelectorAll(".view-tab").forEach((entry) => entry.classList.toggle("active", entry === button));
+    document.querySelectorAll(".view").forEach((view) => view.classList.remove("active"));
+    $(`${button.dataset.view}View`).classList.add("active");
+    const businessScope = button.dataset.businessScope || "";
+    document.body.dataset.businessScope = businessScope;
+    if (businessScope === "survey") {
+      populateCategories();
+      renderEstimate();
+    }
+    document.dispatchEvent(new CustomEvent("ezsekisan:businessscope", { detail: { scope: businessScope } }));
+    if (button.dataset.view === "master") { editorMasterId = estimate.masterId; populateMasterSelects(); renderMasterEditor(); }
+    if (button.dataset.view === "guide") renderGuideSourceLedger(true);
+    if (button.dataset.view === "report") renderReportSettings();
+    if (button.dataset.view === "consulting") document.dispatchEvent(new CustomEvent("ezsekisan:estimatechange"));
+    return true;
+  }
+
+  function enforceMobileImportAvailability() {
+    const importButton = document.querySelector('.view-tab[data-view="import"]');
+    const unavailable = !canUseDocumentImport();
+    importButton?.toggleAttribute("hidden", unavailable);
+    if (importButton) {
+      importButton.tabIndex = unavailable ? -1 : 0;
+      if (unavailable) importButton.setAttribute("aria-hidden", "true");
+      else importButton.removeAttribute("aria-hidden");
+    }
+    if (unavailable && $("importView").classList.contains("active")) {
+      activateViewButton(document.querySelector('.view-tab[data-business-scope="design"]'));
+    }
+  }
+
   function bindEvents() {
     const openAboutTool = () => {
       const dialog = $("aboutToolDialog");
@@ -1495,22 +1533,10 @@
     ["aboutToolButton", "publisherInfoButton"].forEach((id) => $(id).addEventListener("click", openAboutTool));
     $("closeAboutToolButton").addEventListener("click", () => $("aboutToolDialog").close());
     $("aboutToolDialog").addEventListener("click", (event) => { if (event.target === $("aboutToolDialog")) $("aboutToolDialog").close(); });
-    document.querySelectorAll(".view-tab").forEach((button) => button.addEventListener("click", () => {
-      document.querySelectorAll(".view-tab").forEach((entry) => entry.classList.toggle("active", entry === button));
-      document.querySelectorAll(".view").forEach((view) => view.classList.remove("active"));
-      $(`${button.dataset.view}View`).classList.add("active");
-      const businessScope = button.dataset.businessScope || "";
-      document.body.dataset.businessScope = businessScope;
-      if (businessScope === "survey") {
-        populateCategories();
-        renderEstimate();
-      }
-      document.dispatchEvent(new CustomEvent("ezsekisan:businessscope", { detail: { scope: businessScope } }));
-      if (button.dataset.view === "master") { editorMasterId = estimate.masterId; populateMasterSelects(); renderMasterEditor(); }
-      if (button.dataset.view === "guide") renderGuideSourceLedger(true);
-      if (button.dataset.view === "report") renderReportSettings();
-      if (button.dataset.view === "consulting") document.dispatchEvent(new CustomEvent("ezsekisan:estimatechange"));
-    }));
+    document.querySelectorAll(".view-tab").forEach((button) => button.addEventListener("click", () => activateViewButton(button)));
+    const mobileImportMedia = window.matchMedia(MOBILE_IMPORT_QUERY);
+    mobileImportMedia.addEventListener?.("change", enforceMobileImportAvailability);
+    enforceMobileImportAvailability();
     $("guideSourceYear").addEventListener("change", () => renderGuideSourceLedger(false));
     $("surveyKeywordList").addEventListener("click", (event) => {
       const button = event.target.closest("[data-survey-keyword]");
@@ -1643,6 +1669,7 @@
     getSurveyRegulationPath: regulationPathForItem,
     saveDraft: scheduleSave,
     notify: showToast,
+    canUseDocumentImport,
     setAddButtonValidationState,
     showMissingInputPopup,
     importSurveyLines,
