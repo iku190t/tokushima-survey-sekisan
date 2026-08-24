@@ -2352,3 +2352,28 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `styles.css` | `AA904883B960642EC9B97E418201D1AE02DF1218DB4863E7C678EEA5C1882BDC` |
 | `tests/test-ui-static.js` | `1E65ED7AEC9522D92614AD17A018CF7D555B667E62C817A803FA4F9800EDE713` |
 | `tests/test-consulting-ui.js` | `D978AE51B47E71CF67D92C92AF460BC69CFA409AC64D1A10565ECD68FB2DA962` |
+
+## B-2026-08-24-26
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-24
+- 実装コミット: `b5e6fb9fc65aa8ce7ce270416843083de5121024`
+- 外部知能コミット: この項目を追加するコミット
+- GitHub Pages: `built`、ビルド`1171760218`、コミット`b5e6fb9fc65aa8ce7ce270416843083de5121024`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: PDF取込開始画面の確認事項をファイル投下欄の右横へ小型配置した。右入力欄の反映待ち追加・対象外操作を上部へ移し、反映先とキーワード欄を段分離した。
+
+### 合格した試験・実画面確認
+
+- `tests/test-*.js`全19本、`git diff --check`合格。
+- ローカル／公開版で、ファイル投下欄765.97pxと確認カード334.25pxが同じ上端・下端・高さ180pxで横並びになることを確認した。
+- 公開匿名デモPDFで、右入力欄上部の「この作業項目を反映待ちへ追加」が有効・強調され、作業項目だけで反映待ち1件になることを確認した。
+- 公開版で反映先プルダウン下端377.41px、キーワード欄上端400.41px、間隔23px、`styles.css?v=20260824-18`、ブラウザー警告・エラー0件を確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `CC4E84AF10AAD3953BF1B7B1D991EC760AC609892630D29941298C1BA48558E9` |
+| `styles.css` | `7C04A079FDFB6CC88511FE4E42EDE333C7FCA5C4CAA4E92AE40C7F78066C4BFD` |
+| `tests/test-document-import-ui.js` | `BA7BF7EFE61FE0DA8AB6F5F6962D3F3E1BC34F19B539558E8CFD93AC2A81B2A9` |
