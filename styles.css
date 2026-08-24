@@ -686,6 +686,7 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
   .summary-report-table th:nth-child(2) { width: 32mm; }
   .summary-report-table th:last-child { width: 34mm; }
   .summary-report-table .total-row td { background: #edf3f0; border-top-width: .5mm; font-weight: 800; }
+  .summary-report-table th, .summary-report-table td { padding-top: 1.25mm; padding-bottom: 1.25mm; }
   .report-caption { margin: 2.5mm 0 0; color: #444; font: 7.2pt/1.5 "Yu Gothic", "Meiryo", sans-serif; text-align: right; }
   .breakdown-report-table th:nth-child(1) { width: 10mm; }
   .breakdown-report-table th:nth-child(2) { width: auto; }
@@ -696,17 +697,27 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
   .breakdown-report-table .subtotal-row td { background: #f0f4f2; border-top-width: .4mm; font-weight: 800; text-align: right; }
   .breakdown-report-table tfoot th { background: #edf3f0; font-weight: 800; }
   .breakdown-report-table tfoot .grand-row th { color: #fff; background: #184d3e; border-color: #184d3e; font-size: 9.5pt; }
-  .unit-detail-table { font-size: 7.2pt; }
+  .unit-detail-table { font-size: 5.9pt; }
+  .unit-detail-table th, .unit-detail-table td { padding: 1mm .8mm; }
   .unit-detail-table th:nth-child(1) { width: 8mm; }
-  .unit-detail-table th:nth-child(2) { width: 54mm; }
-  .unit-detail-table th:nth-child(3), .unit-detail-table th:nth-child(4), .unit-detail-table th:nth-child(5), .unit-detail-table th:nth-child(6) { width: 21mm; }
-  .unit-detail-table th:nth-child(7), .unit-detail-table th:nth-child(9) { width: 25mm; }
-  .unit-detail-table th:nth-child(8) { width: 18mm; }
-  .unit-detail-table th:nth-child(10) { width: 26mm; }
+  .unit-detail-table th:nth-child(2) { width: 48mm; }
+  .unit-detail-table th:nth-child(3), .unit-detail-table th:nth-child(4), .unit-detail-table th:nth-child(5), .unit-detail-table th:nth-child(6) { width: 18mm; }
+  .unit-detail-table th:nth-child(7), .unit-detail-table th:nth-child(9) { width: 23mm; }
+  .unit-detail-table th:nth-child(8) { width: 16mm; }
+  .unit-detail-table th:nth-child(10) { width: 23mm; }
   .unit-detail-table td:nth-child(n+3):not(:last-child) { text-align: right; }
   .conditions-table th { width: 48mm; color: #111; background: #edf3f0; text-align: left; }
+  .conditions-table th, .conditions-table td { padding-top: 1.25mm; padding-bottom: 1.25mm; }
   .conditions-table td:last-child { text-align: left; }
   .source-note { font-size: 7.4pt; }
+  .source-note p, .source-note ul { min-height: 0; padding: 2mm 3mm; line-height: 1.35; }
+  #printDocument[data-mode="consulting"] .source-note { font-size: 5.9pt; }
+  #printDocument[data-mode="consulting"] .source-note li { margin-bottom: .7mm; line-height: 1.25; }
+  .conditions-table + .report-note-block { margin-top: 3mm; }
+  .conditions-table ~ .source-note { margin-top: 3mm; font-size: 6.1pt; }
+  .conditions-table ~ .source-note .source-report-table th,
+  .conditions-table ~ .source-note .source-report-table td { padding: .9mm 1.2mm; }
+  .conditions-table ~ .report-disclaimer { margin-top: 3mm; padding: 2mm; font-size: 6.2pt; line-height: 1.4; }
   .report-disclaimer { margin-top: 5mm; padding: 3mm; color: #444; background: #f5f5f5; border: .2mm solid #aaa; font-size: 7.2pt; line-height: 1.6; }
   .empty-report-cell, .empty-report-message { padding: 15mm !important; color: #666; text-align: center !important; }
 }
