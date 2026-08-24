@@ -3,6 +3,8 @@
 
   const MASTER_KEY = "surveySekisanMastersV1";
   const ESTIMATE_KEY = "surveySekisanEstimateV1";
+  const ISSUER_PROFILE_KEY = "surveySekisanIssuerProfileV1";
+  const issuerProfileFields = ["companyName", "representative", "postalCode", "address", "phone", "email", "registrationNumber"];
   const defaultMasterId = "standard-r8-2026";
   const legacyMlitMasterId = "r8-mlit-2026-reference";
   const defaultJurisdictionCode = "mlit";
@@ -400,6 +402,25 @@
     };
   }
 
+  function emptyIssuerProfile() {
+    return Object.fromEntries(issuerProfileFields.map((field) => [field, ""]));
+  }
+
+  function loadIssuerProfile() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(ISSUER_PROFILE_KEY) || "null");
+      if (!saved || typeof saved !== "object" || Array.isArray(saved)) return emptyIssuerProfile();
+      return Object.fromEntries(issuerProfileFields.map((field) => [field, String(saved[field] || "").slice(0, 300)]));
+    } catch (_) {
+      return emptyIssuerProfile();
+    }
+  }
+
+  function persistIssuerProfile(report = {}) {
+    const profile = Object.fromEntries(issuerProfileFields.map((field) => [field, String(report[field] || "").slice(0, 300)]));
+    localStorage.setItem(ISSUER_PROFILE_KEY, JSON.stringify(profile));
+  }
+
   function defaultReportSettings(localDate = "") {
     return {
       clientName: "",
@@ -409,13 +430,7 @@
       delivery: "別途協議",
       paymentTerms: "成果品納入・検収後",
       remarks: "",
-      companyName: "",
-      representative: "",
-      postalCode: "",
-      address: "",
-      phone: "",
-      email: "",
-      registrationNumber: "",
+      ...loadIssuerProfile(),
       sections: { quote: true, summary: true, breakdown: true, unitDetail: false, conditions: false }
     };
   }
@@ -424,6 +439,9 @@
     try {
       const saved = JSON.parse(localStorage.getItem(ESTIMATE_KEY) || "null");
       if (saved && Array.isArray(saved.lines)) {
+        if (localStorage.getItem(ISSUER_PROFILE_KEY) === null && issuerProfileFields.some((field) => String(saved.report?.[field] || "").trim())) {
+          persistIssuerProfile(saved.report);
+        }
         if (saved.masterId === legacyMlitMasterId || saved.masterId === "r8-tokushima-2026") saved.masterId = "standard-r8-2026";
         if (!masters.some((master) => master.id === saved.masterId)) {
           const savedYear = num(saved.masterId?.match(/-(20\d{2})$/)?.[1]);
@@ -884,6 +902,7 @@
     estimate.report = estimate.report || defaultReportSettings(estimate.date);
     document.querySelectorAll(".report-input").forEach((input) => { estimate.report[input.dataset.report] = input.value; });
     document.querySelectorAll(".report-section-input").forEach((input) => { estimate.report.sections[input.dataset.section] = input.checked; });
+    persistIssuerProfile(estimate.report);
     renderReportCompleteness();
     scheduleSave();
   }
@@ -1525,7 +1544,7 @@
     estimate.projectName = "匿名化・帳票QA測量業務";
     estimate.projectInfo = { ...defaultProjectInfo(), orderingParty: "匿名発注機関", department: "検査用部署", workLocation: "匿名化済み", contractPeriod: "令和8年度" };
     estimate.lines = item ? [{ id: "qa-survey-line", code: item.code, quantity: 10, correctionRate: 0, correctionSelections: {}, conditionValue: item.conditionFormula?.default, precisionRate: item.precisionRate, manualUnitPrice: 0 }] : [];
-    estimate.report = { ...defaultReportSettings(estimate.date), clientName: "匿名発注機関 御中", companyName: "株式会社アイズ測量", quoteNumber: "QA-2026-001", delivery: "契約条件による", validity: "発行日から30日", paymentTerms: "契約条件による", remarks: "帳票レイアウト検査用の匿名化データです。", sections: { quote: true, summary: true, breakdown: true, unitDetail: true, conditions: true } };
+    estimate.report = { ...defaultReportSettings(estimate.date), ...emptyIssuerProfile(), clientName: "匿名発注機関 御中", companyName: "株式会社アイズ測量", quoteNumber: "QA-2026-001", delivery: "契約条件による", validity: "発行日から30日", paymentTerms: "契約条件による", remarks: "帳票レイアウト検査用の匿名化データです。", sections: { quote: true, summary: true, breakdown: true, unitDetail: true, conditions: true } };
     renderAll();
     renderPrintDocument();
   }

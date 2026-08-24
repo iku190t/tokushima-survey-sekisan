@@ -422,16 +422,17 @@
             <label class="field span-4"><span>見積条件・備考</span><textarea id="reportRemarks" class="report-input" data-report="remarks" rows="4" placeholder="作業範囲、貸与資料、現地条件、別途費用など"></textarea></label>
           </div>
 
-          <h3 class="settings-heading">発行者情報</h3>
+          <h3 class="settings-heading">自社・発行者情報</h3>
           <div class="report-form-grid">
-            <label class="field span-2"><span>会社名</span><input id="reportCompanyName" class="report-input" data-report="companyName" type="text"></label>
-            <label class="field span-2"><span>代表者・担当者</span><input id="reportRepresentative" class="report-input" data-report="representative" type="text"></label>
-            <label class="field"><span>郵便番号</span><input id="reportPostalCode" class="report-input" data-report="postalCode" type="text" placeholder="〒000-0000"></label>
-            <label class="field span-3"><span>住所</span><input id="reportAddress" class="report-input" data-report="address" type="text"></label>
-            <label class="field"><span>電話番号</span><input id="reportPhone" class="report-input" data-report="phone" type="tel"></label>
-            <label class="field span-2"><span>メール</span><input id="reportEmail" class="report-input" data-report="email" type="email"></label>
-            <label class="field"><span>適格請求書発行事業者番号</span><input id="reportRegistrationNumber" class="report-input" data-report="registrationNumber" type="text" placeholder="T＋13桁（任意）"></label>
+            <label class="field span-2"><span>会社名</span><input id="reportCompanyName" class="report-input" data-report="companyName" type="text" autocomplete="organization"></label>
+            <label class="field span-2"><span>担当者</span><input id="reportRepresentative" class="report-input" data-report="representative" type="text" autocomplete="name"></label>
+            <label class="field"><span>郵便番号</span><input id="reportPostalCode" class="report-input" data-report="postalCode" type="text" autocomplete="postal-code" placeholder="〒000-0000"></label>
+            <label class="field span-3"><span>住所</span><input id="reportAddress" class="report-input" data-report="address" type="text" autocomplete="street-address"></label>
+            <label class="field"><span>電話番号</span><input id="reportPhone" class="report-input" data-report="phone" type="tel" autocomplete="tel"></label>
+            <label class="field span-2"><span>メール</span><input id="reportEmail" class="report-input" data-report="email" type="email" autocomplete="email"></label>
+            <label class="field"><span>インボイス登録番号</span><input id="reportRegistrationNumber" class="report-input" data-report="registrationNumber" type="text" maxlength="14" pattern="T[0-9]{13}" placeholder="T＋13桁（任意）"></label>
           </div>
+          <p class="field-note">この7項目は入力と同時にこのブラウザー内へ保存し、次に「新規」を作成したときも初期表示します。修正・消去した内容も次回へ反映され、外部へは送信しません。</p>
 
           <h3 class="settings-heading">出力する帳票</h3>
           <div class="document-choice-grid">
@@ -664,7 +665,7 @@
   <script src="reference-case-engine.js?v=20260824-1"></script>
   <script src="document-import-engine.js?v=20260824-3"></script>
   <script src="document-reader.js?v=20260823-1"></script>
-  <script src="app.js?v=20260824-7"></script>
+  <script src="app.js?v=20260824-8"></script>
   <script src="consulting.js?v=20260824-13"></script>
   <script src="document-import.js?v=20260824-11"></script>
   <script src="analytics.js?v=20260823-1"></script>

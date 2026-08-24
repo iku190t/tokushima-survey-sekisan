@@ -92,6 +92,14 @@ assert.ok(!app.includes("aerialShipCategories") && !html.includes('data-business
 assert.ok(app.includes("applyVerifiedWorkItemExpansions") && html.includes("data/verified-work-item-expansions.js?v="), "令和8年度UAVレーザの公式詳細工程を年度マスターへ展開する");
 assert.ok(html.includes('id="reportView"'), "提出用帳票の設定画面がある");
 assert.ok(html.includes('id="printDocument"'), "画面とは独立した印刷専用文書がある");
+for (const field of ["companyName", "representative", "postalCode", "address", "phone", "email", "registrationNumber"]) {
+  assert.ok(html.includes(`data-report="${field}"`), `発行者プロフィールに${field}がある`);
+}
+assert.ok(html.includes("この7項目は入力と同時にこのブラウザー内へ保存") && html.includes("次に「新規」を作成したときも初期表示"), "自社・発行者情報の自動保存と新規引継ぎを案内する");
+assert.ok(app.includes('const ISSUER_PROFILE_KEY = "surveySekisanIssuerProfileV1"') && app.includes("issuerProfileFields"), "案件と分離した発行者プロフィールを定義する");
+assert.ok(app.includes("...loadIssuerProfile()") && app.includes("persistIssuerProfile(estimate.report)"), "新規帳票へ発行者プロフィールを読込み、入力時に保存する");
+assert.ok(app.includes("localStorage.getItem(ISSUER_PROFILE_KEY) === null") && app.includes("persistIssuerProfile(saved.report)"), "旧案件に保存済みの発行者情報を初回だけプロフィールへ移行する");
+assert.ok(app.includes("...emptyIssuerProfile(), clientName: \"匿名発注機関 御中\""), "匿名QA帳票へ端末保存済みの発行者情報を混入させない");
 assert.ok(app.includes('__qa_report") === "survey"') && app.includes("renderPrintDocument();"), "公開HTTPSから測量5帳票を実PDF検査できる匿名QA入口を持つ");
 for (const section of ["quote", "summary", "breakdown", "unitDetail", "conditions"]) {
   assert.ok(html.includes(`data-section="${section}"`), `${section}帳票を選択できる`);
