@@ -51,6 +51,7 @@ assert.ok(html.includes('id="addConsultingPresetButton" class="button primary ad
 assert.ok(ui.includes("parseStandardQuantity") && ui.includes("calculateStandardQuantity") && ui.includes("quantitySummary"), "標準単位から数量比と職種別人工を自動算出する");
 assert.ok(!html.includes('id="consultingConditionsConfirmed"') && !ui.includes("consultingConditionsConfirmed"), "形式的な確認チェックを表示・要求しない");
 assert.ok(ui.includes("presetInputValidation") && ui.includes("updatePresetAddState") && ui.includes("calculateConditionCorrection"), "必要な数量・条件を自動検査して追加ボタンを制御する");
+assert.ok(ui.includes("app.showMissingInputPopup(inputValidation)") && ui.includes("focusSelector") && !ui.includes('$("addConsultingPresetButton").disabled = !validation.valid'), "設計・調査計画・地質でも追加時に不足項目をポップアップ表示して該当欄へ移動する");
 assert.ok(ui.includes("familyForPreset") && ui.includes("consulting-parameter-value") && ui.includes("consultingFormulaModel") && ui.includes("compileFormula"), "適用条件表と補正式を歩掛へ結び付ける");
 assert.ok(!html.includes('id="consultingPresetMultiplier"'), "利用者へ補正係数の手計算を要求しない");
 assert.ok(html.includes("基準書にない作業・見積項目を手動調整する"), "人工直接入力を基準外の手動調整へ分離する");

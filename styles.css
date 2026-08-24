@@ -208,6 +208,9 @@ input:focus, select:focus, textarea:focus { border-color: var(--green); box-shad
 .consulting-manual-entry > p { margin: 8px 0 0; color: var(--muted); font-size: 11px; }
 .consulting-manual-entry .consulting-picker-grid { margin-top: 12px; }
 .add-button { height: 40px; }
+.add-button.needs-input { box-shadow: 0 0 0 3px rgba(211,107,53,.16); }
+.missing-input-focus { animation: missing-input-focus 2.4s ease-out; }
+@keyframes missing-input-focus { 0%,35% { border-color: #c76432; box-shadow: 0 0 0 5px rgba(211,107,53,.22); background: #fff9ef; } 100% { border-color: #cfd9d3; box-shadow: none; background: #fff; } }
 .field-note { min-height: 19px; margin: 10px 0 0; color: var(--muted); font-size: 12px; }
 
 .table-card { padding: 0; overflow: hidden; }

@@ -635,27 +635,48 @@
   }
 
   function surveyPresetValidation(item = activeMaster().workItems.find((entry) => entry.code === $("itemSelect").value)) {
-    if (!item) return { valid: false, reason: "作業項目を選択してください。" };
-    if (String($("newItemQuantity").value || "").trim() === "") return { valid: false, reason: "積算数量を入力してください。" };
+    if (!item) return { valid: false, reason: "作業項目を選択してください。", focusSelector: "#itemSelect" };
+    if (String($("newItemQuantity").value || "").trim() === "") return { valid: false, reason: "積算数量を入力してください。", focusSelector: "#newItemQuantity" };
     const quantity = window.SekisanEngine.normalizeQuantity($("newItemQuantity").value, item, activeMaster());
-    if (!(quantity > 0)) return { valid: false, reason: "積算数量は0より大きい値を入力してください。" };
-    if (item.applicability?.minimum != null && quantity < Number(item.applicability.minimum)) return { valid: false, reason: `適用範囲は${item.applicability.note}です。` };
-    if (item.applicability?.maximum != null && quantity > Number(item.applicability.maximum)) return { valid: false, reason: `適用範囲は${item.applicability.note}です。` };
+    if (!(quantity > 0)) return { valid: false, reason: "積算数量は0より大きい値を入力してください。", focusSelector: "#newItemQuantity" };
+    if (item.applicability?.minimum != null && quantity < Number(item.applicability.minimum)) return { valid: false, reason: `適用範囲は${item.applicability.note}です。`, focusSelector: "#newItemQuantity" };
+    if (item.applicability?.maximum != null && quantity > Number(item.applicability.maximum)) return { valid: false, reason: `適用範囲は${item.applicability.note}です。`, focusSelector: "#newItemQuantity" };
     const correctionSelections = {};
     for (const rule of item.correctionRules || []) {
       const select = $("surveyConditionFields").querySelector(`.survey-rule-condition[data-rule="${CSS.escape(rule.id)}"]`);
-      if (!select || select.value === "") return { valid: false, reason: `条件表「${rule.label}」を選択してください。` };
+      if (!select || select.value === "") return { valid: false, reason: `条件表「${rule.label}」を選択してください。`, focusSelector: `.survey-rule-condition[data-rule="${CSS.escape(rule.id)}"]` };
       correctionSelections[rule.id] = num(select.value);
     }
     const conditionInput = $("surveyConditionFields").querySelector("#surveyConditionValue");
     const conditionValue = conditionInput ? Number(conditionInput.value) : item.conditionFormula?.default;
-    if (conditionInput && (!Number.isFinite(conditionValue) || conditionValue < 0)) return { valid: false, reason: `${item.conditionFormula.label}を入力してください。` };
+    if (conditionInput && (!Number.isFinite(conditionValue) || conditionValue < 0)) return { valid: false, reason: `${item.conditionFormula.label}を入力してください。`, focusSelector: "#surveyConditionValue" };
     return { valid: true, reason: "必要な数量・条件が入力済みです。追加できます。", quantity, correctionSelections, conditionValue };
+  }
+
+  function setAddButtonValidationState(button, validation) {
+    button.disabled = false;
+    button.dataset.inputValid = validation.valid ? "true" : "false";
+    button.classList.toggle("needs-input", !validation.valid);
+    button.title = validation.valid ? "この作業項目を追加" : `クリックして未入力を確認：${validation.reason}`;
+  }
+
+  function showMissingInputPopup(validation) {
+    alert(`追加できません。\n\n${validation?.reason || "未入力の項目を確認してください。"}`);
+    const target = validation?.focusSelector ? document.querySelector(validation.focusSelector) : null;
+    if (!target) return;
+    requestAnimationFrame(() => {
+      target.scrollIntoView({ behavior: "smooth", block: "center" });
+      target.focus({ preventScroll: true });
+      target.classList.remove("missing-input-focus");
+      void target.offsetWidth;
+      target.classList.add("missing-input-focus");
+      setTimeout(() => target.classList.remove("missing-input-focus"), 2400);
+    });
   }
 
   function updateSurveyAddState(item) {
     const validation = surveyPresetValidation(item || undefined);
-    $("addItemButton").disabled = !validation.valid;
+    setAddButtonValidationState($("addItemButton"), validation);
     $("surveyPresetStatus").textContent = validation.reason;
     return validation;
   }
@@ -1037,9 +1058,8 @@
   function addItem() {
     const code = $("itemSelect").value;
     const item = activeMaster().workItems.find((entry) => entry.code === code);
-    if (!item) return;
     const validation = updateSurveyAddState(item);
-    if (!validation.valid) { showToast(validation.reason); return; }
+    if (!validation.valid) { showMissingInputPopup(validation); return; }
     estimate.lines.push({ id: `line-${Date.now()}-${Math.random().toString(16).slice(2)}`, code, quantity: validation.quantity, correctionRate: 0, correctionSelections: validation.correctionSelections, conditionValue: validation.conditionValue, precisionRate: item.precisionRate, manualUnitPrice: 0 });
     updateSelectedItemMeta();
     recalculate();
@@ -1623,6 +1643,8 @@
     getSurveyRegulationPath: regulationPathForItem,
     saveDraft: scheduleSave,
     notify: showToast,
+    setAddButtonValidationState,
+    showMissingInputPopup,
     importSurveyLines,
     applyImportedProjectName,
     applyImportedMetadata,

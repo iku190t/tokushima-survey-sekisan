@@ -224,7 +224,6 @@
       ? visiblePresets.map((preset) => `<option value="${h(preset.id)}">${h(preset.label)}｜${h(preset.standardUnit || "1業務当り")}</option>`).join("")
       : '<option value="">この業務区分の全国標準参考歩掛は未収録</option>';
     if (visiblePresets.some((preset) => preset.id === previousPreset)) $("consultingPreset").value = previousPreset;
-    $("addConsultingPresetButton").disabled = visiblePresets.length === 0;
     const audit = (rulePack.audits || []).find((entry) => Number(entry.fiscalYear) === year);
     $("consultingPresetStatus").textContent = visiblePresets.length
       ? `令和${year - 2018}年度：検索一致 ${candidates.length}歩掛／選択分類 ${visiblePresets.length}歩掛（全区分 ${audit?.ruleCount || candidates.length}歩掛）。国交省本体・累積改定の対応ページと条件表を表示します。`
@@ -298,8 +297,9 @@
       $("consultingPresetBasis").innerHTML = "<strong>適用できる標準歩掛がありません。</strong>";
       $("consultingQuantityFields").innerHTML = "";
       $("consultingConditionFields").innerHTML = "";
-      $("addConsultingPresetButton").disabled = true;
-      $("consultingPresetStatus").textContent = "作業項目を選択してください。";
+      const validation = { valid: false, reason: "作業項目を選択してください。", focusSelector: "#consultingPreset" };
+      app.setAddButtonValidationState($("addConsultingPresetButton"), validation);
+      $("consultingPresetStatus").textContent = validation.reason;
       return;
     }
     const quantityRule = engine.parseStandardQuantity(preset.standardUnit, preset.quantitySpec);
@@ -335,35 +335,42 @@
 
   function presetInputValidation() {
     const preset = visiblePresets.find((entry) => entry.id === $("consultingPreset").value);
-    if (!preset) return { valid: false, reason: "作業項目を選択してください。" };
+    if (!preset) return { valid: false, reason: "作業項目を選択してください。", focusSelector: "#consultingPreset" };
     const conditionRule = engine.findConditionRule(preset, conditionRules, state().fiscalYear);
     const coverage = engine.classifyPresetCoverage(preset, conditionRule);
-    if (!coverage.canCalculate) return { valid: false, reason: coverage.note };
+    if (!coverage.canCalculate) return { valid: false, reason: coverage.note, focusSelector: "#consultingPreset" };
     if (preset.serviceType === "geologyGeneral") {
       const marketUnit = String(document.querySelector("#consultingMarketUnit")?.value || "").trim();
-      if (!marketUnit) return { valid: false, reason: "積算単位を選択してください。" };
+      if (!marketUnit) return { valid: false, reason: "積算単位を選択してください。", focusSelector: "#consultingMarketUnit" };
       const marketValidation = engine.validateDomainValue(document.querySelector("#consultingMarketQuantity")?.value, marketUnit);
-      if (!marketValidation.valid) return { valid: false, reason: marketValidation.reason || "積算数量を入力してください。" };
-      if (!(Number(document.querySelector("#consultingMarketUnitPrice")?.value) > 0)) return { valid: false, reason: "市場単価を入力してください。" };
-      if (!String(document.querySelector("#consultingMarketSource")?.value || "").trim()) return { valid: false, reason: "市場単価の根拠を入力してください。" };
+      if (!marketValidation.valid) return { valid: false, reason: marketValidation.reason || "積算数量を入力してください。", focusSelector: "#consultingMarketQuantity" };
+      if (!(Number(document.querySelector("#consultingMarketUnitPrice")?.value) > 0)) return { valid: false, reason: "市場単価を入力してください。", focusSelector: "#consultingMarketUnitPrice" };
+      if (!String(document.querySelector("#consultingMarketSource")?.value || "").trim()) return { valid: false, reason: "市場単価の根拠を入力してください。", focusSelector: "#consultingMarketSource" };
     } else {
       const quantityValues = {};
-      document.querySelectorAll(".consulting-rule-quantity").forEach((input) => { quantityValues[input.dataset.quantityKey] = input.value; });
+      const quantityInputs = [...document.querySelectorAll(".consulting-rule-quantity")];
+      quantityInputs.forEach((input) => { quantityValues[input.dataset.quantityKey] = input.value; });
       const calculation = engine.calculateStandardQuantity(preset.standardUnit, quantityValues, preset.quantitySpec);
-      if (!calculation.valid) return { valid: false, reason: calculation.reason };
+      if (!calculation.valid) {
+        const target = quantityInputs.find((input) => String(input.value || "").trim() === "") || quantityInputs[0];
+        return { valid: false, reason: calculation.reason, focusSelector: target ? `.consulting-rule-quantity[data-quantity-key="${CSS.escape(target.dataset.quantityKey)}"]` : "#consultingPreset" };
+      }
     }
     const conditionValues = {};
     document.querySelectorAll(".consulting-rule-condition").forEach((input) => { conditionValues[input.dataset.conditionId] = input.type === "checkbox" ? input.checked : input.value; });
     const correction = engine.calculateConditionCorrection(conditionRule, conditionValues);
-    if (!correction.valid) return { valid: false, reason: correction.reason };
+    if (!correction.valid) {
+      const target = [...document.querySelectorAll("select.consulting-rule-condition")].find((input) => input.value === "");
+      return { valid: false, reason: correction.reason, focusSelector: target ? `.consulting-rule-condition[data-condition-id="${CSS.escape(target.dataset.conditionId)}"]` : "#consultingConditionFields" };
+    }
     const formulaModel = document.querySelector("#consultingFormulaModel");
-    if (formulaModel?.value && !document.querySelector("#consultingFormulaResult")?.dataset.factor) return { valid: false, reason: "補正式の変数を入力してください。" };
+    if (formulaModel?.value && !document.querySelector("#consultingFormulaResult")?.dataset.factor) return { valid: false, reason: "補正式の変数を入力してください。", focusSelector: "#consultingFormulaVariable" };
     return { valid: true, reason: "必要な数量・条件が入力済みです。追加できます。" };
   }
 
   function updatePresetAddState() {
     const validation = presetInputValidation();
-    $("addConsultingPresetButton").disabled = !validation.valid;
+    app.setAddButtonValidationState($("addConsultingPresetButton"), validation);
     $("consultingPresetStatus").textContent = validation.reason;
     return validation;
   }
@@ -588,12 +595,12 @@
 
   function addPreset() {
     const preset = visiblePresets.find((entry) => entry.id === $("consultingPreset").value);
+    const inputValidation = updatePresetAddState();
+    if (!inputValidation.valid) { app.showMissingInputPopup(inputValidation); return; }
     if (!preset) return;
     const conditionRule = engine.findConditionRule(preset, conditionRules, state().fiscalYear);
     const coverage = engine.classifyPresetCoverage(preset, conditionRule);
-    if (!coverage.canCalculate) { app.notify(coverage.note); return; }
-    const inputValidation = updatePresetAddState();
-    if (!inputValidation.valid) { app.notify(inputValidation.reason); return; }
+    if (!coverage.canCalculate) { app.showMissingInputPopup({ valid: false, reason: coverage.note, focusSelector: "#consultingPreset" }); return; }
     const quantityValues = {};
     document.querySelectorAll(".consulting-rule-quantity").forEach((input) => { quantityValues[input.dataset.quantityKey] = input.value; });
     const marketUnit = String(document.querySelector("#consultingMarketUnit")?.value || "").trim();
