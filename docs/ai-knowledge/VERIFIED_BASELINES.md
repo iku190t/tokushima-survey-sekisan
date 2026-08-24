@@ -2083,3 +2083,27 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `tests/test-document-import-ui.js` | `7BDD1A4E21E39D1AEFFCDA58BCC60B8D3967597E675C9D4774971997B57878DA` |
 | `tests/test-consulting-ui.js` | `E6E3BC13E8DF467A8CACB34BA3543A10FC4D914C93E3B4EE94B4E4257D9ED4FB` |
 | `tests/test-ui-static.js` | `56A085542BCA0BED724E72485D4B4B49921C9719A9F007B24DE06AB4183A5630` |
+
+## B-2026-08-24-16
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-24
+- 実装コミット: `0811d14e7316218e39197d293a320db9ecd88613`
+- 外部知能コミット: この項目を追加するコミット
+- GitHub Pages: `built`、コミット`0811d14e7316218e39197d293a320db9ecd88613`、GitHub Actions実行`32703890354`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: PDF行クリックと反映先の業務区分切替で番号1・2・3を推定入力せず、測量の項目・数量・単位と、設計等の作業項目・職種・人工を明示選択またはドロップまで空欄に保つ。
+
+### 合格した試験・実画面確認
+
+- `tests/test-*.js`全18本、`node --check document-import.js`、`git diff --check`合格。
+- ローカル版で匿名デモPDF1ページ・20文字ブロックを読み込み、待機時、未判定行クリック後、設計・測量・調査計画・地質切替後の全6入力値が空文字であることを確認した。明示的に測量項目・数量・単位を入力した時だけ値を保持し、設計でも作業項目選択だけでは職種・人工が空欄のままであることを確認した。
+- 公開版で`document-import.js?v=20260824-14`、未判定行クリック後と4業務切替後の同じ空欄状態を確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `4A30929CBF0D9F57E7D367DE499D7039579D0A1BE59A7D74BAFACFB814AD061C` |
+| `document-import.js` | `A95BF29AFB03F3324F3EAF2A3837766FBE91FC71DAD5D62B9B952927EAF2222E` |
+| `tests/test-document-import-ui.js` | `7C154AA3F2071D272576C301A250A3BE4FEDB4187F4C4968C140BCE7D078BF9C` |
