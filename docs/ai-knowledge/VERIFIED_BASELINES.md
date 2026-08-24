@@ -2491,3 +2491,32 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `tests/test-ui-static.js` | `E97F100A0A4D34620F7DF099EBB6BD1EB8682162CFE055CB98085EB5BE0C331C` |
 | `tests/test-consulting-ui.js` | `E5BC83F94FF1F5D1AD3C22ED19935EF36A8E84FD657BA7621B337BBF8BCDAD39` |
 | `tests/test-document-import-ui.js` | `127A9C89C61A72252CF50D6C0DE881EE47A061146084BAA8626461C626F45D74` |
+
+## B-2026-08-25-02
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-25
+- 実装コミット: `4a8d546fc896a93a7217addbbae23c0f7f6a5507`
+- 外部知能コミット: この項目を追加するコミット
+- GitHub Pages: `built`、コミット`4a8d546fc896a93a7217addbbae23c0f7f6a5507`、更新時刻`2026-08-24T23:55:27Z`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: アイコン案4の数量表・定規・三角定規を正式アイコンへ採用し、ブラウザー、Apple Touch Icon、Web App Manifestへ反映した。
+
+### 合格した試験・実画面確認
+
+- `node tests/test-ui-static.js`、Manifest JSON解析、32／180／192／512px寸法検査、`git diff --check`合格。
+- 180pxと32pxの透過PNGを目視し、180pxで数量表・定規、32pxで緑の積算表を識別できることを確認した。
+- 公開ページHTTP 200、`v=20260825-2`、公開180px画像とローカル画像のSHA-256一致を確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `B2848244E982C8CF01FA336DC8B215101E3886F36DF2ABA11E6EB17124D9E49C` |
+| `site.webmanifest` | `C9AF51EFC52668488E314464E55C02E80E6AC1CE91C2BE36D9370F852378A544` |
+| `web-sekisan-source.png` | `A4E60F3E483961FE2B53CD6DCBC947D76EF243EC5D1E6BFF787D8856CF2DA47E` |
+| `web-sekisan-32.png` | `08ECFFD160F067820F5ED77F200BB3C7865EE7DDDFE6BE51F958BD39E6DA40E1` |
+| `web-sekisan-180.png` | `297ED7691394A1E15ECDE64301DA4D60D7ED0C9E3A8995845468BD27B53D158B` |
+| `web-sekisan-192.png` | `0DEAE6A075E517E0F4AA8E225D130F6158BE6DCA8F1DB6F21312D359B93164D7` |
+| `web-sekisan-512.png` | `EEBA88DA80331003ED0DA44FEE41D61B12FA3EB5498B7947856F402E133D3600` |
+| `tests/test-ui-static.js` | `E69ACB31940BCCEDF7BD8AD5133A0CF5EA7253076ACF91BA46B69ABDF555A299` |
