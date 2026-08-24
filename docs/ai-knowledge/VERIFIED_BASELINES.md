@@ -2053,3 +2053,33 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `app.js` | `22D475C4041274CC8427C149F16ED560A17E27B0A160872CCA50630F3B17E7AF` |
 | `tests/test-ui-static.js` | `BD83634012B39E29386F42072E4B8846E502C3D112F3C4B56A62C11B9085233E` |
 | `README.txt` | `7E2DEF0305E1629D9529D87020B0E56E631167945FB099E82D0CE2F537BF6878` |
+
+## B-2026-08-24-15
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-24
+- 実装コミット: `c68e67738386d18c97cbb21e56fed3254412f34d`
+- 外部知能コミット: この項目を追加するコミット
+- GitHub Pagesビルド: `1171344364`（`built`、コミット`c68e67738386d18c97cbb21e56fed3254412f34d`）
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: PDF取込の原文と反映先を分離し、4業務の反映先を通常入力と同じキーワード、積算基準の作業区分、年度別公式作業項目へ統一した。設計等は公式規則IDを保持し、匿名デモPDFの再実行可能な実ブラウザーQA入口を追加した。
+
+### 合格した試験・実画面確認
+
+- `tests/test-*.js`全18本、`node --check app.js consulting.js document-import.js`、`git diff --check`合格。
+- ローカル実ブラウザーで匿名デモPDF1ページ・20文字ブロックを抽出し、設計313、測量141、調査・計画117、地質40項目を確認した。設計38作業区分、公式「1-1 打合せ等 打合せ 業務着手時｜1式当り」を主任技術者1人日で反映待ちへ追加した。
+- 公開版で`document-import.js?v=20260824-13`、4業務順、原文「業務数量総括表」の不変、同じ4業務件数、設計キーワード件数、設計38作業区分、公式「業務着手時」を確認した。ブラウザー警告・エラー0件。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `5C718014CAE7FD855E036CEA06EEFA5F51B8CDEEF8D11B0D4D8C6D4F8BC2B423` |
+| `styles.css` | `FA7872A7C428A937DBF625FAAD354F883AC91D83BBC4623C83177510B8CE6888` |
+| `app.js` | `19B0AB879774B6807A4D3965FAB3895D76B0AEA8A98E3CBB71D0850ED4738579` |
+| `consulting.js` | `E71FB3A2E650948A6B5B30E512F703EA44FE54D25A4D60295E0ACFC986209676` |
+| `document-import.js` | `AB7FE2DE06881A7945A8C7D1D969A83FE4CE353630BE681C648756F843357B36` |
+| `data/consulting-work-catalog.js` | `D9E501B596B9A63AA1C9CC9BFB2FAB5966903877E4E3CA49E00489F3FC2F5D75` |
+| `tests/test-document-import-ui.js` | `7BDD1A4E21E39D1AEFFCDA58BCC60B8D3967597E675C9D4774971997B57878DA` |
+| `tests/test-consulting-ui.js` | `E6E3BC13E8DF467A8CACB34BA3543A10FC4D914C93E3B4EE94B4E4257D9ED4FB` |
+| `tests/test-ui-static.js` | `56A085542BCA0BED724E72485D4B4B49921C9719A9F007B24DE06AB4183A5630` |
