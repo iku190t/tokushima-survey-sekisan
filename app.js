@@ -1066,6 +1066,9 @@
     const input = event.target;
     estimate.projectInfo = estimate.projectInfo || defaultProjectInfo();
     estimate.projectInfo[input.dataset.projectInfo] = input.value;
+    document.querySelectorAll(`.project-info-input[data-project-info="${input.dataset.projectInfo}"]`).forEach((peer) => {
+      if (peer !== input) peer.value = input.value;
+    });
     if (input.dataset.projectInfo === "orderingParty") estimate.report.clientName = input.value;
     if (input.dataset.projectInfo === "contractPeriod") estimate.report.delivery = input.value;
     renderReportCompleteness();

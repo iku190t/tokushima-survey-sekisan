@@ -206,17 +206,25 @@
 
     <section id="consultingView" class="view active">
       <section class="project-strip business-project-strip">
-        <div class="field static-field"><span>見積提出先（任意）</span><strong id="consultingAuthorityText">—</strong></div>
+        <label class="field"><span>見積提出先（任意）</span><select id="consultingJurisdictionSelect"></select></label>
         <label class="field compact-field"><span>標準単価セット</span><select id="consultingFiscalYear"></select></label>
         <label class="field"><span>業務名</span><input id="consultingProjectName" type="text" placeholder="例：○○地区道路設計業務"></label>
         <label class="field compact-field"><span>積算日</span><input id="consultingEstimateDate" type="date"></label>
         <label class="field"><span>発注者・メモ</span><input id="consultingProjectMemo" type="text" placeholder="任意"></label>
       </section>
 
-      <section class="accuracy-strip business-status-strip" aria-live="polite">
-        <span class="accuracy-icon" aria-hidden="true">✓</span>
-        <div><strong id="consultingScopeTitle">設計業務の年度別技術者単価と計算方式</strong><span id="consultingScopeDescription">土木設計・調査計画を設計方式で計算します。歩掛を確認できない作業の人工は自動推定しません。</span></div>
-      </section>
+      <details class="project-details-panel">
+        <summary>発注者・履行場所・期間などの業務基本情報</summary>
+        <div class="project-info-grid">
+          <label class="field"><span>発注者</span><input class="project-info-input" data-project-info="orderingParty" type="text"></label>
+          <label class="field"><span>担当部署</span><input class="project-info-input" data-project-info="department" type="text"></label>
+          <label class="field"><span>担当者</span><input class="project-info-input" data-project-info="contactName" type="text"></label>
+          <label class="field"><span>業務場所</span><input class="project-info-input" data-project-info="workLocation" type="text"></label>
+          <label class="field"><span>履行期間</span><input class="project-info-input" data-project-info="contractPeriod" type="text"></label>
+          <label class="field"><span>文書・業務番号</span><input class="project-info-input" data-project-info="documentNumber" type="text"></label>
+          <label class="field"><span>公告・資料日</span><input class="project-info-input" data-project-info="documentDate" type="text"></label>
+        </div>
+      </details>
 
       <div class="workspace-grid business-workspace">
         <div class="workspace-main">
@@ -633,8 +641,8 @@
   <script src="reference-case-engine.js?v=20260824-1"></script>
   <script src="document-import-engine.js?v=20260823-2"></script>
   <script src="document-reader.js?v=20260823-1"></script>
-  <script src="app.js?v=20260824-4"></script>
-  <script src="consulting.js?v=20260824-9"></script>
+  <script src="app.js?v=20260824-5"></script>
+  <script src="consulting.js?v=20260824-10"></script>
   <script src="document-import.js?v=20260823-9"></script>
   <script src="analytics.js?v=20260823-1"></script>
 </body>

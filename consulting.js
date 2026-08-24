@@ -54,12 +54,6 @@
     const geology = activeConsultingScope === "geology";
     const planning = activeConsultingScope === "planning";
     const label = geology ? "地質業務" : planning ? "調査・計画業務" : "設計業務";
-    $("consultingScopeTitle").textContent = `${label}の年度別技術者単価と計算方式`;
-    $("consultingScopeDescription").textContent = geology
-      ? "地質解析は標準数量から人工へ展開し、地質一般調査は市場単価・材料・機械・運搬・仮設を分けて積算します。人工表だけで完結させません。"
-      : planning
-        ? "調査・計画の種類と標準数量を選び、数量比から職種別人工を算出します。適用外条件は自動計算しません。"
-        : "道路・橋梁等の設計種類と標準数量を選び、数量比から職種別人工を算出します。適用条件・追加歩掛を確認して積み上げます。";
     $("consultingAddHeading").textContent = `${label}の条件・数量から積算`;
     $("consultingDetailHeading").textContent = `${label}の積算内訳`;
     $("consultingSummaryHeading").textContent = `${label}の積算結果`;
@@ -90,10 +84,11 @@
 
   function renderYearAndProject() {
     const current = state();
-    $("consultingFiscalYear").innerHTML = master.supportedYears.map((year) => `<option value="${year}">令和${year - 2018}年度</option>`).join("");
+    $("consultingJurisdictionSelect").innerHTML = `<option value="">提出先を選択しない</option>` + (window.SEKISAN_JURISDICTIONS || []).map((region) => `<option value="${h(region.code)}">${h(region.name)}</option>`).join("");
+    $("consultingJurisdictionSelect").value = app.getSubmissionJurisdictionCode?.() || "";
+    $("consultingFiscalYear").innerHTML = master.supportedYears.map((year) => `<option value="${year}">令和${year - 2018}年度｜国土交通省・全国標準</option>`).join("");
     $("consultingFiscalYear").value = current.fiscalYear;
     $("consultingProjectName").value = app.getEstimate().projectName || "";
-    $("consultingAuthorityText").textContent = app.getSubmissionJurisdictionName?.() || "見積提出先未設定";
     $("consultingEstimateDate").value = app.getEstimate().date || "";
     $("consultingProjectMemo").value = app.getEstimate().memo || "";
   }
@@ -772,6 +767,13 @@
       result.textContent = `${option.textContent}、${option.dataset.variable}=${value} → ${engine.roundHalfUp(factor, 6)}倍`;
     });
     $("consultingFiscalYear").addEventListener("change", (event) => { state().fiscalYear = Number(event.target.value); renderAll(); app.saveDraft(); });
+    $("consultingJurisdictionSelect").addEventListener("change", (event) => {
+      app.getEstimate().submissionJurisdictionCode = event.target.value;
+      $("jurisdictionSelect").value = event.target.value;
+      app.saveDraft();
+      document.dispatchEvent(new CustomEvent("ezsekisan:estimatechange"));
+      app.notify(event.target.value ? `見積提出先を${app.getSubmissionJurisdictionName()}に設定しました（単価は全国標準のままです）` : "見積提出先を未設定にしました");
+    });
     $("consultingProjectName").addEventListener("input", (event) => { app.getEstimate().projectName = event.target.value; $("projectName").value = event.target.value; app.saveDraft(); });
     $("projectName").addEventListener("input", () => { $("consultingProjectName").value = $("projectName").value; });
     $("consultingEstimateDate").addEventListener("change", (event) => { app.getEstimate().date = event.target.value; $("estimateDate").value = event.target.value; app.saveDraft(); });
