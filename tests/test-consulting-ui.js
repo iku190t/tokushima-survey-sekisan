@@ -9,6 +9,7 @@ const app = fs.readFileSync(path.join(root, "app.js"), "utf8");
 const ui = fs.readFileSync(path.join(root, "consulting.js"), "utf8");
 const engine = fs.readFileSync(path.join(root, "consulting-engine.js"), "utf8");
 const master = fs.readFileSync(path.join(root, "data", "consulting-master.js"), "utf8");
+const workCatalog = fs.readFileSync(path.join(root, "data", "consulting-work-catalog.js"), "utf8");
 const ids = new Set([...html.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]));
 const referencedIds = new Set([...ui.matchAll(/\$\("([^"]+)"\)/g)].map((match) => match[1]));
 assert.deepStrictEqual([...referencedIds].filter((id) => !ids.has(id)), [], "consulting.jsから参照するHTML要素が揃う");
@@ -23,6 +24,7 @@ for (const file of ["data/consulting-master.js", "consulting-engine.js", "consul
 assert.ok(html.includes('src="data/consulting-standard-walks.js?v='), "年度別の設計・調査計画・地質標準歩掛を読み込む");
 assert.ok(html.includes('src="data/consulting-condition-rules.js?v=') && html.includes('id="consultingConditionFields"'), "補正・適用条件データと動的入力欄を読み込む");
 assert.ok(html.includes('src="data/consulting-rule-pack.js?v='), "国交省ページ照合済み規則パックを読み込む");
+assert.ok(html.includes('src="data/consulting-work-catalog.js?v=') && fs.existsSync(path.join(root, "data", "consulting-work-catalog.js")), "本体とPDF取込で共用する作業キーワード台帳を読み込む");
 assert.ok(html.includes('src="data/estimation-compliance-catalog.js?v='), "根拠付き積上費用の区分カタログを読み込む");
 for (const id of ["consultingRegionalAuthority", "consultingNotificationReference", "consultingSpecificationReference", "consultingNotificationConfirmed", "consultingSpecificationConfirmed", "consultingPriceSourcesConfirmed"]) assert.ok(!html.includes(`id="${id}"`), `${id}を設計・調査計画・地質画面へ表示しない`);
 assert.ok(!html.includes("APPLICABILITY GATE") && !ui.includes("renderCompliance") && !ui.includes("updateComplianceStatus"), "適用基準・通知・特記仕様の確認UIと結線を撤去する");
@@ -37,8 +39,8 @@ assert.ok(ui.includes('ezsekisan:businessscope') && ui.includes("activeConsultin
 assert.ok(html.includes('data-consulting-scope="design-planning"') && html.includes('data-consulting-scope="geology"'), "タブに対応する積上費用だけを表示する");
 assert.ok(master.includes('id: "design-note-r8"') && master.includes('id: "design-note-r7"') && master.includes('id: "design-note-r6"') && master.includes("designLead: 0.5") && master.includes("designEngineerA: 1.0"), "令和6～8年度の設計留意書歩掛をプリセットする");
 assert.ok(ui.includes("CONSULTING_RULE_PACK") && ui.includes("preset.fiscalYear") && ui.includes("consultingPresetSearch"), "照合済み標準歩掛を年度・業務タブ・補助検索語で絞る");
-assert.ok(ui.includes("consultingKeywordDefinitions") && ui.includes("presetMatchesKeyword") && ui.includes("renderConsultingKeywords"), "設計・調査計画・地質を正式familyCode由来のキーワードで絞る");
-for (const keyword of ["道路", "橋梁", "河川・水辺", "水文・観測", "ボーリング", "原位置試験", "解析"]) assert.ok(ui.includes(`label: "${keyword}"`), `${keyword}キーワードを表示できる`);
+assert.ok(ui.includes("CONSULTING_WORK_CATALOG") && ui.includes("consultingKeywordDefinitions") && ui.includes("presetMatchesKeyword") && ui.includes("renderConsultingKeywords"), "設計・調査計画・地質を共用台帳の正式familyCode由来キーワードで絞る");
+for (const keyword of ["道路", "橋梁", "河川・水辺", "水文・観測", "ボーリング", "原位置試験", "解析"]) assert.ok(workCatalog.includes(`label: "${keyword}"`), `${keyword}キーワードを表示できる`);
 assert.ok(html.includes("名称でさらに絞り込む"), "文字検索を初期操作ではなく折りたたみの補助操作にする");
 for (const label of ["積算基準の作業区分", "作業項目", "積算数量（"]) assert.ok(html.includes(label) || ui.includes(label), `${label}を測量と共通表示する`);
 assert.ok(ui.includes('`${scopedPresets.length}項目収録`') && ui.includes('`${label.replace(/業務$/, "")}作業項目を追加`'), "見出しと収録件数を測量と同じ形式にする");

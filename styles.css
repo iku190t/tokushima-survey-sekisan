@@ -445,7 +445,11 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
 .pdf-manual-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .pdf-manual-heading strong { color: var(--green-dark); font-size: 12px; }
 .pdf-manual-heading button { width: 28px; height: 28px; padding: 0; color: #40544b; background: #fff; border: 1px solid var(--line); border-radius: 50%; cursor: pointer; }
+.pdf-source-label { margin-bottom: -7px; color: var(--muted); font-size: 9px; font-weight: 800; }
 .pdf-manual-mapper > q { display: block; max-height: 70px; overflow: auto; padding: 9px; color: #173d2f; background: #fff; border: 1px solid #c9ddd4; border-left: 4px solid #1d6c52; font-size: 10px; line-height: 1.55; }
+.pdf-manual-keyword-filter { margin: 0; padding: 9px; background: rgba(255,255,255,.68); border: 1px solid #c9ddd4; border-radius: 9px; }
+.pdf-manual-keyword-filter .work-keyword-list { gap: 5px; }
+.pdf-manual-keyword-filter .work-keyword-button { min-height: 28px; padding: 5px 8px; font-size: 9px; }
 .pdf-manual-fields { display: grid; gap: 8px; }
 .pdf-manual-mapper .field { gap: 4px; }
 .pdf-field-drop-target { position: relative; padding: 8px; background: #fff; border: 2px dashed #4e9b7c; border-radius: 9px; box-shadow: inset 0 0 0 3px rgba(78,155,124,.07); transition: .14s; }

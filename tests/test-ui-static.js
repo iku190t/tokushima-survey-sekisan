@@ -37,7 +37,7 @@ assert.strictEqual((html.match(/class="card table-card business-detail-card"/g) 
 assert.strictEqual((html.match(/class="card business-cost-card no-print"/g) || []).length, 2, "4業務で同じ追加費用カードを使う");
 assert.strictEqual((html.match(/class="summary-card business-summary-card"/g) || []).length, 2, "4業務で同じ集計カードを使う");
 assert.ok(html.includes('id="surveySummaryHeading">測量業務の積算結果') && html.includes('id="consultingSummaryHeading">設計業務の積算結果'), "4業務の右集計見出しを同じ命名規則にする");
-for (const source of ["data/prefectures.js", "data/master-catalog.json", "data/official-source-catalog.json", "data/master-r8.js", "data/national-standard-masters.js", "data/official-role-prices.js", "data/verified-work-item-expansions.js", "engine.js", "app.js", "analytics.js", "styles.css", "DISCLAIMER.md", "media/web-sekisan-introduction.mp4", "media/web-sekisan-introduction-thumbnail.jpg"]) {
+for (const source of ["data/prefectures.js", "data/master-catalog.json", "data/official-source-catalog.json", "data/master-r8.js", "data/national-standard-masters.js", "data/official-role-prices.js", "data/verified-work-item-expansions.js", "data/consulting-work-catalog.js", "engine.js", "app.js", "analytics.js", "styles.css", "DISCLAIMER.md", "media/web-sekisan-introduction.mp4", "media/web-sekisan-introduction-thumbnail.jpg"]) {
   assert.ok(fs.existsSync(path.join(root, source)), `${source} が存在する`);
 }
 assert.ok(html.includes('id="featureVideoTitle"') && html.includes('aria-label="web積算の紹介動画"'), "使い方画面に紹介動画を表示する");

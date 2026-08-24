@@ -23,7 +23,7 @@
   let activeConsultingScope = "design";
   let visiblePresets = [];
   const activeConsultingKeywords = { design: "all", planning: "all", geology: "all" };
-  const consultingKeywordDefinitions = {
+  const consultingKeywordDefinitions = window.CONSULTING_WORK_CATALOG?.keywordDefinitions || {
     design: [
       { id: "all", label: "すべて", prefixes: [] },
       { id: "common", label: "共通", prefixes: ["1-"] },
@@ -675,6 +675,7 @@
         id: `consult-import-${Date.now()}-${added}-${Math.random().toString(16).slice(2)}`,
         serviceType: selectedService.id,
         taskName: String(entry.taskName || "資料取込作業").trim().slice(0, 120) || "資料取込作業",
+        referenceRuleId: String(entry.referenceRuleId || "").slice(0, 120),
         role: entry.role,
         days,
         importSource: {

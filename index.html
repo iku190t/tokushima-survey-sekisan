@@ -7,7 +7,7 @@
   <meta name="description" content="設計、測量、調査・計画、地質を年度別技術者単価と根拠表示付きで計算するWeb業務積算ソフト">
   <meta name="author" content="株式会社アイズ測量">
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="styles.css?v=20260824-10">
+  <link rel="stylesheet" href="styles.css?v=20260824-11">
 </head>
 <body data-business-scope="design">
   <header class="app-header">
@@ -357,18 +357,20 @@
           <aside class="pdf-click-sidebar">
             <section id="pdfManualMapper" class="pdf-manual-mapper" hidden>
               <div class="pdf-manual-heading"><strong id="pdfManualHeadingText">この行の反映先を指定</strong><button id="cancelPdfManualLineButton" type="button" aria-label="閉じる">×</button></div>
-              <q id="pdfManualSourceText">—</q>
-              <label class="field"><span>反映する業務区分</span><select id="pdfManualKind"><option value="design">設計業務（詳細項目・職種・人工）</option><option value="survey">測量業務（項目・数量・単位）</option><option value="planning">調査・計画業務（詳細項目・職種・人工）</option><option value="geology">地質業務（詳細項目・職種・人工）</option><option value="metadata">業務基本情報</option></select></label>
+              <span class="pdf-source-label">PDF原文（確認用）</span><q id="pdfManualSourceText">—</q>
+              <label class="field"><span>反映先</span><select id="pdfManualKind"><option value="design">設計業務</option><option value="survey">測量業務</option><option value="planning">調査・計画業務</option><option value="geology">地質業務</option><option value="metadata">業務基本情報</option></select></label>
+              <div id="pdfManualKeywordFilter" class="work-keyword-filter pdf-manual-keyword-filter"><span>キーワードから選ぶ</span><div id="pdfManualKeywordList" class="work-keyword-list" role="group" aria-label="PDF取込の作業キーワード"></div></div>
               <div id="pdfManualSurveyFields" class="pdf-manual-fields">
-                <label class="field"><span>作業規程上の分類</span><select id="pdfManualSurveyRegulationGroup"></select></label>
+                <select id="pdfManualSurveyRegulationGroup" hidden aria-hidden="true"></select>
                 <label class="field"><span>積算基準の作業区分</span><select id="pdfManualSurveyCategory"></select></label>
-                <label class="field pdf-field-drop-target" data-pdf-drop-target="item"><span class="pdf-drop-title"><b aria-hidden="true">1</b>PDFの項目名をドロップ</span><small class="pdf-drop-callout">左のPDFから項目名の文字枠をつかんで、ここへ移動</small><select id="pdfManualSurveyCode" aria-label="積算する詳細項目"></select></label>
+                <label class="field pdf-field-drop-target" data-pdf-drop-target="item"><span class="pdf-drop-title"><b aria-hidden="true">1</b>作業項目</span><small class="pdf-drop-callout">左のPDFから作業項目の文字枠をここへドロップ</small><select id="pdfManualSurveyCode" aria-label="積算する作業項目"></select></label>
                 <div class="field pdf-survey-quantity-field"><span>資料の数量・単位</span><div class="pdf-manual-quantity"><label class="pdf-field-drop-target" data-pdf-drop-target="quantity"><span class="pdf-drop-title"><b aria-hidden="true">2</b>PDFの数量をドロップ</span><small class="pdf-drop-callout">例：6.9、11</small><input id="pdfManualSurveyQuantity" type="number" aria-label="資料の数量"></label><label class="pdf-field-drop-target" data-pdf-drop-target="unit"><span class="pdf-drop-title"><b aria-hidden="true">3</b>PDFの単位をドロップ</span><small class="pdf-drop-callout">例：10,000m²、回</small><select id="pdfManualSurveySourceUnit" aria-label="資料の単位"></select></label></div><strong id="pdfManualSurveyConversion">項目を選択してください。</strong><small id="pdfManualSurveyRule">項目を選択してください。</small></div>
               </div>
               <div id="pdfManualConsultingFields" class="pdf-manual-fields" hidden>
-                <label class="field"><span>業務区分</span><select id="pdfManualConsultingService"></select></label>
-                <label class="field pdf-field-drop-target" data-pdf-drop-target="consulting-task"><span class="pdf-drop-title"><b aria-hidden="true">1</b>PDFの詳細項目をドロップ</span><small class="pdf-drop-callout">作業名・作業工程の文字枠をここへ移動</small><select id="pdfManualConsultingTaskTemplate"></select></label>
-                <label class="field"><span>内訳名称（必要時のみ修正）</span><input id="pdfManualConsultingTask" type="text"></label>
+                <select id="pdfManualConsultingService" hidden aria-hidden="true"></select>
+                <label class="field"><span>積算基準の作業区分</span><select id="pdfManualConsultingRuleGroup"></select></label>
+                <label class="field pdf-field-drop-target" data-pdf-drop-target="consulting-task"><span class="pdf-drop-title"><b aria-hidden="true">1</b>作業項目</span><small class="pdf-drop-callout">左のPDFから作業項目の文字枠をここへドロップ</small><select id="pdfManualConsultingTaskTemplate"></select></label>
+                <input id="pdfManualConsultingTask" type="hidden">
                 <label class="field pdf-field-drop-target" data-pdf-drop-target="consulting-role"><span class="pdf-drop-title"><b aria-hidden="true">2</b>PDFの職種をドロップ</span><small class="pdf-drop-callout">例：主任技師、技師（A）</small><select id="pdfManualConsultingRole"></select></label>
                 <label class="field pdf-field-drop-target" data-pdf-drop-target="consulting-days"><span class="pdf-drop-title"><b aria-hidden="true">3</b>PDFの人工をドロップ</span><small class="pdf-drop-callout">例：1、2.5人日</small><input id="pdfManualConsultingDays" type="number" min="0" step="0.001" inputmode="decimal" placeholder="未入力"></label>
                 <small class="field-note">詳細項目は基準上の作業を整理するための選択肢です。全国標準参考歩掛は公式基準書・案件条件と照合し、該当しない項目は原資料の職種・人工を入力してください。</small>
@@ -656,6 +658,7 @@
   <script src="data/official-source-catalog.js?v=20260824-1"></script>
   <script src="data/consulting-master.js?v=20260823-1"></script>
   <script src="data/consulting-standard-walks.js?v=20260824-1"></script>
+  <script src="data/consulting-work-catalog.js?v=20260824-1"></script>
   <script src="data/consulting-condition-rules.js?v=20260824-2"></script>
   <script src="data/consulting-rule-pack.js?v=20260824-3"></script>
   <script src="data/estimation-compliance-catalog.js?v=20260824-2"></script>
@@ -665,9 +668,9 @@
   <script src="reference-case-engine.js?v=20260824-1"></script>
   <script src="document-import-engine.js?v=20260824-3"></script>
   <script src="document-reader.js?v=20260823-1"></script>
-  <script src="app.js?v=20260824-8"></script>
-  <script src="consulting.js?v=20260824-13"></script>
-  <script src="document-import.js?v=20260824-11"></script>
+  <script src="app.js?v=20260824-9"></script>
+  <script src="consulting.js?v=20260824-14"></script>
+  <script src="document-import.js?v=20260824-13"></script>
   <script src="analytics.js?v=20260823-1"></script>
 </body>
 </html>

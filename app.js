@@ -1523,6 +1523,7 @@
     getSubmissionJurisdictionCode: () => estimate.submissionJurisdictionCode || "",
     getSubmissionJurisdictionName: () => estimate.submissionJurisdictionCode ? jurisdictionName(estimate.submissionJurisdictionCode) : "",
     getSurveyItemsForScope: (scope, master = activeMaster()) => surveyItemsForScope(master, scope),
+    getSurveyKeywordDefinitions: () => clone(surveyKeywordDefinitions),
     getSurveyRegulationGroups: () => clone(surveyRegulationGroups),
     getSurveyRegulationGroup: (item) => clone(regulationGroupForItem(item)),
     getSurveyRegulationPath: regulationPathForItem,

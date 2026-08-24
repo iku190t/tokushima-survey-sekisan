@@ -5,6 +5,8 @@
   const reader = window.DocumentReader;
   const analyzer = window.DocumentImportEngine;
   const consultingMaster = window.CONSULTING_MASTER;
+  const consultingRulePack = window.CONSULTING_RULE_PACK || { rules: [], families: [] };
+  const workCatalog = window.CONSULTING_WORK_CATALOG || { serviceIdsByScope: {}, keywordDefinitions: {} };
   if (!app || !reader || !analyzer || !consultingMaster) return;
 
   const $ = (id) => document.getElementById(id);
@@ -32,11 +34,8 @@
   const PDF_LINE_DRAG_TYPE = "application/x-ezsekisan-pdf-line";
   let pointerPdfDrag = null;
   let suppressPdfClickLineId = "";
-  const consultingServiceIdsByKind = {
-    design: new Set(["design"]),
-    planning: new Set(["planning"]),
-    geology: new Set(["geologyAnalysis", "geologyGeneral"])
-  };
+  const consultingServiceIdsByKind = Object.fromEntries(Object.entries(workCatalog.serviceIdsByScope).map(([kind, ids]) => [kind, new Set(ids)]));
+  const activeManualKeywords = { design: "all", survey: "all", planning: "all", geology: "all" };
   const manualKindHeadings = {
     design: "PDFから設計業務の作業・人工を入れる",
     survey: "PDFから測量業務の項目・数量・単位を入れる",
@@ -63,7 +62,7 @@
   function isConsultingBusinessKind(kind) { return ["design", "planning", "geology"].includes(kind); }
   function surveyItemsForKind(kind = "") {
     if (!isSurveyBusinessKind(kind)) return activeMaster().workItems;
-    return app.getSurveyItemsForScope("survey", activeMaster());
+    return surveyItemsForManualKeyword(app.getSurveyItemsForScope("survey", activeMaster()), kind);
   }
   function businessKindForSurveyItem(item) {
     return item ? "survey" : "survey";
@@ -71,6 +70,32 @@
   function businessKindForService(serviceType) {
     if (consultingServiceIdsByKind.geology.has(serviceType)) return "geology";
     return serviceType === "planning" ? "planning" : "design";
+  }
+
+  function currentConsultingYear() {
+    return Number(app.getEstimate()?.consulting?.fiscalYear || activeMaster()?.fiscalYear || 2026);
+  }
+
+  function keywordMatchesCode(definition, code, definitions) {
+    if (!definition || definition.id === "all") return true;
+    if (definition.fallback) return !definitions.some((entry) => entry.id !== "all" && !entry.fallback && entry.prefixes.some((prefix) => code.startsWith(prefix)));
+    return definition.prefixes.some((prefix) => code.startsWith(prefix));
+  }
+
+  function consultingRulesForKind(kind = $("pdfManualKind")?.value || "design", applyKeyword = true) {
+    const allowed = consultingServiceIdsByKind[kind] || consultingServiceIdsByKind.design || new Set(["design"]);
+    const rules = (consultingRulePack.rules || []).filter((rule) => allowed.has(rule.serviceType) && Number(rule.fiscalYear) === currentConsultingYear());
+    if (!applyKeyword) return rules;
+    const definitions = workCatalog.keywordDefinitions[kind] || [];
+    const selected = definitions.find((entry) => entry.id === activeManualKeywords[kind]) || definitions[0];
+    return rules.filter((rule) => keywordMatchesCode(selected, String(rule.familyCode || ""), definitions));
+  }
+
+  function surveyItemsForManualKeyword(items, kind = "survey") {
+    if (kind !== "survey") return items;
+    const definitions = app.getSurveyKeywordDefinitions?.() || [];
+    const selected = definitions.find((entry) => entry.id === activeManualKeywords.survey) || definitions[0];
+    return !selected || selected.id === "all" ? items : items.filter((item) => selected.categories.includes(item.category));
   }
 
   function updateProgress(status) {
@@ -96,6 +121,28 @@
   function surveyCategoryOptions(selectedCategory = "", kind = "", regulationGroupId = "") {
     const categories = [...new Set(surveyItemsForKind(kind).filter((item) => !regulationGroupId || app.getSurveyRegulationGroup(item)?.id === regulationGroupId).map((item) => item.category).filter(Boolean))];
     return '<option value="">すべての作業区分</option>' + categories.map((category) => `<option value="${h(category)}" ${category === selectedCategory ? "selected" : ""}>${h(category)}</option>`).join("");
+  }
+
+  function renderManualKeywords() {
+    const kind = $("pdfManualKind").value;
+    const filter = $("pdfManualKeywordFilter");
+    filter.hidden = kind === "metadata";
+    if (filter.hidden) { $("pdfManualKeywordList").innerHTML = ""; return; }
+    let definitions;
+    let allEntries;
+    let countFor;
+    if (kind === "survey") {
+      definitions = app.getSurveyKeywordDefinitions?.() || [];
+      allEntries = app.getSurveyItemsForScope("survey", activeMaster());
+      countFor = (definition) => definition.id === "all" ? allEntries.length : allEntries.filter((item) => definition.categories.includes(item.category)).length;
+    } else {
+      definitions = workCatalog.keywordDefinitions[kind] || [];
+      allEntries = consultingRulesForKind(kind, false);
+      countFor = (definition) => definition.id === "all" ? allEntries.length : allEntries.filter((rule) => keywordMatchesCode(definition, String(rule.familyCode || ""), definitions)).length;
+    }
+    const available = definitions.filter((definition) => definition.id === "all" || countFor(definition) > 0);
+    if (!available.some((definition) => definition.id === activeManualKeywords[kind])) activeManualKeywords[kind] = "all";
+    $("pdfManualKeywordList").innerHTML = available.map((definition) => `<button class="work-keyword-button" type="button" data-pdf-manual-keyword="${h(definition.id)}" aria-pressed="${definition.id === activeManualKeywords[kind]}">${h(definition.label)}<small>${countFor(definition)}</small></button>`).join("");
   }
 
   function populateManualSurveyItems() {
@@ -128,10 +175,27 @@
     return roles.map((role) => `<option value="${h(role.id)}" ${role.id === valid ? "selected" : ""}>${h(role.name)}</option>`).join("");
   }
 
-  function taskOptions(serviceType, selectedTask = "") {
-    const tasks = consultingMaster.taskNames?.[serviceType] || ["任意作業"];
-    const selected = tasks.includes(selectedTask) ? selectedTask : tasks[0];
-    return tasks.map((task) => `<option value="${h(task)}" ${task === selected ? "selected" : ""}>${h(task)}</option>`).join("");
+  function consultingFamilyLabel(rule) {
+    const family = (consultingRulePack.families || []).find((entry) => Number(entry.fiscalYear) === Number(rule?.fiscalYear) && entry.serviceType === rule?.serviceType && entry.familyCode === rule?.familyCode);
+    return `${rule?.familyCode || "共通"}｜${family?.title || "積算基準項目"}`;
+  }
+
+  function selectedManualConsultingRule() {
+    const id = $("pdfManualConsultingTaskTemplate").value;
+    return consultingRulesForKind($("pdfManualKind").value, false).find((rule) => rule.id === id) || null;
+  }
+
+  function syncManualConsultingRule() {
+    const rule = selectedManualConsultingRule();
+    if (!rule) {
+      $("pdfManualConsultingTask").value = "";
+      return;
+    }
+    const kind = $("pdfManualKind").value;
+    $("pdfManualConsultingService").innerHTML = serviceOptions(rule.serviceType, kind);
+    $("pdfManualConsultingService").value = rule.serviceType;
+    $("pdfManualConsultingTask").value = rule.label;
+    updateManualConsultingRoles();
   }
 
   function jurisdictionOptions(selectedCode) {
@@ -250,6 +314,7 @@
     $("pdfManualSurveyFields").hidden = !surveyKind;
     $("pdfManualConsultingFields").hidden = !consultingKind;
     $("pdfManualMetadataFields").hidden = kind !== "metadata";
+    renderManualKeywords();
     if (!currentManualLineId && !currentEditingTarget) $("pdfManualHeadingText").textContent = manualKindHeadings[kind] || "PDFから積算項目を入れる";
     if (surveyKind) {
       const previousGroup = $("pdfManualSurveyRegulationGroup").value;
@@ -260,7 +325,11 @@
       if (![...$("pdfManualSurveyCategory").options].some((option) => option.value === previousCategory)) $("pdfManualSurveyCategory").value = "";
       populateManualSurveyItems();
     }
-    if (consultingKind) updateManualConsultingServices();
+    if (consultingKind) {
+      const sourceLine = clickLines.get(manualConsultingTaskLineId || currentManualLineId);
+      const matched = sourceLine ? matchConsultingTaskDrop(sourceLine.text) : null;
+      updateManualConsultingServices(matched?.rule?.id || "");
+    }
   }
 
   function showEmptyManualMapper() {
@@ -291,22 +360,36 @@
     $("pdfManualConsultingRole").innerHTML = roleOptions(serviceType, $("pdfManualConsultingRole").value);
   }
 
-  function updateManualConsultingTasks(selectedTask = "", preserveName = false) {
-    const serviceType = $("pdfManualConsultingService").value;
-    const previous = selectedTask || $("pdfManualConsultingTaskTemplate").value;
-    $("pdfManualConsultingTaskTemplate").innerHTML = taskOptions(serviceType, previous);
-    if (!preserveName || !$("pdfManualConsultingTask").value.trim()) {
-      $("pdfManualConsultingTask").value = $("pdfManualConsultingTaskTemplate").value;
-    }
+  function updateManualConsultingTasks(selectedRule = "") {
+    const kind = $("pdfManualKind").value;
+    const rules = consultingRulesForKind(kind);
+    const preferred = rules.find((rule) => rule.id === selectedRule || rule.label === selectedRule)
+      || rules.find((rule) => rule.id === $("pdfManualConsultingTaskTemplate").value);
+    const previousGroup = $("pdfManualConsultingRuleGroup").value;
+    const preferredGroup = preferred?.familyCode || previousGroup;
+    const groups = [...new Map(rules.map((rule) => [rule.familyCode, consultingFamilyLabel(rule)]))]
+      .sort(([left], [right]) => String(left).localeCompare(String(right), "ja", { numeric: true }));
+    $("pdfManualConsultingRuleGroup").innerHTML = groups.length
+      ? groups.map(([code, label]) => `<option value="${h(code)}">${h(label)}</option>`).join("")
+      : '<option value="">該当項目なし</option>';
+    if (groups.some(([code]) => code === preferredGroup)) $("pdfManualConsultingRuleGroup").value = preferredGroup;
+    updateManualConsultingItemsForGroup(preferred?.id || "");
   }
 
-  function updateManualConsultingServices(selectedId = "") {
-    const kind = $("pdfManualKind").value;
-    const previous = selectedId || $("pdfManualConsultingService").value;
-    $("pdfManualConsultingService").innerHTML = serviceOptions(previous, kind);
-    if (![...$("pdfManualConsultingService").options].some((option) => option.value === previous)) $("pdfManualConsultingService").selectedIndex = 0;
-    updateManualConsultingTasks("", true);
-    updateManualConsultingRoles();
+  function updateManualConsultingItemsForGroup(selectedRule = "") {
+    const rules = consultingRulesForKind($("pdfManualKind").value);
+    const group = $("pdfManualConsultingRuleGroup").value;
+    const groupRules = rules.filter((rule) => rule.familyCode === group);
+    const preferred = groupRules.find((rule) => rule.id === selectedRule);
+    $("pdfManualConsultingTaskTemplate").innerHTML = groupRules.length
+      ? groupRules.map((rule) => `<option value="${h(rule.id)}">${h(rule.label)}｜${h(rule.standardUnit || "1業務当り")}</option>`).join("")
+      : '<option value="">該当項目なし</option>';
+    if (preferred && groupRules.some((rule) => rule.id === preferred.id)) $("pdfManualConsultingTaskTemplate").value = preferred.id;
+    syncManualConsultingRule();
+  }
+
+  function updateManualConsultingServices(selected = "") {
+    updateManualConsultingTasks(selected);
   }
 
   function openManualMapper(lineId, options = {}) {
@@ -369,15 +452,12 @@
   function matchConsultingTaskDrop(text) {
     const key = analyzer.compact(text);
     const kind = isConsultingBusinessKind($("pdfManualKind").value) ? $("pdfManualKind").value : "design";
-    const allowed = consultingServiceIdsByKind[kind] || consultingServiceIdsByKind.design;
-    const matches = [];
-    consultingMaster.serviceTypes.filter((service) => allowed.has(service.id)).forEach((service) => {
-      (consultingMaster.taskNames?.[service.id] || []).forEach((task) => {
-        const taskKey = analyzer.compact(task);
-        if (key === taskKey || (key.length >= 3 && taskKey.includes(key)) || (taskKey.length >= 4 && key.includes(taskKey))) matches.push({ service, task });
-      });
+    const matches = consultingRulesForKind(kind, false).filter((rule) => {
+      const taskKey = analyzer.compact(rule.label);
+      return key === taskKey || (key.length >= 3 && taskKey.includes(key)) || (taskKey.length >= 4 && key.includes(taskKey));
     });
-    return matches.find((entry) => analyzer.compact(entry.task) === key) || (matches.length === 1 ? matches[0] : null);
+    const exact = matches.find((rule) => analyzer.compact(rule.label) === key);
+    return exact ? { rule: exact, matches } : matches.length === 1 ? { rule: matches[0], matches } : { rule: null, matches };
   }
 
   function matchConsultingRoleDrop(text) {
@@ -403,16 +483,13 @@
       currentManualLineId = lineId;
       manualConsultingTaskLineId = lineId;
       const matched = matchConsultingTaskDrop(line.text);
-      if (matched) {
-        $("pdfManualConsultingService").value = matched.service.id;
-        updateManualConsultingTasks(matched.task);
-        updateManualConsultingRoles();
-        $("pdfManualConsultingTaskTemplate").value = matched.task;
-        $("pdfManualConsultingTask").value = matched.task;
-        app.notify(`詳細項目「${matched.task}」を選びました`);
+      if (matched.rule) {
+        updateManualConsultingTasks(matched.rule.id);
+        app.notify(`作業項目「${matched.rule.label}」を選びました`);
+      } else if (matched.matches.length > 1) {
+        app.notify(`候補が${matched.matches.length}件あります。キーワード、積算基準の作業区分、作業項目の順に選んでください`);
       } else {
-        $("pdfManualConsultingTask").value = line.text.trim();
-        app.notify("一致する詳細項目を確定できないため、内訳名称へ入れました。PDF横（狭い画面では下）の緑枠で確認してください");
+        app.notify("一致する作業項目を確定できません。キーワード、積算基準の作業区分、作業項目の順に選んでください");
       }
     } else if (targetType === "consulting-role") {
       manualConsultingRoleLineId = lineId;
@@ -592,10 +669,8 @@
       updateManualSurveyRule(target.item.sourceUnitId || "base");
     } else {
       $("pdfManualKind").value = businessKindForService(target.item.serviceType);
-      updateManualConsultingServices(target.item.serviceType);
-      updateManualConsultingTasks(target.item.taskName, true);
+      updateManualConsultingServices(target.item.referenceRuleId || target.item.taskName);
       updateManualConsultingRoles();
-      $("pdfManualConsultingTask").value = target.item.taskName;
       $("pdfManualConsultingRole").value = target.item.role;
       $("pdfManualConsultingDays").value = target.item.days;
     }
@@ -694,16 +769,17 @@
         target = { type: "candidate", item: candidate };
       }
     } else if (isConsultingBusinessKind($("pdfManualKind").value)) {
-      const serviceType = $("pdfManualConsultingService").value;
-      const taskName = $("pdfManualConsultingTask").value.trim();
+      const rule = selectedManualConsultingRule();
+      const serviceType = rule?.serviceType || "";
+      const taskName = rule?.label || "";
       const days = Math.round(Math.max(0, Number($("pdfManualConsultingDays").value) || 0) * 1000) / 1000;
-      if (!taskName) { app.notify("作業名を入力してください"); return; }
+      if (!rule) { app.notify("積算基準の作業区分と作業項目を選択してください"); return; }
       if (days <= 0) { app.notify("人工は0より大きい値を入力してください"); return; }
       if (editingTarget) {
-        Object.assign(editingTarget.item, { kind: "consulting", serviceType, taskName, role: $("pdfManualConsultingRole").value, days, selected: true });
+        Object.assign(editingTarget.item, { kind: "consulting", serviceType, taskName, referenceRuleId: rule.id, role: $("pdfManualConsultingRole").value, days, selected: true });
         target = editingTarget;
       } else {
-        const candidate = { ...source, id: `manual-${++manualCandidateSequence}`, kind: "consulting", serviceType, taskName, role: $("pdfManualConsultingRole").value, days };
+        const candidate = { ...source, id: `manual-${++manualCandidateSequence}`, kind: "consulting", serviceType, taskName, referenceRuleId: rule.id, role: $("pdfManualConsultingRole").value, days };
         currentAnalysis.candidates.push(candidate);
         target = { type: "candidate", item: candidate };
       }
@@ -754,7 +830,7 @@
       }
       const source = { fileName: currentFileName, page: item.page, method: item.method, confidence: item.confidence, sourceText: item.sourceText };
       if (item.kind === "survey") survey.push({ ...source, code: item.code, quantity: item.quantity });
-      if (item.kind === "consulting") consulting.push({ ...source, serviceType: item.serviceType, taskName: item.taskName, role: item.role, days: item.days });
+      if (item.kind === "consulting") consulting.push({ ...source, serviceType: item.serviceType, taskName: item.taskName, referenceRuleId: item.referenceRuleId, role: item.role, days: item.days });
       if (item.kind === "consultingCost") costs[item.costKey] = Math.max(0, Math.floor(Number(item.amount) || 0));
     });
     return { selected, survey, consulting, costs, metadata };
@@ -993,6 +1069,22 @@
       updatePdfClickSelection();
     });
     $("pdfManualKind").addEventListener("change", updateManualKind);
+    $("pdfManualKeywordList").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-pdf-manual-keyword]");
+      if (!button) return;
+      const kind = $("pdfManualKind").value;
+      activeManualKeywords[kind] = button.dataset.pdfManualKeyword;
+      renderManualKeywords();
+      if (kind === "survey") {
+        $("pdfManualSurveyRegulationGroup").value = "";
+        $("pdfManualSurveyCategory").innerHTML = surveyCategoryOptions("", "survey", "");
+        $("pdfManualSurveyCategory").value = "";
+        populateManualSurveyItems();
+      } else if (isConsultingBusinessKind(kind)) {
+        $("pdfManualConsultingRuleGroup").value = "";
+        updateManualConsultingTasks();
+      }
+    });
     $("pdfManualSurveyRegulationGroup").addEventListener("change", populateManualSurveyCategories);
     $("pdfManualSurveyCategory").addEventListener("change", populateManualSurveyItems);
     $("pdfManualSurveyCode").addEventListener("change", () => {
@@ -1005,13 +1097,8 @@
       updateManualSurveyConversion();
     });
     $("pdfManualConsultingDays").addEventListener("input", (event) => enforceDecimalInput(event.target, 3, (value) => Math.round(Math.max(0, Number(value) || 0) * 1000) / 1000));
-    $("pdfManualConsultingService").addEventListener("change", () => {
-      updateManualConsultingTasks();
-      updateManualConsultingRoles();
-    });
-    $("pdfManualConsultingTaskTemplate").addEventListener("change", () => {
-      $("pdfManualConsultingTask").value = $("pdfManualConsultingTaskTemplate").value;
-    });
+    $("pdfManualConsultingRuleGroup").addEventListener("change", () => updateManualConsultingItemsForGroup());
+    $("pdfManualConsultingTaskTemplate").addEventListener("change", syncManualConsultingRule);
     $("addPdfManualCandidateButton").addEventListener("click", addManualCandidate);
     $("pdfClickSelectedList").addEventListener("click", (event) => {
       const button = event.target.closest("[data-pdf-edit-target]");
@@ -1062,5 +1149,15 @@
     $("applyDocumentImportButton").addEventListener("click", applyImport);
   }
 
+  async function loadQaImportFixture() {
+    if (new URLSearchParams(location.search).get("__qa_import") !== "demo") return;
+    document.querySelector('.view-tab[data-view="import"]')?.click();
+    const response = await fetch("media/intro-assets/web-sekisan-demo.pdf");
+    if (!response.ok) throw new Error(`QA用PDFを取得できません（${response.status}）`);
+    const file = new File([await response.blob()], "web-sekisan-demo.pdf", { type: "application/pdf" });
+    await analyzeFile(file);
+  }
+
   bindEvents();
+  loadQaImportFixture().catch((error) => app.notify(error.message || "QA用PDFを読み込めませんでした"));
 })();
