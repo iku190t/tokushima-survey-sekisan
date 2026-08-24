@@ -2107,3 +2107,28 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `index.html` | `4A30929CBF0D9F57E7D367DE499D7039579D0A1BE59A7D74BAFACFB814AD061C` |
 | `document-import.js` | `A95BF29AFB03F3324F3EAF2A3837766FBE91FC71DAD5D62B9B952927EAF2222E` |
 | `tests/test-document-import-ui.js` | `7C154AA3F2071D272576C301A250A3BE4FEDB4187F4C4968C140BCE7D078BF9C` |
+
+## B-2026-08-24-17
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-24
+- 実装コミット: `5ccf9464feabe1a2b2c59469302e0b75dcc05875`
+- 外部知能コミット: この項目を追加するコミット
+- GitHub Pages: `built`、コミット`5ccf9464feabe1a2b2c59469302e0b75dcc05875`、GitHub Actions実行`32704526628`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: PDFクリック取込の右側に重複していた「PDF原文（確認用）」ラベルと引用枠を廃止し、見出し直下を反映先選択へ詰めた。左側PDF、出典情報、番号1・2・3の空欄開始と個別対応付けは維持する。
+
+### 合格した試験・実画面確認
+
+- `tests/test-*.js`全18本、`node --check document-import.js`、`git diff --check`合格。
+- ローカル／公開版の匿名デモPDFで、`PDF原文（確認用）`0件、`#pdfManualSourceText`なし、見出し直後の最初の入力が`#pdfManualKind`であることを確認した。
+- 未判定PDF行をクリック後も、測量の作業項目・数量・単位がすべて空文字であることを確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `3A6F650622C8F0C3C92E6F45562EBA9A4D4D9DC756A2AB18FF06558D414B792D` |
+| `styles.css` | `0AB6367C8D3972D044F1D2906DC1C47210E81075A93500819A11A0658AEC5692` |
+| `document-import.js` | `2F7610E100337B213DEE43F0774664E92D5E0C9512E7365AF5166F85EF4253D6` |
+| `tests/test-document-import-ui.js` | `BB41AE642AAFF8B679C331B6934CC3F298DF79DC3EF076A85B9BD4ECCB5B7961` |
