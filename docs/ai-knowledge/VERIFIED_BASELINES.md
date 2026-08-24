@@ -2429,3 +2429,34 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `document-import.js` | `63E1681DA7A0DC741A82879297634343C408B90032F849DFA8F8AF70691C1C55` |
 | `styles.css` | `08B24C065BAAE12C014C51CA5420ED249AC0E3A697C3EC767C231E4BA21B0260` |
 | `tests/test-document-import-ui.js` | `F2B02ADF24E893C29A936235AAF0447BD6BECAF265BDD5081AB0C60A739EB723` |
+
+## B-2026-08-24-29
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-24
+- 実装コミット: `d35ae1f406913aac650a7d79a6fca9cc4100b938`
+- 外部知能コミット: この項目を追加するコミット
+- GitHub Pages: `built`、ビルド`1171855012`、コミット`d35ae1f406913aac650a7d79a6fca9cc4100b938`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: スマホ幅ではPDF・写真取込の導線と画面を非表示・操作不可にし、PCでは従来機能を保持する。web積算専用のショートカットアイコンをfavicon・Apple Touch Icon・Web App Manifestへ設定した。
+
+### 合格した試験・実画面確認
+
+- `node --check app.js`、`node --check document-import.js`、`tests/test-*.js`全19本、manifest JSON解析、`git diff --check`合格。
+- ローカル／公開版の1280pxでは取込ボタン表示・取込画面起動、390pxでは取込ボタン`display:none`・`hidden`、取込画面非表示、設計業務への自動復帰を確認した。
+- 32／180／192／512pxアイコンの画像寸法、ローカルHTTP 200、公開版のfavicon・manifest参照を確認した。
+- 公開版で`styles.css?v=20260824-21`、`app.js?v=20260824-15`、ブラウザー警告・エラー0件を確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `45DF59E2B07162B11254E976D41CE2C01843881329847533F09E4879BA4EE8FE` |
+| `app.js` | `0B49A9FA09CE1C328C615A9DDA47EDF7666BE12F5994B4222B3E5818BE2D5800` |
+| `document-import.js` | `A70D17D0BC594321C601969AD57F272E80F3487291227D92B14B22956D2564D5` |
+| `styles.css` | `40D7443EEF1DFAD7C3C57F5D52CCEFECE20F7528954A1F58434E1133C994DF0E` |
+| `site.webmanifest` | `D910CA21E4AC5DFABF3A581679782985D5E0168C33ED8DBFC231B0E0DDF0A69E` |
+| `web-sekisan-32.png` | `350B760C8A1CC525598BD96516E0F01C74E0734F1064A60306D6E8DE38DCA280` |
+| `web-sekisan-180.png` | `4432D31938A8BB3BD5AA8803AAEBA6F86A44BC85CA742AE223C16C3378119DB0` |
+| `web-sekisan-512.png` | `B4AB268CD42C867347A11FD975A9A0B7D71DB5439A40F7E4A2A4BAFC78AC77DE` |
+| `tests/test-ui-static.js` | `06A847DF2E07E1F360915FF088DF13B3E996068B66DF1035E1D69299BBC7CCF3` |
