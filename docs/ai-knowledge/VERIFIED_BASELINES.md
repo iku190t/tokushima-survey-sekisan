@@ -2219,3 +2219,31 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `document-import.js` | `247962CE7D91E73108D92A3BA1A98B6B36817E94592A33BC680C0052142EB446` |
 | `tests/test-document-import-ui.js` | `730C992D713EC61D5505F1D6F617BDB7C4B411A98B4993273B876780E1612340` |
 | `tests/test-unit-catalog.js` | `BFB8CD480E8C17EE0D94722535368689D513AF1385A59351474F551FE1B5D90A` |
+
+## B-2026-08-24-21
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-24
+- 実装コミット: `6f8bb690cfbf7b0955d72dd160d945606fcee91c`
+- 外部知能コミット: この項目を追加するコミット
+- GitHub Pages: `built`、コミット`6f8bb690cfbf7b0955d72dd160d945606fcee91c`、更新確認`2026-08-24T10:23:18Z`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: PDFで正常にドラッグした各文字ブロックを即時に濃い緑枠・チェック表示し、項目行全体へ未入力内容または入力完了を文字表示する。測量の規定書表を画面下部の計算根拠カードへ移し、4業務の主要カード順を統一する。
+
+### 合格した試験・実画面確認
+
+- `tests/test-*.js`全19本、`node --check document-import.js`、`git diff --check`合格。
+- ローカル匿名デモPDFで、項目ドラッグ直後に文字ブロック1個が緑枠・チェック、行全体が「項目追加済み｜数量未入力」となることを確認した。数量20の追加後は「項目追加済み｜単位未入力」、単位「点」の追加後は「入力完了」となり、文字ブロック3個の緑枠と行状態がPDF領域の往復スクロール後も残った。
+- 項目だけを反映待ちへ追加した後も、反映待ち1件と「項目追加済み｜数量未入力」の行表示が残ることを確認した。
+- ローカル／公開版で、設計・測量・調査計画・地質の主要カードが作業追加、積算内訳、追加費用・条件、計算根拠の4段・同順序であることを実DOM確認した。
+- 公開版で`document-import.js?v=20260824-19`、`styles.css?v=20260824-14`、項目ドラッグ後の緑枠1個と「項目追加済み｜数量未入力」、ブラウザー警告・エラー0件を確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `50C3CD1D1FA41A1674A2FD4253EDC45A4B7D87C8640689D8F7B39ADF13A2CF82` |
+| `styles.css` | `ECF4F2127CC795468935E44D649D5770EEEE70CB37CF89D12E0FFCF6ED0D9C23` |
+| `document-import.js` | `08375D91A8E9095A2C3A7B03147600E6535596407E0743A1F76558DDDE7D9544` |
+| `tests/test-document-import-ui.js` | `BC48E6B5859A364799A92A0E85FB83276A8E4393B191A913FDDC9F3031CB4B57` |
+| `tests/test-ui-static.js` | `6AB2A3AD203B2B9845974BC55BADA7E37E7BD0D99698778A7346D3F6CD36989E` |
