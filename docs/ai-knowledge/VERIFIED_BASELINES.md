@@ -1884,3 +1884,30 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `app.js` | `3E93BFD52D8C2A3229E758E1C57DF575AA5FB4129C4744B73CCBB1BD764362E1` |
 | `consulting.js` | `F5E716B144C1A376C215ABC99E02D4E6268C6405AE03382AC6AFC289C84FA18B` |
 | `tests/test-ui-static.js` | `24192DB8FD6CF1BC5AE779A811044DD0839139B49B7191342E8798755A7C8B0D` |
+
+## B-2026-08-24-09
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-24
+- 実装コミット: `1687111ad670b8fa03101fafa764e66f5817aad7`
+- 外部知能コミット: この項目を追加するコミット
+- GitHub Pagesビルド: `1171080579`（`built`、コミット`1687111ad670b8fa03101fafa764e66f5817aad7`）
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: 4業務の作業選択を、年度マスターに連動する常時表示キーワードへ統一し、名称検索を補助操作へ移した。正式な基準分類・業務条件・数量・出典は選択後に維持する。
+
+### 合格した試験・実画面確認
+
+- `tests/test-*.js`全18本合格、`node --check app.js`、`node --check consulting.js`、`git diff --check`合格。
+- 令和6～8年度で、各業務の表示キーワードに属する候補件数の合計が年度候補総数と一致した。令和8年度は設計313、測量141、調査・計画117、地質40件である。
+- 公開版4タブでキーワード一覧、選択中表示、補助検索の初期閉鎖、横あふれ0を確認した。測量「基準点」は14項目、設計「橋梁」は70歩掛、地質「解析」は7歩掛へ絞られた。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `85A025C62677AD18A79C707F1DEADF1345A57AC24D298696E0A7626D61C7C4D7` |
+| `styles.css` | `BF2BA7124A112EECBB1A10D20BE113891B3EB377A8C8D28281AB76F2C76CAF54` |
+| `app.js` | `B6739940BB6ED75D0CCBE2424DB0293786389CE975F2CFE79BDD9EFE65A62F5D` |
+| `consulting.js` | `881E19AFA79E9077C1D080658ECFD872503B2FEE0391ED08CEA9F4BAB855444C` |
+| `tests/test-ui-static.js` | `C5197766C9667500E744382CE947FAE7CDFF3AB34C6926990D12DD86332D309D` |
+| `tests/test-consulting-ui.js` | `FDF19BB248F7C4DEB869EB40E2243C790F6F49A0537DA40D937334913CD99055` |
