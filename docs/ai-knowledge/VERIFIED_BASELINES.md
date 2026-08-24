@@ -2460,3 +2460,34 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `web-sekisan-180.png` | `4432D31938A8BB3BD5AA8803AAEBA6F86A44BC85CA742AE223C16C3378119DB0` |
 | `web-sekisan-512.png` | `B4AB268CD42C867347A11FD975A9A0B7D71DB5439A40F7E4A2A4BAFC78AC77DE` |
 | `tests/test-ui-static.js` | `06A847DF2E07E1F360915FF088DF13B3E996068B66DF1035E1D69299BBC7CCF3` |
+
+## B-2026-08-25-01
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-25
+- 実装コミット: `aa0937315fcf4c490134fc5fc324ae60e611aa7e`
+- 公開キャッシュ更新コミット: `ced06713e108d8c89bfabf4dc9821a45285166c4`
+- 外部知能コミット: この項目を追加するコミット
+- GitHub Pages: `built`、コミット`ced06713e108d8c89bfabf4dc9821a45285166c4`、更新時刻`2026-08-24T23:25:26Z`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: 4業務の現場条件を同一積算・業務区分内の後続作業へ継承し、年度・基本情報・費用条件・PDF取込み絞込み・帳票設定を前回データ復元時に戻す。新規積算は現場条件と絞込みを初期化する。
+
+### 合格した試験・実画面確認
+
+- `node --check app.js`、`node --check consulting.js`、`node --check document-import.js`、`tests/test-*.js`全19本、`git diff --check`合格。
+- ローカルで測量の森林・丘陵地／交通量条件を次の路線測量項目へ継承し、設計の地形・車線・特殊法面条件を別の道路設計項目へ継承することを確認した。
+- 新規積算では測量条件とキーワードが初期化されることを確認した。
+- PDF取込みで設計業務／道路／道路詳細設計を保存し、再読込み後に前回データを復元すると同じ絞込みへ戻ることを確認した。
+- 公開版で3スクリプトの`v=20260825-1`、タイトル、復元案内、ブラウザーエラー0件を確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `app.js` | `49DAC656F5775108CCC8EAB53C179DC96037014B0CE00598118D6B3EEA00F48F` |
+| `consulting.js` | `E347FE7E74927204341D2B9E7B04E33BD6770B89DA480484AF4A9CC543CB8E90` |
+| `document-import.js` | `B670D5A886D0353F08FB8AEEC65BDCA2EBD2E7BC599CCCD801BDB87844758DD6` |
+| `index.html` | `BBDFE1A482C402FB58AE9D98C988FD20B7CCA0A02E81707751CD95060BF7C082` |
+| `tests/test-ui-static.js` | `E97F100A0A4D34620F7DF099EBB6BD1EB8682162CFE055CB98085EB5BE0C331C` |
+| `tests/test-consulting-ui.js` | `E5BC83F94FF1F5D1AD3C22ED19935EF36A8E84FD657BA7621B337BBF8BCDAD39` |
+| `tests/test-document-import-ui.js` | `127A9C89C61A72252CF50D6C0DE881EE47A061146084BAA8626461C626F45D74` |
