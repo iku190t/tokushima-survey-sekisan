@@ -460,29 +460,30 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
 .pdf-manual-mapper { display: grid; grid-template-rows: auto auto minmax(0,1fr); gap: 10px; height: 100%; min-height: 0; padding: 12px; overflow: hidden; background: #f1f7f4; border: 1px solid #9dbdae; border-radius: 10px; box-shadow: 0 7px 22px rgba(24,75,58,.1); }
 .pdf-manual-mapper[hidden], .pdf-manual-fields[hidden] { display: none; }
 .pdf-manual-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.pdf-manual-heading strong { color: var(--green-dark); font-size: 12px; }
+.pdf-manual-heading strong { color: var(--green-dark); font-size: 14px; }
 .pdf-manual-heading button { width: 28px; height: 28px; padding: 0; color: #40544b; background: #fff; border: 1px solid var(--line); border-radius: 50%; cursor: pointer; }
 .pdf-manual-scroll-body { display: grid; align-content: start; gap: 12px; min-height: 0; padding: 2px 4px 0 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
 .pdf-manual-scroll-body > .field:first-child { padding-bottom: 10px; border-bottom: 1px solid #c9ddd4; }
 .pdf-manual-keyword-filter { position: relative; z-index: 0; margin: 0; padding: 9px; background: rgba(255,255,255,.82); border: 1px solid #c9ddd4; border-radius: 9px; isolation: isolate; }
+.pdf-manual-keyword-filter > span { font-size: 13px; }
 .pdf-manual-keyword-filter .work-keyword-list { gap: 5px; }
-.pdf-manual-keyword-filter .work-keyword-button { min-height: 28px; padding: 5px 8px; font-size: 9px; }
+.pdf-manual-keyword-filter .work-keyword-button { min-height: 28px; padding: 5px 8px; font-size: 11px; }
 .pdf-manual-fields { display: grid; gap: 8px; }
 .pdf-manual-mapper .field { gap: 4px; }
 .pdf-field-drop-target { position: relative; padding: 8px; background: #fff; border: 2px dashed #4e9b7c; border-radius: 9px; box-shadow: inset 0 0 0 3px rgba(78,155,124,.07); transition: .14s; }
-.pdf-manual-mapper .field > span { font-size: 9px; }
-.pdf-manual-mapper input, .pdf-manual-mapper select { min-width: 0; padding: 8px 9px; font-size: 10px; }
-.pdf-drop-title { display: flex; align-items: center; gap: 6px; color: #0d583f; font-size: 10px !important; font-weight: 900; }
-.pdf-drop-title b { width: 19px; height: 19px; display: inline-grid; flex: 0 0 auto; place-items: center; color: #fff; background: #16704e; border-radius: 50%; font-size: 10px; }
-.pdf-drop-callout { display: block; padding: 6px 8px; color: #174d3c !important; background: #e2f3eb; border-radius: 6px; font-size: 9px !important; font-weight: 800; line-height: 1.45; }
+.pdf-manual-mapper .field > span { font-size: 11px; }
+.pdf-manual-mapper input, .pdf-manual-mapper select { min-width: 0; padding: 8px 9px; font-size: 12px; }
+.pdf-drop-title { display: flex; align-items: center; gap: 6px; color: #0d583f; font-size: 12px !important; font-weight: 900; }
+.pdf-drop-title b { width: 21px; height: 21px; display: inline-grid; flex: 0 0 auto; place-items: center; color: #fff; background: #16704e; border-radius: 50%; font-size: 12px; }
+.pdf-drop-callout { display: block; padding: 6px 8px; color: #174d3c !important; background: #e2f3eb; border-radius: 6px; font-size: 11px !important; font-weight: 800; line-height: 1.45; }
 .pdf-field-drop-target > input, .pdf-field-drop-target > select { border-color: #8db7a5; }
 .pdf-manual-quantity { display: grid; grid-template-columns: 1fr; align-items: stretch; gap: 7px; }
 .pdf-manual-quantity > label { display: grid; align-content: start; gap: 5px; margin: 0; }
-.pdf-survey-quantity-field > strong { padding: 8px 9px; color: #124d3a; background: #e3f2ea; border-radius: 7px; font-size: 10px; line-height: 1.5; }
-.pdf-manual-fields small { color: var(--muted); font-size: 9px; line-height: 1.45; }
+.pdf-survey-quantity-field > strong { padding: 8px 9px; color: #124d3a; background: #e3f2ea; border-radius: 7px; font-size: 12px; line-height: 1.5; }
+.pdf-manual-fields small { color: var(--muted); font-size: 11px; line-height: 1.45; }
 .pdf-manual-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .pdf-manual-footer { position: relative; z-index: 2; padding: 9px; background: #e6f2ec; border: 1px solid #bdd6ca; border-radius: 9px; box-shadow: 0 6px 16px rgba(24,75,58,.09); }
-.pdf-manual-add-hint { margin: 0 0 7px; padding: 7px 9px; color: #52615b; background: #f3f6f4; border-radius: 7px; font-size: .72rem; line-height: 1.4; }
+.pdf-manual-add-hint { margin: 0 0 7px; padding: 7px 9px; color: #52615b; background: #f3f6f4; border-radius: 7px; font-size: .86rem; line-height: 1.4; }
 .pdf-manual-add-hint.is-ready { color: #124f3d; background: #dff3e9; font-weight: 700; }
 #addPdfManualCandidateButton.is-ready { box-shadow: 0 0 0 4px rgba(174,225,81,.3); transform: translateY(-1px); }
 .pending-input-row { background: #fff9e9; }

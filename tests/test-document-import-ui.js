@@ -120,7 +120,10 @@ assert.ok(css.includes("--pdf-work-height: clamp(680px,88vh,960px)") && css.incl
 assert.ok(css.includes("grid-template-columns: minmax(0,1fr) clamp(330px,22vw,390px)") && css.includes("align-items: stretch"), "PDF作業画面の重複余白を除き横幅と縦幅を広く使う");
 assert.ok(html.includes("pdf-drop-title") && html.includes("pdf-drop-callout") && css.includes("border: 2px dashed #4e9b7c"), "項目・数量・単位のドロップ先を常時強調する");
 assert.ok(ui.includes('PDF横（狭い画面では下）の緑枠「PDFから項目・数量・単位を入れる」') && !ui.includes("候補が${matched.matches.length}件あります。右側"), "複数候補の案内は曖昧な『右側』ではなく操作枠名と配置を示す");
-assert.ok(html.includes('id="pdfManualAddHint"') && ui.includes("作業項目だけでも追加できます") && css.includes("#addPdfManualCandidateButton.is-ready"), "作業項目を選ぶと反映待ち追加ボタンと案内を強調する");
+assert.ok(html.includes('id="pdfManualAddHint" class="pdf-manual-add-hint" hidden') && ui.includes("作業項目だけでも追加できます") && css.includes("#addPdfManualCandidateButton.is-ready"), "重複案内は非表示にし、作業項目を選ぶと反映待ち追加ボタンだけを強調する");
+assert.ok(html.includes('<span class="sr-only">積算基準の作業区分</span>') && html.includes('<span class="sr-only">資料の数量・単位</span>') && html.includes('id="pdfManualSurveyConversion" hidden') && html.includes('id="pdfManualSurveyRule" hidden'), "不要な補助見出しと未選択時メッセージを画面へ表示しない");
+assert.ok(ui.includes("conversion.hidden = true") && ui.includes("conversion.hidden = false"), "数量と単位が揃った場合だけ換算結果を表示する");
+for (const size of ["font-size: 13px", "font-size: 11px", "font-size: 12px"]) assert.ok(css.includes(size), `PDF右入力欄の文字を拡大する: ${size}`);
 assert.ok(ui.includes("const inputPending = !(quantity > 0)") && ui.includes("quantity: inputPending ? null : quantity") && ui.includes("splitSurveyQuantityUnit"), "数量・単位未入力でも項目を入力待ち候補にし、数字付き単位を分離する");
 assert.ok(app.includes("数量未入力（計算対象外）") && app.includes("!line.inputPending") && consulting.includes("職種・人工未入力") && consulting.includes("!line.inputPending"), "未入力行を4業務画面に明示し計算対象から除外する");
 

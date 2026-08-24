@@ -7,7 +7,7 @@
   <meta name="description" content="設計、測量、調査・計画、地質を年度別技術者単価と根拠表示付きで計算するWeb業務積算ソフト">
   <meta name="author" content="株式会社アイズ測量">
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="styles.css?v=20260824-19">
+  <link rel="stylesheet" href="styles.css?v=20260824-20">
 </head>
 <body data-business-scope="design">
   <header class="app-header">
@@ -357,7 +357,7 @@
             <section id="pdfManualMapper" class="pdf-manual-mapper" hidden>
               <div class="pdf-manual-heading"><strong id="pdfManualHeadingText">この行の反映先を指定</strong><button id="cancelPdfManualLineButton" type="button" aria-label="閉じる">×</button></div>
               <footer class="pdf-manual-footer">
-                <p id="pdfManualAddHint" class="pdf-manual-add-hint">作業項目を選ぶと、数量・単位が未入力でも反映待ちへ追加できます。</p>
+                <p id="pdfManualAddHint" class="pdf-manual-add-hint" hidden>作業項目を選ぶと、数量・単位が未入力でも反映待ちへ追加できます。</p>
                 <div class="pdf-manual-actions"><button id="addPdfManualCandidateButton" class="button primary" type="button">反映待ちへ追加</button><button id="ignorePdfManualLineButton" class="button" type="button">この行は対象外</button></div>
               </footer>
               <div class="pdf-manual-scroll-body">
@@ -365,13 +365,13 @@
               <div id="pdfManualKeywordFilter" class="work-keyword-filter pdf-manual-keyword-filter"><span>キーワードから選ぶ</span><div id="pdfManualKeywordList" class="work-keyword-list" role="group" aria-label="PDF取込の作業キーワード"></div></div>
               <div id="pdfManualSurveyFields" class="pdf-manual-fields">
                 <select id="pdfManualSurveyRegulationGroup" hidden aria-hidden="true"></select>
-                <label class="field"><span>積算基準の作業区分</span><select id="pdfManualSurveyCategory"></select></label>
+                <label class="field"><span class="sr-only">積算基準の作業区分</span><select id="pdfManualSurveyCategory" aria-label="積算基準の作業区分"></select></label>
                 <label class="field pdf-field-drop-target" data-pdf-drop-target="item"><span class="pdf-drop-title"><b aria-hidden="true">1</b>作業項目</span><small class="pdf-drop-callout">左のPDFから作業項目の文字枠をここへドロップ</small><select id="pdfManualSurveyCode" aria-label="積算する作業項目"></select></label>
-                <div class="field pdf-survey-quantity-field"><span>資料の数量・単位</span><div class="pdf-manual-quantity"><label class="pdf-field-drop-target" data-pdf-drop-target="quantity"><span class="pdf-drop-title"><b aria-hidden="true">2</b>PDFの数量をドロップ</span><small class="pdf-drop-callout">例：6.9、11</small><input id="pdfManualSurveyQuantity" type="number" aria-label="資料の数量"></label><label class="pdf-field-drop-target" data-pdf-drop-target="unit"><span class="pdf-drop-title"><b aria-hidden="true">3</b>PDFの単位をドロップ</span><small class="pdf-drop-callout">例：10,000m²、回</small><select id="pdfManualSurveySourceUnit" aria-label="資料の単位"></select></label></div><strong id="pdfManualSurveyConversion">項目を選択してください。</strong><small id="pdfManualSurveyRule">項目を選択してください。</small></div>
+                <div class="field pdf-survey-quantity-field"><span class="sr-only">資料の数量・単位</span><div class="pdf-manual-quantity"><label class="pdf-field-drop-target" data-pdf-drop-target="quantity"><span class="pdf-drop-title"><b aria-hidden="true">2</b>PDFの数量をドロップ</span><small class="pdf-drop-callout">例：6.9、11</small><input id="pdfManualSurveyQuantity" type="number" aria-label="資料の数量"></label><label class="pdf-field-drop-target" data-pdf-drop-target="unit"><span class="pdf-drop-title"><b aria-hidden="true">3</b>PDFの単位をドロップ</span><small class="pdf-drop-callout">例：10,000m²、回</small><select id="pdfManualSurveySourceUnit" aria-label="資料の単位"></select></label></div><strong id="pdfManualSurveyConversion" hidden></strong><small id="pdfManualSurveyRule" hidden></small></div>
               </div>
               <div id="pdfManualConsultingFields" class="pdf-manual-fields" hidden>
                 <select id="pdfManualConsultingService" hidden aria-hidden="true"></select>
-                <label class="field"><span>積算基準の作業区分</span><select id="pdfManualConsultingRuleGroup"></select></label>
+                <label class="field"><span class="sr-only">積算基準の作業区分</span><select id="pdfManualConsultingRuleGroup" aria-label="積算基準の作業区分"></select></label>
                 <label class="field pdf-field-drop-target" data-pdf-drop-target="consulting-task"><span class="pdf-drop-title"><b aria-hidden="true">1</b>作業項目</span><small class="pdf-drop-callout">左のPDFから作業項目の文字枠をここへドロップ</small><select id="pdfManualConsultingTaskTemplate"></select></label>
                 <input id="pdfManualConsultingTask" type="hidden">
                 <label class="field pdf-field-drop-target" data-pdf-drop-target="consulting-role"><span class="pdf-drop-title"><b aria-hidden="true">2</b>PDFの職種をドロップ</span><small class="pdf-drop-callout">例：主任技師、技師（A）</small><select id="pdfManualConsultingRole"></select></label>
@@ -670,7 +670,7 @@
   <script src="document-reader.js?v=20260823-1"></script>
   <script src="app.js?v=20260824-14"></script>
   <script src="consulting.js?v=20260824-17"></script>
-  <script src="document-import.js?v=20260824-19"></script>
+  <script src="document-import.js?v=20260824-20"></script>
   <script src="analytics.js?v=20260823-1"></script>
 </body>
 </html>

@@ -297,24 +297,28 @@
 
   function updateManualSurveyConversion() {
     const item = activeMaster().workItems.find((entry) => entry.code === $("pdfManualSurveyCode").value);
+    const conversion = $("pdfManualSurveyConversion");
     if (!item) {
-      $("pdfManualSurveyConversion").textContent = "項目を選択してください。";
+      conversion.hidden = true;
+      conversion.textContent = "";
       updateManualAddButtonState();
       return null;
     }
     if ($("pdfManualSurveyQuantity").value === "" || !$("pdfManualSurveySourceUnit").value) {
-      $("pdfManualSurveyConversion").textContent = "数量・単位は未入力のまま追加でき、積算画面で後から入力できます。";
+      conversion.hidden = true;
+      conversion.textContent = "";
       updateManualAddButtonState();
       return null;
     }
     const converted = analyzer.convertSurveyQuantity($("pdfManualSurveyQuantity").value, $("pdfManualSurveySourceUnit").value, item);
+    conversion.hidden = false;
     if (!converted.compatible) {
-      $("pdfManualSurveyConversion").textContent = `${converted.sourceUnitLabel.replace("（固定換算なし）", "")}から${item.unit}への全国共通換算はありません。PDFの項目に対応する同じ単位の積算項目を選んでください。`;
+      conversion.textContent = `${converted.sourceUnitLabel.replace("（固定換算なし）", "")}から${item.unit}への全国共通換算はありません。PDFの項目に対応する同じ単位の積算項目を選んでください。`;
       return converted;
     }
     const raw = quantityFormat.format(converted.rawQuantity);
     const result = quantityFormat.format(window.SekisanEngine.normalizeQuantity(converted.quantity, item, activeMaster()));
-    $("pdfManualSurveyConversion").textContent = converted.factor === 1
+    conversion.textContent = converted.factor === 1
       ? `${raw}${converted.sourceUnitLabel} ＝ ${result}${item.unit}（積算へ反映）`
       : `${raw} × ${converted.sourceUnitLabel} ＝ ${result}${item.unit}（積算へ反映）`;
     updateManualAddButtonState();
@@ -325,8 +329,9 @@
     const item = activeMaster().workItems.find((entry) => entry.code === $("pdfManualSurveyCode").value);
     if (!item) {
       $("pdfManualSurveySourceUnit").innerHTML = '<option value="">単位を選択してください</option>';
-      $("pdfManualSurveyConversion").textContent = "項目を選択してください。";
-      $("pdfManualSurveyRule").textContent = "項目を選択してください。";
+      $("pdfManualSurveyConversion").hidden = true;
+      $("pdfManualSurveyConversion").textContent = "";
+      $("pdfManualSurveyRule").textContent = "";
       return;
     }
     const rule = window.SekisanEngine.quantityRule(item, activeMaster());
