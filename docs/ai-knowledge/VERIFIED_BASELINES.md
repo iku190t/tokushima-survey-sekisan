@@ -2325,3 +2325,30 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `index.html` | `B4B4FD90DE746B7F21F54C2BE0B9F03666836521A95A28FB122E554810F23D59` |
 | `styles.css` | `5358D46F93B162551CBD902EFC62656597D5FF20F57C1B2BBA9DD979CFB05F26` |
 | `tests/test-document-import-ui.js` | `37D68F7A7C13508DE5C7525E7666300E1E7BB73424C9A2B8D364E5038F978EA9` |
+
+## B-2026-08-24-25
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-24
+- 実装コミット: `527a01b6ef18ede5b84c1dc2c1c2f51ec18369f1`
+- 外部知能コミット: この項目を追加するコミット
+- GitHub Pages: `built`、ビルド`1171742371`、コミット`527a01b6ef18ede5b84c1dc2c1c2f51ec18369f1`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: 4業務の作業追加ボタンを未入力時もクリック可能にし、追加操作時に不足理由を警告表示して該当欄へスクロール・フォーカス・強調する。検証失敗時は明細へ追加しない。
+
+### 合格した試験・実画面確認
+
+- `node --check app.js`、`node --check consulting.js`、`tests/test-*.js`全19本、`git diff --check`合格。
+- ローカル実ブラウザーで設計・測量・調査計画・地質の未入力追加を操作し、各業務で警告、最初の不足欄へのフォーカス・強調、明細非追加を確認した。
+- 公開版で現地測量`9-1-2`、数量`0.1km²`、条件表「縮尺・地域・地形（9-2）」未選択の状態から追加を押し、警告後に`scaleRegion`プルダウンへ移動・強調、測量明細0件、ブラウザー警告・エラー0件を確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `5973CBF450956A4398579D713B10D97505CEBE70D27D0798CD6D8B4195EB0657` |
+| `app.js` | `29D3791979FD4D4B6BCA744DED885980D4E752A6D68485042E053D8A0253266D` |
+| `consulting.js` | `1A033511E9A30C67A71CF9AFE2AA6955DC946A468916D08A7E3EE075334D2479` |
+| `styles.css` | `AA904883B960642EC9B97E418201D1AE02DF1218DB4863E7C678EEA5C1882BDC` |
+| `tests/test-ui-static.js` | `1E65ED7AEC9522D92614AD17A018CF7D555B667E62C817A803FA4F9800EDE713` |
+| `tests/test-consulting-ui.js` | `D978AE51B47E71CF67D92C92AF460BC69CFA409AC64D1A10565ECD68FB2DA962` |
