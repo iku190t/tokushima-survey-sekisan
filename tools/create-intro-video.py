@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import os
+import subprocess
 import sys
+import wave
 from pathlib import Path
 
 import imageio.v2 as imageio
@@ -14,7 +16,10 @@ from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT / "media" / "intro-assets"
 OUTPUT = ROOT / "media" / "web-sekisan-introduction.mp4"
+SILENT_OUTPUT = ROOT / "media" / "web-sekisan-introduction-silent.mp4"
 THUMBNAIL = ROOT / "media" / "web-sekisan-introduction-thumbnail.jpg"
+NARRATION = ASSETS / "narration.wav"
+MUSIC = ASSETS / "original-bgm.wav"
 WIDTH, HEIGHT, FPS = 1280, 720, 24
 GREEN = "#174f3f"
 LIME = "#d6ef6a"
@@ -93,24 +98,14 @@ def screenshot_frame(path: Path, title: str, body: str, number: str, progress: f
     return image
 
 
-def import_frame(progress: float) -> Image.Image:
-    image = fit_screen(ASSETS / "04-import.png", progress)
+def import_workflow_frame(path: Path, title: str, body: str, number: str, progress: float) -> Image.Image:
+    image = fit_screen(path, progress)
     draw = ImageDraw.Draw(image, "RGBA")
-    draw.rounded_rectangle((48, 32, 1232, 116), radius=18, fill=(15, 55, 44, 232))
-    draw.text((82, 74), "PDF・写真をドロップするだけ", font=font(35, True), fill="white", anchor="lm")
-    steps = [
-        ("1", "項目名", "PDFの文字枠を選択"),
-        ("2", "数量", "数値を確認・修正"),
-        ("3", "単位", "換算結果を確認して反映"),
-    ]
-    for index, (number, heading, detail) in enumerate(steps):
-        left = 87 + index * 398
-        top = 492
-        draw.rounded_rectangle((left, top, left + 350, top + 150), radius=20, fill=(255, 255, 255, 238), outline=(23, 104, 81, 185), width=3)
-        draw.ellipse((left + 22, top + 24, left + 70, top + 72), fill=GREEN)
-        draw.text((left + 46, top + 48), number, font=font(22, True), fill="white", anchor="mm")
-        draw.text((left + 88, top + 26), heading, font=font(26, True), fill=INK)
-        draw.text((left + 24, top + 92), detail, font=font(18), fill="#36554b")
+    draw.rounded_rectangle((42, 25, 1238, 118), radius=18, fill=(15, 55, 44, 235))
+    draw.ellipse((70, 44, 126, 100), fill=LIME)
+    draw.text((98, 72), number, font=font(24, True), fill=INK, anchor="mm")
+    draw.text((148, 49), title, font=font(31, True), fill="white")
+    draw.text((150, 87), body, font=font(18), fill="#dce9e4")
     return image
 
 
@@ -134,9 +129,12 @@ SCENES = [
     (5.5, lambda p: screenshot_frame(ASSETS / "01-design.png", "4つの業務をタブで切替", "設計・測量・調査計画・地質を、共通レイアウトで迷わず操作。", "1", p)),
     (5.5, lambda p: screenshot_frame(ASSETS / "02-survey.png", "キーワードから素早く選択", "基準点、水準、UAV・レーザなどを一覧から絞り込み。", "2", p)),
     (6.5, lambda p: screenshot_frame(ASSETS / "03-calculation.png", "数量を入れると自動積算", "単位・入力桁を項目ごとに制限し、内訳と合計を即時再計算。", "3", p)),
-    (6.5, import_frame),
-    (5.5, lambda p: screenshot_frame(ASSETS / "05-master.png", "令和6〜8年度を切替", "全国標準の歩掛・技術者単価・経費率を年度別に管理。", "5", p)),
-    (5.5, lambda p: screenshot_frame(ASSETS / "06-reports.png", "提出用帳票をPDFへ", "見積書・積算内訳・計算根拠をA4書式でまとめて出力。", "6", p)),
+    (4.8, lambda p: import_workflow_frame(ASSETS / "04-import-loaded.png", "匿名PDFを実際に読み込み", "文字入りPDFをブラウザー内で直接抽出。案件資料そのものは外部送信しません。", "4", p)),
+    (4.8, lambda p: import_workflow_frame(ASSETS / "04-import-drag-item-quantity.png", "項目名と数量をドラッグ", "PDFの文字枠を、横の緑枠にポチポチ移して対応付けます。", "5", p)),
+    (4.8, lambda p: import_workflow_frame(ASSETS / "04-import-drag-complete.png", "単位もドラッグして確認", "項目・数量・単位がそろったら、換算結果を確認して反映待ちへ追加。", "6", p)),
+    (4.3, lambda p: import_workflow_frame(ASSETS / "04-import-pending.png", "同じ画面で続けて追加", "積算画面へ戻らず、次のPDF行を連続して処理できます。", "7", p)),
+    (5.5, lambda p: screenshot_frame(ASSETS / "05-master.png", "令和6〜8年度を切替", "全国標準の歩掛・技術者単価・経費率を年度別に管理。", "8", p)),
+    (5.5, lambda p: screenshot_frame(ASSETS / "06-reports.png", "提出用帳票をPDFへ", "見積書・積算内訳・計算根拠をA4書式でまとめて出力。", "9", p)),
     (4.5, end_frame),
 ]
 
@@ -145,14 +143,74 @@ def blend(a: Image.Image, b: Image.Image, amount: float) -> Image.Image:
     return Image.blend(a.convert("RGB"), b.convert("RGB"), max(0.0, min(1.0, amount)))
 
 
+def create_original_music(duration: float) -> None:
+    """Generate a calm, original four-chord background track."""
+    rate = 44100
+    sample_count = int(duration * rate)
+    timeline = np.arange(sample_count, dtype=np.float64) / rate
+    audio = np.zeros(sample_count, dtype=np.float64)
+    chords = [
+        (130.81, 164.81, 196.00),
+        (110.00, 130.81, 164.81),
+        (87.31, 110.00, 130.81),
+        (98.00, 123.47, 146.83),
+    ]
+    bar_seconds = 4.0
+    for index, chord in enumerate(chords):
+        mask = ((timeline // bar_seconds).astype(int) % len(chords)) == index
+        local = timeline % bar_seconds
+        envelope = np.minimum(1.0, local / 0.35) * np.minimum(1.0, (bar_seconds - local) / 0.7)
+        for note_index, frequency in enumerate(chord):
+            audio[mask] += (0.045 / (note_index + 1)) * np.sin(2 * np.pi * frequency * timeline[mask]) * envelope[mask]
+    beat = timeline % 1.0
+    pluck_env = np.exp(-beat * 5.2)
+    audio += 0.025 * np.sin(2 * np.pi * 523.25 * timeline) * pluck_env
+    fade = np.minimum(1.0, timeline / 1.2) * np.minimum(1.0, (duration - timeline) / 1.8)
+    pcm = np.int16(np.clip(audio * fade, -0.95, 0.95) * 32767)
+    stereo = np.column_stack([pcm, np.int16(pcm * 0.94)]).ravel()
+    with wave.open(str(MUSIC), "wb") as stream:
+        stream.setnchannels(2)
+        stream.setsampwidth(2)
+        stream.setframerate(rate)
+        stream.writeframes(stereo.tobytes())
+
+
+def add_audio(duration: float) -> None:
+    narration_script = ROOT / "tools" / "create-intro-narration.ps1"
+    pwsh = Path.home() / ".cache" / "codex-runtimes" / "codex-primary-runtime" / "dependencies" / "native" / "powershell" / "pwsh.exe"
+    if not pwsh.exists():
+        pwsh = Path("powershell.exe")
+    subprocess.run([
+        str(pwsh), "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", str(narration_script), "-OutputPath", str(NARRATION)
+    ], check=True)
+    create_original_music(duration)
+    import imageio_ffmpeg
+    ffmpeg = imageio_ffmpeg.get_ffmpeg_exe()
+    subprocess.run([
+        ffmpeg, "-y", "-i", str(SILENT_OUTPUT), "-i", str(NARRATION), "-i", str(MUSIC),
+        "-filter_complex", "[1:a]volume=0.95[n];[2:a]volume=0.38[m];[n][m]amix=inputs=2:duration=longest:normalize=0[a]",
+        "-map", "0:v:0", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "160k", "-shortest", "-movflags", "+faststart", str(OUTPUT)
+    ], check=True)
+
+
 def main() -> None:
+    if "--audio-only" in sys.argv:
+        import imageio_ffmpeg
+        if not SILENT_OUTPUT.exists():
+            raise FileNotFoundError(f"Missing silent video: {SILENT_OUTPUT}")
+        _, duration = imageio_ffmpeg.count_frames_and_secs(str(SILENT_OUTPUT))
+        add_audio(duration)
+        SILENT_OUTPUT.unlink(missing_ok=True)
+        print(f"Created: {OUTPUT} ({OUTPUT.stat().st_size} bytes)")
+        print(f"Duration: {duration:.2f} seconds with narration and original BGM")
+        return
     missing = [path for path in [ASSETS / f"0{i}-{name}.png" for i, name in enumerate(["design", "survey", "calculation", "import", "master", "reports"], 1)] if not path.exists()]
     if missing:
         raise FileNotFoundError("Missing intro assets: " + ", ".join(map(str, missing)))
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     transition_frames = int(0.55 * FPS)
     writer = imageio.get_writer(
-        OUTPUT,
+        SILENT_OUTPUT,
         fps=FPS,
         codec="libx264",
         quality=8,
@@ -161,6 +219,7 @@ def main() -> None:
         ffmpeg_log_level="warning",
     )
     previous_tail: list[Image.Image] = []
+    written_frames = 0
     try:
         for scene_index, (duration, renderer) in enumerate(SCENES):
             frame_count = int(duration * FPS)
@@ -168,19 +227,26 @@ def main() -> None:
             if previous_tail:
                 for index in range(transition_frames):
                     writer.append_data(np.asarray(blend(previous_tail[index], frames[index], (index + 1) / (transition_frames + 1))))
+                    written_frames += 1
                 frames = frames[transition_frames:]
             keep = frames[-transition_frames:] if scene_index < len(SCENES) - 1 else []
             body = frames[:-transition_frames] if keep else frames
             for frame in body:
                 writer.append_data(np.asarray(frame))
+                written_frames += 1
             previous_tail = keep
         for frame in previous_tail:
             writer.append_data(np.asarray(frame))
+            written_frames += 1
     finally:
         writer.close()
-    thumbnail = screenshot_frame(ASSETS / "03-calculation.png", "数量から、積算・内訳・帳票まで。", "web積算の便利な機能を45秒で紹介", "Σ", 0.35)
+    duration = written_frames / FPS
+    add_audio(duration)
+    SILENT_OUTPUT.unlink(missing_ok=True)
+    thumbnail = screenshot_frame(ASSETS / "04-import-drag-complete.png", "PDFから、積算・内訳・帳票まで。", "音声・BGM付きで便利な機能を紹介", "Σ", 0.35)
     thumbnail.save(THUMBNAIL, quality=92, subsampling=0)
     print(f"Created: {OUTPUT} ({OUTPUT.stat().st_size} bytes)")
+    print(f"Duration: {duration:.2f} seconds with narration and original BGM")
     print(f"Created: {THUMBNAIL} ({THUMBNAIL.stat().st_size} bytes)")
 
 

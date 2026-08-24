@@ -412,7 +412,7 @@
         app.notify(`詳細項目「${matched.task}」を選びました`);
       } else {
         $("pdfManualConsultingTask").value = line.text.trim();
-        app.notify("一致する詳細項目を確定できないため、内訳名称へ入れました。右側で確認してください");
+        app.notify("一致する詳細項目を確定できないため、内訳名称へ入れました。PDF横（狭い画面では下）の緑枠で確認してください");
       }
     } else if (targetType === "consulting-role") {
       manualConsultingRoleLineId = lineId;
@@ -421,17 +421,17 @@
         $("pdfManualConsultingRole").value = matched.id;
         app.notify(`職種「${matched.name}」を選びました`);
       } else {
-        app.notify("一致する職種を確定できません。右側で職種を選んでください");
+        app.notify("一致する職種を確定できません。PDF横（狭い画面では下）の緑枠で職種を選んでください");
       }
     } else if (targetType === "consulting-days") {
       manualConsultingDaysLineId = lineId;
       $("pdfManualConsultingDays").value = quantityFromLine(line.text);
-      app.notify(`人工「${line.text}」を右側へ入れました`);
+      app.notify(`人工「${line.text}」を緑枠の人工欄へ入れました`);
     } else if (targetType === "quantity") {
       manualQuantityLineId = lineId;
       $("pdfManualSurveyQuantity").value = quantityFromLine(line.text);
       updateManualSurveyConversion();
-      app.notify(`数量「${line.text}」を右側へ入れました`);
+      app.notify(`数量「${line.text}」を緑枠の数量欄へ入れました`);
     } else if (targetType === "unit") {
       manualUnitLineId = lineId;
       const item = activeMaster().workItems.find((entry) => entry.code === $("pdfManualSurveyCode").value);
@@ -439,10 +439,10 @@
         const unitId = analyzer.detectSurveyUnitId(line.text, item);
         if (unitId) {
           updateManualSurveyRule(unitId);
-          app.notify(`単位「${line.text}」を右側へ入れました`);
+          app.notify(`単位「${line.text}」を緑枠の単位欄へ入れました`);
         } else {
           updateManualSurveyRule("");
-          app.notify("単位を判定できません。右側で選択してください");
+          app.notify("単位を判定できません。PDF横（狭い画面では下）の緑枠で単位を選んでください");
         }
       } else {
         app.notify("先に積算する詳細項目を選んでください");
@@ -461,9 +461,9 @@
         updateManualSurveyRule();
         app.notify(`項目「${matched.item.name}」を選びました`);
       } else if (matched.matches.length > 1) {
-        app.notify(`候補が${matched.matches.length}件あります。右側で詳細項目を選んでください`);
+        app.notify(`候補が${matched.matches.length}件あります。PDF横（狭い画面では下）の緑枠「PDFから項目・数量・単位を入れる」で詳細項目を選んでください`);
       } else {
-        app.notify("一致する詳細項目を確定できません。右側で分類と詳細項目を選んでください");
+        app.notify("一致する詳細項目を確定できません。PDF横（狭い画面では下）の緑枠で分類と詳細項目を選んでください");
       }
     }
     updateManualSourceSummary();
@@ -654,12 +654,15 @@
         if (targets.length) mappedLines += 1;
         const confidence = !targets.length ? "unmapped" : targets.some((target) => target.item.confidence === "low") ? "low" : targets.some((target) => target.item.confidence === "medium") ? "medium" : "high";
         const labels = targets.length ? targets.map(clickTargetLabel).join("／") : `${line.text}：反映先を指定`;
-        return `<button class="pdf-line-hotspot" draggable="true" data-pdf-line-id="${h(lineId)}" data-confidence="${h(confidence)}" data-mapped="${targets.length ? "true" : "false"}" data-selected="false" data-applied="false" data-ignored="false" data-dragging="false" type="button" style="left:${(line.left * 100).toFixed(3)}%;top:${(line.top * 100).toFixed(3)}%;width:${(line.width * 100).toFixed(3)}%;height:${(line.height * 100).toFixed(3)}%" aria-label="${h(labels)}" title="${h(labels)}（クリックまたは右側へドラッグ）"></button>`;
+        return `<button class="pdf-line-hotspot" draggable="true" data-pdf-line-id="${h(lineId)}" data-confidence="${h(confidence)}" data-mapped="${targets.length ? "true" : "false"}" data-selected="false" data-applied="false" data-ignored="false" data-dragging="false" type="button" style="left:${(line.left * 100).toFixed(3)}%;top:${(line.top * 100).toFixed(3)}%;width:${(line.width * 100).toFixed(3)}%;height:${(line.height * 100).toFixed(3)}%" aria-label="${h(labels)}" title="${h(labels)}（クリックまたはPDF横の緑枠へドラッグ）"></button>`;
       }).join("");
       const allLines = (preview.lines || []).length;
       return `<article class="pdf-click-page"><header><span>${h(page.pageNumber)}ページ／${h(methodLabel(page.method))}</span><span>選択可能 ${allLines}文字ブロック／自動判定 ${mappedLines}</span></header><div class="pdf-click-stage"><img src="${h(preview.imageDataUrl)}" alt="${h(page.pageNumber)}ページ"><div class="pdf-click-overlay">${buttons}</div></div></article>`;
     }).join("");
-    analysis.metadata.fields.forEach((field) => { field.selected = false; field.applied = false; });
+    analysis.metadata.fields.forEach((field) => {
+      field.selected = false;
+      field.applied = Boolean(field.autoApplied);
+    });
     analysis.candidates.forEach((candidate) => { candidate.selected = false; candidate.applied = false; });
     $("pdfClickWorkbench").hidden = false;
     showEmptyManualMapper();
@@ -845,8 +848,14 @@
       updateProgress({ message: "資料を読み込んでいます…", progress: 0 });
       const extracted = await reader.read(file, updateProgress);
       const analysis = analyzer.analyze(extracted.pages, activeMaster(), consultingMaster, window.SEKISAN_JURISDICTIONS || []);
+      const autoProjectName = analysis.metadata.fields.find((field) => field.key === "projectName" && field.autoApply);
+      if (autoProjectName && app.applyImportedProjectName(autoProjectName.value)) {
+        autoProjectName.autoApplied = true;
+        autoProjectName.selected = false;
+      }
       if (extracted.pages.some((page) => page.preview?.imageDataUrl)) renderPdfClickWorkbench(extracted, analysis);
       else renderReview(extracted.fileName, analysis);
+      if (autoProjectName?.autoApplied) app.notify(`先頭見出しから業務名「${autoProjectName.value}」を4業務共通欄へ自動入力しました`);
     } catch (error) {
       updateProgress({ message: `読取り失敗：${error.message}`, progress: 0 });
       app.notify(error.message || "資料を読み取れませんでした");

@@ -41,6 +41,7 @@ assert.ok(!reader.includes("FormData") && !reader.includes('fetch(file'), "資�
 assert.ok(ui.includes("renderReview") && ui.includes("showModal"), "反映前に一覧確認ダイアログを開く");
 assert.ok(ui.includes("sourceText") && ui.includes("confidenceLabel") && ui.includes("methodLabel"), "原文・確信度・抽出方法を確認できる");
 assert.ok(ui.includes("metadataHtml") && ui.includes("import-metadata-select") && ui.includes("import-metadata-value"), "業務基本情報を項目別に確認・修正・選択できる");
+assert.ok(ui.includes('field.key === "projectName" && field.autoApply') && ui.includes("app.applyImportedProjectName(autoProjectName.value)"), "PDF先頭の高確度な業務見出しを4業務共通の業務名へ自動入力する");
 assert.ok(ui.includes("renderPdfClickWorkbench") && ui.includes("pdf-line-hotspot") && ui.includes("clickLineTargets"), "PDF上の候補行をクリックして反映待ちへ選択できる");
 assert.ok(ui.includes("clickLines.set") && !ui.includes('if (!targets.length) return ""'), "自動判定の有無にかかわらずPDFの全抽出行をクリック対象にする");
 assert.ok(ui.includes("openManualMapper") && ui.includes("addManualCandidate") && ui.includes("metadataLabels"), "未判定行の反映先・数量・人工・基本情報を右側で指定できる");
@@ -91,5 +92,6 @@ assert.ok(!css.includes(".pdf-drag-dock") && css.includes(".pdf-field-drop-targe
 assert.ok(css.includes(".pdf-click-sidebar { position: sticky; top: 18px; align-self: start;") && css.includes(".pdf-pending-panel { display: grid;"), "入力エディターをPDF上端に固定し、反映待ちを独立配置する");
 assert.ok(css.includes(".pdf-click-workbench { margin: 18px 0 0;") && css.includes("grid-template-columns: minmax(0,1fr) clamp(330px,22vw,390px)"), "PDF作業画面の重複余白を除き横幅を広く使う");
 assert.ok(html.includes("pdf-drop-title") && html.includes("pdf-drop-callout") && css.includes("border: 2px dashed #4e9b7c"), "項目・数量・単位のドロップ先を常時強調する");
+assert.ok(ui.includes('PDF横（狭い画面では下）の緑枠「PDFから項目・数量・単位を入れる」') && !ui.includes("候補が${matched.matches.length}件あります。右側"), "複数候補の案内は曖昧な『右側』ではなく操作枠名と配置を示す");
 
 console.log("OK: document import review UI and safe apply wiring checks passed");

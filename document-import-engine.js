@@ -269,7 +269,7 @@
   function metadataLineEntries(pages) {
     return pages.flatMap((page) => normalizeCharacters(page.text).split("\n")
       .map(visibleLine).filter(Boolean)
-      .map((text) => ({ text, page: page.pageNumber, method: page.method })));
+      .map((text, lineIndex) => ({ text, lineIndex, page: page.pageNumber, method: page.method })));
   }
 
   function fieldFromLines(entries, definition) {
@@ -304,7 +304,12 @@
       const hasYear = /(?:令和|平成|昭和|20[0-9]{2})/.test(value);
       const domainWords = ["測量", "調査", "設計", "地質", "用地", "道路", "河川", "砂防", "港湾", "工事"].filter((word) => value.includes(word)).length;
       if (!hasYear && domainWords < 2) return null;
-      return { entry, value, score: (hasYear ? 100 : 0) + domainWords * 20 + Math.min(key.length, 80) };
+      const looksLikeLeadingTitle = entry.page === 1
+        && entry.lineIndex <= 10
+        && hasYear
+        && value.length >= 12
+        && /(?:地区|工事|路線|河川|橋梁|港湾|空港|委託)/.test(value);
+      return { entry, value, looksLikeLeadingTitle, score: (looksLikeLeadingTitle ? 1000 : 0) + (hasYear ? 100 : 0) + domainWords * 20 + Math.min(key.length, 80) };
     }).filter(Boolean).sort((a, b) => b.score - a.score);
     if (!candidates.length) return null;
     const best = candidates[0];
@@ -316,6 +321,7 @@
       page: best.entry.page,
       method: best.entry.method,
       confidence: best.entry.method === "ocr" ? "low" : "medium",
+      autoApply: best.looksLikeLeadingTitle && best.entry.method === "text",
       sourceText: best.entry.text
     };
   }
