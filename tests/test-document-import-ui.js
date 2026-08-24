@@ -24,6 +24,8 @@ for (const id of ["importView", "documentDropZone", "documentFileInput", "pdfCli
 }
 assert.ok(html.includes("設計・測量・調査計画・地質"), "資料取込の対象業務を積算基準の4業務区分順で明示する");
 assert.ok(html.includes(">PDF・写真から取込み<"), "資料取込の表示名をPDF・写真から取込みに統一する");
+assert.ok(!html.includes("確定前に必ず確認") && !html.includes("compact-flow") && !html.includes("import-safety-card"), "取込開始画面の重複した確認案内カードを撤去する");
+assert.ok(css.includes(".utility-view-tabs { margin-left: 0;") && !css.includes(".utility-view-tabs { margin-left: auto;"), "PDF・写真から取込みを業務タブ側へ寄せる");
 const kindOptions = ['value="design">設計業務', 'value="survey">測量業務', 'value="planning">調査・計画業務', 'value="geology">地質業務', 'value="metadata">業務基本情報'];
 assert.ok(kindOptions.every((option) => html.includes(option)), "PDF反映先を4業務区分と基本情報へ分ける");
 assert.deepStrictEqual(kindOptions.map((option) => html.indexOf(option)), [...kindOptions.map((option) => html.indexOf(option))].sort((a, b) => a - b), "PDF反映先を設計・測量・調査計画・地質・基本情報の順にする");
@@ -110,6 +112,7 @@ assert.ok(css.includes('.pdf-line-hotspot[data-mapped="false"]') && css.includes
 assert.ok(css.includes('.pdf-line-hotspot[data-dragged="true"]') && css.includes('.pdf-row-status-highlight[data-status="missing"]') && css.includes('.pdf-row-status-highlight[data-status="complete"]'), "ドラッグ済みブロックの濃い緑枠と行単位の進捗表示を備える");
 assert.ok(!css.includes(".pdf-drag-dock") && css.includes(".pdf-field-drop-target.drag-over"), "実入力欄だけをドラッグ先として視覚表示する");
 assert.ok(css.includes(".pdf-click-sidebar { position: sticky; top: 18px; align-self: start;") && css.includes(".pdf-pending-panel { display: grid;"), "入力エディターをPDF上端に固定し、反映待ちを独立配置する");
+assert.ok(html.includes('class="pdf-manual-scroll-body"') && html.includes('class="pdf-manual-footer"') && css.includes("grid-template-rows: auto minmax(0,1fr) auto") && css.includes(".pdf-manual-scroll-body { display: grid;") && css.includes("overflow-y: auto") && css.includes(".pdf-manual-footer { position: relative;"), "右入力欄だけをスクロールし、反映待ち追加と対象外を常時表示する");
 assert.ok(css.includes(".pdf-click-workbench { margin: 18px 0 0;") && css.includes("grid-template-columns: minmax(0,1fr) clamp(330px,22vw,390px)"), "PDF作業画面の重複余白を除き横幅を広く使う");
 assert.ok(html.includes("pdf-drop-title") && html.includes("pdf-drop-callout") && css.includes("border: 2px dashed #4e9b7c"), "項目・数量・単位のドロップ先を常時強調する");
 assert.ok(ui.includes('PDF横（狭い画面では下）の緑枠「PDFから項目・数量・単位を入れる」') && !ui.includes("候補が${matched.matches.length}件あります。右側"), "複数候補の案内は曖昧な『右側』ではなく操作枠名と配置を示す");

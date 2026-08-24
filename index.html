@@ -7,7 +7,7 @@
   <meta name="description" content="設計、測量、調査・計画、地質を年度別技術者単価と根拠表示付きで計算するWeb業務積算ソフト">
   <meta name="author" content="株式会社アイズ測量">
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="styles.css?v=20260824-16">
+  <link rel="stylesheet" href="styles.css?v=20260824-17">
 </head>
 <body data-business-scope="design">
   <header class="app-header">
@@ -333,14 +333,9 @@
           </button>
           <input id="documentFileInput" type="file" accept="application/pdf,image/png,image/jpeg,image/webp,.pdf,.png,.jpg,.jpeg,.webp" hidden>
           <div id="documentImportProgress" class="import-progress" hidden><div class="import-progress-track"><span id="documentImportProgressBar"></span></div><strong id="documentImportStatus">解析を準備しています…</strong></div>
-        </section>
-
-        <aside class="card import-safety-card">
-          <p class="section-kicker">SAFE REVIEW</p><h2>確定前に必ず確認</h2>
-          <ol class="compact-flow"><li><strong>直接抽出／OCR</strong><span>PDFの状態に応じて自動で切替</span></li><li><strong>基本情報・積算候補へ分類</strong><span>発注者、場所、期間、測量数量、設計等の人工を整理</span></li><li><strong>一覧で修正</strong><span>元の文章、ページ、確信度と並べて確認</span></li><li><strong>選択項目だけ反映</strong><span>OKを押すまで積算データは変更しません</span></li></ol>
-          <div class="privacy-note"><strong>資料内容は外部送信しません</strong><p>解析はブラウザー内で行います。OCR時は解析プログラムと日本語言語データを取得しますが、読み込んだPDF・写真そのものはアップロードしません。</p></div>
+          <p class="import-local-note"><strong>資料内容は外部送信しません。</strong> PDF・写真の解析はブラウザー内で行います。</p>
           <div id="lastImportSummary" class="last-import-summary" hidden></div>
-        </aside>
+        </section>
       </div>
       <section id="pdfClickWorkbench" class="card pdf-click-workbench" hidden>
         <div class="card-title-row"><div><p class="section-kicker">CLICK PDF TO SELECT</p><h2>PDFをクリックして項目を選択</h2></div><span id="pdfClickFileName" class="badge">—</span></div>
@@ -350,6 +345,7 @@
           <aside class="pdf-click-sidebar">
             <section id="pdfManualMapper" class="pdf-manual-mapper" hidden>
               <div class="pdf-manual-heading"><strong id="pdfManualHeadingText">この行の反映先を指定</strong><button id="cancelPdfManualLineButton" type="button" aria-label="閉じる">×</button></div>
+              <div class="pdf-manual-scroll-body">
               <label class="field"><span>反映先</span><select id="pdfManualKind"><option value="design">設計業務</option><option value="survey">測量業務</option><option value="planning">調査・計画業務</option><option value="geology">地質業務</option><option value="metadata">業務基本情報</option></select></label>
               <div id="pdfManualKeywordFilter" class="work-keyword-filter pdf-manual-keyword-filter"><span>キーワードから選ぶ</span><div id="pdfManualKeywordList" class="work-keyword-list" role="group" aria-label="PDF取込の作業キーワード"></div></div>
               <div id="pdfManualSurveyFields" class="pdf-manual-fields">
@@ -371,8 +367,11 @@
                 <label class="field"><span>基本情報の項目</span><select id="pdfManualMetadataKey"><option value="projectName">業務名</option><option value="orderingParty">発注者</option><option value="department">担当部署</option><option value="contactName">担当者</option><option value="workLocation">業務場所</option><option value="contractPeriod">履行期間</option><option value="documentNumber">文書・業務番号</option><option value="documentDate">公告・資料日</option></select></label>
                 <label class="field"><span>反映する内容</span><input id="pdfManualMetadataValue" type="text"></label>
               </div>
-              <p id="pdfManualAddHint" class="pdf-manual-add-hint">作業項目を選ぶと、数量・単位が未入力でも反映待ちへ追加できます。</p>
-              <div class="pdf-manual-actions"><button id="addPdfManualCandidateButton" class="button primary" type="button">反映待ちへ追加</button><button id="ignorePdfManualLineButton" class="button" type="button">この行は対象外</button></div>
+              </div>
+              <footer class="pdf-manual-footer">
+                <p id="pdfManualAddHint" class="pdf-manual-add-hint">作業項目を選ぶと、数量・単位が未入力でも反映待ちへ追加できます。</p>
+                <div class="pdf-manual-actions"><button id="addPdfManualCandidateButton" class="button primary" type="button">反映待ちへ追加</button><button id="ignorePdfManualLineButton" class="button" type="button">この行は対象外</button></div>
+              </footer>
             </section>
           </aside>
         </div>
@@ -384,7 +383,7 @@
               <button id="applyPdfSelectionNowButton" class="button primary" type="button" disabled>反映待ちを積算へ追加</button>
             </div>
           </div>
-          <p class="pdf-click-note">緑・橙の枠は自動判定候補、青い破線は反映先が未判定の文字ブロックです。同じ横一行でも、離れた文字や表セルは個別にクリックし、PDF横（狭い画面では下）の緑枠へドラッグできます。追加前に内容を確認してください。</p>
+          <p class="pdf-click-note">緑・橙の枠は自動判定候補、青い破線は反映先が未判定の文字ブロックです。同じ横一行でも、離れた文字や表セルは個別にクリックし、PDF横（狭い画面では下）の緑枠へドラッグできます。</p>
         </section>
       </section>
     </section>
