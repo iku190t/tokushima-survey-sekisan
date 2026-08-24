@@ -512,25 +512,6 @@
     $("masterCoverageStatus").textContent = `国土交通省・全国標準の令和${standardYears.map((year) => year - 2018).join("・")}年度を収録。見積提出先は全国47都道府県から選べますが、提出先を変えても計算単価は変わりません。`;
   }
 
-  function renderMasterStatus() {
-    const master = activeMaster();
-    const strip = document.querySelector(".accuracy-strip");
-    strip.classList.toggle("warning", master.verificationStatus !== "verified");
-    if (master.verificationStatus === "standard-reference") {
-      $("masterStatusTitle").textContent = `国土交通省・全国標準｜${eraLabel(master.fiscalYear)}`;
-      $("masterStatusText").textContent = "全国共通の標準歩掛・技術者単価による単価セットです。見積提出先を変えても金額は変わりません。地域条件、普通作業員単価、材料・市場単価、特記仕様は必要に応じて別途補正してください。";
-    } else if (master.verificationStatus === "verified") {
-      $("masterStatusTitle").textContent = `${master.label}｜検証済み`;
-      $("masterStatusText").textContent = "利用者が選択した個別単価セットです。全国標準へ戻す場合は標準単価セットから年度を選んでください。";
-    } else if (master.verificationStatus === "official-reference") {
-      $("masterStatusTitle").textContent = `国土交通省・${eraLabel(master.fiscalYear)}の公開基準参照マスター`;
-      $("masterStatusText").textContent = "国交省公開の積算基準・改定資料・技術者単価に基づく参照版です。地方整備局等の適用日、特記仕様、個別費用を発注図書で確認してください。";
-    } else {
-      $("masterStatusTitle").textContent = "利用者編集マスター";
-      $("masterStatusText").textContent = `${master.jurisdictionName}・${eraLabel(master.fiscalYear)}として登録されています。変更した単価・歩掛・経費率の出典と適用日を確認してください。`;
-    }
-  }
-
   function populateCategories() {
     const master = activeMaster();
     const scopedItems = surveyItemsForScope(master);
@@ -711,7 +692,6 @@
     const result = currentResult();
     renderLines(result);
     renderSummary(result);
-    renderMasterStatus();
   }
 
   function renderReportSettings() {
@@ -918,7 +898,6 @@
     populateCategories();
     renderEstimate();
     renderMasterEditor();
-    renderMasterStatus();
     renderReportSettings();
     renderGuideSourceLedger(false);
     document.dispatchEvent(new CustomEvent("ezsekisan:estimatechange"));
@@ -1113,7 +1092,6 @@
     populateMasterSelects();
     populateCategories();
     renderEstimate();
-    renderMasterStatus();
     scheduleSave();
     showToast(`${next.label}に切り替えました`);
   }

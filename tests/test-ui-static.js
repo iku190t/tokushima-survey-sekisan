@@ -22,7 +22,9 @@ const businessTabs = [...html.matchAll(/<button class="view-tab(?: active)?" dat
 assert.deepStrictEqual(businessTabs, [["design", "設計業務"], ["survey", "測量業務"], ["planning", "調査・計画業務"], ["geology", "地質業務"]], "積算基準の4業務区分を指定順で表示する");
 assert.ok(html.includes('id="consultingView" class="view active"') && !html.includes('id="estimateView" class="view active"'), "初期画面を設計業務にする");
 assert.strictEqual((html.match(/class="project-strip business-project-strip"/g) || []).length, 2, "測量と設計等で同じ上部5項目レイアウトを使う");
-assert.strictEqual((html.match(/class="accuracy-strip business-status-strip"/g) || []).length, 2, "測量と設計等で同じ状態帯を使う");
+assert.strictEqual((html.match(/class="accuracy-strip business-status-strip"/g) || []).length, 1, "設計等の状態帯だけを残す");
+assert.ok(!html.includes('id="masterStatusTitle"') && !html.includes('id="masterStatusText"'), "測量画面に全国標準の状態帯を表示しない");
+assert.ok(!app.includes("renderMasterStatus"), "測量状態帯の更新処理を残さない");
 assert.strictEqual((html.match(/class="workspace-grid business-workspace"/g) || []).length, 2, "4業務で同じ作業領域と右集計の骨格を使う");
 assert.strictEqual((html.match(/class="card add-card business-add-card no-print"/g) || []).length, 2, "4業務で同じ作業追加カードを使う");
 assert.strictEqual((html.match(/class="card table-card business-detail-card"/g) || []).length, 2, "4業務で同じ積算内訳カードを使う");
