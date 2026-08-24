@@ -2028,3 +2028,28 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `tools/create-intro-video.py` | `CD1EF93E64847F2E0559D9E08FE9716913C6B463D52B7C71453DA6344B7C1C78` |
 | `tools/create-intro-demo-pdf.py` | `75A9347449DB9E8FEA781F27A0A887DE4FA60CEB06E477FE6592F64E5A11358D` |
 | `tools/create-intro-narration.ps1` | `796AB335109334E17B3E9123BC6517BD3152393FA640804055313373D341F486` |
+
+## B-2026-08-24-14
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-24
+- 実装コミット: `8bc0eca999d841d419032764e9ff7916713d8d79`
+- 外部知能コミット: この項目を追加するコミット
+- GitHub Pagesビルド: `1171311721`（`built`、コミット`8bc0eca999d841d419032764e9ff7916713d8d79`）
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: 提出用帳票の自社・発行者7項目を案件外プロフィールとして自動保存し、新規作成へ引き継ぐ。案件固有情報、匿名QA帳票、外部送信から分離し、旧案件から初回移行する。
+
+### 合格した試験・実画面確認
+
+- `tests/test-*.js`全18本合格、`node --check app.js`、`git diff --check`合格。
+- ローカル実ブラウザーで匿名の会社名、担当者、郵便番号、住所、インボイス番号を入力し、「新規」後と再読込後に同値を確認した。宛名と業務名は空欄だった。ブラウザー警告・エラーは0件。
+- 公開版で`app.js?v=20260824-8`、自社・発行者情報の7入力欄、自動保存案内を確認し、ブラウザー警告・エラー0件だった。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `CCA559DCDBD98E57E3766FF03098686CBA4064AB295C701A3D4B12350BA14A43` |
+| `app.js` | `22D475C4041274CC8427C149F16ED560A17E27B0A160872CCA50630F3B17E7AF` |
+| `tests/test-ui-static.js` | `BD83634012B39E29386F42072E4B8846E502C3D112F3C4B56A62C11B9085233E` |
+| `README.txt` | `7E2DEF0305E1629D9529D87020B0E56E631167945FB099E82D0CE2F537BF6878` |
