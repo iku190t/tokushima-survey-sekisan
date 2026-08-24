@@ -51,6 +51,7 @@ assert.ok(ui.includes("consultingServiceIdsByKind") && ui.includes('planning: ne
 assert.ok(html.includes('draggable="true"') || ui.includes('draggable="true"'), "PDF文字ブロックをドラッグ開始できる");
 assert.ok(!html.includes('id="pdfDragDock"') && !html.includes("PDFからドラッグして入力"), "別置きの重複したドラッグ入力欄を表示しない");
 assert.ok(html.includes('data-pdf-drop-target="item"') && html.includes('data-pdf-drop-target="quantity"') && html.includes('data-pdf-drop-target="unit"'), "実入力欄を項目・数量・単位のドラッグ先にする");
+assert.ok(ui.includes('$("pdfManualSurveyCode").value = "";') && ui.includes('$("pdfManualSurveyQuantity").value = "";') && ui.includes('$("pdfManualSurveySourceUnit").value = "";'), "未選択状態では項目・数量・単位をすべて空欄に戻す");
 assert.ok(html.includes('data-pdf-drop-target="consulting-task"') && html.includes('data-pdf-drop-target="consulting-role"') && html.includes('data-pdf-drop-target="consulting-days"'), "設計・調査計画・地質も詳細項目・職種・人工を個別にドラッグできる");
 const sidebarStart = html.indexOf('<aside class="pdf-click-sidebar">');
 const sidebarEnd = html.indexOf("</aside>", sidebarStart);

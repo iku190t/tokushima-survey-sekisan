@@ -279,6 +279,9 @@
     $("addPdfManualCandidateButton").disabled = true;
     $("ignorePdfManualLineButton").disabled = true;
     updateManualKind();
+    $("pdfManualSurveyCode").value = "";
+    $("pdfManualSurveyQuantity").value = "";
+    $("pdfManualSurveySourceUnit").value = "";
     updateManualSurveyRule();
     $("pdfManualMapper").hidden = false;
   }
