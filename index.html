@@ -7,7 +7,7 @@
   <meta name="description" content="設計、測量、調査・計画、地質を年度別技術者単価と根拠表示付きで計算するWeb業務積算ソフト">
   <meta name="author" content="株式会社アイズ測量">
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="styles.css?v=20260824-18">
+  <link rel="stylesheet" href="styles.css?v=20260824-19">
 </head>
 <body data-business-scope="design">
   <header class="app-header">
@@ -350,8 +350,7 @@
         </section>
       </div>
       <section id="pdfClickWorkbench" class="card pdf-click-workbench" hidden>
-        <div class="card-title-row"><div><p class="section-kicker">CLICK PDF TO SELECT</p><h2>PDFをクリックして項目を選択</h2></div><span id="pdfClickFileName" class="badge">—</span></div>
-        <p class="import-lead">PDF内の文字ブロックはクリックに加え、測量の項目・数量・単位、または設計等の詳細項目・職種・人工へ個別にドラッグして対応付けできます。自動判定できた行は反映待ちへ入り、判定できない行もこの画面を閉じずに続けて追加できます。</p>
+        <span id="pdfClickFileName" hidden>—</span>
         <div class="pdf-click-layout">
           <div id="pdfClickPages" class="pdf-click-pages" aria-label="読み込んだPDF"></div>
           <aside class="pdf-click-sidebar">
