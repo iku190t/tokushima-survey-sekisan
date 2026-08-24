@@ -1859,3 +1859,28 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `index.html` | `9F288B3B870ECCB7808A0A6B950570B0A285185A78F0C67EE694D1003F42FABF` |
 | `app.js` | `EB38F5625D2B16021FC329CA2B5A85CF0C34E181B88524B1BA8223FFDC3908DB` |
 | `tests/test-ui-static.js` | `A5D4A83298E4C1DBA07E448D7A7FF2105DB102C1B4810E8C20B51D8E3557523A` |
+
+## B-2026-08-24-08
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-24
+- 実装コミット: `897614da64abaece6f59be2c6833508217194f13`
+- 外部知能コミット: この項目を追加するコミット
+- GitHub Pagesビルド: `1171018802`（`built`、コミット`897614da64abaece6f59be2c6833508217194f13`）
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: 4業務の上部5項目、業務基本情報7項目、4カードを統一し、見積提出先と基本情報をタブ間同期した。業務別状態帯は全廃した。
+
+### 合格した試験・実画面確認
+
+- `tests/test-*.js`全18本合格、`node --check app.js`、`node --check consulting.js`、`git diff --check`合格。
+- ローカル版で設計側から北海道と匿名発注者を入力し、測量側へ同じ値が即時反映されることを確認した。
+- 公開版4タブすべてで上部5項目、基本情報7項目、作業追加・積算内訳・追加費用・右集計各1組、状態帯0件、横あふれ0を確認した。`app.js?v=20260824-5`と`consulting.js?v=20260824-10`を読み込み、ブラウザー警告・エラー0件だった。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `AA30B0DB4C90EA939A6589DDE3A809B5C38985066CEBFC051ECBBE16AD1F151E` |
+| `app.js` | `3E93BFD52D8C2A3229E758E1C57DF575AA5FB4129C4744B73CCBB1BD764362E1` |
+| `consulting.js` | `F5E716B144C1A376C215ABC99E02D4E6268C6405AE03382AC6AFC289C84FA18B` |
+| `tests/test-ui-static.js` | `24192DB8FD6CF1BC5AE779A811044DD0839139B49B7191342E8798755A7C8B0D` |
