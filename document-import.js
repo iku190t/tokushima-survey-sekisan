@@ -265,24 +265,6 @@
     else showEmptyManualMapper();
   }
 
-  function updateManualSourceSummary() {
-    const itemLine = clickLines.get(manualItemLineId);
-    const quantityLine = clickLines.get(manualQuantityLineId);
-    const unitLine = clickLines.get(manualUnitLineId);
-    const taskLine = clickLines.get(manualConsultingTaskLineId);
-    const roleLine = clickLines.get(manualConsultingRoleLineId);
-    const daysLine = clickLines.get(manualConsultingDaysLineId);
-    const fallback = clickLines.get(currentManualLineId);
-    const parts = [];
-    if (itemLine) parts.push(`項目：${itemLine.text}`);
-    if (quantityLine) parts.push(`数量：${quantityLine.text}`);
-    if (unitLine) parts.push(`単位：${unitLine.text}`);
-    if (taskLine) parts.push(`詳細項目：${taskLine.text}`);
-    if (roleLine) parts.push(`職種：${roleLine.text}`);
-    if (daysLine) parts.push(`人工：${daysLine.text}`);
-    $("pdfManualSourceText").textContent = parts.length ? parts.join(" ／ ") : fallback?.text || "—";
-  }
-
   function updateManualSurveyConversion() {
     const item = activeMaster().workItems.find((entry) => entry.code === $("pdfManualSurveyCode").value);
     if (!item) {
@@ -351,7 +333,6 @@
     $("pdfManualKind").value = "survey";
     $("pdfManualKind").disabled = false;
     $("pdfManualHeadingText").textContent = "PDFから項目・数量・単位を入れる";
-    $("pdfManualSourceText").textContent = "左のPDFで項目名をクリックするか、下の入力欄へ文字枠をドロップしてください。";
     $("pdfManualSurveyRegulationGroup").innerHTML = surveyRegulationGroupOptions("", "survey");
     $("pdfManualSurveyRegulationGroup").value = "";
     $("pdfManualSurveyCategory").innerHTML = surveyCategoryOptions("", "survey", "");
@@ -435,7 +416,6 @@
     $("pdfManualMapper").hidden = false;
     $("addPdfManualCandidateButton").disabled = false;
     $("ignorePdfManualLineButton").disabled = false;
-    updateManualSourceSummary();
     if (options.scroll !== false) $("pdfManualMapper").scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 
@@ -551,7 +531,6 @@
         app.notify("一致する詳細項目を確定できません。PDF横（狭い画面では下）の緑枠で分類と詳細項目を選んでください");
       }
     }
-    updateManualSourceSummary();
   }
 
   function finishPointerPdfDrag(event) {
@@ -683,7 +662,6 @@
       $("pdfManualConsultingDays").value = target.item.days;
     }
     updateManualKind();
-    $("pdfManualSourceText").textContent = `変更中：${clickTargetLabel(target)}`;
     $("pdfManualMapper").scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 

@@ -51,7 +51,7 @@ assert.ok(ui.includes("surveyCategoryOptions") && ui.includes("populateManualSur
 assert.ok(html.includes('src="data/consulting-work-catalog.js?v=') && ui.includes("CONSULTING_WORK_CATALOG") && ui.includes("CONSULTING_RULE_PACK"), "PDF取込と本体が同じキーワード定義・公式作業項目規則を使う");
 assert.ok(ui.includes("updateManualConsultingTasks") && ui.includes("updateManualConsultingItemsForGroup") && ui.includes("pdfManualConsultingRuleGroup") && ui.includes("pdfManualConsultingTaskTemplate"), "設計・調査計画・地質も積算基準の作業区分から公式作業項目を選べる");
 assert.ok(!ui.includes("consultingMaster.taskNames") && ui.includes("referenceRuleId: rule.id"), "PDF反映先に旧式の汎用作業名を使わず公式規則IDを保持する");
-assert.ok(html.includes("PDF原文（確認用）") && !html.includes("内訳名称（必要時のみ修正）"), "クリックしたPDF原文は作業項目の編集欄へ転用せず確認表示に固定する");
+assert.ok(!html.includes("PDF原文（確認用）") && !html.includes('id="pdfManualSourceText"') && !ui.includes("updateManualSourceSummary"), "PDF上で確認できる原文を右側へ重複表示しない");
 for (const keyword of ["道路", "橋梁", "河川・水辺", "ボーリング", "原位置試験", "解析"]) assert.ok(workCatalog.includes(`label: "${keyword}"`), `PDF取込にも${keyword}キーワードを共有する`);
 assert.ok(app.includes("getSurveyRegulationGroups") && ui.includes("surveyRegulationGroupOptions") && ui.includes("pdfManualSurveyRegulationGroup"), "PDF取込も作業規程上の分類から測量項目を絞る");
 assert.ok(ui.includes("consultingServiceIdsByKind") && workCatalog.includes('planning: ["planning"]') && workCatalog.includes('geology: ["geologyAnalysis", "geologyGeneral"]') && ui.includes("businessKindForService"), "PDF取込も設計・調査計画・地質を別々に絞る");
