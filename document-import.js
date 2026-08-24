@@ -175,6 +175,11 @@
     return roles.map((role) => `<option value="${h(role.id)}" ${role.id === valid ? "selected" : ""}>${h(role.name)}</option>`).join("");
   }
 
+  function manualRoleOptions(serviceType, selectedId = "") {
+    const roles = serviceType ? rolesFor(serviceType) : [];
+    return '<option value="">職種を選択してください</option>' + roles.map((role) => `<option value="${h(role.id)}" ${role.id === selectedId ? "selected" : ""}>${h(role.name)}</option>`).join("");
+  }
+
   function consultingFamilyLabel(rule) {
     const family = (consultingRulePack.families || []).find((entry) => Number(entry.fiscalYear) === Number(rule?.fiscalYear) && entry.serviceType === rule?.serviceType && entry.familyCode === rule?.familyCode);
     return `${rule?.familyCode || "共通"}｜${family?.title || "積算基準項目"}`;
@@ -188,7 +193,9 @@
   function syncManualConsultingRule() {
     const rule = selectedManualConsultingRule();
     if (!rule) {
+      $("pdfManualConsultingService").innerHTML = "";
       $("pdfManualConsultingTask").value = "";
+      $("pdfManualConsultingRole").innerHTML = manualRoleOptions("");
       return;
     }
     const kind = $("pdfManualKind").value;
@@ -196,6 +203,18 @@
     $("pdfManualConsultingService").value = rule.serviceType;
     $("pdfManualConsultingTask").value = rule.label;
     updateManualConsultingRoles();
+  }
+
+  function clearManualInputValues() {
+    $("pdfManualSurveyCode").value = "";
+    $("pdfManualSurveyQuantity").value = "";
+    $("pdfManualSurveySourceUnit").value = "";
+    updateManualSurveyRule();
+    $("pdfManualConsultingTaskTemplate").value = "";
+    $("pdfManualConsultingTask").value = "";
+    $("pdfManualConsultingRole").value = "";
+    $("pdfManualConsultingDays").value = "";
+    syncManualConsultingRule();
   }
 
   function jurisdictionOptions(selectedCode) {
@@ -325,11 +344,7 @@
       if (![...$("pdfManualSurveyCategory").options].some((option) => option.value === previousCategory)) $("pdfManualSurveyCategory").value = "";
       populateManualSurveyItems();
     }
-    if (consultingKind) {
-      const sourceLine = clickLines.get(manualConsultingTaskLineId || currentManualLineId);
-      const matched = sourceLine ? matchConsultingTaskDrop(sourceLine.text) : null;
-      updateManualConsultingServices(matched?.rule?.id || "");
-    }
+    if (consultingKind) updateManualConsultingServices();
   }
 
   function showEmptyManualMapper() {
@@ -342,22 +357,17 @@
     $("pdfManualSurveyCategory").innerHTML = surveyCategoryOptions("", "survey", "");
     $("pdfManualSurveyCategory").value = "";
     populateManualSurveyItems();
-    $("pdfManualSurveyQuantity").value = "";
-    $("pdfManualConsultingDays").value = "";
     $("addPdfManualCandidateButton").textContent = "反映待ちへ追加";
     $("addPdfManualCandidateButton").disabled = true;
     $("ignorePdfManualLineButton").disabled = true;
     updateManualKind();
-    $("pdfManualSurveyCode").value = "";
-    $("pdfManualSurveyQuantity").value = "";
-    $("pdfManualSurveySourceUnit").value = "";
-    updateManualSurveyRule();
+    clearManualInputValues();
     $("pdfManualMapper").hidden = false;
   }
 
   function updateManualConsultingRoles() {
     const serviceType = $("pdfManualConsultingService").value;
-    $("pdfManualConsultingRole").innerHTML = roleOptions(serviceType, $("pdfManualConsultingRole").value);
+    $("pdfManualConsultingRole").innerHTML = manualRoleOptions(serviceType, $("pdfManualConsultingRole").value);
   }
 
   function updateManualConsultingTasks(selectedRule = "") {
@@ -382,7 +392,7 @@
     const groupRules = rules.filter((rule) => rule.familyCode === group);
     const preferred = groupRules.find((rule) => rule.id === selectedRule);
     $("pdfManualConsultingTaskTemplate").innerHTML = groupRules.length
-      ? groupRules.map((rule) => `<option value="${h(rule.id)}">${h(rule.label)}｜${h(rule.standardUnit || "1業務当り")}</option>`).join("")
+      ? '<option value="">作業項目を選択してください</option>' + groupRules.map((rule) => `<option value="${h(rule.id)}">${h(rule.label)}｜${h(rule.standardUnit || "1業務当り")}</option>`).join("")
       : '<option value="">該当項目なし</option>';
     if (preferred && groupRules.some((rule) => rule.id === preferred.id)) $("pdfManualConsultingTaskTemplate").value = preferred.id;
     syncManualConsultingRule();
@@ -416,12 +426,9 @@
       $("pdfManualSurveyCategory").innerHTML = surveyCategoryOptions("", isSurveyBusinessKind(kind) ? kind : "survey", "");
       $("pdfManualSurveyCategory").value = "";
       populateManualSurveyItems();
-      $("pdfManualSurveyQuantity").value = quantityFromLine(line.contextText || line.text);
-      $("pdfManualConsultingTask").value = line.text;
-      $("pdfManualConsultingDays").value = quantityFromLine(line.text);
       $("pdfManualMetadataValue").value = line.text;
-      updateManualSurveyRule();
       updateManualKind();
+      clearManualInputValues();
     } else {
       manualSourceLineIds.add(lineId);
     }
@@ -462,6 +469,7 @@
 
   function matchConsultingRoleDrop(text) {
     const key = analyzer.compact(text);
+    if (!selectedManualConsultingRule()) return null;
     const serviceType = $("pdfManualConsultingService").value;
     return rolesFor(serviceType).find((role) => {
       const roleKey = analyzer.compact(role.name);
@@ -1068,7 +1076,10 @@
       allClickTargets().forEach((target) => { target.item.selected = false; });
       updatePdfClickSelection();
     });
-    $("pdfManualKind").addEventListener("change", updateManualKind);
+    $("pdfManualKind").addEventListener("change", () => {
+      updateManualKind();
+      clearManualInputValues();
+    });
     $("pdfManualKeywordList").addEventListener("click", (event) => {
       const button = event.target.closest("[data-pdf-manual-keyword]");
       if (!button) return;

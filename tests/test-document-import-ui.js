@@ -58,7 +58,12 @@ assert.ok(ui.includes("consultingServiceIdsByKind") && workCatalog.includes('pla
 assert.ok(html.includes('draggable="true"') || ui.includes('draggable="true"'), "PDF文字ブロックをドラッグ開始できる");
 assert.ok(!html.includes('id="pdfDragDock"') && !html.includes("PDFからドラッグして入力"), "別置きの重複したドラッグ入力欄を表示しない");
 assert.ok(html.includes('data-pdf-drop-target="item"') && html.includes('data-pdf-drop-target="quantity"') && html.includes('data-pdf-drop-target="unit"'), "実入力欄を項目・数量・単位のドラッグ先にする");
-assert.ok(ui.includes('$("pdfManualSurveyCode").value = "";') && ui.includes('$("pdfManualSurveyQuantity").value = "";') && ui.includes('$("pdfManualSurveySourceUnit").value = "";'), "未選択状態では項目・数量・単位をすべて空欄に戻す");
+assert.ok(ui.includes("function clearManualInputValues") && ui.includes('$("pdfManualSurveyCode").value = "";') && ui.includes('$("pdfManualSurveyQuantity").value = "";') && ui.includes('$("pdfManualSurveySourceUnit").value = "";'), "測量の未選択状態では項目・数量・単位をすべて空欄に戻す");
+assert.ok(ui.includes('$("pdfManualConsultingTaskTemplate").value = "";') && ui.includes('$("pdfManualConsultingRole").value = "";') && ui.includes('$("pdfManualConsultingDays").value = "";') && ui.includes("作業項目を選択してください") && ui.includes("職種を選択してください"), "設計・調査計画・地質も作業項目・職種・人工をすべて空欄から始める");
+const openMapper = ui.slice(ui.indexOf("function openManualMapper"), ui.indexOf("function matchSurveyDrop"));
+assert.ok(!openMapper.includes("quantityFromLine") && !openMapper.includes('pdfManualConsultingTask").value = line.text'), "PDF行のクリックだけでは1・2・3へ値を推定入力しない");
+const updateKind = ui.slice(ui.indexOf("function updateManualKind"), ui.indexOf("function showEmptyManualMapper"));
+assert.ok(!updateKind.includes("matchConsultingTaskDrop"), "反映先の業務区分を切り替えただけでは作業項目を自動選択しない");
 assert.ok(html.includes('data-pdf-drop-target="consulting-task"') && html.includes('data-pdf-drop-target="consulting-role"') && html.includes('data-pdf-drop-target="consulting-days"'), "設計・調査計画・地質も詳細項目・職種・人工を個別にドラッグできる");
 const sidebarStart = html.indexOf('<aside class="pdf-click-sidebar">');
 const sidebarEnd = html.indexOf("</aside>", sidebarStart);
