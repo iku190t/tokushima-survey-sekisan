@@ -2156,3 +2156,35 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `index.html` | `C642BDEB6B8FA8ADA25F66995154C906B50DB6476586B97DDE9408C33690F7D6` |
 | `document-import.js` | `A29105EFF8584BB531C5D2C66858DDD3B654A9D463148D7B192E7FEF6FC4B5B4` |
 | `tests/test-document-import-ui.js` | `08BBC491F0259F1151A26D89155B36F5FA5470C2E3B9C716C32242EEFBEC3270` |
+
+## B-2026-08-24-19
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-24
+- 実装コミット: `4bb0b373aa461e64827013dc24bbec834f8109ec`
+- 外部知能コミット: この項目を追加するコミット
+- GitHub Pages: `built`、ビルド`1171507181`、コミット`4bb0b373aa461e64827013dc24bbec834f8109ec`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: 令和6～8年度・4業務の積算数量単位を41単位の共通台帳へ統合し、通常入力、数量式、PDF単位検出、ドラッグ＆ドロップ、桁制御を同一化した。反映待ちカードへ業務バッジと個別除外を追加し、反映後の行を一時強調、完了表示を短縮した。
+
+### 合格した試験・実画面確認
+
+- `tests/test-*.js`全19本、変更JS10ファイルの`node --check`、`git diff --check`合格。
+- T-UNIT-CATALOGで、測量3年度402作業項目と設計・調査計画・地質3年度規則パックの台帳外単位0件、41単位の入力桁、100枚標準数量、筆の認識と異次元換算拒否を確認した。
+- ローカル実ブラウザーで写真処理項目の単位候補43件、`100枚`、`枚`、`筆（固定換算なし）`、`1×100枚＝100枚`、筆から枚への換算拒否を確認した。2級基準点1件の業務バッジ、個別除外、追加後強調、短い完了表示、点9.9入力の整数10補正、警告・エラー0件を確認した。
+- 公開版で`data/unit-catalog.js?v=20260824-1`、`app.js?v=20260824-10`、同じ単位候補43件、100枚、筆、測量バッジ、個別除外、確定ボタン1件、警告・エラー0件を確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `0F680529D8E2382FDC417448A9FB541EC3313F7A4A57FD75AB191066FFA0E61B` |
+| `styles.css` | `F22FF75539A64D923ED0F35194746D07B18285936EEA11EA47083284AA669EBD` |
+| `app.js` | `165CA29B10603638A5774802ECEDAA710FE8033E611432FB5A694366BBC52D0F` |
+| `consulting-engine.js` | `3276BAF9D1015AA82ECD1622AB3DA5D2BE8BB2ED907759F925904B5615090A7F` |
+| `consulting.js` | `723D9C8D32D7A27C216F8A3D9689B4523BF41491BF2453AD1D4F98C64597C1AA` |
+| `document-import-engine.js` | `CEB729DC3E51B1627347CE0FFDD67D55B261F97CFFBE16B28B2FAEF266F1C42C` |
+| `document-import.js` | `7EFBA2CE088EC225246D5C8371A0144CC0BA776C8AF5B67D9BA1769CC87E7A07` |
+| `engine.js` | `FFA8E17E4288074455C363E937BA6A228B32BB601462A36820C2A02639C8838C` |
+| `data/unit-catalog.js` | `BB48E75A20900048C52EADD95D6697124C010A0BE2D13E08ACD36529FF63B953` |
+| `tests/test-unit-catalog.js` | `236D64C0A04632DFD6D12053D320B9F32F0D6AA8A712550C361B18323253610A` |
