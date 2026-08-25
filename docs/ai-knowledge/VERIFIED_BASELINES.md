@@ -2597,3 +2597,30 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `index.html` | `B7F49DE20734C266B825B55F83D2A18EBBDD3F9FB4C4C9FE3F7B8C6414DB7B9A` |
 | `tests/test-ui-static.js` | `F1C75AB753B38380EC0346721B4181967089FD3B41497B2CCEA605BB96BB2B66` |
 | `tests/test-consulting-ui.js` | `26B4F68F0E26CD1D0A61038E5003BA3DE32F93B26C4433741CEF4344228FBF95` |
+
+## B-2026-08-25-06
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-25
+- 実装コミット: `9cec4192ce97b5af901416a2847f84cf40e041f1`
+- 外部知能コミット: この項目を追加するコミット
+- GitHub Pages: `built`、ビルド`1173165551`、コミット`9cec4192ce97b5af901416a2847f84cf40e041f1`、更新時刻`2026-08-25T01:33:01Z`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: 4業務の条件入力を手動優先方式へ統一し、測量の数値式条件と設計等の汎用補正も後続項目へ継承する。
+
+### 合格した試験・実画面確認
+
+- `node --check app.js`、`node --check consulting.js`、`tests/test-*.js`全19本、`git diff --check`合格。
+- 測量で水面幅を追加前に88へ変更すると次の深浅測量へ88を継承し、追加済み明細で99へ変更すると後続項目へ99を継承した。
+- 設計の共同溝で汎用補正を手動チェックし、別作業区分へ切替後に戻っても同じチェックを維持した。
+- 公開版`app.js?v=20260825-3`で水面幅77を次の河川深浅測量へ継承した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `app.js` | `A060FC10230DA436862DE955DBCDA12941F6DE1DCEEE6112932578BCC81787BA` |
+| `consulting.js` | `F73C895CC6716F05D042D4CB74BC5D455639FD43D889E926AFEDF6E4D557FE44` |
+| `index.html` | `6A22134418A315CF97288F1CF0DA95D4ADA42F9264D6B85A4E2E3BBCDFB644CB` |
+| `tests/test-ui-static.js` | `ED2DC54A9F69AFF7F4EB9F06DDAF93B6208292276AFF79552D0714CFA7D77DE2` |
+| `tests/test-consulting-ui.js` | `E03FBEFB51635FFBD2D07C2C0AB42DFA08ADE4F7017B2BE593232E6CF81F23F6` |
