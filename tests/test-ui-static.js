@@ -131,6 +131,10 @@ assert.ok(css.includes(".workspace-main, .master-layout { display: grid; min-wid
 assert.ok(css.includes("html, body { overflow-x: clip; }"), "表とタブの横スクロールをページ内に封じる");
 assert.ok(css.includes(".table-scroll { max-width: 100%; overflow-x: auto; contain: layout paint; }"), "横長表のレイアウトと描画範囲をスクロール枠内に封じる");
 assert.ok(css.includes(".view-tabs { overflow-x: visible; flex-wrap: wrap;"), "スマートフォン幅では画面切替タブを2段に折り返す");
+assert.ok(html.includes('class="estimate-table survey-estimate-table"'), "測量内訳表へスマホ専用の識別クラスを付ける");
+assert.ok(html.includes('class="table-scroll survey-table-scroll"'), "測量内訳表のスマホ用スクロール枠を識別する");
+assert.ok(css.includes(".survey-estimate-table tbody tr { position: relative; display: grid;") && css.includes(".survey-estimate-table tbody td:nth-child(3) { grid-column: 1 / -1;"), "スマホでは測量内訳をカード化して条件欄を全幅表示する");
+assert.ok(css.includes(".survey-estimate-table .mini-field select { width: 100%; max-width: none; min-width: 0;"), "スマホの補正条件選択を省略幅へ縮めない");
 assert.ok(html.includes('id="draftRecoveryPanel"'), "前回データの復元案内がある");
 assert.ok(html.includes('id="restoreDraftButton"'), "前回データを明示操作で復元できる");
 assert.ok(html.includes('id="dismissDraftButton"'), "新規画面のまま続けられる");
