@@ -2520,3 +2520,26 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `web-sekisan-192.png` | `0DEAE6A075E517E0F4AA8E225D130F6158BE6DCA8F1DB6F21312D359B93164D7` |
 | `web-sekisan-512.png` | `EEBA88DA80331003ED0DA44FEE41D61B12FA3EB5498B7947856F402E133D3600` |
 | `tests/test-ui-static.js` | `E69ACB31940BCCEDF7BD8AD5133A0CF5EA7253076ACF91BA46B69ABDF555A299` |
+
+## B-2026-08-25-03
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-25
+- 実装コミット: `85b804f8e39b2b96609c9278b7962f0f9802dded`
+- 外部知能コミット: この項目を追加するコミット
+- GitHub Pages: `built`、コミット`85b804f8e39b2b96609c9278b7962f0f9802dded`、更新時刻`2026-08-25T00:04:28Z`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: ヘッダーのΣ装飾を撤去し、フッターの統合案内を「Ez 積算」の枠なし・下線付き文字リンクへ変更した。
+
+### 合格した試験・実画面確認
+
+- `node tests/test-ui-static.js`、`git diff --check`合格。
+- ローカル／公開版で`.brand-mark` 0件、フッター文字「Ez 積算」、枠線0px、角丸0px、下線2px、公開CSS `v=20260825-3`を確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `BA3342B8F397FB95CE001AED04C25E7EA286F17CC5D66FFE7AF146426E8D77C4` |
+| `styles.css` | `F655A24773B95E069AE7B30FD0800E7C327133AB0EBA1F982664EBF8A8F8CF58` |
+| `tests/test-ui-static.js` | `6E06275D994A80C82A83FCE7DADE3CCFBEFEF841692D00A68206D63D630EBD29` |
