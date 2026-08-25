@@ -140,9 +140,11 @@ assert.ok(!app.includes("let estimate = loadEstimate();"), "起動時に前回�
 assert.ok(app.includes("function restoreSavedDraft()"), "明示操作による復元処理がある");
 assert.ok(app.includes("if (sessionDirty) persistEstimate();"), "未操作の新規画面で前回保存を上書きしない");
 assert.ok(html.includes("<h3>制作</h3>") && html.includes("株式会社アイズ測量"), "統合案内に制作者を表示する");
-assert.ok(html.includes("Ez積算"), "Ez Viewer型の製品名を画面に表示する");
+assert.ok(html.includes('<span class="publisher-product">Ez 積算</span>'), "Ez Viewer型の下線付き製品名を画面に表示する");
 assert.ok(html.includes("https://ofuse.me/f475dafe/letter"), "確認済みOFUSE応援先を表示する");
 assert.ok(html.includes('id="publisherInfoButton"'), "フッターのEz積算から統合案内を開ける");
+assert.ok(!html.includes('class="brand-mark"') && !css.includes(".brand-mark"), "ヘッダーのΣアイコンを表示しない");
+assert.ok(css.includes(".publisher-signature { padding: 4px 2px;") && css.includes("border: 0; border-radius: 0;") && css.includes("text-decoration-thickness: 2px"), "Ez 積算は囲み枠を外して下線だけで表示する");
 assert.ok(app.includes('["aboutToolButton", "publisherInfoButton"]'), "ナビの免責ボタンとフッターを同じ案内へ結線する");
 assert.ok(!html.includes('class="reference-notice') && !css.includes(".reference-notice"), "大きな参考試算注意帯を表示しない");
 assert.ok(html.includes('>使い方・計算根拠</button>\n      <button id="aboutToolButton"') && html.includes("参考試算・免責</button>"), "使い方・計算根拠の右側に小さな免責ボタンを置く");
