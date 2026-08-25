@@ -178,6 +178,8 @@ assert.ok(app.includes("correctionSelectionLabels") && app.includes("selected?.d
 assert.ok(app.includes('data-rate="${h(option.rate)}"') && app.includes('data-condition-label="${h(option.label)}"'), "同率の1/200と1/500を追加済み明細で区別する");
 assert.ok(app.includes('conditionMemory("survey").values[event.target.dataset.rule] = { label, rate }'), "追加済み測量明細の手動変更を後続項目の継承値として保存する");
 assert.ok(app.includes("correctionSelectionLabels: validation.correctionSelectionLabels"), "追加直前の手動条件を明細へ固定する");
+assert.ok(app.includes("surveyConditionValueMemoryKey") && app.includes('event.target.id === "surveyConditionValue"'), "測量の数値式条件も手動変更を後続項目へ継承する");
+assert.ok(app.includes('conditionMemory("survey").values[valueKey] = line.conditionValue'), "追加済み測量明細の数値式条件変更を次項目へ継承する");
 
 console.log("OK: UI static wiring checks passed");
 assert.ok(html.includes('data/unit-catalog.js') && html.indexOf('data/unit-catalog.js') < html.indexOf('engine.js'), "共通単位台帳を全計算エンジンより先に読み込む");

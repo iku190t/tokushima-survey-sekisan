@@ -336,7 +336,7 @@
       ? `<label class="field"><span>${h(input.label)}</span><select class="consulting-rule-condition" data-condition-id="${h(input.id)}"><option value="">選択してください</option>${(input.options || []).map((option) => `<option value="${h(option.value)}" data-condition-label="${h(option.label)}">${h(option.label)}（${option.rate >= 0 ? "+" : ""}${h(option.rate * 100)}%）</option>`).join("")}</select>${input.help ? `<small>${h(input.help)}</small>` : ""}</label>`
       : `<label class="check consulting-rate-check"><input class="consulting-rule-condition" data-condition-id="${h(input.id)}" type="checkbox"><span>${h(input.label)}（${input.rate >= 0 ? "+" : ""}${h(input.rate * 100)}%）${input.help ? `<small>${h(input.help)}</small>` : ""}</span></label>`).join("")}<p class="condition-calculation-note">${h(conditionRule.calculationNote)}</p><p id="consultingConditionSummary" class="quantity-standard">必須条件を選択すると補正率を表示します。</p><ul class="condition-source-list">${(conditionRule.sources || []).map((entry) => `<li><a href="${h(entry.url)}" target="_blank" rel="noopener noreferrer">${h(entry.label)} p.${h(entry.pages.join("・"))}</a></li>`).join("")}</ul></fieldset>` : "";
     const familyTrusted = Boolean(family?.sources?.length) && family.sources.every((entry) => ["high", "medium"].includes(entry.confidence));
-    const adjustments = conditionRule ? "" : (family?.adjustments || []).map((item, index) => `<label class="check consulting-rate-check"><input class="consulting-family-adjustment" data-adjustment-index="${index}" data-adjustment-type="${h(item.type)}" data-adjustment-value="${h(item.rate ?? item.factor ?? 0)}" type="checkbox"${familyTrusted ? "" : " disabled"}><span>${h(item.text)}（${item.type === "factor-sentence" ? `${item.factor}倍` : `${item.rate >= 0 ? "+" : ""}${engine.roundHalfUp(item.rate * 100, 2)}%`}）${familyTrusted ? "" : "／参照専用"}</span></label>`).join("");
+    const adjustments = conditionRule ? "" : (family?.adjustments || []).map((item, index) => `<label class="check consulting-rate-check"><input class="consulting-family-adjustment" data-adjustment-index="${index}" data-adjustment-type="${h(item.type)}" data-adjustment-value="${h(item.rate ?? item.factor ?? 0)}" data-condition-label="${h(item.text)}" type="checkbox"${familyTrusted ? "" : " disabled"}><span>${h(item.text)}（${item.type === "factor-sentence" ? `${item.factor}倍` : `${item.rate >= 0 ? "+" : ""}${engine.roundHalfUp(item.rate * 100, 2)}%`}）${familyTrusted ? "" : "／参照専用"}</span></label>`).join("");
     const parameterTables = conditionRule ? "" : (family?.parameterTables || []).map(renderParameterTable).join("");
     const formulas = (family?.formulas || []).length ? `<details class="consulting-formula-list"><summary>基準書の補正式・数量式</summary><ol>${family.formulas.map((formula) => `<li>${h(formula)}</li>`).join("")}</ol>${conditionRule?.quantityFormula ? `<p class="quantity-standard">数量式は自動反映：${h(conditionRule.quantityFormula.label)}</p>` : familyTrusted ? renderFormulaCalculator(family.formulas) : '<p class="limit-warning">低確度・未対応ページを含むため式は参照専用です。</p>'}</details>` : "";
     const notes = [...(family?.applicability || []), ...(family?.notes || [])];
@@ -350,7 +350,6 @@
   }
 
   function applyInheritedConditions(conditionRule) {
-    if (!conditionRule) return;
     const memory = scopeConditionMemory();
     document.querySelectorAll(".consulting-rule-condition").forEach((input) => {
       if (!Object.prototype.hasOwnProperty.call(memory, input.dataset.conditionId)) return;
@@ -365,6 +364,10 @@
         if (option) input.selectedIndex = option.index;
       }
     });
+    document.querySelectorAll(".consulting-family-adjustment").forEach((input) => {
+      const key = `adjustment:${String(input.dataset.conditionLabel || "").replace(/\s+/g, " ").trim()}`;
+      if (Object.prototype.hasOwnProperty.call(memory, key)) input.checked = Boolean(memory[key]);
+    });
     updateConditionSummary();
   }
 
@@ -377,6 +380,10 @@
         const selected = input.selectedOptions[0];
         memory[input.dataset.conditionId] = { value: input.value, label: selected?.dataset.conditionLabel || selected?.textContent?.trim() || "" };
       }
+    });
+    document.querySelectorAll(".consulting-family-adjustment").forEach((input) => {
+      const key = `adjustment:${String(input.dataset.conditionLabel || "").replace(/\s+/g, " ").trim()}`;
+      memory[key] = input.checked;
     });
     app.saveDraft();
   }
@@ -929,7 +936,7 @@
     });
     $("consultingConditionFields").addEventListener("input", updateConditionSummary);
     $("consultingConditionFields").addEventListener("change", (event) => {
-      if (event.target.classList.contains("consulting-rule-condition")) rememberCurrentConditions();
+      if (event.target.classList.contains("consulting-rule-condition") || event.target.classList.contains("consulting-family-adjustment")) rememberCurrentConditions();
       updateConditionSummary();
     });
     $("consultingQuantityFields").addEventListener("change", (event) => {

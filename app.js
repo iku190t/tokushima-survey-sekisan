@@ -703,6 +703,11 @@
     return String(label || "").replace(/^標準[：・]?\s*/, "").replace(/（標準）/g, "").trim();
   }
 
+  function surveyConditionValueMemoryKey(item) {
+    if (!item?.conditionFormula) return "";
+    return `condition-value:${normalizedConditionLabel(item.conditionFormula.label)}:${String(item.conditionFormula.unit || "").trim()}`;
+  }
+
   function applySurveyConditionMemory(item) {
     const memory = conditionMemory("survey").values;
     for (const rule of item.correctionRules || []) {
@@ -713,15 +718,24 @@
         && normalizedConditionLabel(candidate.dataset.conditionLabel) === normalizedConditionLabel(saved.label));
       if (option) select.selectedIndex = option.index;
     }
+    const valueKey = surveyConditionValueMemoryKey(item);
+    const valueInput = $("surveyConditionFields").querySelector("#surveyConditionValue");
+    if (valueKey && valueInput && Object.prototype.hasOwnProperty.call(memory, valueKey)) valueInput.value = String(memory[valueKey]);
   }
 
-  function rememberSurveyConditionSelections() {
+  function rememberSurveyConditionSelections(item = activeMaster().workItems.find((entry) => entry.code === $("itemSelect").value)) {
     const memory = conditionMemory("survey").values;
     $("surveyConditionFields").querySelectorAll(".survey-rule-condition").forEach((select) => {
       const selected = select.selectedOptions[0];
       if (!select.value || !selected?.dataset.conditionLabel) delete memory[select.dataset.rule];
       else memory[select.dataset.rule] = { label: selected.dataset.conditionLabel, rate: num(select.value) };
     });
+    const valueKey = surveyConditionValueMemoryKey(item);
+    const valueInput = $("surveyConditionFields").querySelector("#surveyConditionValue");
+    if (valueKey && valueInput) {
+      if (String(valueInput.value || "").trim() === "") delete memory[valueKey];
+      else memory[valueKey] = Math.max(0, num(valueInput.value));
+    }
     scheduleSave();
   }
 
@@ -1661,9 +1675,12 @@
     $("newItemQuantity").addEventListener("paste", blockInvalidQuantityPaste);
     $("newItemQuantity").addEventListener("input", (event) => { enforceQuantityPrecision(event.target, quantityInputItem(event.target), true); updateSurveyAddState(); });
     $("newItemQuantity").addEventListener("change", (event) => { normalizeQuantityInput(event.target, quantityInputItem(event.target), true); updateSurveyAddState(); });
-    $("surveyConditionFields").addEventListener("input", () => updateSurveyAddState());
+    $("surveyConditionFields").addEventListener("input", (event) => {
+      if (event.target.id === "surveyConditionValue") rememberSurveyConditionSelections();
+      updateSurveyAddState();
+    });
     $("surveyConditionFields").addEventListener("change", (event) => {
-      if (event.target.classList.contains("survey-rule-condition")) rememberSurveyConditionSelections();
+      if (event.target.classList.contains("survey-rule-condition") || event.target.id === "surveyConditionValue") rememberSurveyConditionSelections();
       updateSurveyAddState();
     });
     $("addItemButton").addEventListener("click", addItem);
@@ -1693,7 +1710,12 @@
         }
       }
       if (event.target.classList.contains("line-correction")) line.correctionRate = num(event.target.value) / 100;
-      if (event.target.classList.contains("line-condition")) line.conditionValue = Math.max(0, num(event.target.value));
+      if (event.target.classList.contains("line-condition")) {
+        line.conditionValue = Math.max(0, num(event.target.value));
+        const item = activeMaster().workItems.find((entry) => entry.code === line.code);
+        const valueKey = surveyConditionValueMemoryKey(item);
+        if (valueKey) conditionMemory("survey").values[valueKey] = line.conditionValue;
+      }
       if (event.target.classList.contains("line-manual-price")) line.manualUnitPrice = Math.max(0, num(event.target.value));
       const result = currentResult();
       renderSummary(result);
