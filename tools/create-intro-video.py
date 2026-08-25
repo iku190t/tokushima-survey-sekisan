@@ -15,6 +15,7 @@ from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont
 
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT / "media" / "intro-assets"
+APP_ICON = ROOT / "assets" / "icon-concepts" / "web-sekisan-icon-04.png"
 OUTPUT = ROOT / "media" / "web-sekisan-introduction.mp4"
 SILENT_OUTPUT = ROOT / "media" / "web-sekisan-introduction-silent.mp4"
 THUMBNAIL = ROOT / "media" / "web-sekisan-introduction-thumbnail.jpg"
@@ -32,6 +33,15 @@ FONT_MEDIUM_PATH = Path(r"C:\Windows\Fonts\YuGothM.ttc")
 def font(size: int, bold: bool = False) -> ImageFont.FreeTypeFont:
     path = FONT_BOLD_PATH if bold else FONT_MEDIUM_PATH
     return ImageFont.truetype(str(path), size=size)
+
+
+def paste_app_icon(image: Image.Image, box: tuple[int, int, int, int]) -> None:
+    """Place the selected no. 4 shortcut icon without the old sigma ornament."""
+    icon = Image.open(APP_ICON).convert("RGBA")
+    icon.thumbnail((box[2] - box[0], box[3] - box[1]), Image.Resampling.LANCZOS)
+    left = box[0] + ((box[2] - box[0]) - icon.width) // 2
+    top = box[1] + ((box[3] - box[1]) - icon.height) // 2
+    image.paste(icon, (left, top), icon)
 
 
 def rounded_text_box(
@@ -76,10 +86,9 @@ def title_frame(progress: float) -> Image.Image:
     draw = ImageDraw.Draw(image, "RGBA")
     draw.ellipse((875, -180, 1390, 335), outline=(214, 239, 106, 60), width=2)
     draw.ellipse((955, -100, 1310, 255), outline=(214, 239, 106, 90), width=2)
-    draw.rounded_rectangle((82, 98, 174, 190), radius=22, fill=LIME)
-    draw.text((128, 145), "Σ", font=font(59, True), fill=GREEN, anchor="mm")
+    paste_app_icon(image, (67, 70, 190, 193))
     draw.text((82, 240), "web積算", font=font(70, True), fill="white")
-    draw.text((86, 344), "測量・設計・調査計画・地質を、ひとつの画面で。", font=font(31), fill="#dce9e4")
+    draw.text((86, 344), "設計・測量・調査計画・地質を、ひとつの画面で。", font=font(31), fill="#dce9e4")
     draw.rounded_rectangle((82, 422, 670, 492), radius=35, fill=(214, 239, 106, 245))
     draw.text((376, 457), "国土交通省・全国標準  令和6〜8年度", font=font(25, True), fill=INK, anchor="mm")
     draw.text((84, 616), "参考試算用・公式ソフトではありません", font=font(19), fill=(218, 231, 226, 230))
@@ -113,8 +122,7 @@ def end_frame(progress: float) -> Image.Image:
     image = Image.new("RGB", (WIDTH, HEIGHT), OFF_WHITE)
     draw = ImageDraw.Draw(image, "RGBA")
     draw.rectangle((0, 0, WIDTH, 185), fill=GREEN)
-    draw.rounded_rectangle((74, 51, 150, 127), radius=18, fill=LIME)
-    draw.text((112, 89), "Σ", font=font(47, True), fill=GREEN, anchor="mm")
+    paste_app_icon(image, (62, 38, 160, 136))
     draw.text((180, 91), "web積算", font=font(50, True), fill="white", anchor="lm")
     draw.text((WIDTH / 2, 286), "積算の入口を、もっと分かりやすく。", font=font(42, True), fill=INK, anchor="mm")
     draw.rounded_rectangle((178, 355, WIDTH - 178, 447), radius=18, fill="white", outline=(23, 79, 63, 90), width=2)
@@ -243,7 +251,7 @@ def main() -> None:
     duration = written_frames / FPS
     add_audio(duration)
     SILENT_OUTPUT.unlink(missing_ok=True)
-    thumbnail = screenshot_frame(ASSETS / "04-import-drag-complete.png", "PDFから、積算・内訳・帳票まで。", "音声・BGM付きで便利な機能を紹介", "Σ", 0.35)
+    thumbnail = screenshot_frame(ASSETS / "04-import-drag-complete.png", "PDFから、積算・内訳・帳票まで。", "音声・BGM付きで便利な機能を紹介", "▶", 0.35)
     thumbnail.save(THUMBNAIL, quality=92, subsampling=0)
     print(f"Created: {OUTPUT} ({OUTPUT.stat().st_size} bytes)")
     print(f"Duration: {duration:.2f} seconds with narration and original BGM")
