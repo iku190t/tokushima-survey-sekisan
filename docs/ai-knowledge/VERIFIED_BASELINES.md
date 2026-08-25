@@ -2543,3 +2543,31 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `index.html` | `BA3342B8F397FB95CE001AED04C25E7EA286F17CC5D66FFE7AF146426E8D77C4` |
 | `styles.css` | `F655A24773B95E069AE7B30FD0800E7C327133AB0EBA1F982664EBF8A8F8CF58` |
 | `tests/test-ui-static.js` | `6E06275D994A80C82A83FCE7DADE3CCFBEFEF841692D00A68206D63D630EBD29` |
+
+## B-2026-08-25-04
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-25
+- 実装コミット: `b263663b97bc91f05d0f58dacade7ef762d3523f`
+- 外部知能コミット: この項目を追加するコミット
+- GitHub Pages: `built`、コミット`b263663b97bc91f05d0f58dacade7ef762d3523f`、更新時刻`2026-08-25T00:23:32Z`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: 2026年8月25日の公開画面を使って紹介動画を再制作し、旧Σを4番ショートカットアイコンへ変更した。設計・測量・積算結果、匿名PDF取込、項目・数量・単位入力、反映待ち、年度マスター、帳票を収録した。
+
+### 合格した試験・実画面確認
+
+- `node tests/test-ui-static.js`合格。
+- MP4は49.75秒、1280×720、24fps、H.264映像、AAC音声。日本語ナレーション45.94秒とオリジナルBGMを最後まで収録した。
+- 冒頭、PDF取込場面、末尾の3フレームを目視し、4番アイコン、現在の固定式PDF入力欄、公開URL、文字切れ0件を確認した。
+- GitHub Pages `built`後、公開版の紹介動画参照が`media/web-sekisan-introduction.mp4?v=20260825-1`であることを実ブラウザー確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `94978A0198F36C10FF603A0D7CF4464E2195E099E7AEF631909A4A6C2018A447` |
+| `media/web-sekisan-introduction.mp4` | `E34A3DC37768AE84DC25047203952C0AA0E4060B03FFE8E877340FF0CE4D38F5` |
+| `media/web-sekisan-introduction-thumbnail.jpg` | `E3AC3741F36E6E9CA64C6538A899173CCEA1E865E378297EDAF7644330D87BCD` |
+| `tools/create-intro-video.py` | `D167411C5222937CBE1F6BF45FD15BB9513A2753A0E2603070CF6EC4D667DE58` |
+| `tools/create-intro-narration.ps1` | `9A0F93574CDC05A96A5EF43096737BF5ACF191BC7F9FBE79A585D783D6EC0F19` |
+| `tests/test-ui-static.js` | `1973FF6631206C4505A960055DC2D39A5288C7B381ACA35B88331DB321101E70` |
