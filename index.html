@@ -3,6 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval' https://cdn.jsdelivr.net https://www.googletagmanager.com; worker-src 'self' blob: https://cdn.jsdelivr.net; connect-src 'self' https://cdn.jsdelivr.net https://tessdata.projectnaptha.com https://www.google-analytics.com https://region1.google-analytics.com; img-src 'self' data: blob: https://www.google-analytics.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; media-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <title>web積算｜設計・測量・調査計画・地質 業務積算</title>
   <meta name="description" content="設計、測量、調査・計画、地質を年度別技術者単価と根拠表示付きで計算するWeb業務積算ソフト">
   <meta name="author" content="株式会社アイズ測量">
@@ -12,7 +14,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/web-sekisan-32.png?v=20260825-2">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/web-sekisan-180.png?v=20260825-2">
   <link rel="manifest" href="site.webmanifest?v=20260825-2">
-  <link rel="stylesheet" href="styles.css?v=20260825-4">
+  <link rel="stylesheet" href="styles.css?v=20260825-5">
 </head>
 <body data-business-scope="design">
   <header class="app-header">
@@ -290,7 +292,7 @@
                 <label class="field"><span>費用区分</span><select id="consultingAdditionalCategory"></select></label>
                 <label class="field"><span>計上先</span><select id="consultingAdditionalBucket"></select></label>
                 <label class="field span-2"><span>名称・規格</span><input id="consultingAdditionalName" type="text" placeholder="例：ボーリング機械損料 φ66mm"></label>
-                <label class="field"><span>単位</span><select id="consultingAdditionalUnit"><option value="">選択してください</option><option>m</option><option>m²</option><option>km</option><option>km²</option><option>ha</option><option>m³</option><option>孔</option><option>回</option><option>日</option><option>箇所</option><option>本</option><option>台</option><option>t</option><option>式</option></select></label>
+                <label class="field"><span>単位</span><select id="consultingAdditionalUnit"><option value="">選択してください</option></select></label>
                 <label class="field"><span>数量</span><input id="consultingAdditionalQuantity" type="number" placeholder="単位を先に選択" disabled><small id="consultingAdditionalQuantityRule">単位に応じて制限</small></label>
                 <label class="field"><span>単価（円）</span><input id="consultingAdditionalUnitPrice" type="number" min="1" step="1" inputmode="numeric" placeholder="未入力"></label>
                 <label class="field"><span>根拠日</span><input id="consultingAdditionalSourceDate" type="date"></label>
@@ -438,6 +440,7 @@
             <label class="field"><span>インボイス登録番号</span><input id="reportRegistrationNumber" class="report-input" data-report="registrationNumber" type="text" maxlength="14" pattern="T[0-9]{13}" placeholder="T＋13桁（任意）"></label>
           </div>
           <p class="field-note">この7項目は入力と同時にこのブラウザー内へ保存し、次に「新規」を作成したときも初期表示します。修正・消去した内容も次回へ反映され、外部へは送信しません。</p>
+          <button id="clearIssuerProfileButton" class="button quiet no-print" type="button">この端末の自社・発行者情報を消去</button>
 
           <h3 class="settings-heading">出力する帳票</h3>
           <div class="document-choice-grid">
@@ -570,7 +573,7 @@
               <table class="standards-table">
                 <thead><tr><th>積算基準体系</th><th>主な対象</th><th>現在の対応</th></tr></thead>
                 <tbody>
-                  <tr><td><a href="https://www.mlit.go.jp/tec/gyoumu_sekisan.html" target="_blank" rel="noopener noreferrer">国土交通省・設計業務等標準積算基準</a></td><td>測量、土木設計、調査計画、地質</td><td><span class="scope-status partial">R6～R8年度別</span>国交省掲載152 PDF・3,054ページを取得台帳化。測量134項目と、設計・調査計画・地質の職種別歩掛1,393行を収録。適用通知・特記仕様と根拠付き積上費用は案件ごとに確認</td></tr>
+                  <tr><td><a href="https://www.mlit.go.jp/tec/gyoumu_sekisan.html" target="_blank" rel="noopener noreferrer">国土交通省・設計業務等標準積算基準</a></td><td>測量、土木設計、調査計画、地質</td><td><span class="scope-status partial">R6～R8年度別</span>国交省掲載152 PDF・3,054ページを取得台帳化。測量134項目と、設計・調査計画・地質の職種別歩掛1,393行を収録。条件表・補正式が未構造化の歩掛は自動計算不可。適用通知・特記仕様と根拠付き積上費用は案件ごとに確認</td></tr>
                   <tr><td><a href="https://www.mlit.go.jp/kowan/kowan_fr5_000019.html" target="_blank" rel="noopener noreferrer">国土交通省・港湾請負工事積算基準</a></td><td>港湾の測量・調査、船舶・機械損料、水中部調査</td><td><span class="scope-status pending">別体系・未収録</span></td></tr>
                   <tr><td><a href="https://www.mlit.go.jp/koku/koku_tk9_000006.html" target="_blank" rel="noopener noreferrer">国土交通省・空港土木工事共通仕様書等</a></td><td>空港土木の調査・設計・測量</td><td><span class="scope-status pending">別体系・未収録</span></td></tr>
                   <tr><td><a href="https://www-2.kkr.mlit.go.jp/land/sekisannkijunn1.html" target="_blank" rel="noopener noreferrer">用地調査等業務費積算基準</a></td><td>権利、建物、営業、土地評価、補償説明等</td><td><span class="scope-status pending">別体系・未収録</span></td></tr>
@@ -660,7 +663,6 @@
   <script src="data/official-role-prices.js?v=20260822-1"></script>
   <script src="data/official-source-catalog.js?v=20260824-1"></script>
   <script src="data/consulting-master.js?v=20260823-1"></script>
-  <script src="data/consulting-standard-walks.js?v=20260824-1"></script>
   <script src="data/consulting-work-catalog.js?v=20260824-1"></script>
   <script src="data/consulting-condition-rules.js?v=20260824-2"></script>
   <script src="data/consulting-rule-pack.js?v=20260824-3"></script>
@@ -668,12 +670,12 @@
   <script src="data/verified-work-item-expansions.js?v=20260823-1"></script>
   <script src="data/unit-catalog.js?v=20260824-1"></script>
   <script src="engine.js?v=20260824-2"></script>
-  <script src="consulting-engine.js?v=20260824-4"></script>
+  <script src="consulting-engine.js?v=20260825-5"></script>
   <script src="reference-case-engine.js?v=20260824-1"></script>
   <script src="document-import-engine.js?v=20260824-5"></script>
   <script src="document-reader.js?v=20260823-1"></script>
-  <script src="app.js?v=20260825-4"></script>
-  <script src="consulting.js?v=20260825-3"></script>
+  <script src="app.js?v=20260825-5"></script>
+  <script src="consulting.js?v=20260825-4"></script>
   <script src="document-import.js?v=20260825-1"></script>
   <script src="analytics.js?v=20260823-1"></script>
 </body>

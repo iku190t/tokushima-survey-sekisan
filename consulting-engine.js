@@ -81,16 +81,18 @@
     /機械器具損料.*規格/
   ];
 
-  function classifyPresetCoverage(preset, conditionRule = null) {
+  function hasUnresolvedCalculationRules(family = null) {
+    if (!family) return false;
+    if ((family.adjustments || []).length || (family.parameterTables || []).length) return true;
+    return (family.formulas || []).some((formula) => {
+      const text = String(formula || "").replace(/\s+/g, "");
+      if (!text || /消費税|一般管理費|その他原価|業務価格/.test(text)) return false;
+      return /補正|歩掛|設計延長|橋長|幅員|面積|延長|数量|[A-Za-zＡ-Ｚａ-ｚ]\s*=|=\s*[0-9.]+\s*[A-Za-zＡ-Ｚａ-ｚ]/.test(text);
+    });
+  }
+
+  function classifyPresetCoverage(preset, conditionRule = null, family = null) {
     if (!preset) return { status: "unavailable", canCalculate: false, label: "利用不可", note: "業務種類を選択してください。" };
-    if (["source-table-crosschecked", "verified"].includes(preset.verificationStatus) || preset.verificationStatus !== "national-reference") {
-      return {
-        status: "verified-complete",
-        canCalculate: true,
-        label: "原表確認済み",
-        note: "表示した標準数量と人工を原資料の該当表で確認済みです。案件固有の特記条件は別途確認してください。"
-      };
-    }
     if (conditionRule?.status === "verified-rule") {
       return {
         status: "verified-rule",
@@ -107,11 +109,22 @@
         note: "作業班の編成、規格区分または日当たり作業量を示す表です。単独で数量に掛けて人工へ変換できないため、関連表との計算規則を実装するまで自動追加しません。"
       };
     }
+    const trustedWalk = ["source-table-crosschecked", "verified"].includes(preset.verificationStatus);
+    if (trustedWalk && !hasUnresolvedCalculationRules(family)) {
+      return {
+        status: "base-walk-verified",
+        canCalculate: true,
+        label: "職種別歩掛表を確認済み",
+        note: "職種別人工と標準数量を原表で確認済みです。条件表・補正式がある項目は、構造化が完了するまで別途追加できません。"
+      };
+    }
     return {
       status: "incomplete-rule",
       canCalculate: false,
       label: "条件規則未実装・自動計算不可",
-      note: "職種別人工表は収録済みですが、補正式、適用範囲、追加・控除、参照表との関係が未構造化です。出典付き条件規則を実装するまで自動追加しません。"
+      note: trustedWalk
+        ? "職種別人工表は確認済みですが、この作業に関係する条件表、補正式、追加・控除の計算規則が未構造化です。規則を実装するまで自動追加しません。"
+        : "出典または検証状態を確認できません。原資料との照合が完了するまで自動追加しません。"
     };
   }
 
@@ -383,5 +396,5 @@
     };
   }
 
-  return { floorYen, roundHalfUp, normalizeDays, normalizeCorrectionFactor, normalizeQuantityUnit, inputDomainForUnit, validateDomainValue, classifyPresetCoverage, parseStandardQuantity, calculateStandardQuantity, standardQuantitySummary, findConditionRule, calculateConditionCorrection, calculateRuleQuantityMultiplier, overheadRate, electronicDeliverableCost, calculateRoleLine, calculateEstimate };
+  return { floorYen, roundHalfUp, normalizeDays, normalizeCorrectionFactor, normalizeQuantityUnit, inputDomainForUnit, validateDomainValue, hasUnresolvedCalculationRules, classifyPresetCoverage, parseStandardQuantity, calculateStandardQuantity, standardQuantitySummary, findConditionRule, calculateConditionCorrection, calculateRuleQuantityMultiplier, overheadRate, electronicDeliverableCost, calculateRoleLine, calculateEstimate };
 });

@@ -21,7 +21,7 @@ for (const file of ["data/consulting-master.js", "consulting-engine.js", "consul
   assert.ok(html.includes(`src="${file}?v=`), `${file}を読み込む`);
   assert.ok(fs.existsSync(path.join(root, file)), `${file}が存在する`);
 }
-assert.ok(html.includes('src="data/consulting-standard-walks.js?v='), "年度別の設計・調査計画・地質標準歩掛を読み込む");
+assert.ok(!html.includes('src="data/consulting-standard-walks.js?v='), "規則パックと重複する旧標準歩掛データを初期読込みしない");
 assert.ok(html.includes('src="data/consulting-condition-rules.js?v=') && html.includes('id="consultingConditionFields"'), "補正・適用条件データと動的入力欄を読み込む");
 assert.ok(html.includes('src="data/consulting-rule-pack.js?v='), "国交省ページ照合済み規則パックを読み込む");
 assert.ok(html.includes('src="data/consulting-work-catalog.js?v=') && fs.existsSync(path.join(root, "data", "consulting-work-catalog.js")), "本体とPDF取込で共用する作業キーワード台帳を読み込む");
@@ -39,12 +39,15 @@ assert.ok(ui.includes('ezsekisan:businessscope') && ui.includes("activeConsultin
 assert.ok(html.includes('data-consulting-scope="design-planning"') && html.includes('data-consulting-scope="geology"'), "タブに対応する積上費用だけを表示する");
 assert.ok(master.includes('id: "design-note-r8"') && master.includes('id: "design-note-r7"') && master.includes('id: "design-note-r6"') && master.includes("designLead: 0.5") && master.includes("designEngineerA: 1.0"), "令和6～8年度の設計留意書歩掛をプリセットする");
 assert.ok(ui.includes("CONSULTING_RULE_PACK") && ui.includes("preset.fiscalYear") && ui.includes("consultingPresetSearch"), "照合済み標準歩掛を年度・業務タブ・補助検索語で絞る");
+assert.ok(ui.includes("setUnifiedFiscalYear") && ui.includes("ezsekisan:fiscalyearchange") && app.includes("setUnifiedFiscalYear"), "4業務の年度を同じ全国標準単価セットへ同期する");
+assert.ok(ui.includes("standardWalk?.fiscalYear") && ui.includes("year-mismatch-row") && ui.includes("測量と設計等の積算年度が一致しない"), "異年度の歩掛と測量合算を計算対象外にする");
+assert.ok(ui.includes("unitCatalog.definitions.map") && !html.includes("<option>m</option>"), "積上費用と地質市場単価で監査済み単位台帳を共用する");
 assert.ok(ui.includes("CONSULTING_WORK_CATALOG") && ui.includes("consultingKeywordDefinitions") && ui.includes("presetMatchesKeyword") && ui.includes("renderConsultingKeywords"), "設計・調査計画・地質を共用台帳の正式familyCode由来キーワードで絞る");
 for (const keyword of ["道路", "橋梁", "河川・水辺", "水文・観測", "ボーリング", "原位置試験", "解析"]) assert.ok(workCatalog.includes(`label: "${keyword}"`), `${keyword}キーワードを表示できる`);
 assert.ok(html.includes("名称でさらに絞り込む"), "文字検索を初期操作ではなく折りたたみの補助操作にする");
 for (const label of ["積算基準の作業区分", "作業項目", "積算数量（"]) assert.ok(html.includes(label) || ui.includes(label), `${label}を測量と共通表示する`);
-assert.ok(ui.includes('`${scopedPresets.length}項目収録`') && ui.includes('`${label.replace(/業務$/, "")}作業項目を追加`'), "見出しと収録件数を測量と同じ形式にする");
-assert.ok(ui.includes("consultingMarketQuantityLabel") && ui.includes('`積算数量（${event.target.value}）`'), "市場単価方式も選択単位を積算数量へ表示する");
+assert.ok(ui.includes('`${calculableCount}項目計算可／${scopedPresets.length}項目収録`') && ui.includes('`${label.replace(/業務$/, "")}作業項目を追加`'), "見出しに計算可能件数と収録件数を区別して表示する");
+assert.ok(ui.includes("consultingMarketQuantityLabel") && ui.includes('`積算数量（${unitLabel}）`'), "市場単価方式も選択単位を積算数量へ表示する");
 assert.ok(ui.includes('class="consulting-rule-quantity"') && ui.includes('placeholder="未入力"${coverage.canCalculate ? "" : " disabled"}') && !ui.includes('value="${h(dimension.baseQuantity)}"'), "設計・調査計画・地質の標準歩掛数量を自動入力しない");
 assert.ok(!ui.includes("consultingMarketQuantityRule") && !ui.includes('<small class="quantity-standard">${h(dimension.label)}'), "数量欄の下に補助文を置かず入力枠と追加ボタンの高さを揃える");
 assert.ok(ui.includes('aria-description="${h(dimension.label)}。標準') && ui.includes('input.setAttribute("aria-description"'), "削除した補助文の入力規則はアクセシビリティ情報として保持する");

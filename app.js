@@ -98,6 +98,16 @@
     return window.SekisanEngine.quantityRule(item, master);
   }
 
+  function validatedQuantity(value, item, master = activeMaster()) {
+    if (value === "" || value === null || value === undefined) return null;
+    const rule = quantityRule(item, master);
+    const parsed = Number(value);
+    if (!Number.isFinite(parsed) || parsed < rule.min) return null;
+    if (rule.integer && !Number.isInteger(parsed)) return null;
+    if (Math.abs(parsed - Number(parsed.toFixed(rule.decimals))) >= 1e-9) return null;
+    return parsed;
+  }
+
   function quantityLabel(rule) {
     return rule.integer ? "整数のみ" : `小数第${rule.decimals}位まで`;
   }
@@ -516,6 +526,7 @@
         normalized.costs = Object.assign(emptyEstimate().costs, saved.costs || {});
         normalized.options = Object.assign(emptyEstimate().options, saved.options || {});
         normalized.consulting = Object.assign(defaultConsultingState(), saved.consulting || {});
+        normalized.consulting.fiscalYear = Number(masters.find((master) => master.id === normalized.masterId)?.fiscalYear || normalized.consulting.fiscalYear);
         normalized.consulting.lines = Array.isArray(saved.consulting?.lines) ? saved.consulting.lines : [];
         normalized.consulting.costs = Object.assign(defaultConsultingState().costs, saved.consulting?.costs || {});
         normalized.consulting.options = Object.assign(defaultConsultingState().options, saved.consulting?.options || {});
@@ -1120,6 +1131,17 @@
     scheduleSave();
   }
 
+  function clearIssuerProfile() {
+    localStorage.removeItem(ISSUER_PROFILE_KEY);
+    estimate.report = { ...estimate.report, ...emptyIssuerProfile() };
+    document.querySelectorAll(".report-input").forEach((input) => {
+      if (issuerProfileFields.includes(input.dataset.report)) input.value = "";
+    });
+    renderReportCompleteness();
+    scheduleSave();
+    showToast("この端末に保存した自社・発行者情報を消去しました");
+  }
+
   function setReportSections(selected) {
     document.querySelectorAll(".report-section-input").forEach((input) => { input.checked = selected.includes(input.dataset.section); });
     updateReportSettings();
@@ -1364,17 +1386,41 @@
     recalculate();
   }
 
-  function switchMaster(id) {
+  function switchMaster(id, options = {}) {
     const next = masters.find((master) => master.id === id);
-    if (!next) return;
+    if (!next) return false;
     estimate.masterId = id;
     estimate.options.taxRate = next.taxRate;
-    estimate.lines = estimate.lines.filter((line) => next.workItems.some((item) => item.code === line.code));
+    estimate.lines = estimate.lines.filter((line) => next.workItems.some((item) => item.code === line.code)).map((line) => {
+      const item = next.workItems.find((entry) => entry.code === line.code);
+      const value = validatedQuantity(line.quantity, item, next);
+      const validQuantity = value !== null;
+      return {
+        ...line,
+        quantity: validQuantity ? value : null,
+        inputPending: !validQuantity,
+        correctionRate: 0,
+        correctionSelections: {},
+        correctionSelectionLabels: {},
+        conditionValue: item?.conditionFormula?.default,
+        precisionRate: item?.precisionRate,
+        manualUnitPrice: 0
+      };
+    });
+    if (options.syncConsulting !== false && estimate.consulting) estimate.consulting.fiscalYear = Number(next.fiscalYear);
     populateMasterSelects();
     populateCategories();
     renderEstimate();
     scheduleSave();
+    document.dispatchEvent(new CustomEvent("ezsekisan:fiscalyearchange", { detail: { fiscalYear: Number(next.fiscalYear), masterId: next.id } }));
     showToast(`${next.label}に切り替えました`);
+    return true;
+  }
+
+  function setUnifiedFiscalYear(year) {
+    const next = preferredMaster("mlit", Number(year));
+    if (!next) return false;
+    return switchMaster(next.id);
   }
 
   function download(filename, content, type) {
@@ -1420,18 +1466,22 @@
         if (estimate.masterId === "r8-tokushima-2026") estimate.masterId = "standard-r8-2026";
         if (!masters.some((master) => master.id === estimate.masterId)) estimate.masterId = defaultMasterId;
         const master = activeMaster();
+        estimate.consulting.fiscalYear = Number(master.fiscalYear);
         let correctedQuantities = 0;
         estimate.lines = estimate.lines.map((line) => {
           const item = master.workItems.find((entry) => entry.code === line.code);
           if (!item) return line;
           if (line.inputPending || line.quantity == null || String(line.quantity).trim() === "") return { ...line, quantity: null, inputPending: true };
-          const quantity = window.SekisanEngine.normalizeQuantity(line.quantity, item, master);
-          if (num(line.quantity) !== quantity) correctedQuantities += 1;
-          return { ...line, quantity };
+          const quantity = validatedQuantity(line.quantity, item, master);
+          if (quantity === null) {
+            correctedQuantities += 1;
+            return { ...line, quantity: null, inputPending: true };
+          }
+          return { ...line, quantity, inputPending: false };
         });
         renderAll();
         persistEstimate();
-        showToast(correctedQuantities ? `積算書を読込み、数量${correctedQuantities}件を許容桁に補正しました` : "積算書を読み込みました");
+        showToast(correctedQuantities ? `積算書を読込み、規則外の数量${correctedQuantities}件を未入力へ戻しました` : "積算書を読み込みました");
       } catch (error) { alert(`積算書を読み込めませんでした。\n${error.message}`); }
     };
     reader.readAsText(file, "utf-8");
@@ -1788,6 +1838,7 @@
     $("printButton").addEventListener("click", openReportView);
     document.querySelectorAll(".report-input, .report-section-input").forEach((input) => input.addEventListener("input", updateReportSettings));
     document.querySelectorAll(".report-section-input").forEach((input) => input.addEventListener("change", updateReportSettings));
+    $("clearIssuerProfileButton").addEventListener("click", clearIssuerProfile);
     $("selectClientSetButton").addEventListener("click", () => setReportSections(["quote", "summary", "breakdown"]));
     $("selectFullSetButton").addEventListener("click", () => setReportSections(["quote", "summary", "breakdown", "unitDetail", "conditions"]));
     $("previewPrintButton").addEventListener("click", printReport);
@@ -1808,6 +1859,7 @@
     getEstimate: () => estimate,
     getSurveyResult: currentResult,
     getActiveSurveyMaster: activeMaster,
+    setUnifiedFiscalYear,
     getSubmissionJurisdictionCode: () => estimate.submissionJurisdictionCode || "",
     getSubmissionJurisdictionName: () => estimate.submissionJurisdictionCode ? jurisdictionName(estimate.submissionJurisdictionCode) : "",
     getSurveyItemsForScope: (scope, master = activeMaster()) => surveyItemsForScope(master, scope),

@@ -102,9 +102,17 @@ assert.strictEqual(engine.validateDomainValue(1.5, "m2").valid, true, "面積は
 assert.strictEqual(engine.validateDomainValue(1.5, "回").valid, false, "回数は整数以外を拒否する");
 assert.strictEqual(engine.validateDomainValue(1.2345, "km").valid, false, "距離は小数第3位を超える入力を拒否する");
 
-let coverage = engine.classifyPresetCoverage(master.verifiedPresets[0]);
-assert.strictEqual(coverage.status, "verified-complete", "原表確認済みプリセットを完全確認済みとして区別する");
-assert.strictEqual(coverage.canCalculate, true, "原表確認済みプリセットは自動計算できる");
+let coverage = engine.classifyPresetCoverage({ ...master.verifiedPresets[0], verificationStatus: "source-table-crosschecked" });
+assert.strictEqual(coverage.status, "base-walk-verified", "職種別歩掛表の確認と条件規則までの検証を区別する");
+assert.strictEqual(coverage.canCalculate, true, "条件表・補正式を持たない確認済み歩掛は自動計算できる");
+coverage = engine.classifyPresetCoverage({ ...master.verifiedPresets[0], verificationStatus: "source-table-crosschecked" }, null, { adjustments: [{ type: "rate", rate: 0.1 }], parameterTables: [], formulas: [] });
+assert.strictEqual(coverage.status, "incomplete-rule", "未構造化の補正がある歩掛は人工表だけで完全扱いしない");
+assert.strictEqual(coverage.canCalculate, false, "未構造化の条件を持つ歩掛を計算しない");
+coverage = engine.classifyPresetCoverage({ ...master.verifiedPresets[0] });
+assert.strictEqual(coverage.canCalculate, false, "検証状態がないプリセットを既定で許可しない");
+coverage = engine.classifyPresetCoverage({ ...master.verifiedPresets[0] }, { status: "verified-rule" }, { adjustments: [{ type: "rate", rate: 0.1 }] });
+assert.strictEqual(coverage.status, "verified-rule", "出典付き構造化条件は人工表確認より優先する");
+assert.strictEqual(coverage.canCalculate, true, "出典付き構造化条件を計算できる");
 coverage = engine.classifyPresetCoverage({ label: "2-1-2 編成人員 人員", verificationStatus: "national-reference" });
 assert.strictEqual(coverage.status, "reference-only", "編成人員表を数量比例の歩掛として扱わない");
 assert.strictEqual(coverage.canCalculate, false, "関連する日当たり作業量がない編成人員表は自動計算しない");

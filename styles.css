@@ -685,6 +685,19 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
   .survey-estimate-table .mini-field select { width: 100%; max-width: none; min-width: 0; min-height: 42px; padding: 8px 10px; color: var(--ink); font-size: 15px; }
   .survey-estimate-table .mini-field .table-input { width: 100%; max-width: 180px; }
   .survey-table-scroll { overflow-x: visible; contain: none; }
+  .consulting-table, .additional-cost-table { display: block; width: 100%; }
+  .consulting-table thead, .additional-cost-table thead { display: none; }
+  .consulting-table tbody, .additional-cost-table tbody { display: block; padding: 10px; }
+  .consulting-table tbody tr, .additional-cost-table tbody tr { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; margin-bottom: 12px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: #fff; box-shadow: 0 5px 14px rgba(18,58,47,.05); }
+  .consulting-table tbody td, .additional-cost-table tbody td { display: block; min-width: 0; padding: 8px; border: 0; text-align: left; white-space: normal; }
+  .consulting-table tbody td:first-child, .consulting-table tbody td:nth-child(2), .additional-cost-table tbody td:first-child, .additional-cost-table tbody td:nth-child(6) { grid-column: 1 / -1; }
+  .consulting-table tbody td:last-child, .additional-cost-table tbody td:last-child { position: absolute; top: 10px; right: 10px; width: auto; padding: 0; }
+  .consulting-table tbody td:first-child, .additional-cost-table tbody td:first-child { padding-right: 46px; border-bottom: 1px solid var(--line); }
+  .consulting-table tbody td:nth-child(3)::before, .consulting-table tbody td:nth-child(4)::before, .consulting-table tbody td:nth-child(5)::before, .consulting-table tbody td:nth-child(6)::before { display: block; margin-bottom: 5px; color: var(--muted); font-size: 10px; font-weight: 700; }
+  .consulting-table tbody td:nth-child(3)::before { content: "職種"; }
+  .consulting-table tbody td:nth-child(4)::before { content: "人工・数量"; }
+  .consulting-table tbody td:nth-child(5)::before { content: "基準日額・単価"; }
+  .consulting-table tbody td:nth-child(6)::before { content: "金額"; }
 }
 
 @media print {

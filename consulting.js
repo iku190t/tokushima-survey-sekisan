@@ -10,6 +10,7 @@
   const rulePack = window.CONSULTING_RULE_PACK || { rules: [], families: [], audits: [] };
   const officialSourceCatalog = window.OFFICIAL_SOURCE_CATALOG || { sources: [] };
   const complianceCatalog = window.ESTIMATION_COMPLIANCE_CATALOG || { systems: [], regionalAuthorities: [], additionalCostCategories: [], costBuckets: [] };
+  const unitCatalog = window.SekisanUnitCatalog || { definitions: [] };
   const referenceCaseEngine = window.ReferenceCaseEngine;
   if (!app || !master || !engine || !pricesByYear) return;
 
@@ -158,8 +159,14 @@
   function currentResult() {
     const survey = app.getSurveyResult();
     const current = state();
-    const calculationState = { ...current, lines: current.lines.filter((line) => !line.inputPending && line.role && Number(line.days) > 0) };
-    return engine.calculateEstimate(calculationState, master, rolePrices(), survey?.totals?.businessPrice || 0);
+    const calculationState = { ...current, lines: current.lines.filter((line) => {
+      if (line.inputPending || !line.role || !(Number(line.days) > 0)) return false;
+      return !line.standardWalk?.fiscalYear || Number(line.standardWalk.fiscalYear) === Number(current.fiscalYear);
+    }) };
+    const surveyYear = Number(app.getActiveSurveyMaster?.()?.fiscalYear || 0);
+    const includeSurvey = current.options.includeSurvey && surveyYear === Number(current.fiscalYear);
+    calculationState.options = { ...current.options, includeSurvey };
+    return engine.calculateEstimate(calculationState, master, rolePrices(), includeSurvey ? survey?.totals?.businessPrice || 0 : 0);
   }
 
   function renderYearAndProject() {
@@ -181,6 +188,10 @@
     const current = state();
     $("consultingAdditionalCategory").innerHTML = complianceCatalog.additionalCostCategories.map((entry) => `<option value="${h(entry.id)}">${h(entry.name)}</option>`).join("");
     $("consultingAdditionalBucket").innerHTML = complianceCatalog.costBuckets.map((entry) => `<option value="${h(entry.id)}">${h(entry.name)}</option>`).join("");
+    const unitSelect = $("consultingAdditionalUnit");
+    const selectedUnit = unitSelect.value;
+    unitSelect.innerHTML = '<option value="">選択してください</option>' + unitCatalog.definitions.map((entry) => `<option value="${h(entry.id)}">${h(entry.label)}｜${h(entry.quantityLabel)}</option>`).join("");
+    if (unitCatalog.definitions.some((entry) => entry.id === selectedUnit)) unitSelect.value = selectedUnit;
     $("consultingAdditionalCostBody").innerHTML = (result.additionalCosts || []).map((entry) => `<tr data-additional-cost="${h(entry.id)}"><td><strong>${h(additionalCostLabel(complianceCatalog.additionalCostCategories, entry.category))}</strong><small>${h(entry.name)}</small></td><td>${h(additionalCostLabel(complianceCatalog.costBuckets, entry.costBucket))}</td><td>${h(entry.quantity)} ${h(entry.unit)}</td><td>${money(entry.unitPrice)}</td><td><strong>${money(entry.amount)}</strong></td><td>${h(entry.source)}${entry.sourceDate ? `<small>${h(entry.sourceDate)}</small>` : ""}</td><td><button class="icon-button danger-text delete-additional-cost" type="button" aria-label="削除">×</button></td></tr>`).join("") || '<tr><td colspan="7" class="empty-report-cell">根拠付き積上げ費用はありません</td></tr>';
   }
 
@@ -216,7 +227,8 @@
       scopedServices().some((entry) => entry.id === preset.serviceType)
       && (!preset.fiscalYear || Number(preset.fiscalYear) === year)
     );
-    $("consultingItemCountBadge").textContent = `${scopedPresets.length}項目収録`;
+    const calculableCount = scopedPresets.filter((preset) => engine.classifyPresetCoverage(preset, engine.findConditionRule(preset, conditionRules, year), familyForPreset(preset)).canCalculate).length;
+    $("consultingItemCountBadge").textContent = `${calculableCount}項目計算可／${scopedPresets.length}項目収録`;
     renderConsultingKeywords(scopedPresets);
     const candidates = scopedPresets.filter((preset) =>
       presetMatchesKeyword(preset)
@@ -241,7 +253,7 @@
     if (visiblePresets.some((preset) => preset.id === previousPreset)) $("consultingPreset").value = previousPreset;
     const audit = (rulePack.audits || []).find((entry) => Number(entry.fiscalYear) === year);
     $("consultingPresetStatus").textContent = visiblePresets.length
-      ? `令和${year - 2018}年度：検索一致 ${candidates.length}歩掛／選択分類 ${visiblePresets.length}歩掛（全区分 ${audit?.ruleCount || candidates.length}歩掛）。国交省本体・累積改定の対応ページと条件表を表示します。`
+      ? `令和${year - 2018}年度：検索一致 ${candidates.length}歩掛／選択分類 ${visiblePresets.length}歩掛（計算可 ${calculableCount}／収録 ${audit?.ruleCount || scopedPresets.length}）。条件表・補正式が未構造化の項目は誤計算防止のため追加できません。`
       : `令和${year - 2018}年度：検索条件に一致する標準歩掛がありません。`;
     renderPresetRule();
   }
@@ -320,7 +332,7 @@
     const quantityRule = engine.parseStandardQuantity(preset.standardUnit, preset.quantitySpec);
     const conditionRule = engine.findConditionRule(preset, conditionRules, state().fiscalYear);
     const family = familyForPreset(preset);
-    const coverage = engine.classifyPresetCoverage(preset, conditionRule);
+    const coverage = engine.classifyPresetCoverage(preset, conditionRule, family);
     $("consultingPresetBasis").classList.add(coverage.canCalculate ? "verified" : "blocked");
     const geologyWarning = preset.serviceType === "geologyGeneral"
       ? "<small>地質一般調査は公開された編成人員を人工単価へ置換せず、市場単価を入力して数量・規格・補正から計算します。</small>"
@@ -328,9 +340,9 @@
     const source = preset.source || {};
     const roleText = preset.serviceType === "geologyGeneral" ? "市場単価方式" : presetRoleSummary(preset);
     $("consultingPresetBasis").innerHTML = `<strong>${h(preset.label)}</strong><span>標準単位：${h(preset.standardUnit || "標準表1式")}／経費体系：${h(preset.costSystem === "survey" ? "測量" : preset.costSystem === "geology" ? "地質一般" : "設計等")}</span><small>${sourceLink(source, `国交省対応ページ（照合${source.confidence === "high" ? "高" : "中"}）`)}</small><small>収録：${h(roleText)}</small>${geologyWarning}`;
-    const marketUnits = ["m", "m²", "km", "km²", "ha", "m³", "孔", "回", "日", "箇所", "本", "台", "t", "式"];
+    const marketUnits = unitCatalog.definitions.map((entry) => ({ value: entry.id, label: entry.label }));
     $("consultingQuantityFields").innerHTML = preset.serviceType === "geologyGeneral"
-      ? `<label class="field consulting-market-unit-field"><span>積算単位</span><select id="consultingMarketUnit"><option value="">選択してください</option>${marketUnits.map((unit) => `<option value="${h(unit)}">${h(unit)}</option>`).join("")}</select></label><label class="field"><span id="consultingMarketQuantityLabel">積算数量（単位を選択）</span><input id="consultingMarketQuantity" type="number" inputmode="decimal" aria-description="積算単位を選択してください" placeholder="未入力" disabled></label>`
+      ? `<label class="field consulting-market-unit-field"><span>積算単位</span><select id="consultingMarketUnit"><option value="">選択してください</option>${marketUnits.map((unit) => `<option value="${h(unit.value)}">${h(unit.label)}</option>`).join("")}</select></label><label class="field"><span id="consultingMarketQuantityLabel">積算数量（単位を選択）</span><input id="consultingMarketQuantity" type="number" inputmode="decimal" aria-description="積算単位を選択してください" placeholder="未入力" disabled></label>`
       : quantityRule.dimensions.map((dimension) => `<label class="field"><span>積算数量（${h(dimension.unit)}）</span><input class="consulting-rule-quantity" aria-label="積算数量（${h(dimension.unit)}）" aria-description="${h(dimension.label)}。標準 ${h(dimension.baseQuantity.toLocaleString("ja-JP"))} ${h(dimension.unit)}当り。${h(dimension.integer ? "整数のみ" : `小数第${dimension.decimals}位まで`)}" data-quantity-key="${h(dimension.key)}" data-quantity-unit="${h(dimension.unit)}" data-quantity-decimals="${h(dimension.decimals)}" type="number" min="${h(dimension.min)}" step="${h(dimension.step)}" inputmode="${dimension.integer ? "numeric" : "decimal"}" placeholder="未入力"${coverage.canCalculate ? "" : " disabled"}></label>`).join("");
     const curated = conditionRule ? `<fieldset><legend>${h(conditionRule.title)}</legend>${(conditionRule.inputs || []).map((input) => input.type === "select-rate"
       ? `<label class="field"><span>${h(input.label)}</span><select class="consulting-rule-condition" data-condition-id="${h(input.id)}"><option value="">選択してください</option>${(input.options || []).map((option) => `<option value="${h(option.value)}" data-condition-label="${h(option.label)}">${h(option.label)}（${option.rate >= 0 ? "+" : ""}${h(option.rate * 100)}%）</option>`).join("")}</select>${input.help ? `<small>${h(input.help)}</small>` : ""}</label>`
@@ -392,7 +404,7 @@
     const preset = visiblePresets.find((entry) => entry.id === $("consultingPreset").value);
     if (!preset) return { valid: false, reason: "作業項目を選択してください。", focusSelector: "#consultingPreset" };
     const conditionRule = engine.findConditionRule(preset, conditionRules, state().fiscalYear);
-    const coverage = engine.classifyPresetCoverage(preset, conditionRule);
+    const coverage = engine.classifyPresetCoverage(preset, conditionRule, familyForPreset(preset));
     if (!coverage.canCalculate) return { valid: false, reason: coverage.note, focusSelector: "#consultingPreset" };
     if (preset.serviceType === "geologyGeneral") {
       const marketUnit = String(document.querySelector("#consultingMarketUnit")?.value || "").trim();
@@ -433,8 +445,16 @@
   function renderLines(result) {
     const current = state();
     const visibleLines = result.lines.filter((line) => scopedServices().some((entry) => entry.id === line.serviceType));
+    const mismatchedLines = current.lines.filter((line) => line.standardWalk?.fiscalYear
+      && Number(line.standardWalk.fiscalYear) !== Number(current.fiscalYear)
+      && scopedServices().some((entry) => entry.id === line.serviceType));
     const pendingLines = current.lines.filter((line) => line.inputPending && scopedServices().some((entry) => entry.id === line.serviceType));
-    $("consultingEmptyState").hidden = visibleLines.length + pendingLines.length > 0;
+    $("consultingEmptyState").hidden = visibleLines.length + pendingLines.length + mismatchedLines.length > 0;
+    const mismatchHtml = mismatchedLines.map((line) => `<tr data-consulting-line="${h(line.id)}" class="pending-input-row year-mismatch-row">
+      <td><strong>${h(line.taskName)}</strong><small>${h(service(line.serviceType).name)}</small><span class="pending-input-label">令和${Number(line.standardWalk.fiscalYear) - 2018}年度歩掛のため計算対象外</span></td>
+      <td><strong>選択年度と歩掛年度が一致しません</strong><small>令和${Number(current.fiscalYear) - 2018}年度の作業項目を選び直してください。</small></td>
+      <td>${h(roleDefinition(line.serviceType, line.role)?.name || line.role || "—")}</td><td>${h(line.days || "—")} 人日</td><td>—</td><td>—</td>
+      <td class="no-print"><button class="icon-button danger-text delete-consulting-line" type="button" aria-label="削除">×</button></td></tr>`).join("");
     const pendingHtml = pendingLines.map((line) => {
       const selectedService = service(line.serviceType);
       const roles = master.roleGroups[selectedService.roleGroup] || [];
@@ -454,10 +474,10 @@
       const source = sourceLine?.verifiedSource;
       const imported = sourceLine?.importSource;
       const standard = sourceLine?.standardWalk;
-      const incomplete = standard && standard.coverageStatus !== "verified-complete";
+      const incomplete = standard && !["verified-rule", "base-walk-verified"].includes(standard.coverageStatus);
       const basis = standard?.quantitySummary || (imported ? "資料記載の人工（要照合）" : "基準外・手動調整");
       const readonly = standard ? " readonly" : "";
-      const sourceType = standard?.coverageStatus === "verified-complete" ? "原表確認済み" : "全国標準参考";
+      const sourceType = standard?.coverageStatus === "verified-rule" ? "条件規則反映済み" : standard?.coverageStatus === "base-walk-verified" ? "職種別歩掛表確認済み" : "全国標準参考";
       if (line.lineType === "amount") return `<tr data-consulting-line="${h(line.id)}" class="${recentlyImportedConsultingLineIds.has(line.id) ? "recently-imported-line" : ""}">
         <td><strong>${h(line.taskName)}</strong><small>${h(line.serviceName)}／市場単価方式${source ? `／出典：${h(source)}` : ""}</small></td>
         <td><strong>${h(basis)}</strong><small>${h(line.quantity)} ${h(line.unit)} × ${money(line.unitPrice)} × ${h(line.correctionFactor)}倍</small><small>単価根拠：${h(sourceLine?.priceSource || "未記録")}</small></td>
@@ -465,14 +485,14 @@
         <td class="no-print"><button class="icon-button danger-text delete-consulting-line" type="button" aria-label="削除">×</button></td></tr>`;
       return `<tr data-consulting-line="${h(line.id)}" class="${recentlyImportedConsultingLineIds.has(line.id) ? "recently-imported-line" : ""}">
         <td><strong>${h(line.taskName)}</strong><small>${h(line.serviceName)}${source ? `／${h(sourceType)}：${h(source)}` : imported ? `／資料取込：${h(imported.fileName || "貼付け原文")} p.${h(imported.page || 1)}（要原文照合）` : "／人工入力"}</small></td>
-        <td><strong>${h(basis)}</strong><small>${standard ? incomplete ? standard.conditionRuleId ? "選択した補正規則を反映・人工表原ページは要照合" : "一次試算・補正等未反映" : "原表確認済み条件から自動算出" : "人工を直接入力"}</small></td>
+        <td><strong>${h(basis)}</strong><small>${standard ? incomplete ? "計算規則未完了" : standard.coverageStatus === "verified-rule" ? "出典付き条件規則から自動算出" : "職種別人工表と標準数量から算出" : "人工を直接入力"}</small></td>
         <td>${h(role?.name || line.role)}</td>
         <td><input class="consulting-line-days" type="number" min="0" step="0.001" inputmode="decimal" data-decimals="3" value="${h(line.days)}"${readonly}><span class="input-unit">人日</span><small>${standard ? "標準歩掛から算出" : "小数第3位まで"}</small></td>
         <td>${money(line.dailyRate)}</td><td><strong>${money(line.amount)}</strong></td>
         <td class="no-print"><button class="icon-button danger-text delete-consulting-line" type="button" aria-label="削除">×</button></td>
       </tr>`;
     }).join("");
-    $("consultingLineBody").innerHTML = pendingHtml + calculatedHtml;
+    $("consultingLineBody").innerHTML = mismatchHtml + pendingHtml + calculatedHtml;
   }
 
   function renderCostsAndOptions() {
@@ -492,6 +512,8 @@
     if (result.lines.some((line) => line.lineType !== "amount" && !line.dailyRate)) issues.push("基準日額が0円の職種があります。年度単価を確認してください。");
     if (result.lines.some((line) => line.calculationSystem === "geology" && line.lineType !== "amount") && !current.costs.geologyDirectNonLabor && !current.costs.geologyIndirect) issues.push("地質一般調査の機械・材料・運搬・仮設等が0円です。不要か未入力か確認してください。");
     if (current.options.includeSurvey && !app.getSurveyResult().lines.length) issues.push("測量積算を合算する設定ですが、測量作業項目がありません。");
+    if (current.options.includeSurvey && Number(app.getActiveSurveyMaster?.()?.fiscalYear) !== Number(current.fiscalYear)) issues.push("測量と設計等の積算年度が一致しないため、測量業務価格を合算していません。");
+    current.lines.filter((line) => line.standardWalk?.fiscalYear && Number(line.standardWalk.fiscalYear) !== Number(current.fiscalYear)).forEach((line) => issues.push(`${line.taskName}：歩掛年度が選択年度と一致しないため計算対象外です。`));
     if (current.lines.some((line) => line.standardWalk && !line.standardWalk.conditionsConfirmed)) issues.push("適用条件の確認が完了していない行があります。");
     if (result.lines.some((line) => !current.lines.find((entry) => entry.id === line.id)?.verifiedSource)) issues.push("人工入力の行があります。採用歩掛と数量条件を計算根拠で確認してください。");
     if ((result.additionalCosts || []).some((entry) => !entry.source)) issues.push("単価根拠がない積上げ費用があります。");
@@ -501,8 +523,7 @@
 
   function renderSummary(result) {
     const t = result.totals;
-    const rows = [
-      ["測量業務価格（合算時）", t.surveyBusinessPrice],
+    const detailRows = [
       ["調査計画・測量方式直接費", t.surveyPlanningDirect],
       ["調査計画・測量方式諸経費", t.surveyPlanningOverhead],
       ["調査計画・測量方式業務価格", t.surveyPlanningBusinessPrice, true],
@@ -513,7 +534,11 @@
       ["設計等業務価格", t.designBusinessPrice, true],
       ["地質一般・対象額", t.geologyTarget],
       ["地質一般・諸経費", t.geologyOverhead],
-      ["地質一般業務価格", t.geologyBusinessPrice, true],
+      ["地質一般業務価格", t.geologyBusinessPrice, true]
+    ];
+    const rows = [
+      ...(state().options.includeSurvey ? [["測量業務価格（合算）", t.surveyBusinessPrice, true]] : []),
+      ...detailRows.filter(([, value]) => Number(value) !== 0),
       ["総合業務価格", t.businessPrice, true],
       [`消費税（${(t.taxRate * 100).toFixed(1).replace(".0", "")}%）`, t.tax]
     ];
@@ -544,7 +569,7 @@
       }));
     return [
       { label: yearSource.sourceLabel, url: yearSource.sourceUrl },
-      ...(fullBook ? [{ label: `令和${fiscalYear - 2018}年度 国交省対応済み歩掛 ${fullBook.ruleCount}行（本体・累積改定ページへ照合）`, url: "https://www.mlit.go.jp/tec/gyoumu_sekisan.html" }] : []),
+      ...(fullBook ? [{ label: `令和${fiscalYear - 2018}年度 国交省ページ照合台帳 ${fullBook.ruleCount}行（計算可否は条件規則の構造化状況で判定）`, url: "https://www.mlit.go.jp/tec/gyoumu_sekisan.html" }] : []),
       ...baseSources,
       ...mlitSources,
       { label: "国土交通省 設計業務等標準積算基準書（年度別一覧）", url: "https://www.mlit.go.jp/tec/gyoumu_sekisan.html" }
@@ -656,7 +681,7 @@
     if (!preset) return;
     rememberCurrentConditions();
     const conditionRule = engine.findConditionRule(preset, conditionRules, state().fiscalYear);
-    const coverage = engine.classifyPresetCoverage(preset, conditionRule);
+    const coverage = engine.classifyPresetCoverage(preset, conditionRule, familyForPreset(preset));
     if (!coverage.canCalculate) { app.showMissingInputPopup({ valid: false, reason: coverage.note, focusSelector: "#consultingPreset" }); return; }
     const quantityValues = {};
     document.querySelectorAll(".consulting-rule-quantity").forEach((input) => { quantityValues[input.dataset.quantityKey] = input.value; });
@@ -736,7 +761,7 @@
           quantitySummary, multiplier, correctionFactor: correction.factor * genericFactor,
           conditionValues: { ...conditionValues }, conditionLabels: { ...conditionLabels },
           conditionEntries: [...correction.entries, ...genericEntries], conditionsConfirmed: true,
-          verificationStatus: preset.verificationStatus, coverageStatus: "verified-complete", coverageLabel: coverage.label
+          verificationStatus: preset.verificationStatus, coverageStatus: coverage.status, coverageLabel: coverage.label
         }
       });
       renderPresetRule();
@@ -767,7 +792,7 @@
         conditionEntries: [...correction.entries, ...genericEntries],
         conditionsConfirmed: true,
         verificationStatus: preset.verificationStatus || "source-table-crosschecked",
-        coverageStatus: "verified-complete",
+        coverageStatus: coverage.status,
         coverageLabel: coverage.label
       }
     }));
@@ -951,8 +976,9 @@
       input.step = String(domain.step);
       input.inputMode = domain.integer ? "numeric" : "decimal";
       input.dataset.quantityDecimals = String(domain.decimals);
-      label.textContent = event.target.value ? `積算数量（${event.target.value}）` : "積算数量（単位を選択）";
-      input.setAttribute("aria-description", event.target.value ? `${event.target.value}は${domain.label}` : "積算単位を選択してください");
+      const unitLabel = event.target.selectedOptions[0]?.textContent || event.target.value;
+      label.textContent = event.target.value ? `積算数量（${unitLabel}）` : "積算数量（単位を選択）";
+      input.setAttribute("aria-description", event.target.value ? `${unitLabel}は${domain.label}` : "積算単位を選択してください");
     });
     $("consultingQuantityFields").addEventListener("input", (event) => {
       if (event.target.id !== "consultingMarketQuantity") return;
@@ -999,7 +1025,14 @@
     $("consultingQuantityFields").addEventListener("change", updatePresetAddState);
     $("consultingConditionFields").addEventListener("input", updatePresetAddState);
     $("consultingConditionFields").addEventListener("change", updatePresetAddState);
-    $("consultingFiscalYear").addEventListener("change", (event) => { state().fiscalYear = Number(event.target.value); renderAll(); app.saveDraft(); });
+    $("consultingFiscalYear").addEventListener("change", (event) => {
+      const year = Number(event.target.value);
+      if (!app.setUnifiedFiscalYear?.(year)) {
+        event.target.value = state().fiscalYear;
+        app.notify("選択年度の全国標準単価セットがありません");
+      }
+    });
+    document.addEventListener("ezsekisan:fiscalyearchange", () => renderAll());
     $("consultingJurisdictionSelect").addEventListener("change", (event) => {
       app.getEstimate().submissionJurisdictionCode = event.target.value;
       $("jurisdictionSelect").value = event.target.value;

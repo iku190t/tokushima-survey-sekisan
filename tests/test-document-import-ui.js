@@ -127,6 +127,6 @@ assert.ok(html.includes('<span class="sr-only">積算基準の作業区分</span
 assert.ok(ui.includes("conversion.hidden = true") && ui.includes("conversion.hidden = false"), "数量と単位が揃った場合だけ換算結果を表示する");
 for (const size of ["font-size: 13px", "font-size: 11px", "font-size: 12px"]) assert.ok(css.includes(size), `PDF右入力欄の文字を拡大する: ${size}`);
 assert.ok(ui.includes("const inputPending = !(quantity > 0)") && ui.includes("quantity: inputPending ? null : quantity") && ui.includes("splitSurveyQuantityUnit"), "数量・単位未入力でも項目を入力待ち候補にし、数字付き単位を分離する");
-assert.ok(app.includes("数量未入力（計算対象外）") && app.includes("!line.inputPending") && consulting.includes("職種・人工未入力") && consulting.includes("!line.inputPending"), "未入力行を4業務画面に明示し計算対象から除外する");
+assert.ok(app.includes("数量未入力（計算対象外）") && app.includes("!line.inputPending") && consulting.includes("職種・人工未入力") && consulting.includes("line.inputPending ||"), "未入力行を4業務画面に明示し計算対象から除外する");
 
 console.log("OK: document import review UI and safe apply wiring checks passed");

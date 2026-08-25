@@ -113,6 +113,7 @@ for (const field of ["companyName", "representative", "postalCode", "address", "
   assert.ok(html.includes(`data-report="${field}"`), `発行者プロフィールに${field}がある`);
 }
 assert.ok(html.includes("この7項目は入力と同時にこのブラウザー内へ保存") && html.includes("次に「新規」を作成したときも初期表示"), "自社・発行者情報の自動保存と新規引継ぎを案内する");
+assert.ok(html.includes('id="clearIssuerProfileButton"') && app.includes("localStorage.removeItem(ISSUER_PROFILE_KEY)"), "端末保存した自社・発行者情報を明示操作で消去できる");
 assert.ok(app.includes('const ISSUER_PROFILE_KEY = "surveySekisanIssuerProfileV1"') && app.includes("issuerProfileFields"), "案件と分離した発行者プロフィールを定義する");
 assert.ok(app.includes("...loadIssuerProfile()") && app.includes("persistIssuerProfile(estimate.report)"), "新規帳票へ発行者プロフィールを読込み、入力時に保存する");
 assert.ok(app.includes("localStorage.getItem(ISSUER_PROFILE_KEY) === null") && app.includes("persistIssuerProfile(saved.report)"), "旧案件に保存済みの発行者情報を初回だけプロフィールへ移行する");
@@ -134,6 +135,9 @@ assert.ok(css.includes(".view-tabs { overflow-x: visible; flex-wrap: wrap;"), "�
 assert.ok(html.includes('class="estimate-table survey-estimate-table"'), "測量内訳表へスマホ専用の識別クラスを付ける");
 assert.ok(html.includes('class="table-scroll survey-table-scroll"'), "測量内訳表のスマホ用スクロール枠を識別する");
 assert.ok(css.includes(".survey-estimate-table tbody tr { position: relative; display: grid;") && css.includes(".survey-estimate-table tbody td:nth-child(3) { grid-column: 1 / -1;"), "スマホでは測量内訳をカード化して条件欄を全幅表示する");
+assert.ok(css.includes(".consulting-table tbody tr, .additional-cost-table tbody tr { position: relative; display: grid;") && css.includes(".consulting-table thead, .additional-cost-table thead { display: none;"), "スマホでは設計・調査計画・地質と積上費用もカード表示する");
+assert.ok(html.includes('http-equiv="Content-Security-Policy"') && html.includes("object-src 'none'") && html.includes('name="referrer"'), "外部解析依存を許可先限定し埋込みと参照元漏えいを抑止する");
+assert.ok(app.includes("function validatedQuantity") && app.includes("規則外の数量") && !app.includes("数量${correctedQuantities}件を許容桁に補正"), "読込時の規則外数量を標準数量へ自動補完しない");
 assert.ok(css.includes(".survey-estimate-table .mini-field select { width: 100%; max-width: none; min-width: 0;"), "スマホの補正条件選択を省略幅へ縮めない");
 assert.ok(html.includes('id="draftRecoveryPanel"'), "前回データの復元案内がある");
 assert.ok(html.includes('id="restoreDraftButton"'), "前回データを明示操作で復元できる");
