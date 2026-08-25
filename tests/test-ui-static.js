@@ -161,6 +161,9 @@ assert.ok(!html.includes('id="supportDialog"') && !html.includes('id="footerSupp
 assert.ok(!app.includes("openSupportDialog") && !app.includes('$("supportDialog")'), "廃止した応援専用ダイアログへ結線しない");
 assert.ok(html.includes("公式の積算ソフト、発注機関の認定製品または公式帳票ではありません"), "免責ダイアログで非公式性を説明する");
 assert.ok(app.includes("参考試算・公式資料要照合"), "印刷帳票にも照合注意を表示する");
+assert.ok(html.includes('id="newItemQuantity" type="number" min="0" step="0.001" placeholder="未入力"') && !html.includes('id="newItemQuantity" type="number" min="0" step="0.001" value="1"'), "測量の追加前数量を1で初期化しない");
+assert.ok(app.includes('let selectedSurveyQuantityKey = "";') && app.includes('if (selectedSurveyQuantityKey !== quantityKey) $("newItemQuantity").value = "";'), "測量は作業項目が変わったときだけ追加前数量を空欄へ戻す");
+assert.ok(app.includes("line.quantity = null;") && app.includes("line.inputPending = true;") && app.includes("積算数量を入力してください"), "追加済み測量行の項目変更時は旧数量を引き継がず計算対象外にする");
 assert.ok(html.includes('id="consultingDays"') && !html.includes('id="consultingDays" type="number" min="0" step="0.001" value="1"'), "人工入力を1で初期化しない");
 assert.ok(!html.includes('id="consultingPresetMultiplier"') && html.includes('id="consultingQuantityFields"'), "手入力補正係数を廃止して標準数量欄を表示する");
 assert.ok(!html.includes('id="pdfManualSurveyQuantity" type="number" aria-label="資料の数量" value="1"'), "PDF取込数量を1で初期化しない");

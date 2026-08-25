@@ -45,6 +45,7 @@ assert.ok(html.includes("名称でさらに絞り込む"), "文字検索を初�
 for (const label of ["積算基準の作業区分", "作業項目", "積算数量（"]) assert.ok(html.includes(label) || ui.includes(label), `${label}を測量と共通表示する`);
 assert.ok(ui.includes('`${scopedPresets.length}項目収録`') && ui.includes('`${label.replace(/業務$/, "")}作業項目を追加`'), "見出しと収録件数を測量と同じ形式にする");
 assert.ok(ui.includes("consultingMarketQuantityLabel") && ui.includes('`積算数量（${event.target.value}）`'), "市場単価方式も選択単位を積算数量へ表示する");
+assert.ok(ui.includes('class="consulting-rule-quantity"') && ui.includes('placeholder="未入力"${coverage.canCalculate ? "" : " disabled"}') && !ui.includes('value="${h(dimension.baseQuantity)}"'), "設計・調査計画・地質の標準歩掛数量を自動入力しない");
 assert.ok(!ui.includes("consultingMarketQuantityRule") && !ui.includes('<small class="quantity-standard">${h(dimension.label)}'), "数量欄の下に補助文を置かず入力枠と追加ボタンの高さを揃える");
 assert.ok(ui.includes('aria-description="${h(dimension.label)}。標準') && ui.includes('input.setAttribute("aria-description"'), "削除した補助文の入力規則はアクセシビリティ情報として保持する");
 assert.ok(html.includes('id="addConsultingPresetButton" class="button primary add-button"') && ui.includes('textContent = "追加"'), "追加ボタンの名称と配置を測量に揃える");

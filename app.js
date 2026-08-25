@@ -39,6 +39,7 @@
     { id: "bathymetry", label: "深浅", categories: ["深浅測量"] }
   ];
   let activeSurveyKeyword = "all";
+  let selectedSurveyQuantityKey = "";
 
   const surveyRegulationPaths = {
     "共通": "積算基準 第2章 第1節 共通（作業規程の測量種別外）",
@@ -661,7 +662,9 @@
   function updateSelectedItemMeta() {
     const item = activeMaster().workItems.find((entry) => entry.code === $("itemSelect").value);
     if (!item) {
+      selectedSurveyQuantityKey = "";
       $("newItemQuantityLabel").textContent = "積算数量";
+      $("newItemQuantity").value = "";
       $("selectedItemMeta").innerHTML = "<strong>適用できる測量歩掛がありません。</strong>";
       $("surveyConditionFields").innerHTML = "";
       updateSurveyAddState(null);
@@ -669,7 +672,9 @@
       return;
     }
     $("newItemQuantityLabel").textContent = `積算数量（${item.unit}）`;
-    $("newItemQuantity").value = item.standardQuantity;
+    const quantityKey = `${activeMaster().id}:${item.code}`;
+    if (selectedSurveyQuantityKey !== quantityKey) $("newItemQuantity").value = "";
+    selectedSurveyQuantityKey = quantityKey;
     applyQuantityInputRule($("newItemQuantity"), item);
     const qRule = quantityRule(item);
     const standard = window.SekisanEngine.calculateItem({ masterItem: item, quantity: item.standardQuantity, correctionRate: 0, conditionValue: item.conditionFormula?.default }, activeMaster(), {});
@@ -1178,6 +1183,7 @@
     const validation = updateSurveyAddState(item);
     if (!validation.valid) { showMissingInputPopup(validation); return; }
     estimate.lines.push({ id: `line-${Date.now()}-${Math.random().toString(16).slice(2)}`, code, quantity: validation.quantity, correctionRate: 0, correctionSelections: validation.correctionSelections, correctionSelectionLabels: validation.correctionSelectionLabels, conditionValue: validation.conditionValue, precisionRate: item.precisionRate, manualUnitPrice: 0 });
+    $("newItemQuantity").value = "";
     updateSelectedItemMeta();
     recalculate();
     showToast("作業項目を追加しました");
@@ -1730,14 +1736,15 @@
         const item = activeMaster().workItems.find((entry) => entry.code === event.target.value);
         if (item) {
           line.code = item.code;
-          if (!line.inputPending && line.quantity != null) line.quantity = window.SekisanEngine.normalizeQuantity(line.quantity, item, activeMaster());
+          line.quantity = null;
+          line.inputPending = true;
           line.correctionRate = 0;
           line.correctionSelections = {};
           line.correctionSelectionLabels = {};
           line.conditionValue = item.conditionFormula?.default;
           line.precisionRate = item.precisionRate;
           line.manualUnitPrice = 0;
-          showToast(`作業項目を「${item.name}」へ変更しました`);
+          showToast(`作業項目を「${item.name}」へ変更しました。積算数量を入力してください`);
         }
       }
       if (line && event.target.classList.contains("line-quantity")) {
