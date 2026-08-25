@@ -2674,3 +2674,36 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `index.html` | `BE46C71B3F233302564E6732EB524A4223DB333758729D97CA08726E1A806361` |
 | `tests/test-ui-static.js` | `2018F43521451819F8D10370018CB427B0CF18203442A794C816E58F705046CD` |
 | `tests/test-consulting-ui.js` | `BF9FCFAB58E900E8A62DBCA1E01E7E3046C50FEA1EA46C66C2BDD74018D89674` |
+
+## B-2026-08-25-09
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-25
+- 実装コミット: `b16da33ccd43283d756b689913c07c10eabfe7b9`
+- 外部知能コミット: `499ba5d52b1e9a9db7ed06c0ec45656388e755e3`
+- GitHub Pages: `built`、ビルド`1173492705`、コミット`499ba5d52b1e9a9db7ed06c0ec45656388e755e3`、更新時刻`2026-08-25T05:20:51Z`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: 4業務の積算年度を統一し、年度不一致行と未構造化条件行を計算対象外にした。共通41単位、読込数量の空欄保持、スマホ内訳カード、自社・発行者プロフィール消去、CSPを追加した。
+
+### 合格した試験・公開画面確認
+
+- `node --check`対象5ファイル、`tests/test-*.js`全19本、`git diff --check`合格。
+- R6～R8の測量同一コードを比較し、単位・標準数量・数量種別の年度差分0件を確認した。
+- 設計等1,393行は計算可能195、参照専用32、未構造化規則あり1,166へ再分類し、未知状態と年度不一致を計算しない固定値試験が合格した。
+- 公開画面でHTTP 200、`app.js?v=20260825-5`、`styles.css?v=20260825-5`、CSPを確認した。
+- 公開画面で令和7年度へ切り替えると、設計等の技術者単価、照合台帳、各基準書リンクも令和7年度へ同期した。
+- 公開画面で4業務タブを順に開き、令和7年度の計算可能／収録表示が設計33／313、調査計画33／109、地質7／40であることを確認した。測量は年度別マスター141項目を別方式で表示する。
+- 帳票画面に自社・発行者情報の明示的消去ボタンが1件表示されることを確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `app.js` | `D8194D8CB157AF57D446490B8F95608D856E2BB99D53ADC77B7CF5D2291936BA` |
+| `consulting.js` | `1499A1801FD6654AE3F3BF4DC9D5BC7F6E4B81DF98C2DAFA4DC42608EF57E03F` |
+| `consulting-engine.js` | `D2C8CED7D777D094ECB759A33305CAD9489BE68239A51BE6C826AC134C8B359D` |
+| `index.html` | `04763F76F07335D8DF38323E14BB960FC70BA76D86E39DDE276FDF14C49C205B` |
+| `styles.css` | `209314E57453550AE9ACA4B7B3BE8C4EDFCAE987ECF47102414A8A33F59967ED` |
+| `tests/test-consulting-engine.js` | `5486AA0C68D50E8BF72FE21C5F9047F884E79E0C482A99525C227E9BEF18D0A8` |
+| `tests/test-consulting-ui.js` | `8C5CC6C209DEB1E4B1FF8B3EBCD747257CFE397B5C0330F29023B70FE5A371D2` |
+| `tests/test-ui-static.js` | `ECB76F7C6633DCE3D712E3EEEECE3BC27E75F163A4F67C5EC3B1860E51D72629` |
