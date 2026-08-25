@@ -2648,3 +2648,29 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `index.html` | `99A71A682FE3526CB53E0A014976249D35D583847E4BB4745870E5EC6990C3AC` |
 | `styles.css` | `BE0DD5672691F25C66ED8890D85773A0DA817963761AA955FF2B850E217E600A` |
 | `tests/test-ui-static.js` | `07AE08454DFEB158B4F6C9754BFFF81A9667A4CBA120DB8DAD52075E062C755B` |
+
+## B-2026-08-25-08
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-25
+- 実装コミット: `986c3f7103b48c9ba53fc74bcd4f47d5d0c2a2dc`
+- 外部知能コミット: この項目を追加するコミット
+- GitHub Pages: `built`、ビルド`1173252333`、コミット`986c3f7103b48c9ba53fc74bcd4f47d5d0c2a2dc`、更新時刻`2026-08-25T02:34:12Z`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: 4業務の作業項目選択後の積算数量を空欄にし、測量の追加済み明細で項目を変更した場合も旧数量を引き継がない。
+
+### 合格した試験・実画面確認
+
+- `node --check app.js`、`node --check consulting.js`、`tests/test-*.js`全19本、`git diff --check`合格。
+- ローカル実画面で設計・測量・調査計画・地質の初期数量と項目変更後数量が空文字であることを確認した。
+- 測量の追加済み行を別項目へ変更し、数量空欄、`pending-input-row`、`数量未入力（計算対象外）`を確認した。
+- 公開版は`app.js?v=20260825-4`を配信し、`newItemQuantity`に`value`属性がなく、ブラウザー警告・エラー0件だった。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `app.js` | `9F8529904B2C5174B504F78D1203136DD4A1E599E55A0509B98B51D31DF1F193` |
+| `index.html` | `BE46C71B3F233302564E6732EB524A4223DB333758729D97CA08726E1A806361` |
+| `tests/test-ui-static.js` | `2018F43521451819F8D10370018CB427B0CF18203442A794C816E58F705046CD` |
+| `tests/test-consulting-ui.js` | `BF9FCFAB58E900E8A62DBCA1E01E7E3046C50FEA1EA46C66C2BDD74018D89674` |
