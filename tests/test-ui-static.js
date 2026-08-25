@@ -174,6 +174,10 @@ assert.ok(analytics.includes('location.protocol !== "https:"'), "公開HTTPS版�
 assert.ok(analytics.includes('analytics_storage: "granted"') && analytics.includes('send_page_view: true'), "公開HTTPS版ではページアクセス解析を常時開始する");
 assert.ok(analytics.includes('ad_storage: "denied"'), "広告用保存は拒否する");
 assert.ok(!app.includes("gtag("), "積算アプリから入力値をAnalyticsイベントへ送らない");
+assert.ok(app.includes("correctionSelectionLabels") && app.includes("selected?.dataset.conditionLabel"), "測量の補正条件を率だけでなく倍率・地形名まで保存する");
+assert.ok(app.includes('data-rate="${h(option.rate)}"') && app.includes('data-condition-label="${h(option.label)}"'), "同率の1/200と1/500を追加済み明細で区別する");
+assert.ok(app.includes('conditionMemory("survey").values[event.target.dataset.rule] = { label, rate }'), "追加済み測量明細の手動変更を後続項目の継承値として保存する");
+assert.ok(app.includes("correctionSelectionLabels: validation.correctionSelectionLabels"), "追加直前の手動条件を明細へ固定する");
 
 console.log("OK: UI static wiring checks passed");
 assert.ok(html.includes('data/unit-catalog.js') && html.indexOf('data/unit-catalog.js') < html.indexOf('engine.js'), "共通単位台帳を全計算エンジンより先に読み込む");

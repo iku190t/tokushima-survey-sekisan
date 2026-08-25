@@ -333,7 +333,7 @@
       ? `<label class="field consulting-market-unit-field"><span>積算単位</span><select id="consultingMarketUnit"><option value="">選択してください</option>${marketUnits.map((unit) => `<option value="${h(unit)}">${h(unit)}</option>`).join("")}</select></label><label class="field"><span id="consultingMarketQuantityLabel">積算数量（単位を選択）</span><input id="consultingMarketQuantity" type="number" inputmode="decimal" aria-description="積算単位を選択してください" placeholder="未入力" disabled></label>`
       : quantityRule.dimensions.map((dimension) => `<label class="field"><span>積算数量（${h(dimension.unit)}）</span><input class="consulting-rule-quantity" aria-label="積算数量（${h(dimension.unit)}）" aria-description="${h(dimension.label)}。標準 ${h(dimension.baseQuantity.toLocaleString("ja-JP"))} ${h(dimension.unit)}当り。${h(dimension.integer ? "整数のみ" : `小数第${dimension.decimals}位まで`)}" data-quantity-key="${h(dimension.key)}" data-quantity-unit="${h(dimension.unit)}" data-quantity-decimals="${h(dimension.decimals)}" type="number" min="${h(dimension.min)}" step="${h(dimension.step)}" inputmode="${dimension.integer ? "numeric" : "decimal"}" placeholder="未入力"${coverage.canCalculate ? "" : " disabled"}></label>`).join("");
     const curated = conditionRule ? `<fieldset><legend>${h(conditionRule.title)}</legend>${(conditionRule.inputs || []).map((input) => input.type === "select-rate"
-      ? `<label class="field"><span>${h(input.label)}</span><select class="consulting-rule-condition" data-condition-id="${h(input.id)}"><option value="">選択してください</option>${(input.options || []).map((option) => `<option value="${h(option.value)}">${h(option.label)}（${option.rate >= 0 ? "+" : ""}${h(option.rate * 100)}%）</option>`).join("")}</select>${input.help ? `<small>${h(input.help)}</small>` : ""}</label>`
+      ? `<label class="field"><span>${h(input.label)}</span><select class="consulting-rule-condition" data-condition-id="${h(input.id)}"><option value="">選択してください</option>${(input.options || []).map((option) => `<option value="${h(option.value)}" data-condition-label="${h(option.label)}">${h(option.label)}（${option.rate >= 0 ? "+" : ""}${h(option.rate * 100)}%）</option>`).join("")}</select>${input.help ? `<small>${h(input.help)}</small>` : ""}</label>`
       : `<label class="check consulting-rate-check"><input class="consulting-rule-condition" data-condition-id="${h(input.id)}" type="checkbox"><span>${h(input.label)}（${input.rate >= 0 ? "+" : ""}${h(input.rate * 100)}%）${input.help ? `<small>${h(input.help)}</small>` : ""}</span></label>`).join("")}<p class="condition-calculation-note">${h(conditionRule.calculationNote)}</p><p id="consultingConditionSummary" class="quantity-standard">必須条件を選択すると補正率を表示します。</p><ul class="condition-source-list">${(conditionRule.sources || []).map((entry) => `<li><a href="${h(entry.url)}" target="_blank" rel="noopener noreferrer">${h(entry.label)} p.${h(entry.pages.join("・"))}</a></li>`).join("")}</ul></fieldset>` : "";
     const familyTrusted = Boolean(family?.sources?.length) && family.sources.every((entry) => ["high", "medium"].includes(entry.confidence));
     const adjustments = conditionRule ? "" : (family?.adjustments || []).map((item, index) => `<label class="check consulting-rate-check"><input class="consulting-family-adjustment" data-adjustment-index="${index}" data-adjustment-type="${h(item.type)}" data-adjustment-value="${h(item.rate ?? item.factor ?? 0)}" type="checkbox"${familyTrusted ? "" : " disabled"}><span>${h(item.text)}（${item.type === "factor-sentence" ? `${item.factor}倍` : `${item.rate >= 0 ? "+" : ""}${engine.roundHalfUp(item.rate * 100, 2)}%`}）${familyTrusted ? "" : "／参照専用"}</span></label>`).join("");
@@ -354,8 +354,16 @@
     const memory = scopeConditionMemory();
     document.querySelectorAll(".consulting-rule-condition").forEach((input) => {
       if (!Object.prototype.hasOwnProperty.call(memory, input.dataset.conditionId)) return;
-      if (input.type === "checkbox") input.checked = Boolean(memory[input.dataset.conditionId]);
-      else if ([...input.options].some((option) => option.value === String(memory[input.dataset.conditionId]))) input.value = String(memory[input.dataset.conditionId]);
+      const saved = memory[input.dataset.conditionId];
+      if (input.type === "checkbox") input.checked = Boolean(typeof saved === "object" ? saved.checked : saved);
+      else {
+        const savedLabel = typeof saved === "object" ? String(saved.label || "") : "";
+        const savedValue = typeof saved === "object" ? saved.value : saved;
+        const exact = savedLabel ? [...input.options].find((option) => option.dataset.conditionLabel === savedLabel) : null;
+        const fallback = [...input.options].find((option) => option.value === String(savedValue));
+        const option = exact || fallback;
+        if (option) input.selectedIndex = option.index;
+      }
     });
     updateConditionSummary();
   }
@@ -365,7 +373,10 @@
     document.querySelectorAll(".consulting-rule-condition").forEach((input) => {
       if (input.type === "checkbox") memory[input.dataset.conditionId] = input.checked;
       else if (input.value === "") delete memory[input.dataset.conditionId];
-      else memory[input.dataset.conditionId] = input.value;
+      else {
+        const selected = input.selectedOptions[0];
+        memory[input.dataset.conditionId] = { value: input.value, label: selected?.dataset.conditionLabel || selected?.textContent?.trim() || "" };
+      }
     });
     app.saveDraft();
   }
@@ -636,6 +647,7 @@
     const inputValidation = updatePresetAddState();
     if (!inputValidation.valid) { app.showMissingInputPopup(inputValidation); return; }
     if (!preset) return;
+    rememberCurrentConditions();
     const conditionRule = engine.findConditionRule(preset, conditionRules, state().fiscalYear);
     const coverage = engine.classifyPresetCoverage(preset, conditionRule);
     if (!coverage.canCalculate) { app.showMissingInputPopup({ valid: false, reason: coverage.note, focusSelector: "#consultingPreset" }); return; }
@@ -653,7 +665,13 @@
       : engine.calculateStandardQuantity(preset.standardUnit, quantityValues, preset.quantitySpec);
     if (!calculation.valid) { app.notify(calculation.reason); return; }
     const conditionValues = {};
-    document.querySelectorAll(".consulting-rule-condition").forEach((input) => { conditionValues[input.dataset.conditionId] = input.type === "checkbox" ? input.checked : input.value; });
+    const conditionLabels = {};
+    document.querySelectorAll(".consulting-rule-condition").forEach((input) => {
+      conditionValues[input.dataset.conditionId] = input.type === "checkbox" ? input.checked : input.value;
+      conditionLabels[input.dataset.conditionId] = input.type === "checkbox"
+        ? (input.closest("label")?.innerText?.trim() || "")
+        : (input.selectedOptions[0]?.dataset.conditionLabel || input.selectedOptions[0]?.textContent?.trim() || "");
+    });
     const correction = engine.calculateConditionCorrection(conditionRule, conditionValues);
     if (!correction.valid) { app.notify(correction.reason); return; }
     let genericFactor = 1;
@@ -709,6 +727,7 @@
         standardWalk: {
           id: preset.id, fiscalYear: preset.fiscalYear, standardUnit: preset.standardUnit,
           quantitySummary, multiplier, correctionFactor: correction.factor * genericFactor,
+          conditionValues: { ...conditionValues }, conditionLabels: { ...conditionLabels },
           conditionEntries: [...correction.entries, ...genericEntries], conditionsConfirmed: true,
           verificationStatus: preset.verificationStatus, coverageStatus: "verified-complete", coverageLabel: coverage.label
         }
@@ -736,6 +755,8 @@
         quantityMultiplier: calculation.multiplier,
         correctionFactor: correction.factor,
         conditionRuleId: conditionRule?.id || null,
+        conditionValues: { ...conditionValues },
+        conditionLabels: { ...conditionLabels },
         conditionEntries: [...correction.entries, ...genericEntries],
         conditionsConfirmed: true,
         verificationStatus: preset.verificationStatus || "source-table-crosschecked",

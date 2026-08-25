@@ -737,15 +737,18 @@
     if (item.applicability?.minimum != null && quantity < Number(item.applicability.minimum)) return { valid: false, reason: `適用範囲は${item.applicability.note}です。`, focusSelector: "#newItemQuantity" };
     if (item.applicability?.maximum != null && quantity > Number(item.applicability.maximum)) return { valid: false, reason: `適用範囲は${item.applicability.note}です。`, focusSelector: "#newItemQuantity" };
     const correctionSelections = {};
+    const correctionSelectionLabels = {};
     for (const rule of item.correctionRules || []) {
       const select = $("surveyConditionFields").querySelector(`.survey-rule-condition[data-rule="${CSS.escape(rule.id)}"]`);
       if (!select || select.value === "") return { valid: false, reason: `条件表「${rule.label}」を選択してください。`, focusSelector: `.survey-rule-condition[data-rule="${CSS.escape(rule.id)}"]` };
+      const selected = select.selectedOptions[0];
       correctionSelections[rule.id] = num(select.value);
+      correctionSelectionLabels[rule.id] = selected?.dataset.conditionLabel || selected?.textContent?.trim() || "";
     }
     const conditionInput = $("surveyConditionFields").querySelector("#surveyConditionValue");
     const conditionValue = conditionInput ? Number(conditionInput.value) : item.conditionFormula?.default;
     if (conditionInput && (!Number.isFinite(conditionValue) || conditionValue < 0)) return { valid: false, reason: `${item.conditionFormula.label}を入力してください。`, focusSelector: "#surveyConditionValue" };
-    return { valid: true, reason: "必要な数量・条件が入力済みです。追加できます。", quantity, correctionSelections, conditionValue };
+    return { valid: true, reason: "必要な数量・条件が入力済みです。追加できます。", quantity, correctionSelections, correctionSelectionLabels, conditionValue };
   }
 
   function setAddButtonValidationState(button, validation) {
@@ -788,8 +791,10 @@
 
   function renderCorrectionRule(rule, line) {
     const current = num(line.correctionSelections?.[rule.id]);
-    const selectedIndex = Math.max(0, rule.options.findIndex((option) => option.rate === current));
-    const choices = rule.options.map((option, index) => `<option value="${option.rate}" ${index === selectedIndex ? "selected" : ""}>${h(option.label)}（${option.rate >= 0 ? "+" : ""}${(option.rate * 100).toFixed(0)}%）</option>`).join("");
+    const savedLabel = normalizedConditionLabel(line.correctionSelectionLabels?.[rule.id]);
+    const exactIndex = savedLabel ? rule.options.findIndex((option) => normalizedConditionLabel(option.label) === savedLabel) : -1;
+    const selectedIndex = exactIndex >= 0 ? exactIndex : Math.max(0, rule.options.findIndex((option) => option.rate === current));
+    const choices = rule.options.map((option, index) => `<option value="${index}" data-rate="${h(option.rate)}" data-condition-label="${h(option.label)}" ${index === selectedIndex ? "selected" : ""}>${h(option.label)}（${option.rate >= 0 ? "+" : ""}${(option.rate * 100).toFixed(0)}%）</option>`).join("");
     return `<label class="mini-field">${h(rule.label)} <select class="line-rule" data-rule="${h(rule.id)}">${choices}</select></label>`;
   }
 
@@ -1158,7 +1163,7 @@
     const item = activeMaster().workItems.find((entry) => entry.code === code);
     const validation = updateSurveyAddState(item);
     if (!validation.valid) { showMissingInputPopup(validation); return; }
-    estimate.lines.push({ id: `line-${Date.now()}-${Math.random().toString(16).slice(2)}`, code, quantity: validation.quantity, correctionRate: 0, correctionSelections: validation.correctionSelections, conditionValue: validation.conditionValue, precisionRate: item.precisionRate, manualUnitPrice: 0 });
+    estimate.lines.push({ id: `line-${Date.now()}-${Math.random().toString(16).slice(2)}`, code, quantity: validation.quantity, correctionRate: 0, correctionSelections: validation.correctionSelections, correctionSelectionLabels: validation.correctionSelectionLabels, conditionValue: validation.conditionValue, precisionRate: item.precisionRate, manualUnitPrice: 0 });
     updateSelectedItemMeta();
     recalculate();
     showToast("作業項目を追加しました");
@@ -1183,6 +1188,7 @@
         inputPending: requestedPending,
         correctionRate: 0,
         correctionSelections: {},
+        correctionSelectionLabels: {},
         conditionValue: item.conditionFormula?.default,
         precisionRate: item.precisionRate,
         manualUnitPrice: 0,
@@ -1705,6 +1711,7 @@
           if (!line.inputPending && line.quantity != null) line.quantity = window.SekisanEngine.normalizeQuantity(line.quantity, item, activeMaster());
           line.correctionRate = 0;
           line.correctionSelections = {};
+          line.correctionSelectionLabels = {};
           line.conditionValue = item.conditionFormula?.default;
           line.precisionRate = item.precisionRate;
           line.manualUnitPrice = 0;
@@ -1719,8 +1726,14 @@
       }
       if (line && event.target.classList.contains("line-precision")) line.precisionRate = num(event.target.value);
       if (line && event.target.classList.contains("line-rule")) {
+        const selected = event.target.selectedOptions[0];
+        const rate = num(selected?.dataset.rate);
+        const label = selected?.dataset.conditionLabel || selected?.textContent?.trim() || "";
         line.correctionSelections = line.correctionSelections || {};
-        line.correctionSelections[event.target.dataset.rule] = num(event.target.value);
+        line.correctionSelectionLabels = line.correctionSelectionLabels || {};
+        line.correctionSelections[event.target.dataset.rule] = rate;
+        line.correctionSelectionLabels[event.target.dataset.rule] = label;
+        conditionMemory("survey").values[event.target.dataset.rule] = { label, rate };
       }
       renderLines(currentResult());
       renderSummary(currentResult());

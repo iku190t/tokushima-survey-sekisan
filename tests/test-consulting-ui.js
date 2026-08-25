@@ -64,6 +64,9 @@ assert.ok(engine.includes("geologyTarget * geologyOverheadRate"), "地質一般�
 assert.ok(engine.includes("surveyPlanningBusinessPrice") && engine.includes("surveyRulesByYear"), "測量職種の調査計画を年度別測量経費方式で計算する");
 assert.ok(app.includes("draft.consulting?.lines?.length"), "設計・調査だけの案件も新規作成時に確認する");
 assert.ok(ui.includes("scopeConditionMemory") && ui.includes("applyInheritedConditions") && ui.includes("rememberCurrentConditions"), "設計・調査計画・地質は業務別に最後の適用条件を次項目へ継承する");
+assert.ok(ui.includes('data-condition-label="${h(option.label)}"') && ui.includes("{ value: input.value, label:"), "設計・調査計画・地質の継承条件を表示名と値の組で保存する");
+assert.ok(ui.includes("const exact = savedLabel") && ui.includes("const option = exact || fallback"), "継承時は手動選択した表示名を優先し旧形式の値にも互換対応する");
+assert.ok(ui.includes("rememberCurrentConditions();") && ui.includes("conditionValues: { ...conditionValues }") && ui.includes("conditionLabels: { ...conditionLabels }"), "追加直前の手動条件を優先して追加明細へ固定する");
 assert.ok(ui.includes("syncScopeWorkflow") && ui.includes("workflowState().keywords") && ui.includes("workflowState().groups"), "設計等のキーワード・作業区分を案件復元後も維持する");
 assert.ok(app.includes('dataset.mode !== "consulting"'), "総合帳票を測量帳票で上書きしない");
 assert.ok(ui.includes("t.surveyBusinessPrice") && ui.includes("t.designBusinessPrice") && ui.includes("t.geologyBusinessPrice"), "3区分を総合帳票へ合算する");
