@@ -2571,3 +2571,29 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `tools/create-intro-video.py` | `D167411C5222937CBE1F6BF45FD15BB9513A2753A0E2603070CF6EC4D667DE58` |
 | `tools/create-intro-narration.ps1` | `9A0F93574CDC05A96A5EF43096737BF5ACF191BC7F9FBE79A585D783D6EC0F19` |
 | `tests/test-ui-static.js` | `1973FF6631206C4505A960055DC2D39A5288C7B381ACA35B88331DB321101E70` |
+
+## B-2026-08-25-05
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-25
+- 実装コミット: `694a068b4f7e58ab3a0fb013ebe76bebe2e35269`
+- 外部知能コミット: この項目を追加するコミット
+- GitHub Pages: `built`、ビルド`1173110384`、コミット`694a068b4f7e58ab3a0fb013ebe76bebe2e35269`、更新時刻`2026-08-25T00:53:28Z`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: 補正率が同じ別条件を意味ラベルで区別し、追加前と追加後の手動選択を継承値や初期値より優先する。測量明細と設計等の共通条件スナップショットを保存する。
+
+### 合格した試験・実画面確認
+
+- `node --check app.js`、`node --check consulting.js`、`tests/test-*.js`全19本、`git diff --check`合格。
+- 測量`9-1-2`で「1/500 都市近郊／平地（+20%）」を追加して同じ表示のまま保持し、追加済み明細を「1/500 耕地／丘陵地（+20%）」へ変更後も再描画、後続項目、保存復元で維持した。「1/200 耕地／平地（+20%）」への誤復元は0件。
+- 設計の道路概略設計で同率の「市街地（+10%）」と「山地（+10%）」を区別し、手動選択した山地を追加後の継承で維持した。調査計画・地質は同じ共通追加画面を開き、画面初期化エラー0件を確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `app.js` | `B67F34F9BE1D2F42D33D5D9CEBDD55B5E64B0B0000C732C2CDB307C31E175397` |
+| `consulting.js` | `5C5C806C719EB68198EF764E8F17BC6C8354642849B3E6F5F3BA0E21AD906ED3` |
+| `index.html` | `B7F49DE20734C266B825B55F83D2A18EBBDD3F9FB4C4C9FE3F7B8C6414DB7B9A` |
+| `tests/test-ui-static.js` | `F1C75AB753B38380EC0346721B4181967089FD3B41497B2CCEA605BB96BB2B66` |
+| `tests/test-consulting-ui.js` | `26B4F68F0E26CD1D0A61038E5003BA3DE32F93B26C4433741CEF4344228FBF95` |
