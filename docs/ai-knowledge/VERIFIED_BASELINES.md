@@ -2624,3 +2624,27 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `index.html` | `6A22134418A315CF97288F1CF0DA95D4ADA42F9264D6B85A4E2E3BBCDFB644CB` |
 | `tests/test-ui-static.js` | `ED2DC54A9F69AFF7F4EB9F06DDAF93B6208292276AFF79552D0714CFA7D77DE2` |
 | `tests/test-consulting-ui.js` | `E03FBEFB51635FFBD2D07C2C0AB42DFA08ADE4F7017B2BE593232E6CF81F23F6` |
+
+## B-2026-08-25-07
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-25
+- 実装コミット: `84df6fe02f1c30d68466e469e870606ea860d568`
+- 外部知能コミット: この項目を追加するコミット
+- GitHub Pages: `built`、ビルド`1173224161`、コミット`84df6fe02f1c30d68466e469e870606ea860d568`、更新時刻`2026-08-25T02:14:06Z`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: スマートフォンの測量積算内訳を縦型カードへ変更し、縮尺・地域・地形の補正条件をカード全幅で表示する。
+
+### 合格した試験・配信確認
+
+- `tests/test-*.js`全19本、`git diff --check`合格。
+- 修正前の390px幅で、内訳行が約1,237px、条件選択欄が約288pxでも3列目のため画面外へ出ることを再現した。
+- 公開版はHTTP 200で、`styles.css?v=20260825-4`、測量カード識別クラス、条件欄の全幅CSSを配信している。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `99A71A682FE3526CB53E0A014976249D35D583847E4BB4745870E5EC6990C3AC` |
+| `styles.css` | `BE0DD5672691F25C66ED8890D85773A0DA817963761AA955FF2B850E217E600A` |
+| `tests/test-ui-static.js` | `07AE08454DFEB158B4F6C9754BFFF81A9667A4CBA120DB8DAD52075E062C755B` |
