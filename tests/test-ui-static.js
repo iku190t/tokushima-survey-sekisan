@@ -48,8 +48,8 @@ for (const source of ["data/prefectures.js", "data/master-catalog.json", "data/o
   assert.ok(fs.existsSync(path.join(root, source)), `${source} が存在する`);
 }
 assert.ok(html.includes('id="featureVideoTitle"') && html.includes('aria-label="web積算の紹介動画"'), "使い方画面に紹介動画を表示する");
-assert.ok(html.includes('src="media/web-sekisan-introduction.mp4?v=20260825-1" type="video/mp4"') && html.includes('poster="media/web-sekisan-introduction-thumbnail.jpg"'), "紹介MP4とサムネイルを結線する");
-assert.ok(html.includes("日本語音声・オリジナルBGM付き") && html.includes("実際のPDFドラッグ取込"), "紹介動画が音声付きの実PDFドラッグ実演であることを案内する");
+assert.ok(html.includes('src="media/web-sekisan-introduction.mp4?v=20260828-1" type="video/mp4"') && html.includes('poster="media/web-sekisan-introduction-thumbnail.jpg"'), "紹介MP4とサムネイルを結線する");
+assert.ok(html.includes("自然な日本語音声・オリジナルBGM付き") && html.includes("実際のPDFドラッグ取込") && html.includes("約2分"), "紹介動画が自然な音声付きの実PDFドラッグ実演であることを案内する");
 assert.ok(!html.includes("<video autoplay"), "紹介動画を自動再生しない");
 assert.ok(html.includes('id="travelMode"'), "旅費交通費モード選択がある");
 assert.ok(app.includes("line-condition"), "水面幅条件入力が結線されている");

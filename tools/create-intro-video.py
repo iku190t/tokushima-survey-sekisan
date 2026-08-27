@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import os
 import subprocess
 import sys
 import wave
@@ -19,7 +18,7 @@ APP_ICON = ROOT / "assets" / "icon-concepts" / "web-sekisan-icon-04.png"
 OUTPUT = ROOT / "media" / "web-sekisan-introduction.mp4"
 SILENT_OUTPUT = ROOT / "media" / "web-sekisan-introduction-silent.mp4"
 THUMBNAIL = ROOT / "media" / "web-sekisan-introduction-thumbnail.jpg"
-NARRATION = ASSETS / "narration.wav"
+NARRATION = ASSETS / "narration-natural.mp3"
 MUSIC = ASSETS / "original-bgm.wav"
 WIDTH, HEIGHT, FPS = 1280, 720, 24
 GREEN = "#174f3f"
@@ -54,18 +53,33 @@ def rounded_text_box(
 ) -> None:
     draw = ImageDraw.Draw(image, "RGBA")
     left, right, bottom = 56, WIDTH - 56, HEIGHT - 42
-    draw.rounded_rectangle((left, y, right, bottom), radius=22, fill=(14, 45, 37, 235))
+    draw.rounded_rectangle((left, y, right, bottom), radius=22, fill=(10, 43, 35, 242))
     text_left = left + 34
     if number:
         draw.ellipse((left + 26, y + 26, left + 82, y + 82), fill=LIME)
         draw.text((left + 54, y + 54), number, font=font(26, True), fill=INK, anchor="mm")
         text_left = left + 106
-    draw.text((text_left, y + 24), title, font=font(30, True), fill="white")
-    draw.text((text_left, y + 72), body, font=font(21), fill=(229, 239, 235, 255))
+    draw.text((text_left, y + 23), title, font=font(31, True), fill="white")
+    draw.text((text_left, y + 73), body, font=font(22), fill=(229, 239, 235, 255))
+
+
+def draw_timeline(image: Image.Image, chapter: int, progress: float) -> None:
+    """Add a restrained chapter marker so the viewer always knows the flow."""
+    draw = ImageDraw.Draw(image, "RGBA")
+    left, right = 56, WIDTH - 56
+    y = 686
+    draw.rounded_rectangle((left, y, right, y + 7), radius=4, fill=(255, 255, 255, 100))
+    overall = min(1.0, max(0.0, (chapter - 1 + progress) / 6.0))
+    draw.rounded_rectangle((left, y, left + int((right - left) * overall), y + 7), radius=4, fill=LIME)
+    draw.text((right, 665), f"{chapter} / 6", font=font(17, True), fill=(236, 244, 241, 230), anchor="rs")
 
 
 def fit_screen(path: Path, progress: float = 0.0) -> Image.Image:
     source = Image.open(path).convert("RGB")
+    if path.name in {"01-design.png", "02-survey.png", "03-calculation.png"}:
+        # The current public UI no longer displays the old収録件数 badge.
+        clean = ImageDraw.Draw(source)
+        clean.rounded_rectangle((790, 347, 879, 388), radius=12, fill="#ffffff")
     source_ratio = source.width / source.height
     target_ratio = WIDTH / HEIGHT
     zoom = 1.0 + 0.025 * progress
@@ -87,23 +101,27 @@ def title_frame(progress: float) -> Image.Image:
     draw.ellipse((875, -180, 1390, 335), outline=(214, 239, 106, 60), width=2)
     draw.ellipse((955, -100, 1310, 255), outline=(214, 239, 106, 90), width=2)
     paste_app_icon(image, (67, 70, 190, 193))
-    draw.text((82, 240), "web積算", font=font(70, True), fill="white")
-    draw.text((86, 344), "設計・測量・調査計画・地質を、ひとつの画面で。", font=font(31), fill="#dce9e4")
-    draw.rounded_rectangle((82, 422, 670, 492), radius=35, fill=(214, 239, 106, 245))
-    draw.text((376, 457), "国土交通省・全国標準  令和6〜8年度", font=font(25, True), fill=INK, anchor="mm")
-    draw.text((84, 616), "参考試算用・公式ソフトではありません", font=font(19), fill=(218, 231, 226, 230))
+    draw.rounded_rectangle((82, 218, 310, 268), radius=25, fill=(255, 255, 255, 30), outline=(214, 239, 106, 180), width=2)
+    draw.text((196, 243), "要点だけ、約2分", font=font(21, True), fill=LIME, anchor="mm")
+    draw.text((82, 302), "web積算", font=font(72, True), fill="white")
+    draw.text((86, 404), "選ぶ・確認する・帳票にする。", font=font(36, True), fill="#dce9e4")
+    draw.text((86, 462), "設計・測量・調査計画・地質を、ひとつの画面で。", font=font(27), fill="#dce9e4")
+    draw.rounded_rectangle((82, 535, 670, 605), radius=35, fill=(214, 239, 106, 245))
+    draw.text((376, 570), "国土交通省・全国標準  令和6〜8年度", font=font(25, True), fill=INK, anchor="mm")
+    draw.text((84, 654), "参考試算用・公式ソフトではありません", font=font(18), fill=(218, 231, 226, 230))
     return image
 
 
-def screenshot_frame(path: Path, title: str, body: str, number: str, progress: float) -> Image.Image:
+def screenshot_frame(path: Path, title: str, body: str, number: str, eyebrow: str, chapter: int, progress: float) -> Image.Image:
     image = fit_screen(path, progress)
     veil = Image.new("RGBA", image.size, (9, 34, 28, 0))
     vdraw = ImageDraw.Draw(veil)
     vdraw.rectangle((0, 0, WIDTH, 105), fill=(13, 53, 42, 190))
     image = Image.alpha_composite(image.convert("RGBA"), veil).convert("RGB")
     draw = ImageDraw.Draw(image, "RGBA")
-    draw.text((56, 50), "web積算  |  便利な機能", font=font(24, True), fill="white", anchor="lm")
+    draw.text((56, 50), f"web積算  |  {eyebrow}", font=font(24, True), fill="white", anchor="lm")
     rounded_text_box(image, title, body, number=number)
+    draw_timeline(image, chapter, progress)
     return image
 
 
@@ -115,6 +133,7 @@ def import_workflow_frame(path: Path, title: str, body: str, number: str, progre
     draw.text((98, 72), number, font=font(24, True), fill=INK, anchor="mm")
     draw.text((148, 49), title, font=font(31, True), fill="white")
     draw.text((150, 87), body, font=font(18), fill="#dce9e4")
+    draw_timeline(image, 4, progress)
     return image
 
 
@@ -124,26 +143,29 @@ def end_frame(progress: float) -> Image.Image:
     draw.rectangle((0, 0, WIDTH, 185), fill=GREEN)
     paste_app_icon(image, (62, 38, 160, 136))
     draw.text((180, 91), "web積算", font=font(50, True), fill="white", anchor="lm")
-    draw.text((WIDTH / 2, 286), "積算の入口を、もっと分かりやすく。", font=font(42, True), fill=INK, anchor="mm")
-    draw.rounded_rectangle((178, 355, WIDTH - 178, 447), radius=18, fill="white", outline=(23, 79, 63, 90), width=2)
-    draw.text((WIDTH / 2, 401), "iku190t.github.io/tokushima-survey-sekisan/", font=font(28, True), fill=GREEN, anchor="mm")
-    draw.text((WIDTH / 2, 520), "無料公開  |  入力資料は外部送信しません", font=font(25), fill="#48645b", anchor="mm")
-    draw.text((WIDTH / 2, 637), "必ず発注者適用基準・特記仕様・正解積算と照合してください", font=font(19), fill="#6c7a75", anchor="mm")
+    draw.text((WIDTH / 2, 270), "ここまで、ひとつの画面で。", font=font(44, True), fill=INK, anchor="mm")
+    chips = [("選ぶ", 210), ("確認する", 490), ("帳票にする", 790)]
+    for label, left in chips:
+        draw.rounded_rectangle((left, 340, left + 245, 414), radius=37, fill="white", outline=(23, 79, 63, 80), width=2)
+        draw.text((left + 122, 377), label, font=font(25, True), fill=GREEN, anchor="mm")
+    draw.text((WIDTH / 2, 495), "web積算", font=font(48, True), fill=GREEN, anchor="mm")
+    draw.text((WIDTH / 2, 558), "iku190t.github.io/tokushima-survey-sekisan/", font=font(24, True), fill="#48645b", anchor="mm")
+    draw.text((WIDTH / 2, 640), "確認できた公開資料だけを計算に使用  |  入力資料は外部送信しません", font=font(19), fill="#6c7a75", anchor="mm")
     return image
 
 
 SCENES = [
-    (3.5, title_frame),
-    (5.5, lambda p: screenshot_frame(ASSETS / "01-design.png", "4つの業務をタブで切替", "設計・測量・調査計画・地質を、共通レイアウトで迷わず操作。", "1", p)),
-    (5.5, lambda p: screenshot_frame(ASSETS / "02-survey.png", "キーワードから素早く選択", "基準点、水準、UAV・レーザなどを一覧から絞り込み。", "2", p)),
-    (6.5, lambda p: screenshot_frame(ASSETS / "03-calculation.png", "数量を入れると自動積算", "単位・入力桁を項目ごとに制限し、内訳と合計を即時再計算。", "3", p)),
-    (4.8, lambda p: import_workflow_frame(ASSETS / "04-import-loaded.png", "匿名PDFを実際に読み込み", "文字入りPDFをブラウザー内で直接抽出。案件資料そのものは外部送信しません。", "4", p)),
-    (4.8, lambda p: import_workflow_frame(ASSETS / "04-import-drag-item-quantity.png", "項目名と数量をドラッグ", "PDFの文字枠を、横の緑枠にポチポチ移して対応付けます。", "5", p)),
-    (4.8, lambda p: import_workflow_frame(ASSETS / "04-import-drag-complete.png", "単位もドラッグして確認", "項目・数量・単位がそろったら、換算結果を確認して反映待ちへ追加。", "6", p)),
-    (4.3, lambda p: import_workflow_frame(ASSETS / "04-import-pending.png", "同じ画面で続けて追加", "積算画面へ戻らず、次のPDF行を連続して処理できます。", "7", p)),
-    (5.5, lambda p: screenshot_frame(ASSETS / "05-master.png", "令和6〜8年度を切替", "全国標準の歩掛・技術者単価・経費率を年度別に管理。", "8", p)),
-    (5.5, lambda p: screenshot_frame(ASSETS / "06-reports.png", "提出用帳票をPDFへ", "見積書・積算内訳・計算根拠をA4書式でまとめて出力。", "9", p)),
-    (4.5, end_frame),
+    (10.0, title_frame),
+    (11.0, lambda p: screenshot_frame(ASSETS / "01-design.png", "4業務を、同じ操作で", "キーワード → 作業区分 → 項目 → 数量。迷わない入力順です。", "1", "01  業務選択", 1, p)),
+    (11.0, lambda p: screenshot_frame(ASSETS / "02-survey.png", "探すより、押して絞り込む", "基準点・水準・現地・UAV・レーザーを、キーワードから素早く選択。", "2", "02  項目選択", 2, p)),
+    (13.0, lambda p: screenshot_frame(ASSETS / "03-calculation.png", "入力した瞬間、積算結果まで", "単位・入力桁・現場条件を反映し、内訳と合計をすぐに再計算。", "3", "03  自動積算", 3, p)),
+    (10.5, lambda p: import_workflow_frame(ASSETS / "04-import-loaded.png", "匿名PDFを、そのまま読み込み", "文字入りPDFをブラウザー内で抽出。資料そのものは外部送信しません。", "1", p)),
+    (10.5, lambda p: import_workflow_frame(ASSETS / "04-import-drag-item-quantity.png", "作業項目を、右の欄へドラッグ", "項目だけ先に追加して、数量・単位はあとから入力できます。", "2", p)),
+    (10.5, lambda p: import_workflow_frame(ASSETS / "04-import-drag-complete.png", "数量・単位まで、行ごとに確認", "入力完了と数量未入力を色分け。どこまで進んだかが一目で分かります。", "3", p)),
+    (10.5, lambda p: import_workflow_frame(ASSETS / "04-import-pending.png", "画面を戻らず、次の行へ", "反映待ちへ追加したら、そのまま次のPDF行を連続処理できます。", "4", p)),
+    (11.0, lambda p: screenshot_frame(ASSETS / "05-master.png", "令和6・7・8年度を切替", "全国標準の歩掛・技術者単価・経費率を、年度別に管理。", "5", "05  年度マスター", 5, p)),
+    (11.0, lambda p: screenshot_frame(ASSETS / "06-reports.png", "見積書・内訳・根拠をPDFへ", "会社情報を引き継ぎ、提出しやすいA4帳票へまとめます。", "6", "06  帳票出力", 6, p)),
+    (18.0, end_frame),
 ]
 
 
@@ -184,19 +206,16 @@ def create_original_music(duration: float) -> None:
 
 
 def add_audio(duration: float) -> None:
-    narration_script = ROOT / "tools" / "create-intro-narration.ps1"
-    pwsh = Path.home() / ".cache" / "codex-runtimes" / "codex-primary-runtime" / "dependencies" / "native" / "powershell" / "pwsh.exe"
-    if not pwsh.exists():
-        pwsh = Path("powershell.exe")
+    narration_script = ROOT / "tools" / "create-intro-narration.py"
     subprocess.run([
-        str(pwsh), "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", str(narration_script), "-OutputPath", str(NARRATION)
+        sys.executable, str(narration_script), "--output", str(NARRATION)
     ], check=True)
     create_original_music(duration)
     import imageio_ffmpeg
     ffmpeg = imageio_ffmpeg.get_ffmpeg_exe()
     subprocess.run([
         ffmpeg, "-y", "-i", str(SILENT_OUTPUT), "-i", str(NARRATION), "-i", str(MUSIC),
-        "-filter_complex", "[1:a]volume=0.95[n];[2:a]volume=0.38[m];[n][m]amix=inputs=2:duration=longest:normalize=0[a]",
+        "-filter_complex", "[1:a]volume=1.0[n];[2:a]volume=0.22[m];[n][m]amix=inputs=2:duration=longest:normalize=0,alimiter=limit=0.92[a]",
         "-map", "0:v:0", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "160k", "-shortest", "-movflags", "+faststart", str(OUTPUT)
     ], check=True)
 
@@ -251,7 +270,7 @@ def main() -> None:
     duration = written_frames / FPS
     add_audio(duration)
     SILENT_OUTPUT.unlink(missing_ok=True)
-    thumbnail = screenshot_frame(ASSETS / "04-import-drag-complete.png", "PDFから、積算・内訳・帳票まで。", "音声・BGM付きで便利な機能を紹介", "▶", 0.35)
+    thumbnail = screenshot_frame(ASSETS / "04-import-drag-complete.png", "PDFから、積算・内訳・帳票まで。", "約2分で、実際の流れが分かります。", "▶", "操作の流れ", 4, 0.35)
     thumbnail.save(THUMBNAIL, quality=92, subsampling=0)
     print(f"Created: {OUTPUT} ({OUTPUT.stat().st_size} bytes)")
     print(f"Duration: {duration:.2f} seconds with narration and original BGM")
