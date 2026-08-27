@@ -2707,3 +2707,29 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `tests/test-consulting-engine.js` | `5486AA0C68D50E8BF72FE21C5F9047F884E79E0C482A99525C227E9BEF18D0A8` |
 | `tests/test-consulting-ui.js` | `8C5CC6C209DEB1E4B1FF8B3EBCD747257CFE397B5C0330F29023B70FE5A371D2` |
 | `tests/test-ui-static.js` | `ECB76F7C6633DCE3D712E3EEEECE3BC27E75F163A4F67C5EC3B1860E51D72629` |
+
+## B-2026-08-27-01
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-27
+- 実装コミット: `3f97f8d6`
+- 外部知能コミット: `67b8ea4a5d643e7959a5008bec031df7e6a9dcb3`
+- GitHub Pages: `built`、ビルド`1178587375`、コミット`67b8ea4a5d643e7959a5008bec031df7e6a9dcb3`、更新時刻`2026-08-27T14:04:45Z`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: 4業務の見積提出先を未設定／国土交通省（全国標準）の2択へ限定した。旧都道府県提出先は未設定へ移行し、PDFで都道府県を検出しても提出先を自動変更しない。標準単価セットは国土交通省・全国標準R6～R8だけを維持する。
+
+### 合格した試験・公開確認
+
+- `node --check app.js`、`node --check consulting.js`、`tests/test-*.js`全19本、`git diff --check`合格。
+- 公開版はHTTP 200で、`app.js?v=20260827-1`と`consulting.js?v=20260827-1`を配信している。
+- 公開版の測量・設計等の提出先生成処理が、どちらも`mlit`だけを許可していることを確認した。
+- 公開版に旧都道府県コードを未設定へ変換する処理が含まれることを確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `app.js` | `8DB92855FBAC5C8C026F2A23508B3DCAF973715C3280C24F0CED51402494DB6E` |
+| `consulting.js` | `B71BE3FC6F4E355C8F02BE0D241C09DC35A98A66FE09071477565ED6050C0A47` |
+| `index.html` | `5FA5D255B13856830AB9234E382CCE1AD6AF9228CBAE14A59911B55EC9040D24` |
+| `tests/test-ui-static.js` | `9E611071FD17B2ADD685AA0BBB62F3B5CE967FBF358E4E839FF4166F65A4174B` |
