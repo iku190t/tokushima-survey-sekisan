@@ -2761,16 +2761,16 @@ OK: official case search UI is removed while saved-data compatibility remains
 
 - 状態: **検証済み・公開前**
 - 検証日: 2026-08-27
-- 実装コミット: `11d5bc88cd5c847c110b1c20f5ed7f9b8d6654a7`
+- 実装コミット: `11d5bc88cd5c847c110b1c20f5ed7f9b8d6654a7`、キャッシュ更新`e1791693c8a6c11e6274b1c6a1b0f01f050db00d`
 - 内容: 測量・設計・調査計画・地質の作業追加見出しから、収録件数・計算可能件数のバッジをすべて撤去した。項目データ・計算規則・キーワード件数は維持した。
-- 試験: `node --check`、`git diff --check`、`tests/test-*.js`全19本合格。
+- 試験: `node --check`、`git diff --check`、`tests/test-*.js`全19本合格。公開時に旧JavaScriptが残らないよう`app.js`と`consulting.js`のキャッシュ番号を`20260827-2`へ更新した。
 
 ### 主要ファイルのSHA-256
 
 | ファイル | SHA-256 |
 |---|---|
-| `index.html` | `5C12C7F2D6829AC371B126D641416830CDF9FF1AF82C2637E47107FB28A5D21E` |
+| `index.html` | `39A402413F19745D9DA9A5BAAE749A90F4B97876817F8B4B7FC4AFF2CE2B2969` |
 | `app.js` | `D329AED32278E83B63254A3AD9E090E2DE511E0C8618E4E040019888C106D860` |
 | `consulting.js` | `91D196197B0A75A861254E08EBE6B7AA77DA259EFF5010103144B43EDFB92E29` |
-| `tests/test-ui-static.js` | `608E5D1226AE90084345C8333E59D4ADEC1842BD1ABC990C539EF73F16B06E25` |
+| `tests/test-ui-static.js` | `7FA0BAE6584ACD55D617D36AF403AA79771CB2BE542E63B6960AA304BC4D57BE` |
 | `tests/test-consulting-ui.js` | `BDD33E39CBA34D685F43B56E51A47A15DA317707FBEBFE55C1536B8439694148` |
