@@ -2736,12 +2736,15 @@ OK: official case search UI is removed while saved-data compatibility remains
 
 ## B-2026-08-27-02
 
-- 状態: **検証済み・公開前**
+- 状態: **検証済み・GitHub Pages公開済み**
 - 検証日: 2026-08-27
 - 実装コミット: `c930b0dfc0e6822be2dcc38be2b41f38d2e32f24`
+- 外部知能コミット: `643773f2e7607432888457ba435b586858a1226f`
+- GitHub Pages: `built`、ビルド`1178615903`、コミット`643773f2e7607432888457ba435b586858a1226f`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
 - 内容: 原表照合済みの設計・調査計画・地質を全件計算入力へ接続し、地質一般を根拠付き市場単価方式へ統一した。新規積算の見積提出先を国土交通省（全国標準）へ変更した。
 - 件数: R8 設計313/313・調査計画117/117・地質40/40、R7 313/313・109/109・40/40、R6 313/313・109/109・39/39。
-- 試験: `node --check`、`git diff --check`、`tests/test-*.js`全19本合格。`file:` URLのブラウザー自動操作は安全制限により未実施。
+- 試験: `node --check`、`git diff --check`、`tests/test-*.js`全19本合格。公開URLはHTTP 200で、`rule-assisted`、`market-rate-input`、新規提出先`mlit`を含む配信ファイルを確認した。`file:` URLのブラウザー自動操作は安全制限により未実施。
 
 ### 主要ファイルのSHA-256
 
