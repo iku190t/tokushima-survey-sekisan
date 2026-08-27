@@ -390,7 +390,7 @@
     return {
       schemaVersion: 4,
       masterId: masters.find((master) => master.id === defaultMasterId)?.id || masters[0]?.id || defaultMasterId,
-      submissionJurisdictionCode: "",
+      submissionJurisdictionCode: "mlit",
       projectName: "",
       projectInfo: defaultProjectInfo(),
       caseFile: defaultCaseFile(),

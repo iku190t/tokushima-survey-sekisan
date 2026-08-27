@@ -106,8 +106,8 @@ let coverage = engine.classifyPresetCoverage({ ...master.verifiedPresets[0], ver
 assert.strictEqual(coverage.status, "base-walk-verified", "職種別歩掛表の確認と条件規則までの検証を区別する");
 assert.strictEqual(coverage.canCalculate, true, "条件表・補正式を持たない確認済み歩掛は自動計算できる");
 coverage = engine.classifyPresetCoverage({ ...master.verifiedPresets[0], verificationStatus: "source-table-crosschecked" }, null, { adjustments: [{ type: "rate", rate: 0.1 }], parameterTables: [], formulas: [] });
-assert.strictEqual(coverage.status, "incomplete-rule", "未構造化の補正がある歩掛は人工表だけで完全扱いしない");
-assert.strictEqual(coverage.canCalculate, false, "未構造化の条件を持つ歩掛を計算しない");
+assert.strictEqual(coverage.status, "rule-assisted", "原表確認済み歩掛は同じ画面の条件選択と組み合わせる");
+assert.strictEqual(coverage.canCalculate, true, "原表人工を一律停止せず条件表・補正式の選択反映を許可する");
 coverage = engine.classifyPresetCoverage({ ...master.verifiedPresets[0] });
 assert.strictEqual(coverage.canCalculate, false, "検証状態がないプリセットを既定で許可しない");
 coverage = engine.classifyPresetCoverage({ ...master.verifiedPresets[0] }, { status: "verified-rule" }, { adjustments: [{ type: "rate", rate: 0.1 }] });
@@ -119,6 +119,9 @@ assert.strictEqual(coverage.canCalculate, false, "関連する日当たり作業
 coverage = engine.classifyPresetCoverage({ label: "2-3-1 道路詳細設計（A）", verificationStatus: "national-reference" });
 assert.strictEqual(coverage.status, "incomplete-rule", "補正未実装の全国標準候補は自動計算不可として区別する");
 assert.strictEqual(coverage.canCalculate, false, "条件規則のない候補を数量比例だけで追加しない");
+coverage = engine.classifyPresetCoverage({ label: "2-1-2 編成人員 人員", serviceType: "geologyGeneral", verificationStatus: "source-table-crosschecked" });
+assert.strictEqual(coverage.status, "market-rate-input", "地質一般は編成人員を人工単価へ置換せず市場単価入力へ接続する");
+assert.strictEqual(coverage.canCalculate, true, "根拠付き市場単価方式で地質一般を計算できる");
 
 const detailed = baseState();
 detailed.additionalCosts = [

@@ -82,7 +82,7 @@ assert.ok(html.includes('src="data/national-standard-masters.js'), "全国標準
 assert.ok(!html.includes('src="data/master-r8.js') && !html.includes('src="data/verified-masters.js'), "徳島県・県別マスターを通常画面へ読み込まない");
 assert.ok(!app.includes("window.MASTER_R8") && !app.includes("window.SEKISAN_VERIFIED_MASTERS") && !app.includes("prefectureReferenceMasters"), "県別マスターを全国標準の選択肢へ混在させない");
 assert.ok(app.includes('const defaultMasterId = "standard-r8-2026"'), "新規画面は令和8年度全国標準で開始する");
-assert.ok(app.includes('submissionJurisdictionCode: ""') && app.includes("normalizeSubmissionJurisdictionCode") && app.includes("getSubmissionJurisdictionName"), "旧都道府県提出先を未設定へ移行し国土交通省だけを保存する");
+assert.ok(app.includes('submissionJurisdictionCode: "mlit"') && app.includes("normalizeSubmissionJurisdictionCode") && app.includes("getSubmissionJurisdictionName"), "新規は国土交通省全国標準を既定にし旧都道府県提出先は正規化する");
 assert.ok(app.includes('見積提出先は「選択しない」または「国土交通省（全国標準）」だけです'), "見積提出先を2択に限定したことを明示する");
 assert.ok(nationalMasters.includes("https://www.mlit.go.jp/tec/gyoumu_sekisan.html"), "全国標準に国交省積算基準の公式出典を収録する");
 assert.ok(nationalMasters.includes("https://www.mlit.go.jp/tec/content/001724089.pdf"), "全国標準R6に公式技術者単価を収録する");

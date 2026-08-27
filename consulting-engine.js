@@ -101,6 +101,18 @@
         note: "表示した補正・控除条件を数量比と標準歩掛へ反映します。案件固有の特記条件は別途照合してください。"
       };
     }
+    const trustedWalk = ["source-table-crosschecked", "verified"].includes(preset.verificationStatus);
+    // 地質一般は、国交省基準が編成人員・規格・補正を示していても市場単価そのものは
+    // 公開していない。原表照合済みの行は、数量・単位・採用単価・根拠を必須入力にして
+    // 金額を積み上げる。編成人員を技術者単価へ勝手に置換しない。
+    if (preset.serviceType === "geologyGeneral" && trustedWalk) {
+      return {
+        status: "market-rate-input",
+        canCalculate: true,
+        label: "市場単価・根拠入力で計算",
+        note: "数量・単位と、刊行物または見積による市場単価・根拠を入力して計算します。条件表・補正は表示内容から選択できます。"
+      };
+    }
     if (referenceOnlyPatterns.some((pattern) => pattern.test(String(preset.label || "")))) {
       return {
         status: "reference-only",
@@ -109,13 +121,15 @@
         note: "作業班の編成、規格区分または日当たり作業量を示す表です。単独で数量に掛けて人工へ変換できないため、関連表との計算規則を実装するまで自動追加しません。"
       };
     }
-    const trustedWalk = ["source-table-crosschecked", "verified"].includes(preset.verificationStatus);
-    if (trustedWalk && !hasUnresolvedCalculationRules(family)) {
+    if (trustedWalk) {
+      const assisted = hasUnresolvedCalculationRules(family);
       return {
-        status: "base-walk-verified",
+        status: assisted ? "rule-assisted" : "base-walk-verified",
         canCalculate: true,
-        label: "職種別歩掛表を確認済み",
-        note: "職種別人工と標準数量を原表で確認済みです。条件表・補正式がある項目は、構造化が完了するまで別途追加できません。"
+        label: assisted ? "原表歩掛・条件規則を使用" : "職種別歩掛表を確認済み",
+        note: assisted
+          ? "職種別人工と標準数量を原表で確認済みです。この作業区分に条件表・補正式がある場合は、表示された該当条件を選ぶと同じ積算へ反映します。"
+          : "職種別人工と標準数量を原表で確認済みです。数量を標準数量に換算して計算します。"
       };
     }
     return {

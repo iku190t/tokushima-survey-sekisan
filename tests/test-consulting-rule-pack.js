@@ -6,6 +6,10 @@ const path = require("path");
 const root = path.join(__dirname, "..");
 const data = JSON.parse(fs.readFileSync(path.join(root, "data", "consulting-rule-pack.json"), "utf8"));
 const engine = require(path.join(root, "consulting-engine.js"));
+const conditionSource = fs.readFileSync(path.join(root, "data", "consulting-condition-rules.js"), "utf8");
+const conditionWindow = {};
+Function("window", conditionSource)(conditionWindow);
+const conditionRules = conditionWindow.CONSULTING_CONDITION_RULES;
 
 assert.deepStrictEqual(data.supportedYears, [2026, 2025, 2024], "令和6～8年度を収録する");
 assert.strictEqual(data.rules.length, 1393, "照合済み歩掛行を1,393件収録する");
@@ -36,6 +40,26 @@ for (const year of [2024, 2025, 2026]) {
   const rules = data.rules.filter((rule) => rule.fiscalYear === year);
   assert.ok(rules.some((rule) => rule.costSystem === "survey" && Object.keys(rule.roles).some((role) => role.startsWith("survey"))), `${year}年度の水文等を測量方式で区別する`);
   assert.ok(rules.some((rule) => rule.serviceType === "geologyGeneral" && rule.costSystem === "geology"), `${year}年度の地質一般を地質方式で区別する`);
+}
+
+const supportedCounts = {
+  2024: { design: 313, planning: 109, geology: 39 },
+  2025: { design: 313, planning: 109, geology: 40 },
+  2026: { design: 313, planning: 117, geology: 40 }
+};
+for (const [yearText, expected] of Object.entries(supportedCounts)) {
+  const year = Number(yearText);
+  for (const [scope, expectedCount] of Object.entries(expected)) {
+    const serviceTypes = scope === "geology" ? ["geologyAnalysis", "geologyGeneral"] : [scope];
+    const rules = data.rules.filter((rule) => rule.fiscalYear === year && serviceTypes.includes(rule.serviceType));
+    const calculable = rules.filter((rule) => {
+      const family = data.families.find((entry) => entry.fiscalYear === year && entry.serviceType === rule.serviceType && entry.familyCode === rule.familyCode);
+      const conditionRule = engine.findConditionRule(rule, conditionRules, year);
+      return engine.classifyPresetCoverage(rule, conditionRule, family).canCalculate;
+    });
+    assert.strictEqual(rules.length, expectedCount, `${year}年度${scope}の収録件数を固定する`);
+    assert.strictEqual(calculable.length, expectedCount, `${year}年度${scope}の原表照合済み全項目を計算入力可能にする`);
+  }
 }
 
 const r8Families = data.families.filter((family) => family.fiscalYear === 2026);

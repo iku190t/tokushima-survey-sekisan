@@ -474,10 +474,18 @@
       const source = sourceLine?.verifiedSource;
       const imported = sourceLine?.importSource;
       const standard = sourceLine?.standardWalk;
-      const incomplete = standard && !["verified-rule", "base-walk-verified"].includes(standard.coverageStatus);
+      const incomplete = standard && !["verified-rule", "base-walk-verified", "rule-assisted", "market-rate-input"].includes(standard.coverageStatus);
       const basis = standard?.quantitySummary || (imported ? "資料記載の人工（要照合）" : "基準外・手動調整");
       const readonly = standard ? " readonly" : "";
-      const sourceType = standard?.coverageStatus === "verified-rule" ? "条件規則反映済み" : standard?.coverageStatus === "base-walk-verified" ? "職種別歩掛表確認済み" : "全国標準参考";
+      const sourceType = standard?.coverageStatus === "verified-rule"
+        ? "条件規則反映済み"
+        : standard?.coverageStatus === "rule-assisted"
+          ? "原表歩掛・選択条件反映済み"
+          : standard?.coverageStatus === "market-rate-input"
+            ? "市場単価・根拠入力済み"
+            : standard?.coverageStatus === "base-walk-verified"
+              ? "職種別歩掛表確認済み"
+              : "全国標準参考";
       if (line.lineType === "amount") return `<tr data-consulting-line="${h(line.id)}" class="${recentlyImportedConsultingLineIds.has(line.id) ? "recently-imported-line" : ""}">
         <td><strong>${h(line.taskName)}</strong><small>${h(line.serviceName)}／市場単価方式${source ? `／出典：${h(source)}` : ""}</small></td>
         <td><strong>${h(basis)}</strong><small>${h(line.quantity)} ${h(line.unit)} × ${money(line.unitPrice)} × ${h(line.correctionFactor)}倍</small><small>単価根拠：${h(sourceLine?.priceSource || "未記録")}</small></td>
