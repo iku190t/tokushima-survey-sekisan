@@ -2756,3 +2756,21 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `tests/test-consulting-engine.js` | `59844BB47383B3A974E90EEE03091F8EE5F66743AC7CD17D5ABE6E57C082AC40` |
 | `tests/test-consulting-rule-pack.js` | `67CE36E3E91664C647ABB74B49CFB5918030918D23775AE3F27B4D6934FE07EA` |
 | `tests/test-ui-static.js` | `C1AB6ADEFB7DB88BC491F65F94F3B2028E343EA0663736D8D54D0F99F5B48422` |
+
+## B-2026-08-27-03
+
+- 状態: **検証済み・公開前**
+- 検証日: 2026-08-27
+- 実装コミット: `11d5bc88cd5c847c110b1c20f5ed7f9b8d6654a7`
+- 内容: 測量・設計・調査計画・地質の作業追加見出しから、収録件数・計算可能件数のバッジをすべて撤去した。項目データ・計算規則・キーワード件数は維持した。
+- 試験: `node --check`、`git diff --check`、`tests/test-*.js`全19本合格。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `5C12C7F2D6829AC371B126D641416830CDF9FF1AF82C2637E47107FB28A5D21E` |
+| `app.js` | `D329AED32278E83B63254A3AD9E090E2DE511E0C8618E4E040019888C106D860` |
+| `consulting.js` | `91D196197B0A75A861254E08EBE6B7AA77DA259EFF5010103144B43EDFB92E29` |
+| `tests/test-ui-static.js` | `608E5D1226AE90084345C8333E59D4ADEC1842BD1ABC990C539EF73F16B06E25` |
+| `tests/test-consulting-ui.js` | `BDD33E39CBA34D685F43B56E51A47A15DA317707FBEBFE55C1536B8439694148` |
