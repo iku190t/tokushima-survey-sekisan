@@ -46,7 +46,7 @@ assert.ok(ui.includes("CONSULTING_WORK_CATALOG") && ui.includes("consultingKeywo
 for (const keyword of ["道路", "橋梁", "河川・水辺", "水文・観測", "ボーリング", "原位置試験", "解析"]) assert.ok(workCatalog.includes(`label: "${keyword}"`), `${keyword}キーワードを表示できる`);
 assert.ok(html.includes("名称でさらに絞り込む"), "文字検索を初期操作ではなく折りたたみの補助操作にする");
 for (const label of ["積算基準の作業区分", "作業項目", "積算数量（"]) assert.ok(html.includes(label) || ui.includes(label), `${label}を測量と共通表示する`);
-assert.ok(!html.includes('id="consultingItemCountBadge"') && !ui.includes("項目計算可") && ui.includes('`${label.replace(/業務$/, "")}作業項目を追加`'), "4業務の見出しに件数バッジを表示しない");
+assert.ok(!html.includes('id="consultingItemCountBadge"') && !ui.includes("項目計算可") && !ui.includes("計算可 ${") && ui.includes('`${label.replace(/業務$/, "")}作業項目を追加`'), "4業務の見出しと状態文に計算可・収録件数を表示しない");
 assert.ok(ui.includes("consultingMarketQuantityLabel") && ui.includes('`積算数量（${unitLabel}）`'), "市場単価方式も選択単位を積算数量へ表示する");
 assert.ok(ui.includes('class="consulting-rule-quantity"') && ui.includes('placeholder="未入力"${coverage.canCalculate ? "" : " disabled"}') && !ui.includes('value="${h(dimension.baseQuantity)}"'), "設計・調査計画・地質の標準歩掛数量を自動入力しない");
 assert.ok(!ui.includes("consultingMarketQuantityRule") && !ui.includes('<small class="quantity-standard">${h(dimension.label)}'), "数量欄の下に補助文を置かず入力枠と追加ボタンの高さを揃える");
