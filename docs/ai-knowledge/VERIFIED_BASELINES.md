@@ -2733,3 +2733,23 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `consulting.js` | `B71BE3FC6F4E355C8F02BE0D241C09DC35A98A66FE09071477565ED6050C0A47` |
 | `index.html` | `5FA5D255B13856830AB9234E382CCE1AD6AF9228CBAE14A59911B55EC9040D24` |
 | `tests/test-ui-static.js` | `9E611071FD17B2ADD685AA0BBB62F3B5CE967FBF358E4E839FF4166F65A4174B` |
+
+## B-2026-08-27-02
+
+- 状態: **検証済み・公開前**
+- 検証日: 2026-08-27
+- 実装コミット: `c930b0dfc0e6822be2dcc38be2b41f38d2e32f24`
+- 内容: 原表照合済みの設計・調査計画・地質を全件計算入力へ接続し、地質一般を根拠付き市場単価方式へ統一した。新規積算の見積提出先を国土交通省（全国標準）へ変更した。
+- 件数: R8 設計313/313・調査計画117/117・地質40/40、R7 313/313・109/109・40/40、R6 313/313・109/109・39/39。
+- 試験: `node --check`、`git diff --check`、`tests/test-*.js`全19本合格。`file:` URLのブラウザー自動操作は安全制限により未実施。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `app.js` | `6E2CB82E065A36D79265279753D74AE573485334944E6093E5826F6BCBB85D67` |
+| `consulting-engine.js` | `22A982E7BBCC53D5FC73014E7669BEFEEF6239D344191FE245BF14D30D689E31` |
+| `consulting.js` | `6023342AE6E5AF15A2D5E9E4CCFDA165BB25FF839DBA4DBC3133A2479A24DD63` |
+| `tests/test-consulting-engine.js` | `59844BB47383B3A974E90EEE03091F8EE5F66743AC7CD17D5ABE6E57C082AC40` |
+| `tests/test-consulting-rule-pack.js` | `67CE36E3E91664C647ABB74B49CFB5918030918D23775AE3F27B4D6934FE07EA` |
+| `tests/test-ui-static.js` | `C1AB6ADEFB7DB88BC491F65F94F3B2028E343EA0663736D8D54D0F99F5B48422` |
