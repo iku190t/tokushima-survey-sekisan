@@ -2806,3 +2806,31 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `styles.css` | `025C948922C803C3693AD9F66640B7E0FB0A501F454D26E6DC974C51EDED38E8` |
 | `tests/test-consulting-rule-pack.js` | `252D32FCBCC6C7A94DFF80F1BA35C7B10F8B6B42FA96F8662CC563478DB39365` |
 | `tests/test-document-import-ui.js` | `F92CECB10BC758908174DFC1F48AE1B49FE66F5943599C8DDDFB4131893F2A50` |
+
+## B-2026-08-28-02
+
+- 状態: **検証済み・公開前**
+- 検証日: 2026-08-28
+- 実装コミット: `feb5b0ac5475123eddeeeb95fb57444fec36c148`
+- 外部知能コミット: この項目を追加するコミット
+- 内容: 紹介動画を、場面単位の日本語ニューラル音声と6章構成へ再制作した。旧版49.75秒から121.58秒へ延長し、PDF実ドラッグ4段階、年度、帳票、現在の安全な計算方針を要点として収録した。末尾の不要な「紹介動画」表示はない。
+
+### 合格した試験・映像確認
+
+- `tests/test-*.js`全19本、Python構文検査、`git diff --check`が合格した。
+- MP4は121.58秒、1280×720、24fps、2918フレーム、H.264 High、yuv420p、AAC音声。全フレーム復号に成功した。
+- 音量は平均-16.9dB、最大-1.9dB。10発話の開始・終了時刻を生成ログで確認した。
+- 冒頭、4業務、測量、積算結果、PDF取込4段階、年度、帳票、末尾の主要場面を目視し、文字重なり・画面切れ・末尾の「紹介動画」表示0件を確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `73910B28DAFD41ED3B6E2FF89742B9B1846C6DA01D66C35B741A2D64893834E3` |
+| `media/web-sekisan-introduction.mp4` | `68E916B74BAC937E41F6838863D48266EC0A00BA12A287DFF2663F3AD786DDAD` |
+| `media/web-sekisan-introduction-thumbnail.jpg` | `AB282398159A240DB0CFC1EAAE22A16F74DD10A33F450214D783D3FEF1D7DCC9` |
+| `tools/create-intro-video.py` | `9EFF76AF4FEAA4B1084F6414F7C9D03FF2143113E1E6C13EB4BE96CC29EF5D65` |
+| `tools/create-intro-narration.py` | `359D7C71133EDC810B8DC3E758AFEAF983B80C8BC40A3143494B544ADB2FE3A8` |
+| `tools/create-intro-narration.ps1` | `15173BAB27BDE7A81746FB3EA6235F5F57930FB9F7BCC5F0C757F2B2B824C32F` |
+| `tools/video-requirements.txt` | `C93204B25F71E37E8F3CDCC476E8FABE714504A8C2BF8FB872A5AF7F1823F430` |
+| `tests/test-ui-static.js` | `0B4F4D38E1F8F91FB006008843095D0508E23FE283D47601D8CBCF979DB01698` |
