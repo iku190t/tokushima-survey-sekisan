@@ -2809,10 +2809,12 @@ OK: official case search UI is removed while saved-data compatibility remains
 
 ## B-2026-08-28-02
 
-- 状態: **検証済み・公開前**
+- 状態: **検証済み・GitHub Pages公開済み**
 - 検証日: 2026-08-28
 - 実装コミット: `feb5b0ac5475123eddeeeb95fb57444fec36c148`
-- 外部知能コミット: この項目を追加するコミット
+- 外部知能コミット: `82f0999d83f90200046b2d264d946734a8262353`
+- GitHub Pages: `built`、ビルド`1178748116`、コミット`82f0999d83f90200046b2d264d946734a8262353`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
 - 内容: 紹介動画を、場面単位の日本語ニューラル音声と6章構成へ再制作した。旧版49.75秒から121.58秒へ延長し、PDF実ドラッグ4段階、年度、帳票、現在の安全な計算方針を要点として収録した。末尾の不要な「紹介動画」表示はない。
 
 ### 合格した試験・映像確認
@@ -2821,6 +2823,7 @@ OK: official case search UI is removed while saved-data compatibility remains
 - MP4は121.58秒、1280×720、24fps、2918フレーム、H.264 High、yuv420p、AAC音声。全フレーム復号に成功した。
 - 音量は平均-16.9dB、最大-1.9dB。10発話の開始・終了時刻を生成ログで確認した。
 - 冒頭、4業務、測量、積算結果、PDF取込4段階、年度、帳票、末尾の主要場面を目視し、文字重なり・画面切れ・末尾の「紹介動画」表示0件を確認した。
+- 公開版で`media/web-sekisan-introduction.mp4?v=20260828-1`、再生時間121.58秒、`readyState=4`、`muted=false`、自動再生なしを実ブラウザー確認した。
 
 ### 主要ファイルのSHA-256
 
