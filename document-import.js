@@ -5,9 +5,11 @@
   const reader = window.DocumentReader;
   const analyzer = window.DocumentImportEngine;
   const consultingMaster = window.CONSULTING_MASTER;
+  const consultingEngine = window.ConsultingEngine;
+  const consultingConditionRules = window.CONSULTING_CONDITION_RULES || { rules: [] };
   const consultingRulePack = window.CONSULTING_RULE_PACK || { rules: [], families: [] };
   const workCatalog = window.CONSULTING_WORK_CATALOG || { serviceIdsByScope: {}, keywordDefinitions: {} };
-  if (!app || !reader || !analyzer || !consultingMaster) return;
+  if (!app || !reader || !analyzer || !consultingMaster || !consultingEngine) return;
 
   const $ = (id) => document.getElementById(id);
   const h = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
@@ -39,10 +41,10 @@
   const consultingServiceIdsByKind = Object.fromEntries(Object.entries(workCatalog.serviceIdsByScope).map(([kind, ids]) => [kind, new Set(ids)]));
   const activeManualKeywords = { design: "all", survey: "all", planning: "all", geology: "all" };
   const manualKindHeadings = {
-    design: "PDFから設計業務の作業・人工を入れる",
+    design: "PDFから設計業務の作業項目を入れる",
     survey: "PDFから測量業務の項目・数量・単位を入れる",
-    planning: "PDFから調査・計画業務の作業・人工を入れる",
-    geology: "PDFから地質業務の作業・人工を入れる",
+    planning: "PDFから調査・計画業務の作業項目を入れる",
+    geology: "PDFから地質業務の作業項目を入れる",
     metadata: "PDFから業務基本情報を入れる"
   };
 
@@ -103,13 +105,37 @@
     return definition.prefixes.some((prefix) => code.startsWith(prefix));
   }
 
+  function isAutomaticConsultingRule(rule) {
+    if (!rule || Number(rule.fiscalYear) !== currentConsultingYear()) return false;
+    const family = (consultingRulePack.families || []).find((entry) => Number(entry.fiscalYear) === Number(rule.fiscalYear)
+      && entry.serviceType === rule.serviceType && entry.familyCode === rule.familyCode);
+    const conditionRule = consultingEngine.findConditionRule(rule, consultingConditionRules, currentConsultingYear());
+    return consultingEngine.classifyPresetCoverage(rule, conditionRule, family).canCalculate;
+  }
+
   function consultingRulesForKind(kind = $("pdfManualKind")?.value || "design", applyKeyword = true) {
     const allowed = consultingServiceIdsByKind[kind] || consultingServiceIdsByKind.design || new Set(["design"]);
-    const rules = (consultingRulePack.rules || []).filter((rule) => allowed.has(rule.serviceType) && Number(rule.fiscalYear) === currentConsultingYear());
+    const rules = (consultingRulePack.rules || []).filter((rule) => {
+      return allowed.has(rule.serviceType) && isAutomaticConsultingRule(rule);
+    });
     if (!applyKeyword) return rules;
     const definitions = workCatalog.keywordDefinitions[kind] || [];
     const selected = definitions.find((entry) => entry.id === activeManualKeywords[kind]) || definitions[0];
     return rules.filter((rule) => keywordMatchesCode(selected, String(rule.familyCode || ""), definitions));
+  }
+
+  function automaticRuleForCandidate(candidate) {
+    const referenced = (consultingRulePack.rules || []).find((entry) => entry.id === candidate?.referenceRuleId);
+    if (isAutomaticConsultingRule(referenced)) return referenced;
+    const sourceKey = analyzer.compact(candidate?.taskName || candidate?.label || candidate?.sourceText || "");
+    if (!sourceKey) return null;
+    const kind = businessKindForService(candidate?.serviceType);
+    const matches = consultingRulesForKind(kind, false).filter((rule) => {
+      const ruleKey = analyzer.compact(rule.label);
+      return ruleKey === sourceKey || (sourceKey.length >= 4 && ruleKey.includes(sourceKey)) || (ruleKey.length >= 4 && sourceKey.includes(ruleKey));
+    });
+    const exact = matches.find((rule) => analyzer.compact(rule.label) === sourceKey);
+    return exact || (matches.length === 1 ? matches[0] : null);
   }
 
   function surveyItemsForManualKeyword(items, kind = "survey") {
@@ -305,12 +331,12 @@
       ? isSurveyBusinessKind(kind)
         ? "作業項目だけでも追加できます。数量・単位は積算画面で後から入力できます。"
         : isConsultingBusinessKind(kind)
-          ? "作業項目だけでも追加できます。職種・人工は各業務画面で後から入力できます。"
+          ? "作業項目だけでも追加できます。数量・適用条件は各業務画面で後から入力できます。"
           : "この内容を反映待ちへ追加できます。"
       : isSurveyBusinessKind(kind)
         ? "作業項目を選ぶと、数量・単位が未入力でも反映待ちへ追加できます。"
         : isConsultingBusinessKind(kind)
-          ? "作業項目を選ぶと、職種・人工が未入力でも反映待ちへ追加できます。"
+          ? "作業項目を選ぶと、数量・適用条件が未入力でも反映待ちへ追加できます。"
           : "反映する内容を入力してください。";
   }
 
@@ -701,7 +727,7 @@
       return `${item.label}：${Number(item.quantity).toLocaleString("ja-JP", { maximumFractionDigits: 6 })}${item.unit}${source}`;
     }
     if (item.kind === "consulting") {
-      if (item.inputPending) return `${item.taskName}：${item.role ? "人工未入力" : "職種・人工未入力"}（計算対象外）`;
+      if (item.inputPending) return `${item.taskName}：数量・適用条件未入力（計算対象外）`;
       const roleName = rolesFor(item.serviceType).find((role) => role.id === item.role)?.name || item.role;
       return `${item.taskName}／${roleName}：${item.days}人日`;
     }
@@ -815,7 +841,7 @@
           const missingUnit = !target.item.sourceUnitId;
           setStatus(lineId, "missing", missingQuantity ? "項目追加済み｜数量未入力" : missingUnit ? "項目追加済み｜単位未入力" : "項目追加済み｜入力要確認");
         }
-        else setStatus(lineId, "missing", "項目追加済み｜職種・人工未入力");
+        else setStatus(lineId, "missing", "項目追加済み｜数量・条件未入力");
       });
     });
     const kind = $("pdfManualKind")?.value;
@@ -827,8 +853,7 @@
         const complete = hasQuantity && hasUnit;
         setStatus(itemLineId, complete ? "complete" : "missing", complete ? "入力完了" : !hasQuantity ? "項目追加済み｜数量未入力" : "項目追加済み｜単位未入力");
       } else if (isConsultingBusinessKind(kind) && selectedManualConsultingRule()) {
-        const complete = Boolean($("pdfManualConsultingRole").value) && Number($("pdfManualConsultingDays").value) > 0;
-        setStatus(itemLineId, complete ? "complete" : "missing", complete ? "入力完了" : "項目追加済み｜職種・人工未入力");
+        setStatus(itemLineId, "missing", "項目追加済み｜数量・条件未入力");
       }
     }
     document.querySelectorAll(".pdf-row-status-highlight").forEach((row) => {
@@ -873,6 +898,18 @@
 
   function renderPdfClickWorkbench(extracted, analysis) {
     currentFileName = extracted.fileName;
+    analysis.candidates = analysis.candidates.filter((candidate) => {
+      if (candidate.kind !== "consulting") return true;
+      const rule = automaticRuleForCandidate(candidate);
+      if (!rule) return false;
+      candidate.referenceRuleId = rule.id;
+      candidate.serviceType = rule.serviceType;
+      candidate.taskName = rule.label;
+      candidate.role = "";
+      candidate.days = null;
+      candidate.inputPending = true;
+      return true;
+    });
     currentAnalysis = analysis;
     clickLineTargets.clear();
     clickLines.clear();
@@ -950,15 +987,12 @@
       const rule = selectedManualConsultingRule();
       const serviceType = rule?.serviceType || "";
       const taskName = rule?.label || "";
-      const days = Math.round(Math.max(0, Number($("pdfManualConsultingDays").value) || 0) * 1000) / 1000;
       if (!rule) { app.notify("積算基準の作業区分と作業項目を選択してください"); return; }
-      const role = $("pdfManualConsultingRole").value;
-      const inputPending = !role || !(days > 0);
       if (editingTarget) {
-        Object.assign(editingTarget.item, { kind: "consulting", serviceType, taskName, referenceRuleId: rule.id, role, days: inputPending ? null : days, inputPending, selected: true });
+        Object.assign(editingTarget.item, { kind: "consulting", serviceType, taskName, referenceRuleId: rule.id, role: "", days: null, inputPending: true, selected: true });
         target = editingTarget;
       } else {
-        const candidate = { ...source, id: `manual-${++manualCandidateSequence}`, kind: "consulting", serviceType, taskName, referenceRuleId: rule.id, role, days: inputPending ? null : days, inputPending };
+        const candidate = { ...source, id: `manual-${++manualCandidateSequence}`, kind: "consulting", serviceType, taskName, referenceRuleId: rule.id, role: "", days: null, inputPending: true };
         currentAnalysis.candidates.push(candidate);
         target = { type: "candidate", item: candidate };
       }

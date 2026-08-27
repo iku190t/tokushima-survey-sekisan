@@ -14,7 +14,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/web-sekisan-32.png?v=20260825-2">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/web-sekisan-180.png?v=20260825-2">
   <link rel="manifest" href="site.webmanifest?v=20260825-2">
-  <link rel="stylesheet" href="styles.css?v=20260825-5">
+  <link rel="stylesheet" href="styles.css?v=20260828-1">
 </head>
 <body data-business-scope="design">
   <header class="app-header">
@@ -379,9 +379,9 @@
                 <label class="field"><span class="sr-only">積算基準の作業区分</span><select id="pdfManualConsultingRuleGroup" aria-label="積算基準の作業区分"></select></label>
                 <label class="field pdf-field-drop-target" data-pdf-drop-target="consulting-task"><span class="pdf-drop-title"><b aria-hidden="true">1</b>作業項目</span><small class="pdf-drop-callout">左のPDFから作業項目の文字枠をここへドロップ</small><select id="pdfManualConsultingTaskTemplate"></select></label>
                 <input id="pdfManualConsultingTask" type="hidden">
-                <label class="field pdf-field-drop-target" data-pdf-drop-target="consulting-role"><span class="pdf-drop-title"><b aria-hidden="true">2</b>PDFの職種をドロップ</span><small class="pdf-drop-callout">例：主任技師、技師（A）</small><select id="pdfManualConsultingRole"></select></label>
-                <label class="field pdf-field-drop-target" data-pdf-drop-target="consulting-days"><span class="pdf-drop-title"><b aria-hidden="true">3</b>PDFの人工をドロップ</span><small class="pdf-drop-callout">例：1、2.5人日</small><input id="pdfManualConsultingDays" type="number" min="0" step="0.001" inputmode="decimal" placeholder="未入力"></label>
-                <small class="field-note">詳細項目は基準上の作業を整理するための選択肢です。全国標準参考歩掛は公式基準書・案件条件と照合し、該当しない項目は原資料の職種・人工を入力してください。</small>
+                <select id="pdfManualConsultingRole" hidden aria-hidden="true"></select>
+                <input id="pdfManualConsultingDays" type="hidden">
+                <small class="field-note">作業項目だけを続けて反映待ちへ追加できます。積算数量と、この項目に必要な適用条件は、追加後に該当業務タブで入力します。</small>
               </div>
               <div id="pdfManualMetadataFields" class="pdf-manual-fields" hidden>
                 <label class="field"><span>基本情報の項目</span><select id="pdfManualMetadataKey"><option value="projectName">業務名</option><option value="orderingParty">発注者</option><option value="department">担当部署</option><option value="contactName">担当者</option><option value="workLocation">業務場所</option><option value="contractPeriod">履行期間</option><option value="documentNumber">文書・業務番号</option><option value="documentDate">公告・資料日</option></select></label>
@@ -669,13 +669,13 @@
   <script src="data/verified-work-item-expansions.js?v=20260823-1"></script>
   <script src="data/unit-catalog.js?v=20260824-1"></script>
   <script src="engine.js?v=20260824-2"></script>
-  <script src="consulting-engine.js?v=20260825-5"></script>
+  <script src="consulting-engine.js?v=20260828-1"></script>
   <script src="reference-case-engine.js?v=20260824-1"></script>
   <script src="document-import-engine.js?v=20260824-5"></script>
   <script src="document-reader.js?v=20260823-1"></script>
   <script src="app.js?v=20260827-3"></script>
-  <script src="consulting.js?v=20260827-3"></script>
-  <script src="document-import.js?v=20260825-1"></script>
+  <script src="consulting.js?v=20260828-1"></script>
+  <script src="document-import.js?v=20260828-1"></script>
   <script src="analytics.js?v=20260823-1"></script>
 </body>
 </html>

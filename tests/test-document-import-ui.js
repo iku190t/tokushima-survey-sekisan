@@ -54,6 +54,7 @@ assert.ok(ui.includes("openManualMapper") && ui.includes("addManualCandidate") &
 assert.ok(ui.includes("surveyCategoryOptions") && ui.includes("populateManualSurveyItems") && ui.includes("pdfManualSurveyCategory"), "長い測量項目を分類で絞り込んで詳細項目を選べる");
 assert.ok(html.includes('src="data/consulting-work-catalog.js?v=') && ui.includes("CONSULTING_WORK_CATALOG") && ui.includes("CONSULTING_RULE_PACK"), "PDF取込と本体が同じキーワード定義・公式作業項目規則を使う");
 assert.ok(ui.includes("updateManualConsultingTasks") && ui.includes("updateManualConsultingItemsForGroup") && ui.includes("pdfManualConsultingRuleGroup") && ui.includes("pdfManualConsultingTaskTemplate"), "設計・調査計画・地質も積算基準の作業区分から公式作業項目を選べる");
+assert.ok(ui.includes("isAutomaticConsultingRule") && ui.includes("automaticRuleForCandidate") && ui.includes("classifyPresetCoverage") && ui.includes("analysis.candidates = analysis.candidates.filter") && ui.includes("candidate.inputPending = true"), "PDF取込も条件式まで完成した全国標準項目へ安全に照合し、数量・条件待ち候補にする");
 assert.ok(!ui.includes("consultingMaster.taskNames") && ui.includes("referenceRuleId: rule.id"), "PDF反映先に旧式の汎用作業名を使わず公式規則IDを保持する");
 assert.ok(!html.includes("PDF原文（確認用）") && !html.includes('id="pdfManualSourceText"') && !ui.includes("updateManualSourceSummary"), "PDF上で確認できる原文を右側へ重複表示しない");
 for (const keyword of ["道路", "橋梁", "河川・水辺", "ボーリング", "原位置試験", "解析"]) assert.ok(workCatalog.includes(`label: "${keyword}"`), `PDF取込にも${keyword}キーワードを共有する`);
@@ -63,12 +64,12 @@ assert.ok(html.includes('draggable="true"') || ui.includes('draggable="true"'), 
 assert.ok(!html.includes('id="pdfDragDock"') && !html.includes("PDFからドラッグして入力"), "別置きの重複したドラッグ入力欄を表示しない");
 assert.ok(html.includes('data-pdf-drop-target="item"') && html.includes('data-pdf-drop-target="quantity"') && html.includes('data-pdf-drop-target="unit"'), "実入力欄を項目・数量・単位のドラッグ先にする");
 assert.ok(ui.includes("function clearManualInputValues") && ui.includes('$("pdfManualSurveyCode").value = "";') && ui.includes('$("pdfManualSurveyQuantity").value = "";') && ui.includes('$("pdfManualSurveySourceUnit").value = "";'), "測量の未選択状態では項目・数量・単位をすべて空欄に戻す");
-assert.ok(ui.includes('$("pdfManualConsultingTaskTemplate").value = "";') && ui.includes('$("pdfManualConsultingRole").value = "";') && ui.includes('$("pdfManualConsultingDays").value = "";') && ui.includes("作業項目を選択してください") && ui.includes("職種を選択してください"), "設計・調査計画・地質も作業項目・職種・人工をすべて空欄から始める");
+assert.ok(ui.includes('$("pdfManualConsultingTaskTemplate").value = "";') && ui.includes('$("pdfManualConsultingRole").value = "";') && ui.includes('$("pdfManualConsultingDays").value = "";') && ui.includes("作業項目を選択してください"), "設計・調査計画・地質は作業項目だけを空欄から選ぶ");
 const openMapper = ui.slice(ui.indexOf("function openManualMapper"), ui.indexOf("function matchSurveyDrop"));
 assert.ok(!openMapper.includes("quantityFromLine") && !openMapper.includes('pdfManualConsultingTask").value = line.text'), "PDF行のクリックだけでは1・2・3へ値を推定入力しない");
 const updateKind = ui.slice(ui.indexOf("function updateManualKind"), ui.indexOf("function showEmptyManualMapper"));
 assert.ok(!updateKind.includes("matchConsultingTaskDrop"), "反映先の業務区分を切り替えただけでは作業項目を自動選択しない");
-assert.ok(html.includes('data-pdf-drop-target="consulting-task"') && html.includes('data-pdf-drop-target="consulting-role"') && html.includes('data-pdf-drop-target="consulting-days"'), "設計・調査計画・地質も詳細項目・職種・人工を個別にドラッグできる");
+assert.ok(html.includes('data-pdf-drop-target="consulting-task"') && !html.includes('data-pdf-drop-target="consulting-role"') && !html.includes('data-pdf-drop-target="consulting-days"'), "設計・調査計画・地質はPDFから作業項目だけを先行追加する");
 const sidebarStart = html.indexOf('<aside class="pdf-click-sidebar">');
 const sidebarEnd = html.indexOf("</aside>", sidebarStart);
 const sidebarHtml = html.slice(sidebarStart, sidebarEnd);
@@ -78,7 +79,7 @@ const pendingListIndex = html.indexOf('id="pdfClickSelectedList"');
 assert.ok(sidebarHtml.includes('id="pdfManualMapper"') && !sidebarHtml.includes('id="pdfClickSelectedList"'), "PDF右側には固定する入力エディターだけを置く");
 assert.ok(mapperIndex >= 0 && mapperIndex < pendingPanelIndex && pendingPanelIndex < pendingListIndex, "反映待ち一覧をPDFと入力エディターの下へ分離する");
 assert.ok(ui.includes("PDF_LINE_DRAG_TYPE") && ui.includes("applyDraggedPdfLine") && ui.includes("matchSurveyDrop") && ui.includes('addEventListener("dragstart"') && ui.includes('addEventListener("drop"'), "項目・数量を別々に右側へドロップして対応付ける");
-assert.ok(ui.includes("matchConsultingTaskDrop") && ui.includes("matchConsultingRoleDrop") && ui.includes('targetType === "consulting-days"'), "設計等のドラッグを詳細項目・職種・人工へ振り分ける");
+assert.ok(ui.includes("matchConsultingTaskDrop") && html.includes("作業項目だけを続けて反映待ちへ追加") && html.includes("積算数量と、この項目に必要な適用条件"), "設計等は作業項目をドラッグし数量・適用条件を業務画面で補う");
 assert.ok(ui.includes("pointerPdfDrag") && ui.includes("finishPointerPdfDrag") && ui.includes('addEventListener("pointermove"') && ui.includes('addEventListener("pointerup"'), "標準ドラッグ非対応環境とタッチ・ペン操作でも移動先を判定する");
 assert.ok(ui.includes("manualSourceLineIds") && ui.includes("manualItemLineId") && ui.includes("manualQuantityLineId") && ui.includes("manualConsultingTaskLineId") && ui.includes("manualConsultingDaysLineId"), "測量・設計等の別セルを同じ候補へ関連付ける");
 assert.ok(ui.includes("manualUnitLineId") && ui.includes("convertSurveyQuantity") && ui.includes("sourceUnitLabel"), "単位セルを別に対応付けて資料数量を積算数量へ換算する");
@@ -127,6 +128,6 @@ assert.ok(html.includes('<span class="sr-only">積算基準の作業区分</span
 assert.ok(ui.includes("conversion.hidden = true") && ui.includes("conversion.hidden = false"), "数量と単位が揃った場合だけ換算結果を表示する");
 for (const size of ["font-size: 13px", "font-size: 11px", "font-size: 12px"]) assert.ok(css.includes(size), `PDF右入力欄の文字を拡大する: ${size}`);
 assert.ok(ui.includes("const inputPending = !(quantity > 0)") && ui.includes("quantity: inputPending ? null : quantity") && ui.includes("splitSurveyQuantityUnit"), "数量・単位未入力でも項目を入力待ち候補にし、数字付き単位を分離する");
-assert.ok(app.includes("数量未入力（計算対象外）") && app.includes("!line.inputPending") && consulting.includes("職種・人工未入力") && consulting.includes("line.inputPending ||"), "未入力行を4業務画面に明示し計算対象から除外する");
+assert.ok(app.includes("数量未入力（計算対象外）") && app.includes("!line.inputPending") && consulting.includes("数量・適用条件未入力") && consulting.includes("line.inputPending ||") && consulting.includes("completeImportedPreset"), "未入力行を4業務画面に明示し、PDF作業項目は通常の数量・条件入力へ接続する");
 
 console.log("OK: document import review UI and safe apply wiring checks passed");

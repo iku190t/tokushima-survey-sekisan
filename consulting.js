@@ -23,6 +23,7 @@
     || Object.values(master.roleGroups).flat().find((entry) => entry.id === roleId);
   let activeConsultingScope = "design";
   let visiblePresets = [];
+  let pendingPresetLineId = "";
   const recentlyImportedConsultingLineIds = new Set();
   const activeConsultingKeywords = { design: "all", planning: "all", geology: "all" };
   const consultingKeywordDefinitions = window.CONSULTING_WORK_CATALOG?.keywordDefinitions || {
@@ -223,10 +224,12 @@
     const query = String($("consultingPresetSearch").value || "").trim().toLocaleLowerCase("ja");
     const year = Number(state().fiscalYear);
     const allPresets = Array.isArray(rulePack.rules) && rulePack.rules.length ? rulePack.rules : master.verifiedPresets;
-    const scopedPresets = allPresets.filter((preset) =>
-      scopedServices().some((entry) => entry.id === preset.serviceType)
-      && (!preset.fiscalYear || Number(preset.fiscalYear) === year)
-    );
+    const scopedPresets = allPresets.filter((preset) => {
+      if (!scopedServices().some((entry) => entry.id === preset.serviceType)) return false;
+      if (preset.fiscalYear && Number(preset.fiscalYear) !== year) return false;
+      const conditionRule = engine.findConditionRule(preset, conditionRules, year);
+      return engine.classifyPresetCoverage(preset, conditionRule, familyForPreset(preset)).canCalculate;
+    });
     renderConsultingKeywords(scopedPresets);
     const candidates = scopedPresets.filter((preset) =>
       presetMatchesKeyword(preset)
@@ -247,11 +250,11 @@
     visiblePresets = candidates.filter((preset) => presetGroup(preset).id === selectedGroup);
     $("consultingPreset").innerHTML = visiblePresets.length
       ? visiblePresets.map((preset) => `<option value="${h(preset.id)}">${h(preset.label)}｜${h(preset.standardUnit || "1業務当り")}</option>`).join("")
-      : '<option value="">この業務区分の全国標準参考歩掛は未収録</option>';
+      : '<option value="">この業務区分に自動積算できる全国標準項目はありません</option>';
     if (visiblePresets.some((preset) => preset.id === previousPreset)) $("consultingPreset").value = previousPreset;
     $("consultingPresetStatus").textContent = visiblePresets.length
       ? `令和${year - 2018}年度：作業区分と作業項目を選択してください。`
-      : `令和${year - 2018}年度：検索条件に一致する標準歩掛がありません。`;
+      : `令和${year - 2018}年度：条件式まで完成した全国標準項目がありません。必要な場合は下の根拠付き手動調整を使用してください。`;
     renderPresetRule();
   }
 
@@ -264,6 +267,25 @@
     if (!source?.url) return "";
     const page = source.page ? ` p.${source.page}` : "";
     return `<a href="${h(source.url)}" target="_blank" rel="noopener noreferrer">${h(label)}${h(page)}</a>`;
+  }
+
+  function lineBasisDetails(sourceLine, fallback = "—") {
+    const standard = sourceLine?.standardWalk;
+    const source = String(sourceLine?.verifiedSource || "").trim();
+    const conditionEntries = Array.isArray(standard?.conditionEntries) ? standard.conditionEntries.filter(Boolean) : [];
+    const rows = [
+      ["積算年度", standard?.fiscalYear ? `令和${Number(standard.fiscalYear) - 2018}年度` : `令和${Number(state().fiscalYear) - 2018}年度`],
+      ["標準単位", standard?.standardUnit || fallback],
+      ["数量・換算", standard?.quantitySummary || fallback],
+      ["適用条件・補正", conditionEntries.length ? conditionEntries.join("／") : "追加補正なし"],
+      ["計算方法", standard?.coverageLabel || (sourceLine?.lineType === "amount" ? "市場単価×数量×補正" : "根拠付き手動調整")]
+    ];
+    const sourceHtml = source
+      ? /^https:\/\//.test(source.split(" ")[0])
+        ? `<a href="${h(source.split(" ")[0])}" target="_blank" rel="noopener noreferrer">国交省資料・該当ページを開く</a><small>${h(source)}</small>`
+        : `<span>${h(source)}</span>`
+      : "<span>手動調整：根拠資料を別途確認</span>";
+    return `<details class="line-calculation-basis"><summary>計算根拠を見る</summary><dl>${rows.map(([label, value]) => `<div><dt>${h(label)}</dt><dd>${h(value)}</dd></div>`).join("")}<div><dt>出典</dt><dd>${sourceHtml}</dd></div></dl></details>`;
   }
 
   function parameterMode(table) {
@@ -457,11 +479,12 @@
       const roles = master.roleGroups[selectedService.roleGroup] || [];
       const roleChoices = '<option value="">職種を選択してください</option>' + roles.map((role) => `<option value="${h(role.id)}" ${role.id === line.role ? "selected" : ""}>${h(role.name)}</option>`).join("");
       const imported = line.importSource;
+      const standardDraft = Boolean(line.referenceRuleId);
       return `<tr data-consulting-line="${h(line.id)}" class="pending-input-row ${recentlyImportedConsultingLineIds.has(line.id) ? "recently-imported-line" : ""}">
-        <td><strong>${h(line.taskName)}</strong><small>${h(selectedService.name)}${imported ? `／資料取込：${h(imported.fileName || "PDF")} p.${h(imported.page || 1)}（要原文照合）` : ""}</small><span class="pending-input-label">${line.role ? "人工未入力" : "職種・人工未入力"}（計算対象外）</span></td>
-        <td><strong>作業項目のみ取込済み</strong><small>未入力項目を補うと計算を開始します。</small></td>
-        <td><select class="consulting-line-role" aria-label="職種">${roleChoices}</select></td>
-        <td><input class="consulting-line-days" type="number" min="0.001" step="0.001" inputmode="decimal" data-decimals="3" value="" placeholder="未入力"><span class="input-unit">人日</span><small>小数第3位まで</small></td>
+        <td><strong>${h(line.taskName)}</strong><small>${h(selectedService.name)}${imported ? `／資料取込：${h(imported.fileName || "PDF")} p.${h(imported.page || 1)}（要原文照合）` : ""}</small><span class="pending-input-label">${standardDraft ? "数量・適用条件未入力" : line.role ? "人工未入力" : "職種・人工未入力"}（計算対象外）</span></td>
+        <td>${standardDraft ? `<strong>作業項目のみ取込済み</strong><small>通常入力で数量と必要条件を補ってください。</small><button class="button compact-button complete-consulting-preset" type="button">数量・条件を入力</button>` : `<strong>手動調整項目</strong><small>未入力項目を補うと計算を開始します。</small>`}</td>
+        <td>${standardDraft ? "—" : `<select class="consulting-line-role" aria-label="職種">${roleChoices}</select>`}</td>
+        <td>${standardDraft ? "—" : `<input class="consulting-line-days" type="number" min="0.001" step="0.001" inputmode="decimal" data-decimals="3" value="" placeholder="未入力"><span class="input-unit">人日</span><small>小数第3位まで</small>`}</td>
         <td>—</td><td>—</td><td class="no-print"><button class="icon-button danger-text delete-consulting-line" type="button" aria-label="削除">×</button></td>
       </tr>`;
     }).join("");
@@ -485,12 +508,12 @@
               : "全国標準参考";
       if (line.lineType === "amount") return `<tr data-consulting-line="${h(line.id)}" class="${recentlyImportedConsultingLineIds.has(line.id) ? "recently-imported-line" : ""}">
         <td><strong>${h(line.taskName)}</strong><small>${h(line.serviceName)}／市場単価方式${source ? `／出典：${h(source)}` : ""}</small></td>
-        <td><strong>${h(basis)}</strong><small>${h(line.quantity)} ${h(line.unit)} × ${money(line.unitPrice)} × ${h(line.correctionFactor)}倍</small><small>単価根拠：${h(sourceLine?.priceSource || "未記録")}</small></td>
+        <td><strong>${h(basis)}</strong><small>${h(line.quantity)} ${h(line.unit)} × ${money(line.unitPrice)} × ${h(line.correctionFactor)}倍</small><small>単価根拠：${h(sourceLine?.priceSource || "未記録")}</small>${lineBasisDetails(sourceLine, basis)}</td>
         <td>市場単価</td><td>${h(line.quantity)} ${h(line.unit)}</td><td>${money(line.unitPrice)}</td><td><strong>${money(line.amount)}</strong></td>
         <td class="no-print"><button class="icon-button danger-text delete-consulting-line" type="button" aria-label="削除">×</button></td></tr>`;
       return `<tr data-consulting-line="${h(line.id)}" class="${recentlyImportedConsultingLineIds.has(line.id) ? "recently-imported-line" : ""}">
         <td><strong>${h(line.taskName)}</strong><small>${h(line.serviceName)}${source ? `／${h(sourceType)}：${h(source)}` : imported ? `／資料取込：${h(imported.fileName || "貼付け原文")} p.${h(imported.page || 1)}（要原文照合）` : "／人工入力"}</small></td>
-        <td><strong>${h(basis)}</strong><small>${standard ? incomplete ? "計算規則未完了" : standard.coverageStatus === "verified-rule" ? "出典付き条件規則から自動算出" : "職種別人工表と標準数量から算出" : "人工を直接入力"}</small></td>
+        <td><strong>${h(basis)}</strong><small>${standard ? incomplete ? "計算規則未完了" : standard.coverageStatus === "verified-rule" ? "出典付き条件規則から自動算出" : "職種別人工表と標準数量から算出" : "人工を直接入力"}</small>${lineBasisDetails(sourceLine, basis)}</td>
         <td>${h(role?.name || line.role)}</td>
         <td><input class="consulting-line-days" type="number" min="0" step="0.001" inputmode="decimal" data-decimals="3" value="${h(line.days)}"${readonly}><span class="input-unit">人日</span><small>${standard ? "標準歩掛から算出" : "小数第3位まで"}</small></td>
         <td>${money(line.dailyRate)}</td><td><strong>${money(line.amount)}</strong></td>
@@ -513,7 +536,7 @@
     const issues = [];
     const current = state();
     if (!current.lines.length) issues.push("積算内訳がありません。条件・数量から作業を追加してください。");
-    current.lines.filter((line) => line.inputPending).forEach((line) => issues.push(`${line.taskName || "作業項目"}：${line.role ? "人工" : "職種・人工"}未入力のため計算対象外です。`));
+    current.lines.filter((line) => line.inputPending).forEach((line) => issues.push(`${line.taskName || "作業項目"}：${line.referenceRuleId ? "数量・適用条件" : line.role ? "人工" : "職種・人工"}未入力のため計算対象外です。`));
     if (result.lines.some((line) => line.lineType !== "amount" && !line.dailyRate)) issues.push("基準日額が0円の職種があります。年度単価を確認してください。");
     if (result.lines.some((line) => line.calculationSystem === "geology" && line.lineType !== "amount") && !current.costs.geologyDirectNonLabor && !current.costs.geologyIndirect) issues.push("地質一般調査の機械・材料・運搬・仮設等が0円です。不要か未入力か確認してください。");
     if (current.options.includeSurvey && !app.getSurveyResult().lines.length) issues.push("測量積算を合算する設定ですが、測量作業項目がありません。");
@@ -684,6 +707,8 @@
     const inputValidation = updatePresetAddState();
     if (!inputValidation.valid) { app.showMissingInputPopup(inputValidation); return; }
     if (!preset) return;
+    const pendingSourceLine = pendingPresetLineId ? state().lines.find((line) => line.id === pendingPresetLineId) : null;
+    const importedSource = pendingSourceLine?.importSource ? { ...pendingSourceLine.importSource } : null;
     rememberCurrentConditions();
     const conditionRule = engine.findConditionRule(preset, conditionRules, state().fiscalYear);
     const coverage = engine.classifyPresetCoverage(preset, conditionRule, familyForPreset(preset));
@@ -758,6 +783,7 @@
         unitPrice,
         unit,
         priceSource: marketSource,
+        ...(importedSource ? { importSource: importedSource } : {}),
         inputDomain: marketValidation.domain,
         correctionFactor: correction.factor * genericFactor,
         verifiedSource: `${preset.source?.url || ""}${preset.source?.page ? ` p.${preset.source.page}` : ""}`,
@@ -769,6 +795,8 @@
           verificationStatus: preset.verificationStatus, coverageStatus: coverage.status, coverageLabel: coverage.label
         }
       });
+      if (pendingSourceLine) state().lines = state().lines.filter((line) => line.id !== pendingSourceLine.id);
+      pendingPresetLineId = "";
       renderPresetRule();
       updateAndRender();
       app.notify(`${quantitySummary}で市場単価項目を追加しました`);
@@ -782,6 +810,7 @@
       role,
       days: engine.normalizeDays(Number(days) * multiplier),
       verifiedSource: `${preset.source?.url || ""}${preset.source?.page ? ` p.${preset.source.page}` : ""}${conditionRule ? `／補正出典：${conditionRule.sources.map((source) => `${source.label} ${source.url}`).join("、")}` : ""}`,
+      ...(importedSource ? { importSource: importedSource } : {}),
       standardWalk: {
         id: preset.id,
         fiscalYear: preset.fiscalYear || state().fiscalYear,
@@ -801,6 +830,8 @@
         coverageLabel: coverage.label
       }
     }));
+    if (pendingSourceLine) state().lines = state().lines.filter((line) => line.id !== pendingSourceLine.id);
+    pendingPresetLineId = "";
     renderPresetRule();
     updateAndRender();
     app.notify(`${quantitySummary}で条件反映済み歩掛を追加しました`);
@@ -817,6 +848,42 @@
     target.textContent = result.valid ? `${result.summary}（${result.entries.map((entry) => `${entry.selection} ${entry.rate >= 0 ? "+" : ""}${entry.rate * 100}%`).join("、")}）` : result.reason;
   }
 
+  function completeImportedPreset(lineId) {
+    const line = state().lines.find((entry) => entry.id === lineId);
+    const preset = (rulePack.rules || []).find((entry) => entry.id === line?.referenceRuleId && Number(entry.fiscalYear) === Number(state().fiscalYear));
+    if (!line || !preset) {
+      app.showMissingInputPopup({ valid: false, reason: "現在の年度で対応する全国標準項目を確認できません。作業項目を選び直してください。", focusSelector: "#consultingPreset" });
+      return;
+    }
+    const conditionRule = engine.findConditionRule(preset, conditionRules, state().fiscalYear);
+    const coverage = engine.classifyPresetCoverage(preset, conditionRule, familyForPreset(preset));
+    if (!coverage.canCalculate) {
+      app.showMissingInputPopup({ valid: false, reason: coverage.note, focusSelector: "#consultingPreset" });
+      return;
+    }
+    activeConsultingKeywords[activeConsultingScope] = "all";
+    const workflow = workflowState();
+    workflow.keywords = workflow.keywords || {};
+    workflow.groups = workflow.groups || {};
+    workflow.searches = workflow.searches || {};
+    workflow.keywords[activeConsultingScope] = "all";
+    workflow.groups[activeConsultingScope] = presetGroup(preset).id;
+    $("consultingPresetSearch").value = "";
+    workflow.searches[activeConsultingScope] = "";
+    renderPresets();
+    $("consultingRuleGroup").value = presetGroup(preset).id;
+    visiblePresets = (rulePack.rules || []).filter((entry) => Number(entry.fiscalYear) === Number(state().fiscalYear)
+      && entry.serviceType === preset.serviceType && presetGroup(entry).id === presetGroup(preset).id
+      && engine.classifyPresetCoverage(entry, engine.findConditionRule(entry, conditionRules, state().fiscalYear), familyForPreset(entry)).canCalculate);
+    $("consultingPreset").innerHTML = visiblePresets.map((entry) => `<option value="${h(entry.id)}">${h(entry.label)}｜${h(entry.standardUnit || "1業務当り")}</option>`).join("");
+    $("consultingPreset").value = preset.id;
+    pendingPresetLineId = line.id;
+    renderPresetRule();
+    $("consultingPresetBasis").scrollIntoView({ behavior: "smooth", block: "center" });
+    document.querySelector("#consultingQuantityFields input, #consultingQuantityFields select")?.focus({ preventScroll: true });
+    app.notify("PDFから追加した作業項目の数量・必要条件を入力してください");
+  }
+
   function importCandidates(detail) {
     const current = state();
     let added = 0;
@@ -827,14 +894,20 @@
       if (!selectedService) { rejected += 1; return; }
       const role = roles.some((candidate) => candidate.id === entry.role) ? entry.role : "";
       const days = entry.days == null || String(entry.days).trim() === "" ? null : engine.normalizeDays(entry.days);
-      const inputPending = entry.inputPending === true || !role || !(days > 0);
+      const referenceRuleId = String(entry.referenceRuleId || "").slice(0, 120);
+      const referencedPreset = (rulePack.rules || []).find((rule) => rule.id === referenceRuleId && Number(rule.fiscalYear) === Number(current.fiscalYear));
+      if (!referencedPreset) { rejected += 1; return; }
+      const referencedConditionRule = engine.findConditionRule(referencedPreset, conditionRules, current.fiscalYear);
+      const referencedCoverage = engine.classifyPresetCoverage(referencedPreset, referencedConditionRule, familyForPreset(referencedPreset));
+      if (!referencedCoverage.canCalculate) { rejected += 1; return; }
+      const inputPending = true;
       const id = `consult-import-${Date.now()}-${added}-${Math.random().toString(16).slice(2)}`;
       recentlyImportedConsultingLineIds.add(id);
       current.lines.push({
         id,
         serviceType: selectedService.id,
         taskName: String(entry.taskName || "資料取込作業").trim().slice(0, 120) || "資料取込作業",
-        referenceRuleId: String(entry.referenceRuleId || "").slice(0, 120),
+        referenceRuleId,
         role,
         days: inputPending ? null : days,
         inputPending,
@@ -1092,6 +1165,12 @@
       }
     });
     $("consultingLineBody").addEventListener("click", (event) => {
+      const completeButton = event.target.closest(".complete-consulting-preset");
+      if (completeButton) {
+        const row = completeButton.closest("tr[data-consulting-line]");
+        completeImportedPreset(row?.dataset.consultingLine || "");
+        return;
+      }
       const button = event.target.closest(".delete-consulting-line");
       if (!button) return;
       const row = button.closest("tr[data-consulting-line]");

@@ -47,6 +47,7 @@ const supportedCounts = {
   2025: { design: 313, planning: 109, geology: 40 },
   2026: { design: 313, planning: 117, geology: 40 }
 };
+const automaticCounts = { design: 33, planning: 33, geology: 7 };
 for (const [yearText, expected] of Object.entries(supportedCounts)) {
   const year = Number(yearText);
   for (const [scope, expectedCount] of Object.entries(expected)) {
@@ -58,7 +59,7 @@ for (const [yearText, expected] of Object.entries(supportedCounts)) {
       return engine.classifyPresetCoverage(rule, conditionRule, family).canCalculate;
     });
     assert.strictEqual(rules.length, expectedCount, `${year}年度${scope}の収録件数を固定する`);
-    assert.strictEqual(calculable.length, expectedCount, `${year}年度${scope}の原表照合済み全項目を計算入力可能にする`);
+    assert.strictEqual(calculable.length, automaticCounts[scope], `${year}年度${scope}は条件式まで完成した項目だけを通常の自動積算へ出す`);
   }
 }
 

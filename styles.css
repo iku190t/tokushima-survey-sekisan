@@ -235,6 +235,13 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
 .consulting-table { min-width: 850px; }
 .consulting-table td:first-child { min-width: 250px; }
 .consulting-table td:nth-child(2) { text-align: left; }
+.line-calculation-basis { margin-top: 8px; color: var(--ink); font-size: 12px; }
+.line-calculation-basis summary { color: var(--accent); font-weight: 800; cursor: pointer; }
+.line-calculation-basis dl { display: grid; gap: 4px; margin: 8px 0 0; padding: 8px; background: #f3f7f5; border-radius: 8px; }
+.line-calculation-basis dl > div { display: grid; grid-template-columns: 88px minmax(0, 1fr); gap: 8px; }
+.line-calculation-basis dt { color: var(--muted); font-weight: 700; }
+.line-calculation-basis dd { min-width: 0; margin: 0; overflow-wrap: anywhere; }
+.line-calculation-basis dd small { display: block; }
 .consulting-line-days { width: 86px; height: 34px; text-align: right; }
 .input-unit { margin-left: 5px; color: var(--muted); font-size: 11px; }
 .icon-button { width: 31px; height: 31px; padding: 0; background: #fff; border: 1px solid var(--line); border-radius: 7px; }
