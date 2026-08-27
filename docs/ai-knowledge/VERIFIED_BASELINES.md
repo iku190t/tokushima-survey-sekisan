@@ -2777,3 +2777,32 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `consulting.js` | `2571F5CD6F4C6824069078F00682C063DAAF1C5455013B2E57005E2D41DA7040` |
 | `tests/test-ui-static.js` | `0BAE77708919E4E5C46560DDCF0F96EA6A965F04668EE66B109194F13202A6AD` |
 | `tests/test-consulting-ui.js` | `BB6AA923BB6DADD0F02E95F39E9E8B85FCB4C0F19A0FCAFF8F591C8279D7ADAE` |
+
+## B-2026-08-28-01
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-28
+- 実装コミット: `c282884f5a5d42118ee2d1ee156b115af4df718f`
+- 外部知能コミット: `41104385be916ebdc7ad1e94de822b5517f9268a`
+- GitHub Pages: `built`、ビルド`1178702830`、コミット`41104385be916ebdc7ad1e94de822b5517f9268a`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: 設計・調査計画・地質の通常入力とPDF取込へ同じ厳格な計算可否判定を適用した。各年度の自動積算候補を設計33・調査計画33・地質7へ限定し、PDFは作業項目を先行追加して通常入力で数量・適用条件を補う。計算済み明細へ年度・数量・条件・出典をまとめた計算根拠を追加した。年度マスター自動更新監査、帳票へのマスター版固定、匿名正解案件精度監査は変更していない。
+
+### 合格した試験・公開確認
+
+- `node --check`、`git diff --check`、`tests/test-*.js`全19本が合格した。
+- 令和6～8年度の各年度で、収録件数と自動積算件数を分離し、自動積算を設計33・調査計画33・地質7に固定した。
+- ローカルDOMで令和8年度設計の通常候補33項目、未完成項目の選択肢なし、未入力追加ボタンの案内を確認した。
+- 公開版はHTTP 200で、`consulting-engine.js?v=20260828-1`、`consulting.js?v=20260828-1`、`document-import.js?v=20260828-1`を配信している。配信ファイルに厳格ゲート、明細計算根拠、PDF作業項目先行追加の処理が含まれることを確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `consulting-engine.js` | `137A71FFEF74D196497A27706FA2BCCAED344C5CAA8368654C3BD35C0AE0FF1E` |
+| `consulting.js` | `AE531F3C960811F238D8AAAA2DA7BEB4AD6B1A5A1E1B7A8FB60A448C96260015` |
+| `document-import.js` | `EEF190C05BF132243BECBB15EED2FCF0058418D01FBC087D30EF738387C805D8` |
+| `index.html` | `4D065261D199CD61298DFD028E8BE22E7829A8CE683CC8E228F97121713CAD7E` |
+| `styles.css` | `025C948922C803C3693AD9F66640B7E0FB0A501F454D26E6DC974C51EDED38E8` |
+| `tests/test-consulting-rule-pack.js` | `252D32FCBCC6C7A94DFF80F1BA35C7B10F8B6B42FA96F8662CC563478DB39365` |
+| `tests/test-document-import-ui.js` | `F92CECB10BC758908174DFC1F48AE1B49FE66F5943599C8DDDFB4131893F2A50` |
