@@ -662,7 +662,6 @@
     $("categorySelect").value = categories.includes(previous) ? previous : (categories.length === 1 ? categories[0] : "");
     workflowState().survey.category = $("categorySelect").value;
     populateItems();
-    $("itemCountBadge").textContent = `${scopedItems.length}項目収録`;
     renderSurveyScopeLabels();
   }
 

@@ -227,8 +227,6 @@
       scopedServices().some((entry) => entry.id === preset.serviceType)
       && (!preset.fiscalYear || Number(preset.fiscalYear) === year)
     );
-    const calculableCount = scopedPresets.filter((preset) => engine.classifyPresetCoverage(preset, engine.findConditionRule(preset, conditionRules, year), familyForPreset(preset)).canCalculate).length;
-    $("consultingItemCountBadge").textContent = `${calculableCount}項目計算可／${scopedPresets.length}項目収録`;
     renderConsultingKeywords(scopedPresets);
     const candidates = scopedPresets.filter((preset) =>
       presetMatchesKeyword(preset)
