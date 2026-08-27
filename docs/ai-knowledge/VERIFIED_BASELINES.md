@@ -2759,11 +2759,14 @@ OK: official case search UI is removed while saved-data compatibility remains
 
 ## B-2026-08-27-03
 
-- 状態: **検証済み・公開前**
+- 状態: **検証済み・GitHub Pages公開済み**
 - 検証日: 2026-08-27
 - 実装コミット: `11d5bc88cd5c847c110b1c20f5ed7f9b8d6654a7`、キャッシュ更新`e1791693c8a6c11e6274b1c6a1b0f01f050db00d`、状態文修正`a6d07f3bf30d465eff3b404f6d0efcf82c8719e1`
+- 外部知能コミット: `1594a85dd3177f785682d1592d79f82b6f3b0638`
+- GitHub Pages: `built`、ビルド`1178646735`、コミット`1594a85dd3177f785682d1592d79f82b6f3b0638`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
 - 内容: 測量・設計・調査計画・地質の作業追加見出しから、収録件数・計算可能件数のバッジをすべて撤去した。項目データ・計算規則・キーワード件数は維持した。
-- 試験: `node --check`、`git diff --check`、`tests/test-*.js`全19本合格。公開時に旧JavaScriptが残らないよう`app.js`と`consulting.js`のキャッシュ番号を`20260827-3`へ更新した。
+- 試験: `node --check`、`git diff --check`、`tests/test-*.js`全19本合格。公開時に旧JavaScriptが残らないよう`app.js`と`consulting.js`のキャッシュ番号を`20260827-3`へ更新した。公開ブラウザーで4業務すべて件数表示0件、警告・エラー0件を確認した。
 
 ### 主要ファイルのSHA-256
 
