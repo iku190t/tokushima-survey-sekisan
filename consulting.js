@@ -171,7 +171,7 @@
 
   function renderYearAndProject() {
     const current = state();
-    $("consultingJurisdictionSelect").innerHTML = `<option value="">提出先を選択しない</option>` + (window.SEKISAN_JURISDICTIONS || []).map((region) => `<option value="${h(region.code)}">${h(region.name)}</option>`).join("");
+    $("consultingJurisdictionSelect").innerHTML = `<option value="">提出先を選択しない</option>` + (window.SEKISAN_JURISDICTIONS || []).filter((region) => region.code === "mlit").map((region) => `<option value="${h(region.code)}">${h(region.name)}</option>`).join("");
     $("consultingJurisdictionSelect").value = app.getSubmissionJurisdictionCode?.() || "";
     $("consultingFiscalYear").innerHTML = master.supportedYears.map((year) => `<option value="${year}">令和${year - 2018}年度｜国土交通省・全国標準</option>`).join("");
     $("consultingFiscalYear").value = current.fiscalYear;

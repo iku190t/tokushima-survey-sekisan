@@ -323,6 +323,14 @@
     return window.SEKISAN_JURISDICTIONS?.find((entry) => entry.code === String(code))?.name || "地域未設定";
   }
 
+  function submissionJurisdictions() {
+    return (window.SEKISAN_JURISDICTIONS || []).filter((entry) => entry.code === "mlit");
+  }
+
+  function normalizeSubmissionJurisdictionCode(code) {
+    return submissionJurisdictions().some((entry) => entry.code === String(code)) ? String(code) : "";
+  }
+
   function applyVerifiedWorkItemExpansions(master) {
     if (!Array.isArray(master.workItems)) return master;
     (window.SEKISAN_VERIFIED_WORK_ITEM_EXPANSIONS || [])
@@ -520,6 +528,7 @@
           saved.masterId = masters.find((master) => master.fiscalYear === savedYear && master.jurisdictionCode === "mlit")?.id || defaultMasterId;
         }
         const normalized = Object.assign(emptyEstimate(), saved);
+        normalized.submissionJurisdictionCode = normalizeSubmissionJurisdictionCode(saved.submissionJurisdictionCode);
         normalized.projectInfo = Object.assign(defaultProjectInfo(), saved.projectInfo || {});
         normalized.caseFile = Object.assign(defaultCaseFile(), saved.caseFile || {});
         normalized.caseFile.sources = Array.isArray(saved.caseFile?.sources) ? saved.caseFile.sources : [];
@@ -625,8 +634,9 @@
 
   function populateMasterSelects() {
     const active = activeMaster();
-    $("jurisdictionSelect").innerHTML = `<option value="">提出先を選択しない</option>` + (window.SEKISAN_PREFECTURES || []).map((region) => `<option value="${region.code}">${h(region.name)}</option>`).join("");
-    $("jurisdictionSelect").value = estimate.submissionJurisdictionCode || "";
+    estimate.submissionJurisdictionCode = normalizeSubmissionJurisdictionCode(estimate.submissionJurisdictionCode);
+    $("jurisdictionSelect").innerHTML = `<option value="">提出先を選択しない</option>` + submissionJurisdictions().map((region) => `<option value="${region.code}">${h(region.name)}</option>`).join("");
+    $("jurisdictionSelect").value = estimate.submissionJurisdictionCode;
     const selectableMasters = masters.slice().sort((a, b) => num(b.fiscalYear) - num(a.fiscalYear) || String(a.label).localeCompare(String(b.label), "ja"));
     $("fiscalYearSelect").innerHTML = selectableMasters.map((master) => `<option value="${h(master.id)}">${h(eraLabel(master.fiscalYear))}｜${h(master.jurisdictionCode === "mlit" ? "国土交通省・全国標準" : master.label)}</option>`).join("");
     $("fiscalYearSelect").value = active.id;
@@ -637,7 +647,7 @@
     $("masterEditorSelect").value = editorMasterId;
     $("masterJurisdiction").innerHTML = (window.SEKISAN_JURISDICTIONS || []).map((region) => `<option value="${region.code}">${h(region.name)}</option>`).join("");
     const standardYears = [...new Set(masters.filter((master) => master.jurisdictionCode === "mlit" && master.verificationStatus === "standard-reference").map((master) => master.fiscalYear))].sort();
-    $("masterCoverageStatus").textContent = `国土交通省・全国標準の令和${standardYears.map((year) => year - 2018).join("・")}年度を収録。見積提出先は全国47都道府県から選べますが、提出先を変えても計算単価は変わりません。`;
+    $("masterCoverageStatus").textContent = `国土交通省・全国標準の令和${standardYears.map((year) => year - 2018).join("・")}年度を収録。見積提出先は「選択しない」または「国土交通省（全国標準）」だけです。`;
   }
 
   function populateCategories() {
@@ -1273,8 +1283,8 @@
     let applied = 0;
     let masterChanged = false;
     let masterFound = true;
-    if (values.jurisdictionCode && (window.SEKISAN_PREFECTURES || []).some((entry) => entry.code === String(values.jurisdictionCode))) {
-      estimate.submissionJurisdictionCode = String(values.jurisdictionCode);
+    if (normalizeSubmissionJurisdictionCode(values.jurisdictionCode)) {
+      estimate.submissionJurisdictionCode = normalizeSubmissionJurisdictionCode(values.jurisdictionCode);
       applied += 1;
     }
     const requestedMaster = preferredMaster("mlit", num(values.fiscalYear) || activeMaster().fiscalYear);
@@ -1453,6 +1463,7 @@
         const imported = JSON.parse(reader.result);
         if (!imported || !Array.isArray(imported.lines)) throw new Error("形式が違います");
         estimate = Object.assign(emptyEstimate(), imported);
+        estimate.submissionJurisdictionCode = normalizeSubmissionJurisdictionCode(imported.submissionJurisdictionCode);
         estimate.costs = Object.assign(emptyEstimate().costs, imported.costs || {});
         estimate.options = Object.assign(emptyEstimate().options, imported.options || {});
         estimate.consulting = Object.assign(defaultConsultingState(), imported.consulting || {});

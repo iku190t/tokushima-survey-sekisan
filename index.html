@@ -66,7 +66,7 @@
     <section id="estimateView" class="view">
       <section class="project-strip business-project-strip">
         <label class="field">
-          <span>見積提出先（任意）</span>
+          <span>見積提出先</span>
           <select id="jurisdictionSelect"></select>
         </label>
         <label class="field compact-field">
@@ -210,7 +210,7 @@
 
     <section id="consultingView" class="view active">
       <section class="project-strip business-project-strip">
-        <label class="field"><span>見積提出先（任意）</span><select id="consultingJurisdictionSelect"></select></label>
+        <label class="field"><span>見積提出先</span><select id="consultingJurisdictionSelect"></select></label>
         <label class="field compact-field"><span>標準単価セット</span><select id="consultingFiscalYear"></select></label>
         <label class="field"><span>業務名</span><input id="consultingProjectName" type="text" placeholder="例：○○地区道路設計業務"></label>
         <label class="field compact-field"><span>積算日</span><input id="consultingEstimateDate" type="date"></label>
@@ -485,7 +485,7 @@
             <button id="deleteMasterButton" class="button danger" type="button">このマスターを削除</button>
             <input id="masterFileInput" type="file" accept="application/json,.json" hidden>
           </div>
-          <p id="masterUpdateStatus" class="callout">令和6・7・8年度の国土交通省・全国標準単価セットを収録しています。見積提出先は帳票情報であり、単価セットを変更しません。</p>
+          <p id="masterUpdateStatus" class="callout">令和6・7・8年度の国土交通省・全国標準単価セットを収録しています。見積提出先は「選択しない」または「国土交通省（全国標準）」だけです。</p>
           <p id="masterCoverageStatus" class="callout warning-callout"></p>
         </section>
 
@@ -643,7 +643,7 @@
       <section id="importMetadataPanel" class="import-metadata-panel">
         <div class="import-metadata-heading"><div><strong>業務基本情報</strong><p>読み取れた項目を修正し、反映する項目だけチェックしてください。</p></div><label id="toggleAllImportMetadataLabel" class="check"><input id="toggleAllImportMetadata" type="checkbox"><span>基本情報をすべて選択／解除</span></label></div>
         <div id="documentImportMetadataList" class="import-metadata-list"></div>
-        <p id="importedBasisHint">現在選択中の全国標準単価セットへ取り込みます。見積提出先は計算単価を変更しません。</p>
+        <p id="importedBasisHint">現在選択中の国土交通省・全国標準単価セットへ取り込みます。都道府県名を読み取っても見積提出先は自動変更しません。</p>
       </section>
       <div id="documentImportWarnings" class="import-warning-list" hidden></div>
       <div id="documentImportEmptyGuide" class="import-empty-guide" hidden></div>
@@ -674,8 +674,8 @@
   <script src="reference-case-engine.js?v=20260824-1"></script>
   <script src="document-import-engine.js?v=20260824-5"></script>
   <script src="document-reader.js?v=20260823-1"></script>
-  <script src="app.js?v=20260825-5"></script>
-  <script src="consulting.js?v=20260825-4"></script>
+  <script src="app.js?v=20260827-1"></script>
+  <script src="consulting.js?v=20260827-1"></script>
   <script src="document-import.js?v=20260825-1"></script>
   <script src="analytics.js?v=20260823-1"></script>
 </body>

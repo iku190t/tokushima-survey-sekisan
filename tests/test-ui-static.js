@@ -30,7 +30,7 @@ assert.strictEqual((html.match(/class="accuracy-strip business-status-strip"/g) 
 assert.ok(!html.includes('id="masterStatusTitle"') && !html.includes('id="masterStatusText"'), "測量画面に全国標準の状態帯を表示しない");
 assert.ok(!app.includes("renderMasterStatus"), "測量状態帯の更新処理を残さない");
 assert.ok(!html.includes('id="consultingScopeTitle"') && !html.includes('id="consultingScopeDescription"'), "設計等だけの説明帯を表示しない");
-assert.ok(html.includes('id="consultingJurisdictionSelect"') && consulting.includes("SEKISAN_JURISDICTIONS"), "設計等も測量と同じ見積提出先選択を使う");
+assert.ok(html.includes('id="consultingJurisdictionSelect"') && consulting.includes('filter((region) => region.code === "mlit")'), "設計等の見積提出先は未設定または国土交通省だけを使う");
 for (const key of ["orderingParty", "department", "contactName", "workLocation", "contractPeriod", "documentNumber", "documentDate"]) {
   assert.strictEqual((html.match(new RegExp(`data-project-info="${key}"`, "g")) || []).length, 2, `${key}を測量と設計等の両方に表示する`);
 }
@@ -69,10 +69,10 @@ assert.ok(app.includes('<li><strong>${h(use)}</strong>${source}<small>${location
 assert.ok(app.includes("selectedSurveySourceRows") && app.includes("基準書本体・歩掛") && app.includes("作業規程上の分類"), "選択した測量項目を国交省基準書本体・年度積算基準・技術者単価・作業規程へ対応付ける");
 assert.ok(html.includes("航空局の空港設計・調査とは別") && html.includes("港湾請負工事積算基準") && html.includes("船舶損料"), "航空測量・深浅測量と空港・港湾船舶の別基準を明示する");
 assert.ok(html.includes('id="validationPanel"'), "提出前チェックがある");
-assert.ok(html.includes('id="jurisdictionSelect"') && html.includes("見積提出先（任意）"), "見積提出先を計算条件と分けて選択できる");
+assert.ok(html.includes('id="jurisdictionSelect"') && html.includes("見積提出先") && app.includes("submissionJurisdictions()"), "見積提出先を未設定または国土交通省だけから選択できる");
 assert.ok(html.includes('id="fiscalYearSelect"') && html.includes("標準単価セット"), "全国標準単価セットの年度を選択できる");
 assert.ok(html.includes('id="checkMasterUpdatesButton"'), "年度マスターの更新を確認できる");
-assert.ok(html.includes('id="masterCoverageStatus"'), "国と47都道府県の収録状況を明示する");
+assert.ok(html.includes('id="masterCoverageStatus"'), "国土交通省・全国標準の収録状況を明示する");
 assert.ok(!html.includes('id="officialRateYear"'), "技術者単価だけを入れ替える比較UIを表示しない");
 assert.ok(!html.includes("比較用"), "利用者画面に比較マスターを表示しない");
 assert.ok(app.includes("checkForMasterUpdates({ silent: true })"), "公開版起動時に検証済みマスターの更新を確認する");
@@ -82,8 +82,8 @@ assert.ok(html.includes('src="data/national-standard-masters.js'), "全国標準
 assert.ok(!html.includes('src="data/master-r8.js') && !html.includes('src="data/verified-masters.js'), "徳島県・県別マスターを通常画面へ読み込まない");
 assert.ok(!app.includes("window.MASTER_R8") && !app.includes("window.SEKISAN_VERIFIED_MASTERS") && !app.includes("prefectureReferenceMasters"), "県別マスターを全国標準の選択肢へ混在させない");
 assert.ok(app.includes('const defaultMasterId = "standard-r8-2026"'), "新規画面は令和8年度全国標準で開始する");
-assert.ok(app.includes('submissionJurisdictionCode: ""') && app.includes("getSubmissionJurisdictionName"), "見積提出先を単価セットとは別に保存する");
-assert.ok(app.includes("提出先を変えても計算単価は変わりません"), "提出先と計算単価の分離を明示する");
+assert.ok(app.includes('submissionJurisdictionCode: ""') && app.includes("normalizeSubmissionJurisdictionCode") && app.includes("getSubmissionJurisdictionName"), "旧都道府県提出先を未設定へ移行し国土交通省だけを保存する");
+assert.ok(app.includes('見積提出先は「選択しない」または「国土交通省（全国標準）」だけです'), "見積提出先を2択に限定したことを明示する");
 assert.ok(nationalMasters.includes("https://www.mlit.go.jp/tec/gyoumu_sekisan.html"), "全国標準に国交省積算基準の公式出典を収録する");
 assert.ok(nationalMasters.includes("https://www.mlit.go.jp/tec/content/001724089.pdf"), "全国標準R6に公式技術者単価を収録する");
 assert.ok(app.includes("function sourceListHtml"), "マスター画面と帳票で公式出典をリンク表示する");
