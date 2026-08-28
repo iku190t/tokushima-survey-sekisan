@@ -2867,3 +2867,29 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `tests/test-consulting-engine.js` | `623CF1F02D703CCE9801B03A516E14714141AB37498A19EED097957FF4DEEF0F` |
 | `tests/test-consulting-ui.js` | `FC9659E4EB26B8D606259428AC0706C6C5A8895869D0E6CB278ED99F87BA48EA` |
 | `tests/test-ui-static.js` | `3DA8C88A8CA2ED30ADD4FEEFDED3F4D60E179890DEBB42C2C731A2A3A76D1C12` |
+
+## B-2026-08-28-04
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-28
+- 実装コミット: `d8ea0ca1382281684e29409e75a8e3c2c021b2fc`
+- GitHub Pages: `built`、ビルド`1179729994`、コミット`d8ea0ca1382281684e29409e75a8e3c2c021b2fc`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: PDF文字が複数の作業項目に一致したとき、設計・測量・調査計画・地質の4業務共通で候補一覧を表示し、選択した候補を右入力欄へ反映する。候補選択だけでは反映待ち・積算へ追加せず、数量・単位・条件の未入力状態を保持する。
+
+### 合格した試験・公開確認
+
+- `tests/test-*.js`全19本、`node --check document-import.js`、`git diff --check`が合格した。
+- ローカル匿名合成PDFで、測量「作業計画」11件、設計「打合せ」8件、調査計画「打合せ」11件、地質「打合せ」5件の候補一覧を確認した。
+- 公開版で測量「作業計画」11件を表示し、用地測量`7-1-1-1`選択後に作業区分・作業項目が更新された。数量・単位は空欄、反映待ち0件、追加ボタンは手動操作待ち、ブラウザー警告・エラー0件だった。
+- 公開版は`document-import.js?v=20260828-2`、`styles.css?v=20260828-2`を配信している。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `document-import.js` | `3E2117F939E43791CD254222B3DA44E56FCC94A01D0B8A15E190D22C438FA2D8` |
+| `index.html` | `7A60D9D2A9EE956E75D484A7BD7A1974B3F7278236FC9A2A78A6A6C9B63A20F7` |
+| `styles.css` | `38AE7BB134A45EEFB7A52943A976112CE70CAA9062E79184315295261B8F7A97` |
+| `tests/test-document-import-ui.js` | `86999A3C2D0A5C1050F113BB28E093B2974A0BED29CAAD6DD8AA0AA8CB24A197` |
+| `tests/test-ui-static.js` | `4EA0281DBD577FFB72D2C0992C3527BD4EA0009CB71F81D992E936652A81C554` |
