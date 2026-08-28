@@ -192,6 +192,7 @@
   let estimate = emptyEstimate();
   let editorMasterId = estimate.masterId;
   let toastTimer;
+  let missingInputTarget = null;
   let saveTimer;
   let sessionDirty = false;
   const recentlyImportedSurveyLineIds = new Set();
@@ -859,10 +860,20 @@
     button.title = validation.valid ? "この作業項目を追加" : `クリックして未入力を確認：${validation.reason}`;
   }
 
-  function showMissingInputPopup(validation) {
-    alert(`追加できません。\n\n${validation?.reason || "未入力の項目を確認してください。"}`);
-    const target = validation?.focusSelector ? document.querySelector(validation.focusSelector) : null;
-    if (!target) return;
+  function missingInputFieldName(target) {
+    if (!target) return "未入力の項目";
+    const ariaLabel = String(target.getAttribute("aria-label") || "").trim();
+    if (ariaLabel) return ariaLabel;
+    const label = target.closest("label");
+    const visibleLabel = label?.querySelector(":scope > span")?.textContent?.trim();
+    if (visibleLabel) return visibleLabel;
+    return "未入力の項目";
+  }
+
+  function focusMissingInputTarget() {
+    const target = missingInputTarget;
+    missingInputTarget = null;
+    if (!target || !document.documentElement.contains(target)) return;
     requestAnimationFrame(() => {
       target.scrollIntoView({ behavior: "smooth", block: "center" });
       target.focus({ preventScroll: true });
@@ -871,6 +882,23 @@
       target.classList.add("missing-input-focus");
       setTimeout(() => target.classList.remove("missing-input-focus"), 2400);
     });
+  }
+
+  function showMissingInputPopup(validation) {
+    const target = validation?.focusSelector ? document.querySelector(validation.focusSelector) : null;
+    const fieldName = missingInputFieldName(target);
+    const dialog = $("missingInputDialog");
+    missingInputTarget = target;
+    $("missingInputTitle").textContent = fieldName === "未入力の項目" ? "入力が必要です" : `${fieldName}が未入力です`;
+    $("missingInputField").textContent = fieldName;
+    $("missingInputMessage").textContent = validation?.reason || "未入力の項目を確認してください。";
+    if (typeof dialog.showModal === "function") {
+      if (!dialog.open) dialog.showModal();
+      requestAnimationFrame(() => $("focusMissingInputButton").focus());
+      return;
+    }
+    showToast(`${fieldName}：${validation?.reason || "入力内容を確認してください。"}`);
+    focusMissingInputTarget();
   }
 
   function updateSurveyAddState(item) {
@@ -1801,6 +1829,8 @@
     };
     ["aboutToolButton", "publisherInfoButton"].forEach((id) => $(id).addEventListener("click", openAboutTool));
     $("closeAboutToolButton").addEventListener("click", () => $("aboutToolDialog").close());
+    $("focusMissingInputButton").addEventListener("click", () => $("missingInputDialog").close());
+    $("missingInputDialog").addEventListener("close", focusMissingInputTarget);
     $("aboutToolDialog").addEventListener("click", (event) => { if (event.target === $("aboutToolDialog")) $("aboutToolDialog").close(); });
     document.querySelectorAll(".view-tab").forEach((button) => button.addEventListener("click", () => activateViewButton(button)));
     const mobileImportMedia = window.matchMedia(MOBILE_IMPORT_QUERY);

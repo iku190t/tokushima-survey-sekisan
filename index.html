@@ -14,7 +14,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/web-sekisan-32.png?v=20260825-2">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/web-sekisan-180.png?v=20260825-2">
   <link rel="manifest" href="site.webmanifest?v=20260825-2">
-  <link rel="stylesheet" href="styles.css?v=20260828-4">
+  <link rel="stylesheet" href="styles.css?v=20260828-5">
 </head>
 <body data-business-scope="design">
   <header class="app-header">
@@ -670,6 +670,18 @@
     <div class="import-dialog-actions"><button id="cancelPdfCandidateChoiceButton" class="button" type="button">選ばず戻る</button></div>
   </dialog>
 
+  <dialog id="missingInputDialog" class="missing-input-dialog" aria-labelledby="missingInputTitle" aria-describedby="missingInputMessage">
+    <div class="missing-input-heading">
+      <span class="missing-input-mark" aria-hidden="true">!</span>
+      <div><p>未入力の項目があります</p><h2 id="missingInputTitle">入力が必要です</h2></div>
+    </div>
+    <div class="missing-input-body">
+      <strong id="missingInputField">未入力の項目</strong>
+      <p id="missingInputMessage">入力内容を確認してください。</p>
+    </div>
+    <div class="missing-input-actions"><button id="focusMissingInputButton" class="button primary" type="button">入力欄へ移動</button></div>
+  </dialog>
+
   <div id="printDocument" class="print-document" aria-hidden="true"></div>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
@@ -693,7 +705,7 @@
   <script src="reference-case-engine.js?v=20260824-1"></script>
   <script src="document-import-engine.js?v=20260824-5"></script>
   <script src="document-reader.js?v=20260823-1"></script>
-  <script src="app.js?v=20260827-3"></script>
+  <script src="app.js?v=20260828-4"></script>
   <script src="consulting.js?v=20260828-2"></script>
   <script src="document-import.js?v=20260828-3"></script>
   <script src="analytics.js?v=20260823-1"></script>

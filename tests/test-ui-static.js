@@ -97,6 +97,7 @@ assert.ok(html.includes('id="newItemQuantityLabel"') && app.includes('`積算数
 assert.ok(html.includes('id="surveyConditionFields" class="consulting-condition-fields"') && html.includes('id="surveyPresetStatus"'), "測量も設計等と同じ位置へ適用範囲・条件表・補正と入力状態を表示する");
 assert.ok(app.includes("renderSurveyConditionFields") && app.includes("surveyPresetValidation") && app.includes("correctionSelections: validation.correctionSelections"), "測量の追加前条件を表示・必須検査し、選択補正を明細へ保存する");
 assert.ok(app.includes("showMissingInputPopup") && app.includes("focusSelector") && app.includes("missing-input-focus") && !app.includes('$("addItemButton").disabled = !validation.valid'), "測量の追加ボタンを押した時に不足項目を表示して該当欄へ移動する");
+assert.ok(html.includes('id="missingInputDialog"') && html.includes('id="focusMissingInputButton"') && app.includes("missingInputFieldName") && app.includes("focusMissingInputTarget") && !app.includes('alert(`追加できません。'), "未入力時はブラウザー標準警告ではなく項目名付き案内を表示して該当欄へ移動する");
 assert.ok(app.includes("defaultConditionMemory") && app.includes("normalizedConditionMemory") && app.includes('survey: { values: {} }'), "4業務別の条件継承メモリーを案件内へ保存する");
 assert.ok(app.includes("data-condition-label") && app.includes("applySurveyConditionMemory") && app.includes("rememberSurveyConditionSelections"), "測量は率ではなく条件名を記憶し、次の対応項目へ継承する");
 assert.ok(app.includes("defaultWorkflowState") && app.includes("normalizedWorkflowState") && app.includes("getWorkflowState"), "案件内の年度・作業選択・PDF絞込み状態を復元できる");
@@ -196,4 +197,4 @@ assert.ok(app.includes('conditionMemory("survey").values[valueKey] = line.condit
 console.log("OK: UI static wiring checks passed");
 assert.ok(html.includes('data/unit-catalog.js') && html.indexOf('data/unit-catalog.js') < html.indexOf('engine.js'), "共通単位台帳を全計算エンジンより先に読み込む");
 assert.ok(!html.includes('id="itemCountBadge"') && !app.includes("項目収録`"), "測量を含む4業務の項目件数バッジを表示しない");
-assert.ok(html.includes('app.js?v=20260827-3') && html.includes('consulting.js?v=20260828-2') && html.includes('consulting-engine.js?v=20260828-2') && html.includes('document-import.js?v=20260828-3') && html.includes('styles.css?v=20260828-4'), "厳格な自動計算判定・PDF選択解除・手動調整安全化・YouTube埋め込みの資産をキャッシュ更新する");
+assert.ok(html.includes('app.js?v=20260828-4') && html.includes('consulting.js?v=20260828-2') && html.includes('consulting-engine.js?v=20260828-2') && html.includes('document-import.js?v=20260828-3') && html.includes('styles.css?v=20260828-5'), "未入力案内・厳格な自動計算判定・PDF選択解除・手動調整安全化・YouTube埋め込みの資産をキャッシュ更新する");
