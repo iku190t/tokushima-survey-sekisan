@@ -427,7 +427,6 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
 .pdf-line-hotspot[data-dragged="true"] { background: rgba(20,143,100,.28); border: 3px solid #087454; box-shadow: 0 0 0 2px rgba(8,116,84,.26); }
 .pdf-line-hotspot[data-dragged="true"]::after, .pdf-line-hotspot[data-applied="true"]::after { content: "✓"; position: absolute; top: -9px; right: -9px; display: grid; place-items: center; width: 15px; height: 15px; color: #fff; background: #087454; border: 2px solid #fff; border-radius: 50%; font: 900 9px/1 sans-serif; }
 .pdf-line-hotspot[data-applied="true"] { background: rgba(20,143,100,.24); border: 3px solid #087454; border-style: solid; box-shadow: 0 0 0 2px rgba(8,116,84,.2); cursor: default; }
-.pdf-line-hotspot[data-ignored="true"] { background: rgba(92,101,97,.035); border-color: rgba(92,101,97,.28); opacity: .55; }
 .pdf-row-status-highlight { position: absolute; z-index: 1; display: none; pointer-events: none; border-radius: 3px; }
 .pdf-row-status-highlight > span { position: absolute; right: 2px; bottom: calc(100% + 2px); padding: 2px 6px; color: #fff; background: #177257; border-radius: 999px; font-size: 8px; font-weight: 900; line-height: 1.35; white-space: nowrap; box-shadow: 0 1px 3px rgba(0,0,0,.22); }
 .pdf-row-status-highlight[data-status="missing"] { display: block; background: rgba(95,190,151,.16); border: 2px dashed #268161; box-shadow: inset 0 0 0 1px rgba(255,255,255,.7); }
@@ -484,6 +483,11 @@ td:first-child { padding-left: 22px; text-align: left; white-space: normal; min-
 .pdf-survey-quantity-field > strong { padding: 8px 9px; color: #124d3a; background: #e3f2ea; border-radius: 7px; font-size: 12px; line-height: 1.5; }
 .pdf-manual-fields small { color: var(--muted); font-size: 11px; line-height: 1.45; }
 .pdf-manual-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+#clearPdfManualLineSelectionButton:disabled {
+  color: #8e9894; background: #e7ebe9; border-color: #d5dcda; cursor: not-allowed;
+  box-shadow: none; opacity: 1;
+}
+#clearPdfManualLineSelectionButton:disabled:hover { transform: none; box-shadow: none; }
 .pdf-manual-footer { position: relative; z-index: 2; padding: 9px; background: #e6f2ec; border: 1px solid #bdd6ca; border-radius: 9px; box-shadow: 0 6px 16px rgba(24,75,58,.09); }
 .pdf-manual-add-hint { margin: 0 0 7px; padding: 7px 9px; color: #52615b; background: #f3f6f4; border-radius: 7px; font-size: .86rem; line-height: 1.4; }
 .pdf-manual-add-hint.is-ready { color: #124f3d; background: #dff3e9; font-weight: 700; }

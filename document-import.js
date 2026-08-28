@@ -21,7 +21,6 @@
   const clickLineTargets = new Map();
   const clickLines = new Map();
   const editablePdfTargets = new Map();
-  const ignoredPdfLines = new Set();
   const draggedPdfLines = new Set();
   const pdfLineRowIds = new Map();
   const manualSourceLineIds = new Set();
@@ -452,7 +451,7 @@
     $("addPdfManualCandidateButton").textContent = "反映待ちへ追加";
     $("addPdfManualCandidateButton").disabled = true;
     $("addPdfManualCandidateButton").classList.remove("is-ready");
-    $("ignorePdfManualLineButton").disabled = true;
+    $("clearPdfManualLineSelectionButton").disabled = true;
     restoreManualWorkflow();
     clearManualInputValues();
     updateManualAddButtonState();
@@ -528,7 +527,7 @@
     }
     $("pdfManualMapper").hidden = false;
     updateManualAddButtonState();
-    $("ignorePdfManualLineButton").disabled = false;
+    $("clearPdfManualLineSelectionButton").disabled = false;
     if (options.scroll !== false) $("pdfManualMapper").scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 
@@ -843,6 +842,7 @@
     }
     openManualMapper(primaryLineId, { scroll: false });
     currentEditingTarget = target;
+    $("clearPdfManualLineSelectionButton").disabled = true;
     manualSourceLineIds.clear();
     lineIds.forEach((lineId) => manualSourceLineIds.add(lineId));
     $("pdfManualKind").disabled = true;
@@ -965,7 +965,6 @@
       button.dataset.selected = lineTargetList.some((target) => target.item.selected && !target.item.applied) ? "true" : "false";
       button.dataset.applied = lineTargetList.length > 0 && lineTargetList.every((target) => target.item.applied) ? "true" : "false";
       button.dataset.mapped = lineTargetList.length ? "true" : "false";
-      button.dataset.ignored = ignoredPdfLines.has(lineId) ? "true" : "false";
       button.dataset.dragged = draggedPdfLines.has(lineId) ? "true" : "false";
     });
     updatePdfRowStatuses();
@@ -988,7 +987,6 @@
     currentAnalysis = analysis;
     clickLineTargets.clear();
     clickLines.clear();
-    ignoredPdfLines.clear();
     draggedPdfLines.clear();
     pdfLineRowIds.clear();
     closeManualMapper();
@@ -1007,7 +1005,7 @@
         if (targets.length) mappedLines += 1;
         const confidence = !targets.length ? "unmapped" : targets.some((target) => target.item.confidence === "low") ? "low" : targets.some((target) => target.item.confidence === "medium") ? "medium" : "high";
         const labels = targets.length ? targets.map(clickTargetLabel).join("／") : `${line.text}：反映先を指定`;
-        return `<button class="pdf-line-hotspot" draggable="true" data-pdf-line-id="${h(lineId)}" data-pdf-row-id="${h(previewRows.lineRowIds[index])}" data-confidence="${h(confidence)}" data-mapped="${targets.length ? "true" : "false"}" data-selected="false" data-applied="false" data-ignored="false" data-dragged="false" data-dragging="false" type="button" style="left:${(line.left * 100).toFixed(3)}%;top:${(line.top * 100).toFixed(3)}%;width:${(line.width * 100).toFixed(3)}%;height:${(line.height * 100).toFixed(3)}%" aria-label="${h(labels)}" title="${h(labels)}（クリックまたはPDF横の緑枠へドラッグ）"></button>`;
+        return `<button class="pdf-line-hotspot" draggable="true" data-pdf-line-id="${h(lineId)}" data-pdf-row-id="${h(previewRows.lineRowIds[index])}" data-confidence="${h(confidence)}" data-mapped="${targets.length ? "true" : "false"}" data-selected="false" data-applied="false" data-dragged="false" data-dragging="false" type="button" style="left:${(line.left * 100).toFixed(3)}%;top:${(line.top * 100).toFixed(3)}%;width:${(line.width * 100).toFixed(3)}%;height:${(line.height * 100).toFixed(3)}%" aria-label="${h(labels)}" title="${h(labels)}（クリックまたはPDF横の緑枠へドラッグ）"></button>`;
       }).join("");
       const rowHighlights = previewRows.rows.map((row) => `<div class="pdf-row-status-highlight" data-pdf-row-id="${h(row.id)}" data-status="none" style="left:${(row.left * 100).toFixed(3)}%;top:${(row.top * 100).toFixed(3)}%;width:${((row.right - row.left) * 100).toFixed(3)}%;height:${((row.bottom - row.top) * 100).toFixed(3)}%"><span></span></div>`).join("");
       const allLines = (preview.lines || []).length;
@@ -1096,7 +1094,6 @@
       const targets = clickLineTargets.get(lineId) || [];
       if (!targets.includes(target)) targets.push(target);
       clickLineTargets.set(lineId, targets);
-      ignoredPdfLines.delete(lineId);
     });
     closeManualMapper();
     updatePdfClickSelection();
@@ -1206,7 +1203,6 @@
     $("pdfClickPages").innerHTML = "";
     clickLineTargets.clear();
     clickLines.clear();
-    ignoredPdfLines.clear();
     draggedPdfLines.clear();
     pdfLineRowIds.clear();
     closeManualMapper();
@@ -1408,9 +1404,10 @@
       if (target) openSelectedTargetEditor(target);
     });
     $("cancelPdfManualLineButton").addEventListener("click", closeManualMapper);
-    $("ignorePdfManualLineButton").addEventListener("click", () => {
-      if (!currentManualLineId) return;
-      ignoredPdfLines.add(currentManualLineId);
+    $("clearPdfManualLineSelectionButton").addEventListener("click", () => {
+      if (!currentManualLineId || currentEditingTarget) return;
+      const lineIds = manualSourceLineIds.size ? [...manualSourceLineIds] : [currentManualLineId];
+      lineIds.filter(Boolean).forEach((lineId) => draggedPdfLines.delete(lineId));
       closeManualMapper();
       updatePdfClickSelection();
     });
