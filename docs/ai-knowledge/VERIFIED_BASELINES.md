@@ -2969,3 +2969,27 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `data/maff-master.js` | `F4EF824B579D3409B550E219EFBA4AF5965F05A34B672AF5EEF7FC16C031BEDA` |
 | `data/maff-rule-pack.json` | `F026B9B09324E7E643EB00A3E37ED2B6CEB9FDA2A51006F70713880B64834A86` |
 | `data/source-audits/maff-land-improvement-sources.json` | `FB502F3ADF533D48A8ACE4CD324E92B3F27A6B08FF0FCE5D0EC8D91C131A270F` |
+
+## B-2026-08-28-08
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-28
+- 実装コミット: `8eee80041ccd8e4f0adb83ba23c10cd3d16659de`
+- GitHub Pages: `built`、ビルド`1180370488`、コミット`8eee80041ccd8e4f0adb83ba23c10cd3d16659de`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: 4業務の追加時に必須入力が不足している場合、ブラウザー標準警告を使わず、対象入力欄名・単位・不足理由をアプリ内ダイアログへ表示し、「入力欄へ移動」で該当欄をフォーカス・強調する。
+
+### 合格した試験・公開確認
+
+- `tests/test-*.js`全21本、`node --check app.js`、`git diff --check`が合格した。
+- ローカルで設計`積算数量（式）`、測量`積算数量（回）`の案内、標準JSダイアログ0件、該当欄フォーカス・強調、警告・エラー0件を確認した。
+- 公開版で`app.js?v=20260828-4`、`styles.css?v=20260828-5`、設計の項目名付き案内、該当欄フォーカス・強調、警告・エラー0件を確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `app.js` | `4121B876B108E354CD5E0F312682E3985BB7919ED2E3CCE42AC9F0D92B73906F` |
+| `index.html` | `8DCBF4E316D29C4BB25D0185D0B68A78072B09B023C604EEA3FB1BAC4A1D3DD8` |
+| `styles.css` | `6F2B8477704879E22ABE65DCCD7EB7394A467FD889DFD78212D45FD4E0FBF6A5` |
+| `tests/test-ui-static.js` | `91587B6086494A427F03ECC4C188A8CF5EF4FFDC83D074369E760AFD55DBF7FD` |
