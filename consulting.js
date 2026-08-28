@@ -995,9 +995,15 @@
 
   function importCandidates(detail) {
     const current = state();
+    const system = app.getStandardSystem?.() || "mlit-general";
     let added = 0;
     let rejected = 0;
+    if (detail?.standardSystem && detail.standardSystem !== system) {
+      detail.result = { added: 0, rejected: (Array.isArray(detail.lines) ? detail.lines.length : 0) + Object.keys(detail.costs || {}).length };
+      return;
+    }
     (Array.isArray(detail?.lines) ? detail.lines : []).forEach((entry) => {
+      if (entry.standardSystem && entry.standardSystem !== system) { rejected += 1; return; }
       const selectedService = master.serviceTypes.find((candidate) => candidate.id === entry.serviceType);
       const roles = selectedService ? master.roleGroups[selectedService.roleGroup] || [] : [];
       if (!selectedService) { rejected += 1; return; }
@@ -1014,6 +1020,7 @@
       recentlyImportedConsultingLineIds.add(id);
       current.lines.push({
         id,
+        standardSystem: system,
         serviceType: selectedService.id,
         taskName: String(entry.taskName || "資料取込作業").trim().slice(0, 120) || "資料取込作業",
         referenceRuleId,

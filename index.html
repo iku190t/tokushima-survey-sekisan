@@ -14,7 +14,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/web-sekisan-32.png?v=20260825-2">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/web-sekisan-180.png?v=20260825-2">
   <link rel="manifest" href="site.webmanifest?v=20260825-2">
-  <link rel="stylesheet" href="styles.css?v=20260828-5">
+  <link rel="stylesheet" href="styles.css?v=20260828-6">
 </head>
 <body data-business-scope="design">
   <header class="app-header">
@@ -342,18 +342,15 @@
               <strong>ここへPDF・写真をドロップ</strong>
               <span>またはクリックして選択／PDF・PNG・JPEG・WebP／最大30MB・PDFは60ページまで</span>
             </button>
-            <aside class="import-safety-card" aria-label="取込み前の確認事項">
-              <p class="section-kicker">SAFE REVIEW</p>
-              <h3>確定前に必ず確認</h3>
-              <ol>
-                <li>PDFの状態に応じて直接抽出・OCRを自動切替</li>
-                <li>基本情報と積算候補を分けて整理</li>
-                <li>一覧で修正してから積算へ反映</li>
-                <li>選択項目だけを反映</li>
-              </ol>
-              <p><strong>資料内容は外部送信しません。</strong><span>解析はブラウザー内で行います。</span></p>
+            <aside class="import-system-card" aria-label="PDF解析に使用する積算基準">
+              <span>PDF解析に使用する積算基準</span>
+              <strong id="documentStandardSystemLabel">国土交通省・全国標準</strong>
+              <label class="field"><span>基準を切り替える</span><select id="documentStandardSystemSelect"></select></label>
+              <p id="documentStandardSystemHint">この基準の作業項目だけを候補として解析します。</p>
+              <p id="documentSourceSystemNotice" class="document-source-system-notice" hidden></p>
             </aside>
           </div>
+          <p class="import-local-note">資料内容は外部送信しません。解析はこのブラウザー内で行います。</p>
           <input id="documentFileInput" type="file" accept="application/pdf,image/png,image/jpeg,image/webp,.pdf,.png,.jpg,.jpeg,.webp" hidden>
           <div id="documentImportProgress" class="import-progress" hidden><div class="import-progress-track"><span id="documentImportProgressBar"></span></div><strong id="documentImportStatus">解析を準備しています…</strong></div>
           <div id="lastImportSummary" class="last-import-summary" hidden></div>
@@ -703,11 +700,11 @@
   <script src="engine.js?v=20260824-2"></script>
   <script src="consulting-engine.js?v=20260828-2"></script>
   <script src="reference-case-engine.js?v=20260824-1"></script>
-  <script src="document-import-engine.js?v=20260824-5"></script>
+  <script src="document-import-engine.js?v=20260828-6"></script>
   <script src="document-reader.js?v=20260823-1"></script>
-  <script src="app.js?v=20260828-4"></script>
-  <script src="consulting.js?v=20260828-2"></script>
-  <script src="document-import.js?v=20260828-3"></script>
+  <script src="app.js?v=20260828-5"></script>
+  <script src="consulting.js?v=20260828-3"></script>
+  <script src="document-import.js?v=20260828-4"></script>
   <script src="analytics.js?v=20260823-1"></script>
 </body>
 </html>

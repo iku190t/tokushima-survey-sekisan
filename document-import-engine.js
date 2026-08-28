@@ -28,6 +28,33 @@
     return normalizeCharacters(value).toLowerCase().replace(/[\s\u3000・･,，。:：;；「」『』【】\[\]{}()（）]/g, "");
   }
 
+  function detectStandardSystem(pages) {
+    const text = compact((pages || []).map((page) => page?.text || "").join("\n"));
+    const definitions = [
+      {
+        id: "maff-land-improvement",
+        label: "農林水産省・土地改良",
+        signals: ["農林水産省", "農村振興局", "土地改良", "農業農村整備"]
+      },
+      {
+        id: "mlit-general",
+        label: "国土交通省・全国標準",
+        signals: ["国土交通省", "地方整備局", "北海道開発局"]
+      }
+    ];
+    const scored = definitions.map((definition) => {
+      const evidence = definition.signals.filter((signal) => text.includes(compact(signal)));
+      return { ...definition, evidence, score: evidence.length };
+    }).sort((a, b) => b.score - a.score);
+    if (!scored[0]?.score || scored[0].score === scored[1]?.score) return null;
+    return {
+      id: scored[0].id,
+      label: scored[0].label,
+      evidence: scored[0].evidence,
+      confidence: scored[0].score >= 2 ? "high" : "medium"
+    };
+  }
+
   function visibleLine(value) {
     let normalized = normalizeCharacters(value);
     if (/(?:[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}]\s){3,}/u.test(normalized)) {
@@ -435,17 +462,18 @@
 
   function analyze(pages, surveyMaster, consultingMaster, jurisdictions) {
     const safePages = (pages || []).map((page, index) => ({ pageNumber: Number(page.pageNumber) || index + 1, text: String(page.text || ""), method: page.method === "ocr" ? "ocr" : "text" }));
+    const standardSystem = surveyMaster?.standardSystem || "mlit-general";
     const candidates = deduplicate(safePages.flatMap((page) => [
       ...detectSurveyCandidates(page, surveyMaster),
       ...detectConsultingCandidates(page, consultingMaster),
       ...detectCostCandidates(page)
-    ]));
+    ])).map((candidate) => ({ ...candidate, standardSystem }));
     const warnings = [];
     if (!candidates.length) warnings.push("積算へ対応付けられる数量・人工を検出できませんでした。原文を確認し、必要項目を手入力してください。");
     if (safePages.some((page) => page.method === "ocr")) warnings.push("OCRを使用したページがあります。数字・小数点・単位を原文画像と必ず照合してください。");
     if (candidates.some((candidate) => candidate.confidence === "low")) warnings.push("対応先が曖昧な候補は初期選択を外しています。採用する場合は項目と数量を修正してください。");
-    return { metadata: detectMetadata(safePages, jurisdictions), pages: safePages, candidates, warnings };
+    return { standardSystem, sourceSystem: detectStandardSystem(safePages), metadata: detectMetadata(safePages, jurisdictions), pages: safePages, candidates, warnings };
   }
 
-  return { normalizeCharacters, compact, numericMatches, surveyUnitOptions, detectSurveyUnitId, splitSurveyQuantityUnit, convertSurveyQuantity, detectMetadata, analyze };
+  return { normalizeCharacters, compact, detectStandardSystem, numericMatches, surveyUnitOptions, detectSurveyUnitId, splitSurveyQuantityUnit, convertSurveyQuantity, detectMetadata, analyze };
 });

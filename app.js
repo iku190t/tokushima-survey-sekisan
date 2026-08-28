@@ -11,6 +11,16 @@
     { id: "mlit-general", label: "国土交通省・全国標準" },
     { id: "maff-land-improvement", label: "農林水産省・土地改良" }
   ];
+  const standardSystemLabel = (systemId) => standardSystems.find((entry) => entry.id === systemId)?.label || "国土交通省・全国標準";
+  const surveyDisplayCode = (itemOrCode, systemId = "") => {
+    const item = typeof itemOrCode === "object" && itemOrCode ? itemOrCode : null;
+    const code = String(item?.code || itemOrCode || "");
+    const system = systemId || item?.standardSystem || (code.startsWith("maff-") ? "maff-land-improvement" : defaultStandardSystem);
+    if (system !== "maff-land-improvement" || !code.startsWith("maff-")) return code;
+    const parts = code.split("-");
+    return parts.length >= 5 ? parts.slice(1, -2).join("-") : code.replace(/^maff-/, "");
+  };
+  const surveyOptionLabel = (item, systemId = "") => `${surveyDisplayCode(item, systemId)}｜${String(item?.name || "")}`;
   const legacyMlitMasterId = "r8-mlit-2026-reference";
   const defaultJurisdictionCode = "mlit";
   const masterCatalogPath = "data/master-catalog.json";
@@ -69,7 +79,7 @@
 
   function regulationPathForItem(item) {
     if (activeMaster()?.standardSystem === "maff-land-improvement") {
-      return `農林水産省 測量業務標準歩掛について ${String(item?.code || "").replace(/^maff-/, "").split("-").slice(0, 3).join("-")}／${item?.category || "測量"}`;
+      return `農林水産省 測量業務標準歩掛について ${surveyDisplayCode(item, "maff-land-improvement")}／${item?.category || "測量"}`;
     }
     return surveyRegulationPaths[item?.category] || "積算基準の作業区分（作業規程との対応要確認）";
   }
@@ -442,7 +452,9 @@
       lines: [],
       consulting: defaultConsultingState(),
       conditionMemory: defaultConditionMemory(),
+      conditionMemoryBySystem: defaultConditionMemoryBySystem(),
       workflowState: defaultWorkflowState(),
+      workflowStateBySystem: defaultWorkflowStateBySystem(),
       costs: { travel: 0, roundtrip: 0, baseCost: 0, other: 0, inspection: 0 },
       options: { useElectronicDeliverable: true, useFourSignificantDigits: true, adjustBusinessPrice: true, travelMode: "noLodging", safetyRate: 0, taxRate: masters.find((master) => master.id === defaultMasterId)?.taxRate ?? masters[0]?.taxRate ?? .1 }
     };
@@ -484,6 +496,19 @@
     return defaults;
   }
 
+  function defaultConditionMemoryBySystem() {
+    return Object.fromEntries(standardSystems.map((entry) => [entry.id, defaultConditionMemory()]));
+  }
+
+  function normalizedConditionMemoryBySystem(saved = {}, legacy = {}, legacySystem = defaultStandardSystem) {
+    const defaults = defaultConditionMemoryBySystem();
+    standardSystems.forEach((entry) => {
+      if (saved?.[entry.id]) defaults[entry.id] = normalizedConditionMemory(saved[entry.id]);
+    });
+    if (!saved || !Object.keys(saved).length) defaults[standardSystems.some((entry) => entry.id === legacySystem) ? legacySystem : defaultStandardSystem] = normalizedConditionMemory(legacy);
+    return defaults;
+  }
+
   function defaultWorkflowState() {
     return {
       survey: { keyword: "all", category: "", search: "" },
@@ -514,14 +539,27 @@
     return defaults;
   }
 
+  function defaultWorkflowStateBySystem() {
+    return Object.fromEntries(standardSystems.map((entry) => [entry.id, defaultWorkflowState()]));
+  }
+
+  function normalizedWorkflowStateBySystem(saved = {}, legacy = {}, legacySystem = defaultStandardSystem) {
+    const defaults = defaultWorkflowStateBySystem();
+    standardSystems.forEach((entry) => {
+      if (saved?.[entry.id]) defaults[entry.id] = normalizedWorkflowState(saved[entry.id]);
+    });
+    if (!saved || !Object.keys(saved).length) defaults[standardSystems.some((entry) => entry.id === legacySystem) ? legacySystem : defaultStandardSystem] = normalizedWorkflowState(legacy);
+    return defaults;
+  }
+
   function conditionMemory(scope) {
-    estimate.conditionMemory = normalizedConditionMemory(estimate.conditionMemory);
-    return estimate.conditionMemory[scope];
+    estimate.conditionMemoryBySystem = normalizedConditionMemoryBySystem(estimate.conditionMemoryBySystem, estimate.conditionMemory, estimate.standardSystem);
+    return estimate.conditionMemoryBySystem[activeStandardSystem()][scope];
   }
 
   function workflowState() {
-    estimate.workflowState = normalizedWorkflowState(estimate.workflowState);
-    return estimate.workflowState;
+    estimate.workflowStateBySystem = normalizedWorkflowStateBySystem(estimate.workflowStateBySystem, estimate.workflowState, estimate.standardSystem);
+    return estimate.workflowStateBySystem[activeStandardSystem()];
   }
 
   function emptyIssuerProfile() {
@@ -583,7 +621,9 @@
         normalized.consulting.costs = Object.assign(defaultConsultingState().costs, saved.consulting?.costs || {});
         normalized.consulting.options = Object.assign(defaultConsultingState().options, saved.consulting?.options || {});
         normalized.conditionMemory = normalizedConditionMemory(saved.conditionMemory);
+        normalized.conditionMemoryBySystem = normalizedConditionMemoryBySystem(saved.conditionMemoryBySystem, saved.conditionMemory, normalized.standardSystem);
         normalized.workflowState = normalizedWorkflowState(saved.workflowState);
+        normalized.workflowStateBySystem = normalizedWorkflowStateBySystem(saved.workflowStateBySystem, saved.workflowState, normalized.standardSystem);
         normalized.report = Object.assign(defaultReportSettings(normalized.date), saved.report || {});
         normalized.report.sections = Object.assign(defaultReportSettings().sections, saved.report?.sections || {});
         return normalized;
@@ -594,8 +634,8 @@
 
   function hasDraftContent(draft) {
     if (!draft) return false;
-    const hasConditionMemory = JSON.stringify(normalizedConditionMemory(draft.conditionMemory)) !== JSON.stringify(defaultConditionMemory());
-    const hasWorkflowSelection = JSON.stringify(normalizedWorkflowState(draft.workflowState)) !== JSON.stringify(defaultWorkflowState());
+    const hasConditionMemory = JSON.stringify(normalizedConditionMemoryBySystem(draft.conditionMemoryBySystem, draft.conditionMemory, draft.standardSystem)) !== JSON.stringify(defaultConditionMemoryBySystem());
+    const hasWorkflowSelection = JSON.stringify(normalizedWorkflowStateBySystem(draft.workflowStateBySystem, draft.workflowState, draft.standardSystem)) !== JSON.stringify(defaultWorkflowStateBySystem());
     return Boolean(
       draft.projectName?.trim() || draft.memo?.trim() || Object.values(draft.projectInfo || {}).some((value) => String(value || "").trim()) || draft.caseFile?.sources?.length || draft.lines?.length ||
       draft.consulting?.lines?.length || Object.values(draft.consulting?.costs || {}).some((value) => num(value) !== 0) ||
@@ -737,7 +777,7 @@
       (!category || item.category === category)
       && (!query || `${item.code} ${item.name} ${item.category}`.toLocaleLowerCase("ja").includes(query))
     );
-    $("itemSelect").innerHTML = filtered.map((item) => `<option value="${h(item.code)}">${h(item.code)}｜${h(item.name)}</option>`).join("");
+    $("itemSelect").innerHTML = filtered.map((item) => `<option value="${h(item.code)}">${h(surveyOptionLabel(item, master.standardSystem))}</option>`).join("");
     if (filtered.some((item) => item.code === previous)) $("itemSelect").value = previous;
     updateSelectedItemMeta();
   }
@@ -934,7 +974,7 @@
       const item = master.workItems.find((entry) => entry.code === line.code);
       if (!item) return "";
       const qRule = quantityRule(item, master);
-      const itemEditorOptions = surveyItemsForScope(master).map((candidate) => `<option value="${h(candidate.code)}" ${candidate.code === line.code ? "selected" : ""}>${h(candidate.code)}｜${h(candidate.name)}</option>`).join("");
+      const itemEditorOptions = surveyItemsForScope(master).map((candidate) => `<option value="${h(candidate.code)}" ${candidate.code === line.code ? "selected" : ""}>${h(surveyOptionLabel(candidate, master.standardSystem))}</option>`).join("");
       const importSource = line.importSource ? `<small>資料取込：${h(line.importSource.fileName || "PDF")} p.${h(line.importSource.page || 1)}／${line.importSource.method === "ocr" ? "OCR" : "文字抽出"}／要原文照合</small>` : "";
       return `<tr data-line-id="${h(line.id)}" class="pending-input-row ${recentlyImportedSurveyLineIds.has(line.id) ? "recently-imported-line" : ""}">
         <td><select class="line-code table-item-select" aria-label="作業項目を変更">${itemEditorOptions}</select><span class="item-code">クリックして作業項目を変更</span>${importSource}<span class="pending-input-label">数量未入力（計算対象外）</span></td>
@@ -947,7 +987,7 @@
       const line = estimate.lines.find((entry) => entry.id === calculated.id);
       const item = master.workItems.find((entry) => entry.code === calculated.code);
       const qRule = quantityRule(item, master);
-      const itemEditorOptions = surveyItemsForScope(master).map((candidate) => `<option value="${h(candidate.code)}" ${candidate.code === line.code ? "selected" : ""}>${h(candidate.code)}｜${h(candidate.name)}</option>`).join("");
+      const itemEditorOptions = surveyItemsForScope(master).map((candidate) => `<option value="${h(candidate.code)}" ${candidate.code === line.code ? "selected" : ""}>${h(surveyOptionLabel(candidate, master.standardSystem))}</option>`).join("");
       line.quantity = calculated.quantity;
       const outside = item.applicability && ((Number.isFinite(item.applicability.minimum) && calculated.quantity < item.applicability.minimum) || (Number.isFinite(item.applicability.maximum) && calculated.quantity > item.applicability.maximum));
       const conditionInput = item.conditionFormula ? `<label class="mini-field">${h(item.conditionFormula.label)} <input class="table-input line-condition" type="number" min="0" step=".1" value="${h(line.conditionValue ?? item.conditionFormula.default)}">${h(item.conditionFormula.unit)}</label><small>${h(item.conditionFormula.note)}</small>` : "";
@@ -1319,9 +1359,11 @@
 
   function importSurveyLines(entries, metadata = {}) {
     const master = activeMaster();
+    const system = activeStandardSystem();
     let added = 0;
     let rejected = 0;
     (Array.isArray(entries) ? entries : []).forEach((entry) => {
+      if (entry.standardSystem && entry.standardSystem !== system) { rejected += 1; return; }
       const item = master.workItems.find((candidate) => candidate.code === entry.code);
       if (!item) { rejected += 1; return; }
       const requestedPending = entry.inputPending === true || entry.quantity == null || String(entry.quantity).trim() === "";
@@ -1331,7 +1373,7 @@
       recentlyImportedSurveyLineIds.add(id);
       estimate.lines.push({
         id,
-        standardSystem: activeStandardSystem(),
+        standardSystem: system,
         code: item.code,
         quantity,
         inputPending: requestedPending,
@@ -1582,7 +1624,9 @@
         estimate.consulting.costs = Object.assign(defaultConsultingState().costs, imported.consulting?.costs || {});
         estimate.consulting.options = Object.assign(defaultConsultingState().options, imported.consulting?.options || {});
         estimate.conditionMemory = normalizedConditionMemory(imported.conditionMemory);
+        estimate.conditionMemoryBySystem = normalizedConditionMemoryBySystem(imported.conditionMemoryBySystem, imported.conditionMemory, estimate.standardSystem);
         estimate.workflowState = normalizedWorkflowState(imported.workflowState);
+        estimate.workflowStateBySystem = normalizedWorkflowStateBySystem(imported.workflowStateBySystem, imported.workflowState, estimate.standardSystem);
         estimate.report = Object.assign(defaultReportSettings(estimate.date), imported.report || {});
         estimate.report.sections = Object.assign(defaultReportSettings().sections, imported.report?.sections || {});
         if (estimate.masterId === "r8-tokushima-2026") estimate.masterId = "standard-r8-2026";
@@ -1987,6 +2031,10 @@
     getSurveyResult: currentResult,
     getActiveSurveyMaster: activeMaster,
     getStandardSystem: activeStandardSystem,
+    getStandardSystems: () => clone(standardSystems),
+    getStandardSystemLabel: (systemId = activeStandardSystem()) => standardSystemLabel(systemId),
+    getSurveyDisplayCode: (itemOrCode, systemId = activeStandardSystem()) => surveyDisplayCode(itemOrCode, systemId),
+    getSurveyOptionLabel: (item, systemId = activeStandardSystem()) => surveyOptionLabel(item, systemId),
     setStandardSystem,
     setUnifiedFiscalYear,
     getSubmissionJurisdictionCode: () => estimate.submissionJurisdictionCode || "",

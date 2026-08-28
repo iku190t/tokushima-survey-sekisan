@@ -8,7 +8,7 @@ const root = path.join(__dirname, "..");
 const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const css = fs.readFileSync(path.join(root, "styles.css"), "utf8");
 const ui = fs.readFileSync(path.join(root, "document-import.js"), "utf8");
-assert.ok(ui.includes('app.getStandardSystem?.() === "maff-land-improvement"') && ui.includes('"農林水産省・土地改良"'), "取込確認は現在選択中の基準体系を表示する");
+assert.ok(ui.includes("renderDocumentStandardSystem") && ui.includes("app.getStandardSystemLabel"), "取込画面は現在選択中の基準体系を表示する");
 const reader = fs.readFileSync(path.join(root, "document-reader.js"), "utf8");
 const app = fs.readFileSync(path.join(root, "app.js"), "utf8");
 const consulting = fs.readFileSync(path.join(root, "consulting.js"), "utf8");
@@ -20,12 +20,16 @@ assert.deepStrictEqual([...referencedIds].filter((id) => !ids.has(id)), [], "資
 for (const file of ["document-import-engine.js", "document-reader.js", "document-import.js", "tests/test-document-import.js"]) {
   assert.ok(fs.existsSync(path.join(root, file)), `${file} が存在する`);
 }
-for (const id of ["importView", "documentDropZone", "documentFileInput", "pdfClickWorkbench", "pdfClickPages", "pdfClickSelectedList", "pdfManualMapper", "pdfManualHeadingText", "pdfManualKind", "pdfManualKeywordFilter", "pdfManualKeywordList", "pdfManualSurveyRegulationGroup", "pdfManualSurveyCategory", "pdfManualSurveyCode", "pdfManualSurveyQuantity", "pdfManualSurveySourceUnit", "pdfManualSurveyConversion", "pdfManualConsultingService", "pdfManualConsultingRuleGroup", "pdfManualConsultingTaskTemplate", "pdfManualConsultingTask", "pdfManualConsultingRole", "pdfManualConsultingDays", "pdfManualMetadataKey", "pdfManualMetadataValue", "addPdfManualCandidateButton", "clearPdfManualLineSelectionButton", "applyPdfSelectionNowButton", "pdfCandidateChoiceDialog", "pdfCandidateChoiceTitle", "pdfCandidateChoiceSummary", "pdfCandidateChoiceList", "closePdfCandidateChoiceButton", "cancelPdfCandidateChoiceButton", "documentImportDialog", "importMetadataPanel", "documentImportMetadataList", "toggleAllImportMetadata", "documentImportEmptyGuide", "importCandidateToolbar", "documentImportCandidateList", "applyDocumentImportButton"]) {
+for (const id of ["importView", "documentDropZone", "documentFileInput", "documentStandardSystemLabel", "documentStandardSystemSelect", "documentStandardSystemHint", "documentSourceSystemNotice", "pdfClickWorkbench", "pdfClickPages", "pdfClickSelectedList", "pdfManualMapper", "pdfManualHeadingText", "pdfManualKind", "pdfManualKeywordFilter", "pdfManualKeywordList", "pdfManualSurveyRegulationGroup", "pdfManualSurveyCategory", "pdfManualSurveyCode", "pdfManualSurveyQuantity", "pdfManualSurveySourceUnit", "pdfManualSurveyConversion", "pdfManualConsultingService", "pdfManualConsultingRuleGroup", "pdfManualConsultingTaskTemplate", "pdfManualConsultingTask", "pdfManualConsultingRole", "pdfManualConsultingDays", "pdfManualMetadataKey", "pdfManualMetadataValue", "addPdfManualCandidateButton", "clearPdfManualLineSelectionButton", "applyPdfSelectionNowButton", "pdfCandidateChoiceDialog", "pdfCandidateChoiceTitle", "pdfCandidateChoiceSummary", "pdfCandidateChoiceList", "closePdfCandidateChoiceButton", "cancelPdfCandidateChoiceButton", "documentImportDialog", "importMetadataPanel", "documentImportMetadataList", "toggleAllImportMetadata", "documentImportEmptyGuide", "importCandidateToolbar", "documentImportCandidateList", "applyDocumentImportButton"]) {
   assert.ok(ids.has(id), `${id} が存在する`);
 }
 assert.ok(html.includes("設計・測量・調査計画・地質"), "資料取込の対象業務を積算基準の4業務区分順で明示する");
 assert.ok(html.includes(">PDF・写真から取込み<"), "資料取込の表示名をPDF・写真から取込みに統一する");
-assert.ok(html.includes('class="import-start-grid"') && html.includes('class="import-safety-card"') && html.includes("確定前に必ず確認"), "取込確認事項を大きな横長カードにせずファイル投下欄の横へ配置する");
+assert.ok(html.includes('class="import-start-grid"') && html.includes('class="import-system-card"') && !html.includes("確定前に必ず確認"), "不要な確認カードを撤去し解析基準をファイル投下欄の横へ配置する");
+assert.ok(ui.includes("currentExtracted") && ui.includes("analyzeExtracted(currentExtracted") && ui.includes("applyStandardSystemResources"), "基準切替時は読み込み済みPDFを新しい専用マスターで再解析する");
+assert.ok(ui.includes("candidate.standardSystem !== activeStandardSystem()") && ui.includes("standardSystem: system") && consulting.includes("detail.standardSystem !== system"), "異なる基準体系の候補・取込行を混在させない");
+assert.ok(app.includes("getSurveyDisplayCode") && ui.includes("app.getSurveyOptionLabel") && ui.includes("app.getSurveyDisplayCode"), "内部識別子を利用者向けの作業コードとして表示しない");
+assert.ok(app.includes("conditionMemoryBySystem") && app.includes("workflowStateBySystem") && app.includes("[activeStandardSystem()]"), "補正条件とPDF絞込み状態も基準体系ごとに分離する");
 assert.ok(html.indexOf('class="pdf-manual-footer"') < html.indexOf('class="pdf-manual-scroll-body"') && css.includes("grid-template-rows: auto auto minmax(0,1fr)"), "反映待ち追加ボタンを右入力欄の上部へ固定し入力項目で隠さない");
 assert.ok(css.includes(".pdf-manual-scroll-body > .field:first-child") && css.includes("isolation: isolate"), "反映先とキーワード欄を別段にして文字の重なりを防ぐ");
 assert.ok(css.includes(".utility-view-tabs { margin-left: 0;") && !css.includes(".utility-view-tabs { margin-left: auto;"), "PDF・写真から取込みを業務タブ側へ寄せる");

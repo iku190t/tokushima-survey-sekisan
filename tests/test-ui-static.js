@@ -197,4 +197,4 @@ assert.ok(app.includes('conditionMemory("survey").values[valueKey] = line.condit
 console.log("OK: UI static wiring checks passed");
 assert.ok(html.includes('data/unit-catalog.js') && html.indexOf('data/unit-catalog.js') < html.indexOf('engine.js'), "共通単位台帳を全計算エンジンより先に読み込む");
 assert.ok(!html.includes('id="itemCountBadge"') && !app.includes("項目収録`"), "測量を含む4業務の項目件数バッジを表示しない");
-assert.ok(html.includes('app.js?v=20260828-4') && html.includes('consulting.js?v=20260828-2') && html.includes('consulting-engine.js?v=20260828-2') && html.includes('document-import.js?v=20260828-3') && html.includes('styles.css?v=20260828-5'), "未入力案内・厳格な自動計算判定・PDF選択解除・手動調整安全化・YouTube埋め込みの資産をキャッシュ更新する");
+assert.ok(html.includes('app.js?v=20260828-5') && html.includes('consulting.js?v=20260828-3') && html.includes('consulting-engine.js?v=20260828-2') && html.includes('document-import.js?v=20260828-4') && html.includes('document-import-engine.js?v=20260828-6') && html.includes('styles.css?v=20260828-6'), "基準体系分離・未入力案内・手動調整安全化の資産をキャッシュ更新する");
