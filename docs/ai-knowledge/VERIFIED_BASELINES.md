@@ -2993,3 +2993,31 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `index.html` | `8DCBF4E316D29C4BB25D0185D0B68A78072B09B023C604EEA3FB1BAC4A1D3DD8` |
 | `styles.css` | `6F2B8477704879E22ABE65DCCD7EB7394A467FD889DFD78212D45FD4E0FBF6A5` |
 | `tests/test-ui-static.js` | `91587B6086494A427F03ECC4C188A8CF5EF4FFDC83D074369E760AFD55DBF7FD` |
+
+## B-2026-08-28-09
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-28
+- 実装コミット: `983d62b48050e1d8acb4212c163b9fa98579838b`
+- GitHub Pages: `built`、ビルド`1180407649`、コミット`983d62b48050e1d8acb4212c163b9fa98579838b`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: 国交省・全国標準と農水省・土地改良のPDF解析候補、取込行、現場条件継承、PDF絞込みを体系別に分離した。PDF画面へ現在基準を常時表示し、体系切替時は表示中PDFを専用マスターで再解析する。資料内省庁表記は不一致警告だけに使い自動切替しない。内部コードは画面へ表示しない。
+
+### 合格した試験・公開確認
+
+- `tests/test-*.js`全21本、対象4 JavaScriptの`node --check`、`git diff --check`が合格した。
+- ローカルと公開版の匿名PDFで、国交省5候補→農水省3候補→国交省5候補へ往復再解析されることを確認した。
+- 公開版で現在基準の選択表示、農水省公式表番号`2-2-1`、内部`maff-`表示0件、国交省復帰後の`2-2-1-1`候補を確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `app.js` | `613E5C684859C541CEB9687FFF162609ACCF62183949D403A03049BF7B58FA47` |
+| `consulting.js` | `C4B8718FB5B32BB2CB25F0E3A23447A4FBB7B17A6B6F9D8441E8984CB46A867D` |
+| `document-import-engine.js` | `CF586421434781240E639E559574FAAB19BC295C3F0C6810005625BE76152698` |
+| `document-import.js` | `90EA3D4D5892AAADE2AEB57AD987CBD0B84E23081A299E3B75F85167B2DBC827` |
+| `index.html` | `BA2AA2A3EAA46883D27756DF34D6195B41986E9013B37EB682B0AEF0E2409E30` |
+| `styles.css` | `5306FE06732963D03CC0C913C4BAA9A9A3C20C5810E69BF6C3AE90667BB66E63` |
+| `tests/test-document-import-ui.js` | `1D6F8981DB6F745C710A20544A311103263F0B76D2093F9D228227F1C79EE687` |
+| `tests/test-document-import.js` | `688506ABDD461B037F064AD77F029087EB397998E11598C7D853863039D148B1` |
