@@ -2837,3 +2837,33 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `tools/create-intro-narration.ps1` | `15173BAB27BDE7A81746FB3EA6235F5F57930FB9F7BCC5F0C757F2B2B824C32F` |
 | `tools/video-requirements.txt` | `C93204B25F71E37E8F3CDCC476E8FABE714504A8C2BF8FB872A5AF7F1823F430` |
 | `tests/test-ui-static.js` | `0B4F4D38E1F8F91FB006008843095D0508E23FE283D47601D8CBCF979DB01698` |
+
+## B-2026-08-28-03
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-28
+- 実装コミット: `ab6218a4950d60c2d743fef66265a3c6b684388f`
+- 監査記録コミット: `113b37dbf047902d36bee1d3c098e9287155aa29`
+- GitHub Pages: `built`、アプリ内容公開ビルド`1179645826`、コミット`113b37dbf047902d36bee1d3c098e9287155aa29`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: 設計・調査計画・地質の基準外手動調整を、業務区分・職種・年度単価・人工の共通検証へ接続した。計算結果と明細表示を確認できた場合だけ入力欄を消去・保存し、失敗時はロールバックして入力を残す。業務タブ変更時は前業務の手動項目名を持ち越さない。
+- 監査訂正: 「地質手動追加が通常操作で消える」という旧観察は、閉じた折りたたみ内の非表示要素を自動操作した誤判定だった。折りたたみを開いた通常操作では旧版でも追加できた。安全確認の追加と、実際に確認した業務間項目名持越しを修正した。
+
+### 合格した試験・公開確認
+
+- `node --check consulting-engine.js`、`node --check consulting.js`、`tests/test-*.js`全19本、`git diff --check`合格。
+- T-CONSULTで設計、調査計画、地質解析、地質一般の手動調整生成、無効職種拒否、人工未入力拒否、R6～R8年度職種単価を確認した。
+- ローカル実ブラウザーで、R8地質解析等調査の既存資料整理・主任技術者1人工が90,300円、地質一般調査の機械ボーリング・地質調査技師1人工が58,300円として追加された。成功通知、追加後の人工欄空欄、コンソール警告・エラー0件を確認した。
+- 業務タブ変更時に地質一般の「機械ボーリング」が設計へ残らず「業務計画」、調査計画へ残らず「調査計画」へ切り替わることを確認した。
+- 公開版は`consulting-engine.js?v=20260828-2`、`consulting.js?v=20260828-2`を配信し、地質解析等調査1人工の明細追加・90,300円・成功通知・入力欄空欄・コンソール警告／エラー0件を実ブラウザー確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `consulting-engine.js` | `37A55AB2D37626495A1725288CB854F707ECE9488F60BD61251CF4BD16B31A5E` |
+| `consulting.js` | `53122FC944329CF4A161DBF8E155876B2F6236341DE7F574AB0DDFAE8059F3DC` |
+| `index.html` | `1CA9694BED85AA3F9FCF5C653DCDDAE48317AFF9CF209A6CF10EE6B4FAD9CBBE` |
+| `tests/test-consulting-engine.js` | `623CF1F02D703CCE9801B03A516E14714141AB37498A19EED097957FF4DEEF0F` |
+| `tests/test-consulting-ui.js` | `FC9659E4EB26B8D606259428AC0706C6C5A8895869D0E6CB278ED99F87BA48EA` |
+| `tests/test-ui-static.js` | `3DA8C88A8CA2ED30ADD4FEEFDED3F4D60E179890DEBB42C2C731A2A3A76D1C12` |
