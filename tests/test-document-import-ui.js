@@ -59,6 +59,7 @@ assert.ok(ui.includes("openManualMapper") && ui.includes("addManualCandidate") &
 assert.ok(ui.includes("surveyCategoryOptions") && ui.includes("populateManualSurveyItems") && ui.includes("pdfManualSurveyCategory"), "長い測量項目を分類で絞り込んで詳細項目を選べる");
 assert.ok(html.includes('src="data/consulting-work-catalog.js?v=') && ui.includes("CONSULTING_WORK_CATALOG") && ui.includes("CONSULTING_RULE_PACK"), "PDF取込と本体が同じキーワード定義・公式作業項目規則を使う");
 assert.ok(ui.includes("updateManualConsultingTasks") && ui.includes("updateManualConsultingItemsForGroup") && ui.includes("pdfManualConsultingRuleGroup") && ui.includes("pdfManualConsultingTaskTemplate"), "設計・調査計画・地質も積算基準の作業区分から公式作業項目を選べる");
+assert.ok(ui.includes('return /^\\d+(?:-\\d+)*$/.test(code) ? `${code}｜${title}` : `${title}${sourcePage ? `（資料 p.${sourcePage}）` : ""}`;'), "PDF取込の設計・調査計画・地質でも内部familyCodeを表示せず、資料ページで同名区分を区別する");
 assert.ok(ui.includes("isAutomaticConsultingRule") && ui.includes("automaticRuleForCandidate") && ui.includes("classifyPresetCoverage") && ui.includes("analysis.candidates = analysis.candidates.filter") && ui.includes("candidate.inputPending = true"), "PDF取込も条件式まで完成した全国標準項目へ安全に照合し、数量・条件待ち候補にする");
 assert.ok(!ui.includes("consultingMaster.taskNames") && ui.includes("referenceRuleId: rule.id"), "PDF反映先に旧式の汎用作業名を使わず公式規則IDを保持する");
 assert.ok(!html.includes("PDF原文（確認用）") && !html.includes('id="pdfManualSourceText"') && !ui.includes("updateManualSourceSummary"), "PDF上で確認できる原文を右側へ重複表示しない");

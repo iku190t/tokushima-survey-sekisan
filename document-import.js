@@ -251,7 +251,10 @@
 
   function consultingFamilyLabel(rule) {
     const family = (consultingRulePack.families || []).find((entry) => Number(entry.fiscalYear) === Number(rule?.fiscalYear) && entry.serviceType === rule?.serviceType && entry.familyCode === rule?.familyCode);
-    return `${rule?.familyCode || "共通"}｜${family?.title || "積算基準項目"}`;
+    const code = String(rule?.familyCode || "");
+    const title = family?.title || "積算基準項目";
+    const sourcePage = Number(family?.sources?.[0]?.page || 0);
+    return /^\d+(?:-\d+)*$/.test(code) ? `${code}｜${title}` : `${title}${sourcePage ? `（資料 p.${sourcePage}）` : ""}`;
   }
 
   function selectedManualConsultingRule() {

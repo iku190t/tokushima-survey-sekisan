@@ -362,12 +362,19 @@
     return window.SEKISAN_JURISDICTIONS?.find((entry) => entry.code === String(code))?.name || "地域未設定";
   }
 
-  function submissionJurisdictions() {
-    return (window.SEKISAN_JURISDICTIONS || []).filter((entry) => entry.code === "mlit");
+  function defaultSubmissionJurisdictionCode(systemId = defaultStandardSystem) {
+    return systemId === "maff-land-improvement" ? "maff" : "mlit";
   }
 
-  function normalizeSubmissionJurisdictionCode(code) {
-    return submissionJurisdictions().some((entry) => entry.code === String(code)) ? String(code) : "";
+  function submissionJurisdictions(systemId = defaultStandardSystem) {
+    const code = defaultSubmissionJurisdictionCode(systemId);
+    return [{ code, name: jurisdictionName(code) }];
+  }
+
+  function normalizeSubmissionJurisdictionCode(code, systemId = defaultStandardSystem) {
+    const raw = String(code || "");
+    if (!raw) return "";
+    return submissionJurisdictions(systemId).some((entry) => entry.code === raw) ? raw : defaultSubmissionJurisdictionCode(systemId);
   }
 
   function applyVerifiedWorkItemExpansions(master) {
@@ -609,7 +616,7 @@
         }
         const normalized = Object.assign(emptyEstimate(), saved);
         normalized.standardSystem = standardSystems.some((entry) => entry.id === saved.standardSystem) ? saved.standardSystem : (masters.find((master) => master.id === saved.masterId)?.standardSystem || defaultStandardSystem);
-        normalized.submissionJurisdictionCode = normalizeSubmissionJurisdictionCode(saved.submissionJurisdictionCode);
+        normalized.submissionJurisdictionCode = normalizeSubmissionJurisdictionCode(saved.submissionJurisdictionCode, normalized.standardSystem);
         normalized.projectInfo = Object.assign(defaultProjectInfo(), saved.projectInfo || {});
         normalized.caseFile = Object.assign(defaultCaseFile(), saved.caseFile || {});
         normalized.caseFile.sources = Array.isArray(saved.caseFile?.sources) ? saved.caseFile.sources : [];
@@ -733,8 +740,8 @@
     $("standardSystemSelect").value = system;
     $("consultingStandardSystemSelect").innerHTML = systemOptions;
     $("consultingStandardSystemSelect").value = system;
-    estimate.submissionJurisdictionCode = normalizeSubmissionJurisdictionCode(estimate.submissionJurisdictionCode);
-    $("jurisdictionSelect").innerHTML = `<option value="">提出先を選択しない</option>` + submissionJurisdictions().map((region) => `<option value="${region.code}">${h(region.name)}</option>`).join("");
+    estimate.submissionJurisdictionCode = normalizeSubmissionJurisdictionCode(estimate.submissionJurisdictionCode, system);
+    $("jurisdictionSelect").innerHTML = `<option value="">提出先を選択しない</option>` + submissionJurisdictions(system).map((region) => `<option value="${region.code}">${h(region.name)}</option>`).join("");
     $("jurisdictionSelect").value = estimate.submissionJurisdictionCode;
     const selectableMasters = masters.filter((master) => master.standardSystem === system).sort((a, b) => num(b.fiscalYear) - num(a.fiscalYear) || String(a.label).localeCompare(String(b.label), "ja"));
     $("fiscalYearSelect").innerHTML = selectableMasters.map((master) => `<option value="${h(master.id)}">${h(eraLabel(master.fiscalYear))}｜${h(master.label)}</option>`).join("");
@@ -750,7 +757,7 @@
     const standardYears = [...new Set(masters.filter((master) => master.jurisdictionCode === "mlit" && master.verificationStatus === "standard-reference").map((master) => master.fiscalYear))].sort();
     $("masterCoverageStatus").textContent = `国土交通省・全国標準と農林水産省・土地改良を別体系で収録。現在は${standardSystems.find((entry) => entry.id === system)?.label || system}を選択中です。`;
     if (system === "maff-land-improvement") $("masterUpdateStatus").textContent = "農林水産省・土地改良の令和6・7・8年度公式資料を年度別に収録しています。市場単価・刊行物単価・個別見積は、案件で採用する単価と根拠を入力します。";
-    else $("masterUpdateStatus").textContent = "令和6・7・8年度の国土交通省・全国標準単価セットを収録しています。見積提出先は「選択しない」または「国土交通省（全国標準）」だけです。";
+    else $("masterUpdateStatus").textContent = "令和6・7・8年度の国土交通省・全国標準単価セットを収録しています。見積提出先は「選択しない」または「国土交通省（全国標準）」です。";
   }
 
   function populateCategories() {
@@ -1422,8 +1429,8 @@
     let applied = 0;
     let masterChanged = false;
     let masterFound = true;
-    if (normalizeSubmissionJurisdictionCode(values.jurisdictionCode)) {
-      estimate.submissionJurisdictionCode = normalizeSubmissionJurisdictionCode(values.jurisdictionCode);
+    if (normalizeSubmissionJurisdictionCode(values.jurisdictionCode, activeStandardSystem())) {
+      estimate.submissionJurisdictionCode = normalizeSubmissionJurisdictionCode(values.jurisdictionCode, activeStandardSystem());
       applied += 1;
     }
     const requestedMaster = preferredMaster("mlit", num(values.fiscalYear) || activeMaster().fiscalYear);
@@ -1581,6 +1588,7 @@
     const currentYear = Number(activeMaster()?.fiscalYear || estimate.consulting?.fiscalYear || 2026);
     const next = preferredMaster("mlit", currentYear, systemId) || preferredMaster("mlit", 0, systemId);
     if (!next) return false;
+    if (systemId !== activeStandardSystem()) estimate.submissionJurisdictionCode = defaultSubmissionJurisdictionCode(systemId);
     const changed = switchMaster(next.id);
     if (changed) document.dispatchEvent(new CustomEvent("ezsekisan:standardsystemchange", { detail: { standardSystem: systemId, fiscalYear: Number(next.fiscalYear), masterId: next.id } }));
     return changed;
@@ -1616,7 +1624,7 @@
         const imported = JSON.parse(reader.result);
         if (!imported || !Array.isArray(imported.lines)) throw new Error("形式が違います");
         estimate = Object.assign(emptyEstimate(), imported);
-        estimate.submissionJurisdictionCode = normalizeSubmissionJurisdictionCode(imported.submissionJurisdictionCode);
+        estimate.submissionJurisdictionCode = normalizeSubmissionJurisdictionCode(imported.submissionJurisdictionCode, estimate.standardSystem);
         estimate.costs = Object.assign(emptyEstimate().costs, imported.costs || {});
         estimate.options = Object.assign(emptyEstimate().options, imported.options || {});
         estimate.consulting = Object.assign(defaultConsultingState(), imported.consulting || {});
@@ -2039,6 +2047,7 @@
     setUnifiedFiscalYear,
     getSubmissionJurisdictionCode: () => estimate.submissionJurisdictionCode || "",
     getSubmissionJurisdictionName: () => estimate.submissionJurisdictionCode ? jurisdictionName(estimate.submissionJurisdictionCode) : "",
+    getSubmissionJurisdictions: () => submissionJurisdictions(activeStandardSystem()).map((entry) => ({ ...entry })),
     getSurveyItemsForScope: (scope, master = activeMaster()) => surveyItemsForScope(master, scope),
     getSurveyKeywordDefinitions: () => clone(surveyKeywordDefinitions),
     getSurveyRegulationGroups: () => clone(surveyRegulationGroups),

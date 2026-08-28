@@ -30,7 +30,7 @@ assert.strictEqual((html.match(/class="accuracy-strip business-status-strip"/g) 
 assert.ok(!html.includes('id="masterStatusTitle"') && !html.includes('id="masterStatusText"'), "測量画面に全国標準の状態帯を表示しない");
 assert.ok(!app.includes("renderMasterStatus"), "測量状態帯の更新処理を残さない");
 assert.ok(!html.includes('id="consultingScopeTitle"') && !html.includes('id="consultingScopeDescription"'), "設計等だけの説明帯を表示しない");
-assert.ok(html.includes('id="consultingJurisdictionSelect"') && consulting.includes('filter((region) => region.code === "mlit")'), "設計等の見積提出先は未設定または国土交通省だけを使う");
+assert.ok(html.includes('id="consultingJurisdictionSelect"') && consulting.includes("app.getSubmissionJurisdictions") && app.includes('systemId === "maff-land-improvement" ? "maff" : "mlit"'), "設計等の見積提出先を選択中の国交省／農水省基準へ連動する");
 for (const key of ["orderingParty", "department", "contactName", "workLocation", "contractPeriod", "documentNumber", "documentDate"]) {
   assert.strictEqual((html.match(new RegExp(`data-project-info="${key}"`, "g")) || []).length, 2, `${key}を測量と設計等の両方に表示する`);
 }
@@ -70,7 +70,7 @@ assert.ok(app.includes('<li><strong>${h(use)}</strong>${source}<small>${location
 assert.ok(app.includes("selectedSurveySourceRows") && app.includes("基準書本体・歩掛") && app.includes("作業規程上の分類"), "選択した測量項目を国交省基準書本体・年度積算基準・技術者単価・作業規程へ対応付ける");
 assert.ok(html.includes("航空局の空港設計・調査とは別") && html.includes("港湾請負工事積算基準") && html.includes("船舶損料"), "航空測量・深浅測量と空港・港湾船舶の別基準を明示する");
 assert.ok(html.includes('id="validationPanel"'), "提出前チェックがある");
-assert.ok(html.includes('id="jurisdictionSelect"') && html.includes("見積提出先") && app.includes("submissionJurisdictions()"), "見積提出先を未設定または国土交通省だけから選択できる");
+assert.ok(html.includes('id="jurisdictionSelect"') && html.includes("見積提出先") && app.includes("submissionJurisdictions(system)"), "見積提出先を選択中の国交省／農水省基準から選択できる");
 assert.ok(html.includes('id="fiscalYearSelect"') && html.includes("標準単価セット"), "全国標準単価セットの年度を選択できる");
 assert.ok(html.includes('id="checkMasterUpdatesButton"'), "年度マスターの更新を確認できる");
 assert.ok(html.includes('id="masterCoverageStatus"'), "国土交通省・全国標準の収録状況を明示する");
@@ -84,7 +84,7 @@ assert.ok(!html.includes('src="data/master-r8.js') && !html.includes('src="data/
 assert.ok(!app.includes("window.MASTER_R8") && !app.includes("window.SEKISAN_VERIFIED_MASTERS") && !app.includes("prefectureReferenceMasters"), "県別マスターを全国標準の選択肢へ混在させない");
 assert.ok(app.includes('const defaultMasterId = "standard-r8-2026"'), "新規画面は令和8年度全国標準で開始する");
 assert.ok(app.includes('submissionJurisdictionCode: "mlit"') && app.includes("normalizeSubmissionJurisdictionCode") && app.includes("getSubmissionJurisdictionName"), "新規は国土交通省全国標準を既定にし旧都道府県提出先は正規化する");
-assert.ok(app.includes("submissionJurisdictions()") && app.includes('entry.code === "mlit"'), "見積提出先を未設定または国土交通省に限定する");
+assert.ok(app.includes("defaultSubmissionJurisdictionCode") && app.includes('return systemId === "maff-land-improvement" ? "maff" : "mlit"') && app.includes("getSubmissionJurisdictions"), "見積提出先を国交省／農水省の選択中の基準体系へ限定する");
 assert.ok(nationalMasters.includes("https://www.mlit.go.jp/tec/gyoumu_sekisan.html"), "全国標準に国交省積算基準の公式出典を収録する");
 assert.ok(nationalMasters.includes("https://www.mlit.go.jp/tec/content/001724089.pdf"), "全国標準R6に公式技術者単価を収録する");
 assert.ok(app.includes("function sourceListHtml"), "マスター画面と帳票で公式出典をリンク表示する");
@@ -197,4 +197,4 @@ assert.ok(app.includes('conditionMemory("survey").values[valueKey] = line.condit
 console.log("OK: UI static wiring checks passed");
 assert.ok(html.includes('data/unit-catalog.js') && html.indexOf('data/unit-catalog.js') < html.indexOf('engine.js'), "共通単位台帳を全計算エンジンより先に読み込む");
 assert.ok(!html.includes('id="itemCountBadge"') && !app.includes("項目収録`"), "測量を含む4業務の項目件数バッジを表示しない");
-assert.ok(html.includes('app.js?v=20260828-5') && html.includes('consulting.js?v=20260828-3') && html.includes('consulting-engine.js?v=20260828-2') && html.includes('document-import.js?v=20260828-4') && html.includes('document-import-engine.js?v=20260828-6') && html.includes('styles.css?v=20260828-6'), "基準体系分離・未入力案内・手動調整安全化の資産をキャッシュ更新する");
+assert.ok(html.includes('app.js?v=20260828-6') && html.includes('consulting.js?v=20260828-4') && html.includes('consulting-engine.js?v=20260828-2') && html.includes('document-import.js?v=20260828-5') && html.includes('document-import-engine.js?v=20260828-6') && html.includes('styles.css?v=20260828-6'), "基準体系分離・内部ID非表示・提出先連動の資産をキャッシュ更新する");

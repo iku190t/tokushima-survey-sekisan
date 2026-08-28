@@ -142,7 +142,14 @@
   }
 
   function presetGroup(preset) {
-    if (preset?.familyCode) return { id: preset.familyCode, label: `${preset.familyCode}｜${familyForPreset(preset)?.title || "基準書項目"}` };
+    if (preset?.familyCode) {
+      const code = String(preset.familyCode);
+      const family = familyForPreset(preset);
+      const title = family?.title || "基準書項目";
+      const publicCode = /^\d+(?:-\d+)*$/.test(code) ? code : "";
+      const sourcePage = Number(family?.sources?.[0]?.page || 0);
+      return { id: code, label: publicCode ? `${publicCode}｜${title}` : `${title}${sourcePage ? `（資料 p.${sourcePage}）` : ""}` };
+    }
     const match = String(preset?.label || "").match(/^\s*(\d+)(?:-(\d+))?/);
     if (!match) return { id: "common", label: "共通・その他" };
     const id = match[2] ? `${match[1]}-${match[2]}` : match[1];
@@ -218,7 +225,8 @@
 
   function renderYearAndProject() {
     const current = state();
-    $("consultingJurisdictionSelect").innerHTML = `<option value="">提出先を選択しない</option>` + (window.SEKISAN_JURISDICTIONS || []).filter((region) => region.code === "mlit").map((region) => `<option value="${h(region.code)}">${h(region.name)}</option>`).join("");
+    const destinations = app.getSubmissionJurisdictions?.() || [];
+    $("consultingJurisdictionSelect").innerHTML = `<option value="">提出先を選択しない</option>` + destinations.map((region) => `<option value="${h(region.code)}">${h(region.name)}</option>`).join("");
     $("consultingJurisdictionSelect").value = app.getSubmissionJurisdictionCode?.() || "";
     $("consultingFiscalYear").innerHTML = master.supportedYears.map((year) => `<option value="${year}">令和${year - 2018}年度｜${h(standardSystemLabel())}</option>`).join("");
     $("consultingFiscalYear").value = current.fiscalYear;

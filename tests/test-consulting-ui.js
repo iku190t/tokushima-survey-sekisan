@@ -45,6 +45,7 @@ assert.ok(ui.includes("setUnifiedFiscalYear") && ui.includes("ezsekisan:fiscalye
 assert.ok(ui.includes("standardWalk?.fiscalYear") && ui.includes("year-mismatch-row") && ui.includes("測量と設計等の積算年度が一致しない"), "異年度の歩掛と測量合算を計算対象外にする");
 assert.ok(ui.includes("unitCatalog.definitions.map") && !html.includes("<option>m</option>"), "積上費用と地質市場単価で監査済み単位台帳を共用する");
 assert.ok(ui.includes("CONSULTING_WORK_CATALOG") && ui.includes("consultingKeywordDefinitions") && ui.includes("presetMatchesKeyword") && ui.includes("renderConsultingKeywords"), "設計・調査計画・地質を共用台帳の正式familyCode由来キーワードで絞る");
+assert.ok(ui.includes("const publicCode = /^\\d+(?:-\\d+)*$/.test(code) ? code : \"\"") && ui.includes("sourcePage ? `（資料 p.${sourcePage}）`") && ui.includes("label: publicCode ? `${publicCode}｜${title}`"), "内部familyCodeは値だけに保持し、作業区分には公式番号または資料ページ付き名称を表示する");
 for (const keyword of ["道路", "橋梁", "河川・水辺", "水文・観測", "ボーリング", "原位置試験", "解析"]) assert.ok(workCatalog.includes(`label: "${keyword}"`), `${keyword}キーワードを表示できる`);
 assert.ok(html.includes("名称でさらに絞り込む"), "文字検索を初期操作ではなく折りたたみの補助操作にする");
 for (const label of ["積算基準の作業区分", "作業項目", "積算数量（"]) assert.ok(html.includes(label) || ui.includes(label), `${label}を測量と共通表示する`);
