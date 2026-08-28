@@ -2942,3 +2942,30 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `index.html` | `597B47BD4EA437EE4DD1C147D5FC3B5CE4A0F4CBB2C90275D84029A14C510ED1` |
 | `styles.css` | `C5433229AED6C9F76E2430D2C5473D5B5C63804BCCB7111E21D3BEA99BF92649` |
 | `tests/test-ui-static.js` | `20BFE634E2E6403AF300C18726F0B5DB08CAA598FB30AE59091BAC852580C738` |
+
+## B-2026-08-28-07
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-28
+- 実装コミット: `73b560e255164e894d14e773040fa7ce91853299`
+- GitHub Pages: `built`、ビルド`1180354690`、コミット`73b560e255164e894d14e773040fa7ce91853299`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: 農林水産省・土地改良の調査・測量・設計体系を、国交省全国標準と分離したR6～R8年度マスターとして追加した。公式37文書・2,156頁を台帳化し、計算19文書から6,504規則を生成した。4業務、PDF取込、年度マスター、出典台帳、設計等・測量・地質市場単価の計算を同じ体系切替へ接続した。
+
+### 合格した試験・公開確認
+
+- `tests/test-*.js`全21本、対象JavaScriptの`node --check`、`git diff --check`が合格した。
+- ローカル実ブラウザーでR8設計1式の3職種、測量23項目、調査計画23項目、地質φ66mm 10m×15,000円=150,000円、R7切替、国交省体系復帰、農水省基準区分表示、警告・エラー0件を確認した。
+- 公開版で設計2,010、測量23、調査計画23、地質41候補、地質見出し混入0、設計・調査計画の職種展開、測量5点、地質3m×20,000円=60,000円、R8公式資料11件・720頁、警告・エラー0件を確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `app.js` | `63F3BF2AE0E48DB636C1D5A0B8EA97C9DDF40DC447260F99D0BE3FC4C2C0EB5C` |
+| `consulting-engine.js` | `85C7348BA6F77CC48E0DF66230C31C332521EA92C4439C140E49A097CD05EEEF` |
+| `consulting.js` | `79B0DD23E51792C678E0576E3C377CE9DCAB8CB52D18224EB58EBC1F86ECD46F` |
+| `document-import.js` | `36022FEB01A3B3255EBBDADFD5C549B0D4328E12EAAAC9549CDF944D8930F65D` |
+| `data/maff-master.js` | `F4EF824B579D3409B550E219EFBA4AF5965F05A34B672AF5EEF7FC16C031BEDA` |
+| `data/maff-rule-pack.json` | `F026B9B09324E7E643EB00A3E37ED2B6CEB9FDA2A51006F70713880B64834A86` |
+| `data/source-audits/maff-land-improvement-sources.json` | `FB502F3ADF533D48A8ACE4CD324E92B3F27A6B08FF0FCE5D0EC8D91C131A270F` |
