@@ -47,10 +47,11 @@ assert.ok(html.includes('id="surveySummaryHeading">測量業務の積算結果')
 for (const source of ["data/prefectures.js", "data/master-catalog.json", "data/official-source-catalog.json", "data/master-r8.js", "data/national-standard-masters.js", "data/official-role-prices.js", "data/verified-work-item-expansions.js", "data/consulting-work-catalog.js", "engine.js", "app.js", "analytics.js", "styles.css", "DISCLAIMER.md", "media/web-sekisan-introduction.mp4", "media/web-sekisan-introduction-thumbnail.jpg"]) {
   assert.ok(fs.existsSync(path.join(root, source)), `${source} が存在する`);
 }
-assert.ok(html.includes('id="featureVideoTitle"') && html.includes('aria-label="web積算の紹介動画"'), "使い方画面に紹介動画を表示する");
-assert.ok(html.includes('src="media/web-sekisan-introduction.mp4?v=20260828-1" type="video/mp4"') && html.includes('poster="media/web-sekisan-introduction-thumbnail.jpg"'), "紹介MP4とサムネイルを結線する");
+assert.ok(html.includes('id="featureVideoTitle"') && html.includes('title="web積算の紹介動画"'), "使い方画面に紹介動画を表示する");
+assert.ok(html.includes('src="https://www.youtube.com/embed/E_SM2gWNUIA"') && html.includes('href="https://www.youtube.com/watch?v=E_SM2gWNUIA"'), "公開YouTube動画を埋め込み、視聴リンクを結線する");
+assert.ok(html.includes('loading="lazy"') && html.includes("allowfullscreen") && css.includes(".feature-video-frame iframe"), "YouTube動画を遅延読込みし、レスポンシブ表示する");
 assert.ok(html.includes("自然な日本語音声・オリジナルBGM付き") && html.includes("実際のPDFドラッグ取込") && html.includes("約2分"), "紹介動画が自然な音声付きの実PDFドラッグ実演であることを案内する");
-assert.ok(!html.includes("<video autoplay"), "紹介動画を自動再生しない");
+assert.ok(!html.includes("autoplay=1"), "紹介動画を自動再生しない");
 assert.ok(html.includes('id="travelMode"'), "旅費交通費モード選択がある");
 assert.ok(app.includes("line-condition"), "水面幅条件入力が結線されている");
 assert.ok(app.includes("line-rule"), "規定変化率選択が結線されている");
@@ -195,4 +196,4 @@ assert.ok(app.includes('conditionMemory("survey").values[valueKey] = line.condit
 console.log("OK: UI static wiring checks passed");
 assert.ok(html.includes('data/unit-catalog.js') && html.indexOf('data/unit-catalog.js') < html.indexOf('engine.js'), "共通単位台帳を全計算エンジンより先に読み込む");
 assert.ok(!html.includes('id="itemCountBadge"') && !app.includes("項目収録`"), "測量を含む4業務の項目件数バッジを表示しない");
-assert.ok(html.includes('app.js?v=20260827-3') && html.includes('consulting.js?v=20260828-2') && html.includes('consulting-engine.js?v=20260828-2') && html.includes('document-import.js?v=20260828-3') && html.includes('styles.css?v=20260828-3'), "厳格な自動計算判定・PDF選択解除・手動調整安全化の資産をキャッシュ更新する");
+assert.ok(html.includes('app.js?v=20260827-3') && html.includes('consulting.js?v=20260828-2') && html.includes('consulting-engine.js?v=20260828-2') && html.includes('document-import.js?v=20260828-3') && html.includes('styles.css?v=20260828-4'), "厳格な自動計算判定・PDF選択解除・手動調整安全化・YouTube埋め込みの資産をキャッシュ更新する");
