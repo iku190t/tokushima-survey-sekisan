@@ -3021,3 +3021,30 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `styles.css` | `5306FE06732963D03CC0C913C4BAA9A9A3C20C5810E69BF6C3AE90667BB66E63` |
 | `tests/test-document-import-ui.js` | `1D6F8981DB6F745C710A20544A311103263F0B76D2093F9D228227F1C79EE687` |
 | `tests/test-document-import.js` | `688506ABDD461B037F064AD77F029087EB397998E11598C7D853863039D148B1` |
+
+## B-2026-08-28-10
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-28
+- 実装コミット: `3c5f34b49e1a120091b2272840ad00f44022660a`
+- GitHub Pages: `built`、ビルド`1180432258`、コミット`3c5f34b49e1a120091b2272840ad00f44022660a`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: 農水省の設計・調査計画・地質とPDF取込から`design-p…`、`reference-walk-p…`、`investigation-p…`の内部ID表示を撤去した。公式番号がない区分は名称と公式資料ページで同名を区別する。見積提出先を選択中の基準体系へ連動し、農水省では`農林水産省（土地改良）`、国交省では`国土交通省（全国標準）`を体系切替時の既定値にした。
+
+### 合格した試験・公開確認
+
+- `tests/test-*.js`全21本、`node --check app.js`、`node --check consulting.js`、`node --check document-import.js`、`git diff --check`が合格した。
+- ローカル／公開実ブラウザーで、農水省の設計99区分、調査計画13区分、地質16区分、PDFの同3区分に内部ID0件を確認した。
+- 測量を含む4業務で農水省提出先、国交省へ戻した時の国交省提出先、警告・エラー0件を確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `app.js` | `BD816530B92EDF5924845F6ABA4C974B65F1842E867396586636FC3FF6C95BB5` |
+| `consulting.js` | `CA3F6F63320C44972DA4DFB23AC3A6638B8D984282BDBCE6D7047D2CF252B98F` |
+| `document-import.js` | `3CF0553FC1DF234FD2A951DBE9625B4390DC16D8C205266098E1E44C1B9F79B6` |
+| `index.html` | `911CC722EBD299E742386D5EFD716A0F789759DA4FB712E4DB14BC4A7B5374B6` |
+| `tests/test-ui-static.js` | `3A41FBBEFFBC0CD9E50AE5EF69F8CEE93454B4786BF2C6BED31FF1664706512A` |
+| `tests/test-consulting-ui.js` | `1E86CA41B85D00F0EA8C002937DA9CC9514D9AF28C732A48EC509D01B9C810B9` |
+| `tests/test-document-import-ui.js` | `D4F0AD8B67AFE14A0CB58EF42FC76E8316F12820FAEC3F6BB0AD1EC1CFB0EE77` |
