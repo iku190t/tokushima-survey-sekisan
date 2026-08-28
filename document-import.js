@@ -34,6 +34,7 @@
   let manualConsultingDaysLineId = "";
   let manualCandidateSequence = 0;
   let currentEditingTarget = null;
+  let pendingCandidateChoice = null;
   let running = false;
   const PDF_LINE_DRAG_TYPE = "application/x-ezsekisan-pdf-line";
   let pointerPdfDrag = null;
@@ -569,6 +570,80 @@
     }) || null;
   }
 
+  function businessKindLabel(kind) {
+    return ({ design: "設計業務", survey: "測量業務", planning: "調査・計画業務", geology: "地質業務" })[kind] || "積算項目";
+  }
+
+  function keywordForSurveyItem(item) {
+    const definitions = app.getSurveyKeywordDefinitions?.() || [];
+    return definitions.find((entry) => entry.id !== "all" && entry.categories?.includes(item.category))?.id || "all";
+  }
+
+  function keywordForConsultingRule(kind, rule) {
+    const definitions = workCatalog.keywordDefinitions[kind] || [];
+    return definitions.find((entry) => entry.id !== "all" && !entry.fallback && keywordMatchesCode(entry, String(rule.familyCode || ""), definitions))?.id || "all";
+  }
+
+  function candidateChoiceHtml(choice) {
+    if (choice.type === "survey") {
+      const item = choice.item;
+      return '<button class="pdf-candidate-choice" type="button" role="option" data-pdf-candidate-choice="' + h(item.code) + '"><strong>' + h(item.name) + '</strong><small>' + h(item.code) + '／' + h(item.category) + '／単位：' + h(item.unit) + '</small><span class="pdf-candidate-choice-scope">測量業務</span></button>';
+    }
+    const rule = choice.rule;
+    return '<button class="pdf-candidate-choice" type="button" role="option" data-pdf-candidate-choice="' + h(rule.id) + '"><strong>' + h(rule.label) + '</strong><small>' + h(consultingFamilyLabel(rule)) + '／標準単位：' + h(rule.standardUnit || "1業務当り") + '</small><span class="pdf-candidate-choice-scope">' + h(businessKindLabel(choice.kind)) + '</span></button>';
+  }
+
+  function openPdfCandidateChoice(lineId, targetType, matches) {
+    const line = clickLines.get(lineId);
+    if (!line || matches.length < 2) return;
+    const kind = targetType === "item" ? "survey" : $("pdfManualKind").value;
+    const choices = targetType === "item"
+      ? matches.map((item) => ({ type: "survey", kind: "survey", item }))
+      : matches.map((rule) => ({ type: "consulting", kind, rule }));
+    pendingCandidateChoice = { lineId, targetType, kind, choices };
+    $("pdfCandidateChoiceSummary").textContent = "「" + line.text + "」に該当する候補が" + choices.length + "件あります";
+    $("pdfCandidateChoiceList").innerHTML = choices.map(candidateChoiceHtml).join("");
+    const dialog = $("pdfCandidateChoiceDialog");
+    if (dialog.open) dialog.close();
+    dialog.showModal();
+    requestAnimationFrame(() => $("pdfCandidateChoiceList").querySelector("button")?.focus());
+  }
+
+  function closePdfCandidateChoice() {
+    pendingCandidateChoice = null;
+    if ($("pdfCandidateChoiceDialog").open) $("pdfCandidateChoiceDialog").close();
+  }
+
+  function applyPdfCandidateChoice(candidateId) {
+    const pending = pendingCandidateChoice;
+    if (!pending) return;
+    const selected = pending.choices.find((choice) => (choice.type === "survey" ? choice.item.code : choice.rule.id) === candidateId);
+    if (!selected) return;
+    if (selected.type === "survey") {
+      const item = selected.item;
+      activeManualKeywords.survey = keywordForSurveyItem(item);
+      renderManualKeywords();
+      $("pdfManualSurveyRegulationGroup").value = app.getSurveyRegulationGroup(item)?.id || "";
+      populateManualSurveyCategories();
+      $("pdfManualSurveyCategory").value = item.category;
+      populateManualSurveyItems();
+      $("pdfManualSurveyCode").value = item.code;
+      updateManualSurveyRule();
+      app.notify("候補「" + item.name + "」を入力欄へ反映しました");
+    } else {
+      const rule = selected.rule;
+      activeManualKeywords[pending.kind] = keywordForConsultingRule(pending.kind, rule);
+      renderManualKeywords();
+      updateManualConsultingTasks(rule.id);
+      app.notify("候補「" + rule.label + "」を入力欄へ反映しました");
+    }
+    draggedPdfLines.add(pending.lineId);
+    rememberManualWorkflow();
+    closePdfCandidateChoice();
+    updateManualAddButtonState();
+    updatePdfClickSelection();
+  }
+
   function applyDraggedPdfLine(lineId, targetType) {
     const line = clickLines.get(lineId);
     if (!line) return;
@@ -589,7 +664,7 @@
         dragApplied = true;
         app.notify(`作業項目「${matched.rule.label}」を選びました`);
       } else if (matched.matches.length > 1) {
-        app.notify(`候補が${matched.matches.length}件あります。キーワード、積算基準の作業区分、作業項目の順に選んでください`);
+        openPdfCandidateChoice(lineId, targetType, matched.matches);
       } else {
         app.notify("一致する作業項目を確定できません。キーワード、積算基準の作業区分、作業項目の順に選んでください");
       }
@@ -649,7 +724,7 @@
         dragApplied = true;
         app.notify(`項目「${matched.item.name}」を選びました`);
       } else if (matched.matches.length > 1) {
-        app.notify(`候補が${matched.matches.length}件あります。PDF横（狭い画面では下）の緑枠「PDFから項目・数量・単位を入れる」で詳細項目を選んでください`);
+        openPdfCandidateChoice(lineId, targetType, matched.matches);
       } else {
         app.notify("一致する詳細項目を確定できません。PDF横（狭い画面では下）の緑枠で分類と詳細項目を選んでください");
       }
@@ -1340,6 +1415,13 @@
       updatePdfClickSelection();
     });
     $("applyPdfSelectionNowButton").addEventListener("click", applyPdfClickSelection);
+    $("pdfCandidateChoiceList").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-pdf-candidate-choice]");
+      if (button) applyPdfCandidateChoice(button.dataset.pdfCandidateChoice);
+    });
+    ["closePdfCandidateChoiceButton", "cancelPdfCandidateChoiceButton"].forEach((id) => $(id).addEventListener("click", closePdfCandidateChoice));
+    $("pdfCandidateChoiceDialog").addEventListener("click", (event) => { if (event.target === $("pdfCandidateChoiceDialog")) closePdfCandidateChoice(); });
+    $("pdfCandidateChoiceDialog").addEventListener("close", () => { pendingCandidateChoice = null; });
     ["closeDocumentImportDialogButton", "cancelDocumentImportButton"].forEach((id) => $(id).addEventListener("click", () => $("documentImportDialog").close()));
     $("documentImportDialog").addEventListener("click", (event) => { if (event.target === $("documentImportDialog")) $("documentImportDialog").close(); });
     $("toggleAllImportCandidates").addEventListener("change", (event) => { document.querySelectorAll(".import-candidate-select").forEach((box) => { box.checked = event.target.checked; }); updateSelectionState(); });

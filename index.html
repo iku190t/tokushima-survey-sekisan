@@ -14,7 +14,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/web-sekisan-32.png?v=20260825-2">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/web-sekisan-180.png?v=20260825-2">
   <link rel="manifest" href="site.webmanifest?v=20260825-2">
-  <link rel="stylesheet" href="styles.css?v=20260828-1">
+  <link rel="stylesheet" href="styles.css?v=20260828-2">
 </head>
 <body data-business-scope="design">
   <header class="app-header">
@@ -653,6 +653,19 @@
     <div class="import-dialog-actions"><button id="cancelDocumentImportButton" class="button" type="button">取り込まず閉じる</button><button id="applyDocumentImportButton" class="button primary" type="button">確認した項目を積算へ反映</button></div>
   </dialog>
 
+  <dialog id="pdfCandidateChoiceDialog" class="pdf-candidate-choice-dialog" aria-labelledby="pdfCandidateChoiceTitle">
+    <div class="dialog-heading">
+      <div><p class="section-kicker">SELECT MATCH</p><h2 id="pdfCandidateChoiceTitle">作業項目の候補を選択</h2></div>
+      <button id="closePdfCandidateChoiceButton" class="dialog-close" type="button" aria-label="閉じる">×</button>
+    </div>
+    <div class="pdf-candidate-choice-body">
+      <p id="pdfCandidateChoiceSummary" class="pdf-candidate-choice-summary"></p>
+      <p class="pdf-candidate-choice-guide">候補を選ぶと、業務区分・作業区分・作業項目を右の入力欄へ反映します。この操作だけでは積算へ追加しません。</p>
+      <div id="pdfCandidateChoiceList" class="pdf-candidate-choice-list" role="listbox" aria-label="作業項目の候補"></div>
+    </div>
+    <div class="import-dialog-actions"><button id="cancelPdfCandidateChoiceButton" class="button" type="button">選ばず戻る</button></div>
+  </dialog>
+
   <div id="printDocument" class="print-document" aria-hidden="true"></div>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
@@ -675,7 +688,7 @@
   <script src="document-reader.js?v=20260823-1"></script>
   <script src="app.js?v=20260827-3"></script>
   <script src="consulting.js?v=20260828-2"></script>
-  <script src="document-import.js?v=20260828-1"></script>
+  <script src="document-import.js?v=20260828-2"></script>
   <script src="analytics.js?v=20260823-1"></script>
 </body>
 </html>
