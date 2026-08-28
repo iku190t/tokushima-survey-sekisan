@@ -6,6 +6,11 @@
   const ISSUER_PROFILE_KEY = "surveySekisanIssuerProfileV1";
   const issuerProfileFields = ["companyName", "representative", "postalCode", "address", "phone", "email", "registrationNumber"];
   const defaultMasterId = "standard-r8-2026";
+  const defaultStandardSystem = "mlit-general";
+  const standardSystems = [
+    { id: "mlit-general", label: "国土交通省・全国標準" },
+    { id: "maff-land-improvement", label: "農林水産省・土地改良" }
+  ];
   const legacyMlitMasterId = "r8-mlit-2026-reference";
   const defaultJurisdictionCode = "mlit";
   const masterCatalogPath = "data/master-catalog.json";
@@ -14,6 +19,7 @@
   const defaultDocumentTitle = document.title;
   const MOBILE_IMPORT_QUERY = "(max-width: 720px)";
   const officialSourceCatalog = window.OFFICIAL_SOURCE_CATALOG || { sources: [] };
+  const maffSourceCatalog = window.MAFF_SOURCE_CATALOG || { documents: [] };
   const $ = (id) => document.getElementById(id);
   const clone = (value) => JSON.parse(JSON.stringify(value));
   const h = (value) => String(value ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
@@ -62,6 +68,9 @@
   }
 
   function regulationPathForItem(item) {
+    if (activeMaster()?.standardSystem === "maff-land-improvement") {
+      return `農林水産省 測量業務標準歩掛について ${String(item?.code || "").replace(/^maff-/, "").split("-").slice(0, 3).join("-")}／${item?.category || "測量"}`;
+    }
     return surveyRegulationPaths[item?.category] || "積算基準の作業区分（作業規程との対応要確認）";
   }
 
@@ -277,14 +286,20 @@
   function selectedSurveySourceRows(master, item) {
     const links = Array.isArray(master.sourceLinks) ? master.sourceLinks.filter((entry) => typeof entry === "object") : [];
     const findLink = (word) => links.find((entry) => String(entry.label || "").includes(word));
-    const fullBook = findLink("第1編 測量業務") || links[0];
+    const fullBook = master.standardSystem === "maff-land-improvement" ? findLink("測量") || links[0] : findLink("第1編 測量業務") || links[0];
     const measurementStandard = findLink("測量業務積算基準");
-    const rolePrices = findLink("技術者単価");
+    const rolePrices = findLink("技術者基準日額") || findLink("技術者単価");
     const gsiRegulation = (officialSourceCatalog.sources || []).find((source) => source.jurisdictionCode === "gsi" && Number(source.fiscalYear) === Number(master.fiscalYear));
     const sourceLink = (entry, fallback) => entry?.url && /^https:\/\//i.test(entry.url)
       ? `<a href="${h(entry.url)}" target="_blank" rel="noopener noreferrer">${h(entry.label || fallback)}</a>`
       : h(entry?.label || fallback);
-    const sourcePage = item?.source?.standardPage ? `p.${h(item.source.standardPage)}${item.source.ratioPage ? `／直接経費率 p.${h(item.source.ratioPage)}` : ""}` : "現行全編の項目別ページ未対応";
+    const sourcePage = item?.source?.standardPage ? `p.${h(item.source.standardPage)}${item.source.ratioPage ? `／直接経費率 p.${h(item.source.ratioPage)}` : ""}` : "項目別出典ページ";
+    if (master.standardSystem === "maff-land-improvement") return [
+      ["測量標準歩掛", sourceLink(fullBook, `農林水産省 ${eraYear(master.fiscalYear)} 測量`), sourcePage],
+      ["留意事項・積算要領", sourceLink(findLink("留意事項"), `農林水産省 ${eraYear(master.fiscalYear)} 留意事項`), "旅費・電子成果品・運用事項"],
+      ["技術者基準日額", sourceLink(rolePrices, `農林水産省 ${eraYear(master.fiscalYear)} 技術者基準日額`), `${eraYear(master.fiscalYear)}適用`],
+      ["測量機械等損料", sourceLink(findLink("損料"), `農林水産省 ${eraYear(master.fiscalYear)} 測量機械等損料`), `${eraYear(master.fiscalYear)}適用`]
+    ];
     const rows = [
       ["基準書本体・歩掛", sourceLink(fullBook, "国土交通省 標準積算基準書 第1編 測量業務"), sourcePage],
       ["年度の積算基準・改定確認", sourceLink(measurementStandard, `${eraYear(master.fiscalYear)} 国土交通省 測量業務積算基準`), "年度・適用内容を確認"],
@@ -307,6 +322,18 @@
     const preferredYear = Number(estimate.consulting?.fiscalYear || activeMaster().fiscalYear || 2026);
     if (resetYear || !yearSelect.value) yearSelect.value = String(preferredYear);
     const fiscalYear = Number(yearSelect.value || preferredYear);
+    const isMaffSystem = estimate.standardSystem === "maff-land-improvement";
+    $("guideSourceLedgerTitle").textContent = `${isMaffSystem ? "農林水産省・土地改良" : "国土交通省"}で使用する規定書・PDF`;
+    if (isMaffSystem) {
+      const documents = (maffSourceCatalog.documents || []).filter((entry) => Number(entry.fiscalYear) === fiscalYear);
+      body.innerHTML = documents.map((entry) => {
+        const usage = entry.usage === "calculation" ? "歩掛・条件・計算式" : entry.usage === "rate" ? "技術者基準日額・損料" : "適用・留意事項の照合";
+        const link = `<a href="${h(entry.url)}" target="_blank" rel="noopener noreferrer">${h(entry.title)}</a>`;
+        return `<tr><td>農林水産省</td><td>${link}<small>SHA-256 ${h(String(entry.sha256 || "").slice(0, 12))}…</small></td><td class="source-use-status">${h(usage)}</td><td class="source-page">${h(entry.pageCount || 0)}頁</td><td><span class="scope-status verified">取得・索引済み</span></td></tr>`;
+      }).join("") || '<tr><td colspan="5">この年度の農林水産省公式資料はありません。</td></tr>';
+      $("guideSourceLedgerSummary").textContent = `${eraYear(fiscalYear)}：農林水産省公式資料 ${documents.length}件・${documents.reduce((sum, entry) => sum + Number(entry.pageCount || 0), 0)}頁。`;
+      return;
+    }
     const surveyMaster = masters.find((master) => Number(master.fiscalYear) === fiscalYear && master.scopeStatus === "national-standard-reference") || activeMaster();
     const rows = (surveyMaster.sourceLinks || []).filter((entry) => typeof entry === "object");
     body.innerHTML = rows.map((entry) => {
@@ -320,6 +347,7 @@
   }
 
   function jurisdictionName(code) {
+    if (String(code) === "maff") return "農林水産省（土地改良）";
     return window.SEKISAN_JURISDICTIONS?.find((entry) => entry.code === String(code))?.name || "地域未設定";
   }
 
@@ -350,9 +378,10 @@
   }
 
   function normalizeMasterMetadata(master, fallbackCode = defaultJurisdictionCode) {
-    master.jurisdictionCode = String(master.jurisdictionCode || fallbackCode).padStart(2, "0");
-    master.jurisdictionName = jurisdictionName(master.jurisdictionCode);
-    master.jurisdictionType = master.jurisdictionCode === "mlit" ? "national" : "prefecture";
+    master.jurisdictionCode = String(master.jurisdictionCode || fallbackCode);
+    master.standardSystem = master.standardSystem || defaultStandardSystem;
+    master.jurisdictionName = master.jurisdictionName || jurisdictionName(master.jurisdictionCode);
+    master.jurisdictionType = ["mlit", "maff"].includes(master.jurisdictionCode) ? "national" : "prefecture";
     master.verificationStatus = master.verificationStatus || "user-supplied";
     master.scopeStatus = master.scopeStatus === "rate-comparison" ? "retired-comparison" : (master.scopeStatus || "user-custom");
     return applyVerifiedWorkItemExpansions(master);
@@ -369,19 +398,30 @@
     });
   }
 
+  function bundledMaffMasters() {
+    return (window.MAFF_SURVEY_MASTERS || []).map((entry) => {
+      const master = clone(entry);
+      master.catalogEntryId = master.id;
+      master.catalogManaged = true;
+      master.bundled = true;
+      return normalizeMasterMetadata(master, "mlit");
+    });
+  }
+
   function loadMasters() {
     let stored = [];
     try { stored = JSON.parse(localStorage.getItem(MASTER_KEY) || "[]"); } catch (_) { stored = []; }
     if (!Array.isArray(stored)) stored = [];
     const national = bundledNationalStandardMasters();
-    const reservedIds = new Set(national.map((master) => master.id));
+    const maff = bundledMaffMasters();
+    const reservedIds = new Set([...national, ...maff].map((master) => master.id));
     const downloadedStandards = stored
       .filter((master) => master && !reservedIds.has(master.id) && master.catalogManaged && master.jurisdictionCode === "mlit" && master.verificationStatus === "standard-reference")
       .map((master) => normalizeMasterMetadata(master, "mlit"));
     const custom = stored
       .filter((master) => master && !reservedIds.has(master.id) && master.id !== legacyMlitMasterId && master.id !== "r8-tokushima-2026" && !master.catalogManaged && master.scopeStatus !== "rate-comparison" && master.scopeStatus !== "retired-comparison" && master.scopeStatus !== "national-standard-reference")
       .map((master) => normalizeMasterMetadata(master));
-    return [...national, ...downloadedStandards, ...custom].sort((a, b) => num(b.fiscalYear) - num(a.fiscalYear));
+    return [...national, ...maff, ...downloadedStandards, ...custom].sort((a, b) => num(b.fiscalYear) - num(a.fiscalYear));
   }
 
   function emptyEstimate() {
@@ -389,6 +429,7 @@
     const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
     return {
       schemaVersion: 4,
+      standardSystem: defaultStandardSystem,
       masterId: masters.find((master) => master.id === defaultMasterId)?.id || masters[0]?.id || defaultMasterId,
       submissionJurisdictionCode: "mlit",
       projectName: "",
@@ -420,7 +461,7 @@
       fiscalYear: 2026,
       lines: [],
       costs: { designDirectExpenses: 0, geologyDirectNonLabor: 0, geologyIndirect: 0, geologyExcluded: 0 },
-      options: { includeSurvey: false, electronicMode: "none", adjustBusinessPrice: false, taxRate: 0.1 }
+      options: { includeSurvey: false, electronicMode: "none", electronicModes: { designPlanning: "none", geology: "none" }, adjustBusinessPrice: false, taxRate: 0.1 }
     };
   }
 
@@ -528,6 +569,7 @@
           saved.masterId = masters.find((master) => master.fiscalYear === savedYear && master.jurisdictionCode === "mlit")?.id || defaultMasterId;
         }
         const normalized = Object.assign(emptyEstimate(), saved);
+        normalized.standardSystem = standardSystems.some((entry) => entry.id === saved.standardSystem) ? saved.standardSystem : (masters.find((master) => master.id === saved.masterId)?.standardSystem || defaultStandardSystem);
         normalized.submissionJurisdictionCode = normalizeSubmissionJurisdictionCode(saved.submissionJurisdictionCode);
         normalized.projectInfo = Object.assign(defaultProjectInfo(), saved.projectInfo || {});
         normalized.caseFile = Object.assign(defaultCaseFile(), saved.caseFile || {});
@@ -561,7 +603,17 @@
   }
 
   function activeMaster() {
-    return masters.find((master) => master.id === estimate.masterId) || masters[0];
+    return masters.find((master) => master.id === estimate.masterId)
+      || masters.find((master) => master.standardSystem === (estimate.standardSystem || defaultStandardSystem))
+      || masters[0];
+  }
+
+  function activeStandardSystem() {
+    return estimate.standardSystem || activeMaster()?.standardSystem || defaultStandardSystem;
+  }
+
+  function lineStandardSystem(line) {
+    return line?.standardSystem || defaultStandardSystem;
   }
 
   function editorMaster() {
@@ -626,7 +678,7 @@
   function currentResult() {
     const master = activeMaster();
     const prepared = Object.assign({}, estimate, {
-      lines: estimate.lines.map((line) => ({ ...line, masterItem: master.workItems.find((item) => item.code === line.code) }))
+      lines: estimate.lines.filter((line) => lineStandardSystem(line) === activeStandardSystem()).map((line) => ({ ...line, masterItem: master.workItems.find((item) => item.code === line.code) }))
         .filter((line) => line.masterItem && !line.inputPending && Number(line.quantity) > 0)
     });
     return window.SekisanEngine.calculateEstimate(prepared, master);
@@ -634,20 +686,30 @@
 
   function populateMasterSelects() {
     const active = activeMaster();
+    const system = activeStandardSystem();
+    const systemOptions = standardSystems.map((entry) => `<option value="${h(entry.id)}">${h(entry.label)}</option>`).join("");
+    $("standardSystemSelect").innerHTML = systemOptions;
+    $("standardSystemSelect").value = system;
+    $("consultingStandardSystemSelect").innerHTML = systemOptions;
+    $("consultingStandardSystemSelect").value = system;
     estimate.submissionJurisdictionCode = normalizeSubmissionJurisdictionCode(estimate.submissionJurisdictionCode);
     $("jurisdictionSelect").innerHTML = `<option value="">提出先を選択しない</option>` + submissionJurisdictions().map((region) => `<option value="${region.code}">${h(region.name)}</option>`).join("");
     $("jurisdictionSelect").value = estimate.submissionJurisdictionCode;
-    const selectableMasters = masters.slice().sort((a, b) => num(b.fiscalYear) - num(a.fiscalYear) || String(a.label).localeCompare(String(b.label), "ja"));
-    $("fiscalYearSelect").innerHTML = selectableMasters.map((master) => `<option value="${h(master.id)}">${h(eraLabel(master.fiscalYear))}｜${h(master.jurisdictionCode === "mlit" ? "国土交通省・全国標準" : master.label)}</option>`).join("");
+    const selectableMasters = masters.filter((master) => master.standardSystem === system).sort((a, b) => num(b.fiscalYear) - num(a.fiscalYear) || String(a.label).localeCompare(String(b.label), "ja"));
+    $("fiscalYearSelect").innerHTML = selectableMasters.map((master) => `<option value="${h(master.id)}">${h(eraLabel(master.fiscalYear))}｜${h(master.label)}</option>`).join("");
     $("fiscalYearSelect").value = active.id;
     const editorMasters = masters;
     if (!editorMasters.some((master) => master.id === editorMasterId)) editorMasterId = active.id;
     const options = editorMasters.map((master) => `<option value="${h(master.id)}">${h(master.jurisdictionName)}｜${h(eraLabel(master.fiscalYear))}｜${h(master.label)}${master.bundled ? "（初期収録）" : ""}</option>`).join("");
     $("masterEditorSelect").innerHTML = options;
     $("masterEditorSelect").value = editorMasterId;
-    $("masterJurisdiction").innerHTML = (window.SEKISAN_JURISDICTIONS || []).map((region) => `<option value="${region.code}">${h(region.name)}</option>`).join("");
+    const masterJurisdictions = [...(window.SEKISAN_JURISDICTIONS || [])];
+    if (!masterJurisdictions.some((entry) => entry.code === "maff")) masterJurisdictions.splice(1, 0, { code: "maff", name: "農林水産省（土地改良）" });
+    $("masterJurisdiction").innerHTML = masterJurisdictions.map((region) => `<option value="${region.code}">${h(region.name)}</option>`).join("");
     const standardYears = [...new Set(masters.filter((master) => master.jurisdictionCode === "mlit" && master.verificationStatus === "standard-reference").map((master) => master.fiscalYear))].sort();
-    $("masterCoverageStatus").textContent = `国土交通省・全国標準の令和${standardYears.map((year) => year - 2018).join("・")}年度を収録。見積提出先は「選択しない」または「国土交通省（全国標準）」だけです。`;
+    $("masterCoverageStatus").textContent = `国土交通省・全国標準と農林水産省・土地改良を別体系で収録。現在は${standardSystems.find((entry) => entry.id === system)?.label || system}を選択中です。`;
+    if (system === "maff-land-improvement") $("masterUpdateStatus").textContent = "農林水産省・土地改良の令和6・7・8年度公式資料を年度別に収録しています。市場単価・刊行物単価・個別見積は、案件で採用する単価と根拠を入力します。";
+    else $("masterUpdateStatus").textContent = "令和6・7・8年度の国土交通省・全国標準単価セットを収録しています。見積提出先は「選択しない」または「国土交通省（全国標準）」だけです。";
   }
 
   function populateCategories() {
@@ -840,7 +902,7 @@
   function renderLines(result) {
     const master = activeMaster();
     const visibleLines = result.lines;
-    const pendingHtml = estimate.lines.filter((line) => line.inputPending).map((line) => {
+    const pendingHtml = estimate.lines.filter((line) => lineStandardSystem(line) === activeStandardSystem() && line.inputPending).map((line) => {
       const item = master.workItems.find((entry) => entry.code === line.code);
       if (!item) return "";
       const qRule = quantityRule(item, master);
@@ -880,7 +942,7 @@
         ${unitAudit}
         <p><b>直接作業費</b>${directFormula} ＝ ${yen.format(calculated.directWork)}</p>
         <p><b>精度管理費</b>(${yen.format(calculated.labor)}＋${yen.format(calculated.machine)}) × ${(calculated.precisionRate * 100).toFixed(0)}% ＝ ${yen.format(calculated.precision)}</p>
-        <p class="calc-source">${(() => { const source = (master.sourceLinks || []).find((entry) => typeof entry === "object" && String(entry.label || "").includes("第1編 測量業務")) || (master.sourceLinks || [])[0]; const label = source?.label || "国土交通省 標準積算基準書 第1編 測量業務"; const pageText = item.source?.standardPage ? `p.${h(item.source.standardPage)}${item.source.ratioPage ? `／直接経費率 p.${h(item.source.ratioPage)}` : ""}` : "現行全編の項目別ページ未対応"; return source?.url && /^https:\/\//i.test(source.url) ? `出典：<a href="${h(source.url)}" target="_blank" rel="noopener noreferrer">${h(label)}</a> ${pageText}` : `出典：${h(label)} ${pageText}`; })()}</p>
+        <p class="calc-source">${(() => { const source = (master.sourceLinks || []).find((entry) => typeof entry === "object" && (master.standardSystem === "maff-land-improvement" ? String(entry.label || "").includes("測量") : String(entry.label || "").includes("第1編 測量業務"))) || (master.sourceLinks || [])[0]; const label = source?.label || (master.standardSystem === "maff-land-improvement" ? "農林水産省 測量業務標準歩掛" : "国土交通省 標準積算基準書 第1編 測量業務"); const pageText = item.source?.standardPage ? `p.${h(item.source.standardPage)}${item.source.ratioPage && item.source.ratioPage !== item.source.standardPage ? `／直接経費率 p.${h(item.source.ratioPage)}` : ""}` : "項目別出典ページ"; return source?.url && /^https:\/\//i.test(source.url) ? `出典：<a href="${h(source.url)}" target="_blank" rel="noopener noreferrer">${h(label)}</a> ${pageText}` : `出典：${h(label)} ${pageText}`; })()}</p>
       </div></details>`;
       const importSource = line.importSource ? `<small>資料取込：${h(line.importSource.fileName || "貼付け原文")} p.${h(line.importSource.page || 1)}／${line.importSource.method === "ocr" ? "OCR" : "文字抽出"}／要原文照合</small>` : "";
       return `<tr data-line-id="${h(line.id)}" class="${recentlyImportedSurveyLineIds.has(line.id) ? "recently-imported-line" : ""}">
@@ -894,7 +956,7 @@
       </tr>`;
     }).join("");
     $("lineTableBody").innerHTML = pendingHtml + calculatedHtml;
-    $("emptyState").classList.toggle("hidden", estimate.lines.length > 0);
+    $("emptyState").classList.toggle("hidden", estimate.lines.some((line) => lineStandardSystem(line) === activeStandardSystem()));
   }
 
   function renderSummary(result) {
@@ -924,11 +986,13 @@
   function validationIssues(result) {
     const issues = [];
     const master = activeMaster();
-    if (master.verificationStatus === "standard-reference") issues.push({ severity: "warn", text: "全国標準単価セットです。地域条件、普通作業員単価、材料・市場・機械単価、補正、適用通知を発注図書で確認してください。" });
+    if (master.standardSystem === "maff-land-improvement") issues.push({ severity: "info", text: "農林水産省・土地改良の選択年度基準で計算しています。市場単価・個別見積は入力した採用根拠を使用します。" });
+    else if (master.verificationStatus === "standard-reference") issues.push({ severity: "warn", text: "全国標準単価セットです。地域条件、普通作業員単価、材料・市場・機械単価、補正、適用通知を発注図書で確認してください。" });
     else if (master.verificationStatus === "official-reference") issues.push({ severity: "warn", text: "国土交通省の公開基準参照版です。地方整備局等の適用通知・特記仕様・正解積算と照合してください。" });
     else if (master.verificationStatus !== "verified") issues.push({ severity: "warn", text: "利用者作成マスターです。発注機関・年度・出典と正解積算を照合してください。" });
-    if (!estimate.lines.length) issues.push({ severity: "info", text: "作業項目がまだありません。" });
-    estimate.lines.filter((line) => line.inputPending).forEach((line) => {
+    const systemLines = estimate.lines.filter((line) => lineStandardSystem(line) === activeStandardSystem());
+    if (!systemLines.length) issues.push({ severity: "info", text: "作業項目がまだありません。" });
+    systemLines.filter((line) => line.inputPending).forEach((line) => {
       const item = master.workItems.find((entry) => entry.code === line.code);
       issues.push({ severity: "error", text: `${item?.name || line.code}：数量未入力のため計算対象外です。` });
     });
@@ -952,7 +1016,7 @@
     const hasError = issues.some((issue) => issue.severity === "error");
     const hasWarning = issues.some((issue) => issue.severity === "warn");
     panel.className = `validation-panel ${hasError ? "error" : hasWarning ? "warning" : "good"}`;
-    $("validationTitle").textContent = hasError ? "未確定項目があります" : hasWarning ? "確認が必要です" : estimate.lines.length ? "自動計算範囲は入力済み" : "提出前チェック";
+    $("validationTitle").textContent = hasError ? "未確定項目があります" : hasWarning ? "確認が必要です" : estimate.lines.some((line) => lineStandardSystem(line) === activeStandardSystem()) ? "自動計算範囲は入力済み" : "提出前チェック";
     const visible = issues.slice(0, 5);
     $("validationList").innerHTML = visible.length
       ? visible.map((issue) => `<li>${h(issue.text)}</li>`).join("") + (issues.length > visible.length ? `<li>ほか${issues.length - visible.length}件</li>` : "")
@@ -970,7 +1034,12 @@
     $("useElectronic").checked = estimate.options.useElectronicDeliverable !== false;
     $("useFourDigits").checked = estimate.options.useFourSignificantDigits !== false;
     $("adjustBusinessPrice").checked = estimate.options.adjustBusinessPrice !== false;
-    $("travelMode").value = estimate.options.travelMode || activeMaster().travel?.defaultMode || "manual";
+    const travelRule = activeMaster().travel || {};
+    $("travelMode").innerHTML = travelRule.manualOnly
+      ? '<option value="manual">農水省旅費交通費積算要領により実費積上げ</option>'
+      : '<option value="noLodging">宿泊なし：直接人件費×0.56%（上限23万円）</option><option value="lodging">宿泊あり：直接人件費×0.83%（上限31.3万円）</option><option value="manual">率によらず実費積上げ</option>';
+    estimate.options.travelMode = travelRule.manualOnly ? "manual" : (estimate.options.travelMode || travelRule.defaultMode || "manual");
+    $("travelMode").value = estimate.options.travelMode;
     populateSafetyRates();
     const result = currentResult();
     renderLines(result);
@@ -1213,7 +1282,7 @@
     const item = activeMaster().workItems.find((entry) => entry.code === code);
     const validation = updateSurveyAddState(item);
     if (!validation.valid) { showMissingInputPopup(validation); return; }
-    estimate.lines.push({ id: `line-${Date.now()}-${Math.random().toString(16).slice(2)}`, code, quantity: validation.quantity, correctionRate: 0, correctionSelections: validation.correctionSelections, correctionSelectionLabels: validation.correctionSelectionLabels, conditionValue: validation.conditionValue, precisionRate: item.precisionRate, manualUnitPrice: 0 });
+    estimate.lines.push({ id: `line-${Date.now()}-${Math.random().toString(16).slice(2)}`, standardSystem: activeStandardSystem(), code, quantity: validation.quantity, correctionRate: 0, correctionSelections: validation.correctionSelections, correctionSelectionLabels: validation.correctionSelectionLabels, conditionValue: validation.conditionValue, precisionRate: item.precisionRate, manualUnitPrice: 0 });
     $("newItemQuantity").value = "";
     updateSelectedItemMeta();
     recalculate();
@@ -1234,6 +1303,7 @@
       recentlyImportedSurveyLineIds.add(id);
       estimate.lines.push({
         id,
+        standardSystem: activeStandardSystem(),
         code: item.code,
         quantity,
         inputPending: requestedPending,
@@ -1271,9 +1341,9 @@
     return true;
   }
 
-  function preferredMaster(_jurisdictionCode, fiscalYear) {
+  function preferredMaster(_jurisdictionCode, fiscalYear, standardSystem = activeStandardSystem()) {
     const priority = (master) => master.verificationStatus === "verified" ? 30 : master.verificationStatus === "user-supplied" ? 20 : 10;
-    return masters.filter((master) => master.jurisdictionCode === "mlit" && (!fiscalYear || master.fiscalYear === fiscalYear))
+    return masters.filter((master) => master.standardSystem === standardSystem && (!fiscalYear || master.fiscalYear === fiscalYear))
       .sort((a, b) => priority(b) - priority(a) || num(b.fiscalYear) - num(a.fiscalYear))[0] || null;
   }
 
@@ -1398,9 +1468,13 @@
   function switchMaster(id, options = {}) {
     const next = masters.find((master) => master.id === id);
     if (!next) return false;
+    const previousSystem = activeStandardSystem();
+    estimate.lines = estimate.lines.map((line) => ({ ...line, standardSystem: line.standardSystem || previousSystem }));
     estimate.masterId = id;
+    estimate.standardSystem = next.standardSystem || defaultStandardSystem;
     estimate.options.taxRate = next.taxRate;
-    estimate.lines = estimate.lines.filter((line) => next.workItems.some((item) => item.code === line.code)).map((line) => {
+    estimate.lines = estimate.lines.filter((line) => lineStandardSystem(line) !== estimate.standardSystem || next.workItems.some((item) => item.code === line.code)).map((line) => {
+      if (lineStandardSystem(line) !== estimate.standardSystem) return line;
       const item = next.workItems.find((entry) => entry.code === line.code);
       const value = validatedQuantity(line.quantity, item, next);
       const validQuantity = value !== null;
@@ -1421,15 +1495,25 @@
     populateCategories();
     renderEstimate();
     scheduleSave();
-    document.dispatchEvent(new CustomEvent("ezsekisan:fiscalyearchange", { detail: { fiscalYear: Number(next.fiscalYear), masterId: next.id } }));
+    document.dispatchEvent(new CustomEvent("ezsekisan:fiscalyearchange", { detail: { fiscalYear: Number(next.fiscalYear), masterId: next.id, standardSystem: estimate.standardSystem } }));
     showToast(`${next.label}に切り替えました`);
     return true;
   }
 
   function setUnifiedFiscalYear(year) {
-    const next = preferredMaster("mlit", Number(year));
+    const next = preferredMaster("mlit", Number(year), activeStandardSystem());
     if (!next) return false;
     return switchMaster(next.id);
+  }
+
+  function setStandardSystem(systemId) {
+    if (!standardSystems.some((entry) => entry.id === systemId)) return false;
+    const currentYear = Number(activeMaster()?.fiscalYear || estimate.consulting?.fiscalYear || 2026);
+    const next = preferredMaster("mlit", currentYear, systemId) || preferredMaster("mlit", 0, systemId);
+    if (!next) return false;
+    const changed = switchMaster(next.id);
+    if (changed) document.dispatchEvent(new CustomEvent("ezsekisan:standardsystemchange", { detail: { standardSystem: systemId, fiscalYear: Number(next.fiscalYear), masterId: next.id } }));
+    return changed;
   }
 
   function download(filename, content, type) {
@@ -1513,7 +1597,7 @@
     const master = ensureEditableMaster();
     master.jurisdictionCode = $("masterJurisdiction").value;
     master.jurisdictionName = jurisdictionName(master.jurisdictionCode);
-    master.jurisdictionType = master.jurisdictionCode === "mlit" ? "national" : "prefecture";
+    master.jurisdictionType = ["mlit", "maff"].includes(master.jurisdictionCode) ? "national" : "prefecture";
     master.fiscalYear = Math.trunc(num($("masterYear").value, master.fiscalYear));
     master.label = $("masterLabel").value.trim() || `${master.fiscalYear}年度マスター`;
     master.effectiveFrom = $("masterEffective").value;
@@ -1723,6 +1807,7 @@
     mobileImportMedia.addEventListener?.("change", enforceMobileImportAvailability);
     enforceMobileImportAvailability();
     $("guideSourceYear").addEventListener("change", () => renderGuideSourceLedger(false));
+    document.addEventListener("ezsekisan:standardsystemchange", () => renderGuideSourceLedger(true));
     $("surveyKeywordList").addEventListener("click", (event) => {
       const button = event.target.closest("[data-survey-keyword]");
       if (!button) return;
@@ -1757,6 +1842,8 @@
       showToast(event.target.value ? `見積提出先を${jurisdictionName(event.target.value)}に設定しました（単価は全国標準のままです）` : "見積提出先を未設定にしました");
     });
     $("fiscalYearSelect").addEventListener("change", (event) => switchMaster(event.target.value));
+    $("standardSystemSelect").addEventListener("change", (event) => setStandardSystem(event.target.value));
+    $("consultingStandardSystemSelect").addEventListener("change", (event) => setStandardSystem(event.target.value));
     ["projectName", "estimateDate", "projectMemo"].forEach((id) => $(id).addEventListener("input", updateEstimateField));
     document.querySelectorAll(".project-info-input").forEach((input) => input.addEventListener("input", updateProjectInfo));
     document.querySelectorAll(".cost-input").forEach((input) => input.addEventListener("input", updateOptions));
@@ -1869,6 +1956,8 @@
     getEstimate: () => estimate,
     getSurveyResult: currentResult,
     getActiveSurveyMaster: activeMaster,
+    getStandardSystem: activeStandardSystem,
+    setStandardSystem,
     setUnifiedFiscalYear,
     getSubmissionJurisdictionCode: () => estimate.submissionJurisdictionCode || "",
     getSubmissionJurisdictionName: () => estimate.submissionJurisdictionCode ? jurisdictionName(estimate.submissionJurisdictionCode) : "",

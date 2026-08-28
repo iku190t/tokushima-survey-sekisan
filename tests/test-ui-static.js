@@ -61,7 +61,7 @@ assert.ok(app.includes("line.correctionSelections = {}") && app.includes("line.m
 assert.ok(app.includes("calc-detail"), "項目ごとの計算根拠表示がある");
 for (const id of ["guideSourceYear", "guideSourceLedgerSummary", "guideSourceLedgerBody"]) assert.ok(html.includes(`id="${id}"`), `${id}で年度別公式PDF台帳を表示する`);
 assert.ok(app.includes("renderGuideSourceLedger") && app.includes("surveySourceUsage") && app.includes("surveyMaster.sourceLinks"), "測量マスターが実際に使用・照合するPDFだけを年度別表示する");
-assert.ok(app.includes('String(entry.label || "").includes("第1編 測量業務")') && app.includes("現行全編の項目別ページ未対応"), "測量明細は国交省基準書本体へリンクし、未対応の県版ページを流用しない");
+assert.ok(app.includes('master.standardSystem === "maff-land-improvement"') && app.includes("selectedSurveySourceRows") && app.includes("項目別出典ページ"), "測量明細は選択基準体系の公式資料と項目別PDF頁へリンクする");
 assert.ok(app.includes("公式PDF・計算根拠一覧") && app.includes("sourceTableHtml(master)"), "測量の積算条件書にもPDF名・用途・頁数・確認状態の一覧表を出す");
 const surveyCostCardIndex = html.indexOf('class="card business-cost-card no-print"');
 const surveySourceCardIndex = html.indexOf('class="card source-card consulting-source-card survey-source-card"');
@@ -84,7 +84,7 @@ assert.ok(!html.includes('src="data/master-r8.js') && !html.includes('src="data/
 assert.ok(!app.includes("window.MASTER_R8") && !app.includes("window.SEKISAN_VERIFIED_MASTERS") && !app.includes("prefectureReferenceMasters"), "県別マスターを全国標準の選択肢へ混在させない");
 assert.ok(app.includes('const defaultMasterId = "standard-r8-2026"'), "新規画面は令和8年度全国標準で開始する");
 assert.ok(app.includes('submissionJurisdictionCode: "mlit"') && app.includes("normalizeSubmissionJurisdictionCode") && app.includes("getSubmissionJurisdictionName"), "新規は国土交通省全国標準を既定にし旧都道府県提出先は正規化する");
-assert.ok(app.includes('見積提出先は「選択しない」または「国土交通省（全国標準）」だけです'), "見積提出先を2択に限定したことを明示する");
+assert.ok(app.includes("submissionJurisdictions()") && app.includes('entry.code === "mlit"'), "見積提出先を未設定または国土交通省に限定する");
 assert.ok(nationalMasters.includes("https://www.mlit.go.jp/tec/gyoumu_sekisan.html"), "全国標準に国交省積算基準の公式出典を収録する");
 assert.ok(nationalMasters.includes("https://www.mlit.go.jp/tec/content/001724089.pdf"), "全国標準R6に公式技術者単価を収録する");
 assert.ok(app.includes("function sourceListHtml"), "マスター画面と帳票で公式出典をリンク表示する");
@@ -175,7 +175,7 @@ assert.ok(!html.includes('id="pdfManualSurveyQuantity" type="number" aria-label=
 assert.ok(documentImport.includes('$("pdfManualSurveyQuantity").value = "";') && documentImport.includes('$("pdfManualConsultingDays").value = "";'), "PDF取込の数量・人工を空欄へ戻す");
 assert.ok(documentImport.includes('return values.length ? values[values.length - 1][1] : "";'), "PDFに数値がなければ1を補わない");
 assert.ok(consulting.includes("calculateStandardQuantity") && consulting.includes("presetInputValidation") && consulting.includes("updatePresetAddState"), "必要な条件と標準数量を追加前に自動検査する");
-assert.ok(consulting.includes("CONSULTING_RULE_PACK") && consulting.includes("国交省基準の適用条件") && consulting.includes("source-table-crosschecked"), "国交省ページ照合済みの設計・調査・地質条件を使用する");
+assert.ok(consulting.includes("CONSULTING_RULE_PACK") && consulting.includes("MAFF_RULE_PACK") && consulting.includes("source-table-crosschecked"), "選択基準体系のページ照合済み設計・調査・地質条件を使用する");
 assert.ok(!html.includes('id="analyticsConsent"') && !html.includes('id="analyticsAcceptButton"') && !html.includes('id="analyticsDeclineButton"'), "アクセス解析の同意ポップアップを表示しない");
 assert.ok(!html.includes('id="analyticsSettingsButton"') && !analytics.includes("readConsent") && !analytics.includes("writeConsent"), "アクセス解析の同意保存と設定変更UIを残さない");
 assert.ok(!html.includes("サイト改善のため") && !html.includes("利用状況の把握と改善のため"), "アクセス解析の目的説明を画面へ表示しない");

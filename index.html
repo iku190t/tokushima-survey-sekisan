@@ -65,6 +65,10 @@
     </section>
     <section id="estimateView" class="view">
       <section class="project-strip business-project-strip">
+        <label class="field standard-system-field">
+          <span>適用する積算基準</span>
+          <select id="standardSystemSelect"></select>
+        </label>
         <label class="field">
           <span>見積提出先</span>
           <select id="jurisdictionSelect"></select>
@@ -209,6 +213,7 @@
 
     <section id="consultingView" class="view active">
       <section class="project-strip business-project-strip">
+        <label class="field standard-system-field"><span>適用する積算基準</span><select id="consultingStandardSystemSelect"></select></label>
         <label class="field"><span>見積提出先</span><select id="consultingJurisdictionSelect"></select></label>
         <label class="field compact-field"><span>標準単価セット</span><select id="consultingFiscalYear"></select></label>
         <label class="field"><span>業務名</span><input id="consultingProjectName" type="text" placeholder="例：○○地区道路設計業務"></label>
@@ -301,7 +306,7 @@
               <div class="table-scroll"><table class="estimate-table additional-cost-table"><thead><tr><th>区分・名称</th><th>計上先</th><th>数量</th><th>単価</th><th>金額</th><th>根拠</th><th><span class="sr-only">操作</span></th></tr></thead><tbody id="consultingAdditionalCostBody"></tbody></table></div>
             </details>
             <div class="option-row consulting-options">
-              <label class="field inline-select" data-consulting-scope="design-planning"><span>電子成果品作成費</span><select id="consultingElectronicMode"><option value="none">計上しない</option><option value="detailed">概略・予備・詳細設計</option><option value="other">その他の設計業務</option></select></label>
+              <label class="field inline-select"><span>電子成果品作成費</span><select id="consultingElectronicMode"><option value="none">計上しない</option><option value="detailed">概略・予備・詳細設計</option><option value="other">その他の設計業務</option></select></label>
               <label class="check"><input id="consultingIncludeSurvey" type="checkbox"><span>現在の測量積算を合算</span></label>
               <label class="check"><input id="consultingAdjustBusinessPrice" type="checkbox"><span>総合業務価格を千円止め</span></label>
               <label class="field inline-select"><span>消費税率</span><input id="consultingTaxRate" type="number" min="0" max="100" step="0.1"></label>
@@ -575,7 +580,7 @@
                   <tr><td><a href="https://www.mlit.go.jp/kowan/kowan_fr5_000019.html" target="_blank" rel="noopener noreferrer">国土交通省・港湾請負工事積算基準</a></td><td>港湾の測量・調査、船舶・機械損料、水中部調査</td><td><span class="scope-status pending">別体系・未収録</span></td></tr>
                   <tr><td><a href="https://www.mlit.go.jp/koku/koku_tk9_000006.html" target="_blank" rel="noopener noreferrer">国土交通省・空港土木工事共通仕様書等</a></td><td>空港土木の調査・設計・測量</td><td><span class="scope-status pending">別体系・未収録</span></td></tr>
                   <tr><td><a href="https://www-2.kkr.mlit.go.jp/land/sekisannkijunn1.html" target="_blank" rel="noopener noreferrer">用地調査等業務費積算基準</a></td><td>権利、建物、営業、土地評価、補償説明等</td><td><span class="scope-status pending">別体系・未収録</span></td></tr>
-                  <tr><td><a href="https://www.maff.go.jp/j/nousin/sekkei/sekisan_kijun/index.html" target="_blank" rel="noopener noreferrer">農林水産省・土地改良工事積算基準</a></td><td>農業農村の調査・測量・設計</td><td><span class="scope-status pending">別体系・未収録</span></td></tr>
+                  <tr><td><a href="https://www.maff.go.jp/j/nousin/sekkei/sekisan_kijun/index.html" target="_blank" rel="noopener noreferrer">農林水産省・土地改良工事積算基準</a></td><td>農業農村整備の調査・測量・設計・地質</td><td><span class="scope-status supported">R6～R8年度別・別体系で収録</span>公式基準、積算参考歩掛、技術者基準日額、測量機械等損料を年度別に切り替えます。市場単価・刊行物単価・個別見積は、案件で採用する価格根拠を入力して計算します。</td></tr>
                   <tr><td><a href="https://www.mlit.go.jp/mizukokudo/sewerage/mizukokudo_sewerage_tk_001075.html" target="_blank" rel="noopener noreferrer">下水道用設計標準歩掛表</a></td><td>下水道計画、管路、処理場・ポンプ場設計</td><td><span class="scope-status pending">別体系・未収録</span></td></tr>
                   <tr><td><a href="https://www.mlit.go.jp/mizukokudo/watersupply/stf_seisakunitsuite_bunya_topics_bukyoku_kenkou_suido_yosan_01_00001.html" target="_blank" rel="noopener noreferrer">水道関係基準</a></td><td>水道施設・管路等</td><td><span class="scope-status pending">別体系・未収録</span></td></tr>
                   <tr><td><a href="https://www.rinya.maff.go.jp/j/sekou/gijutu/tyousasankou.html" target="_blank" rel="noopener noreferrer">林野庁・調査等業務の積算資料</a></td><td>治山・林道等の調査、測量、設計</td><td><span class="scope-status pending">別体系・未収録</span></td></tr>
@@ -677,6 +682,9 @@
   <script src="data/consulting-work-catalog.js?v=20260824-1"></script>
   <script src="data/consulting-condition-rules.js?v=20260824-2"></script>
   <script src="data/consulting-rule-pack.js?v=20260824-3"></script>
+  <script src="data/maff-source-catalog.js?v=20260828-1"></script>
+  <script src="data/maff-rule-pack.js?v=20260828-1"></script>
+  <script src="data/maff-master.js?v=20260828-1"></script>
   <script src="data/estimation-compliance-catalog.js?v=20260824-2"></script>
   <script src="data/verified-work-item-expansions.js?v=20260823-1"></script>
   <script src="data/unit-catalog.js?v=20260824-1"></script>

@@ -8,6 +8,7 @@ const root = path.join(__dirname, "..");
 const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const css = fs.readFileSync(path.join(root, "styles.css"), "utf8");
 const ui = fs.readFileSync(path.join(root, "document-import.js"), "utf8");
+assert.ok(ui.includes('app.getStandardSystem?.() === "maff-land-improvement"') && ui.includes('"農林水産省・土地改良"'), "取込確認は現在選択中の基準体系を表示する");
 const reader = fs.readFileSync(path.join(root, "document-reader.js"), "utf8");
 const app = fs.readFileSync(path.join(root, "app.js"), "utf8");
 const consulting = fs.readFileSync(path.join(root, "consulting.js"), "utf8");

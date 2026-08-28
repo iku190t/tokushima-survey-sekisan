@@ -4,10 +4,10 @@
   const app = window.EzSekisanApp;
   const reader = window.DocumentReader;
   const analyzer = window.DocumentImportEngine;
-  const consultingMaster = window.CONSULTING_MASTER;
+  let consultingMaster = app?.getStandardSystem?.() === "maff-land-improvement" ? window.MAFF_CONSULTING_MASTER : window.CONSULTING_MASTER;
   const consultingEngine = window.ConsultingEngine;
-  const consultingConditionRules = window.CONSULTING_CONDITION_RULES || { rules: [] };
-  const consultingRulePack = window.CONSULTING_RULE_PACK || { rules: [], families: [] };
+  let consultingConditionRules = app?.getStandardSystem?.() === "maff-land-improvement" ? { rules: [] } : (window.CONSULTING_CONDITION_RULES || { rules: [] });
+  let consultingRulePack = app?.getStandardSystem?.() === "maff-land-improvement" ? (window.MAFF_RULE_PACK || { rules: [], families: [] }) : (window.CONSULTING_RULE_PACK || { rules: [], families: [] });
   const workCatalog = window.CONSULTING_WORK_CATALOG || { serviceIdsByScope: {}, keywordDefinitions: {} };
   if (!app || !reader || !analyzer || !consultingMaster || !consultingEngine) return;
 
@@ -1174,7 +1174,8 @@
     const master = activeMaster();
     const detected = [analysis.metadata.jurisdictionName, analysis.metadata.fiscalYear ? `令和${analysis.metadata.fiscalYear - 2018}年度` : ""].filter(Boolean).join("・");
     const submissionName = app.getSubmissionJurisdictionName?.() || "未設定";
-    $("importedBasisHint").textContent = `${detected ? `資料候補：${detected}。` : "資料から見積提出先・年度を確定できませんでした。"} 見積提出先：${submissionName}／計算：国土交通省・全国標準 令和${master.fiscalYear - 2018}年度。確認した項目だけ反映します。`;
+    const systemName = app.getStandardSystem?.() === "maff-land-improvement" ? "農林水産省・土地改良" : "国土交通省・全国標準";
+    $("importedBasisHint").textContent = `${detected ? `資料候補：${detected}。` : "資料から見積提出先・年度を確定できませんでした。"} 見積提出先：${submissionName}／計算：${systemName} 令和${master.fiscalYear - 2018}年度。確認した項目だけ反映します。`;
     const warnings = [...analysis.warnings];
     if (analysis.metadata.fiscalYear && analysis.metadata.fiscalYear !== master.fiscalYear) warnings.push("資料の年度候補と現在の積算年度が異なります。閉じて年度マスターを切り替えてから再度確認してください。");
     if (analysis.metadata.jurisdictionCode && analysis.metadata.jurisdictionCode !== app.getSubmissionJurisdictionCode?.()) warnings.push("資料の発注機関候補と現在の見積提出先が異なります。提出先を確認してください（計算単価には影響しません）。");
@@ -1466,5 +1467,15 @@
   bindEvents();
   document.addEventListener("ezsekisan:estimatechange", () => { if (!currentAnalysis) restoreManualWorkflow(); });
   document.addEventListener("ezsekisan:draftrestored", restoreManualWorkflow);
+  document.addEventListener("ezsekisan:standardsystemchange", () => {
+    const maff = app.getStandardSystem?.() === "maff-land-improvement";
+    consultingMaster = maff ? window.MAFF_CONSULTING_MASTER : window.CONSULTING_MASTER;
+    consultingConditionRules = maff ? { rules: [] } : (window.CONSULTING_CONDITION_RULES || { rules: [] });
+    consultingRulePack = maff ? (window.MAFF_RULE_PACK || { rules: [], families: [] }) : (window.CONSULTING_RULE_PACK || { rules: [], families: [] });
+    if (currentAnalysis) {
+      closeManualMapper();
+      updateManualKind();
+    } else restoreManualWorkflow();
+  });
   loadQaImportFixture().catch((error) => app.notify(error.message || "QA用PDFを読み込めませんでした"));
 })();
