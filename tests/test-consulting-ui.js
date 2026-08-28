@@ -36,6 +36,7 @@ for (const task of ["設計条件の確認", "施工計画", "資料整理とり
 assert.ok(html.includes("詳細項目（作業工程）") && ui.includes("consultingTaskTemplate"), "設計・地質で詳細項目を選んで内訳名称へ反映する");
 assert.ok(ui.includes('entry.id === "design"') && ui.includes('entry.id === "planning"') && ui.includes('["geologyAnalysis", "geologyGeneral"]'), "設計・調査計画・地質のタブで対象区分を分離する");
 assert.ok(ui.includes('ezsekisan:businessscope') && ui.includes("activeConsultingScope"), "業務タブ切替を設計・地質入力へ反映する");
+assert.ok(ui.includes("function renderAll(resetManualTask = false)") && ui.includes("const scopeChanged = activeConsultingScope !== event.detail.scope") && ui.includes("renderAll(scopeChanged);"), "業務タブが実際に変わったときだけ前業務の手動項目名を持ち越さない");
 assert.ok(html.includes('data-consulting-scope="design-planning"') && html.includes('data-consulting-scope="geology"'), "タブに対応する積上費用だけを表示する");
 assert.ok(master.includes('id: "design-note-r8"') && master.includes('id: "design-note-r7"') && master.includes('id: "design-note-r6"') && master.includes("designLead: 0.5") && master.includes("designEngineerA: 1.0"), "令和6～8年度の設計留意書歩掛をプリセットする");
 assert.ok(ui.includes("CONSULTING_RULE_PACK") && ui.includes("preset.fiscalYear") && ui.includes("consultingPresetSearch"), "照合済み標準歩掛を年度・業務タブ・補助検索語で絞る");
@@ -62,6 +63,10 @@ assert.ok(ui.includes("lineBasisDetails") && ui.includes("計算根拠を見る"
 assert.ok(ui.includes("familyForPreset") && ui.includes("consulting-parameter-value") && ui.includes("consultingFormulaModel") && ui.includes("compileFormula"), "適用条件表と補正式を歩掛へ結び付ける");
 assert.ok(!html.includes('id="consultingPresetMultiplier"'), "利用者へ補正係数の手計算を要求しない");
 assert.ok(html.includes("基準書にない作業・見積項目を手動調整する"), "人工直接入力を基準外の手動調整へ分離する");
+assert.ok(ui.includes("engine.createManualLine") && ui.includes("current.lines = [...previousLines, creation.line]"), "手動調整を業務区分・職種・人工検証後に一括追加する");
+assert.ok(ui.includes("const calculatedLine = result.lines.find") && ui.includes("const renderedRow = document.querySelector"), "手動調整は計算結果と画面表示の両方を確認する");
+assert.ok(ui.includes('$("consultingDays").value = "";\n    app.saveDraft();'), "手動調整の表示成功後だけ人工入力を消去・保存する");
+assert.ok(ui.includes("current.lines = previousLines") && ui.includes("入力内容は消去していません"), "手動調整の計算・表示失敗時はロールバックして入力を残す");
 assert.ok(ui.includes("OFFICIAL_SOURCE_CATALOG") && ui.includes('source.jurisdictionCode === "mlit"') && ui.includes("fullBook.ruleCount"), "選択年度の国交省資料と照合済み歩掛を計算根拠に表示する");
 assert.ok(ui.includes("人工入力の行があります"), "未確認人工を提出前警告する");
 assert.ok(ui.includes("市場単価による積算") && ui.includes("consultingMarketUnitPrice"), "地質一般を人工比例にせず市場単価で計算する");

@@ -321,6 +321,32 @@
     };
   }
 
+  function createManualLine(input, master, rolePrices) {
+    const selectedService = (master?.serviceTypes || []).find((entry) => entry.id === input?.serviceType);
+    if (!selectedService) return { valid: false, reason: "業務区分を選択してください" };
+    const roles = master?.roleGroups?.[selectedService.roleGroup] || [];
+    if (!roles.some((entry) => entry.id === input?.role)) return { valid: false, reason: "職種を選択してください" };
+    if (!(floorYen(rolePrices?.[input.role]) > 0)) return { valid: false, reason: "選択した年度の職種単価を確認してください" };
+    const days = normalizeDays(input?.days);
+    if (!(days > 0)) return { valid: false, reason: "人工を0より大きい値で入力してください" };
+    const id = String(input?.id || "").trim();
+    if (!id) return { valid: false, reason: "手動調整行を識別できません" };
+    const fallbackTask = String(input?.fallbackTask || "任意作業").trim() || "任意作業";
+    return {
+      valid: true,
+      reason: "",
+      line: {
+        id,
+        serviceType: selectedService.id,
+        costSystem: selectedService.calculationSystem || "design",
+        taskName: String(input?.taskName || "").trim() || fallbackTask,
+        role: input.role,
+        days,
+        manualAdjustment: true
+      }
+    };
+  }
+
   function calculateEstimate(state, master, rolePrices, surveyBusinessPrice = 0) {
     const lines = (state?.lines || []).map((line) => calculateRoleLine(line, rolePrices, master?.serviceTypes));
     const additionalCosts = (state?.additionalCosts || []).map((entry) => ({
@@ -415,5 +441,5 @@
     };
   }
 
-  return { floorYen, roundHalfUp, normalizeDays, normalizeCorrectionFactor, normalizeQuantityUnit, inputDomainForUnit, validateDomainValue, hasUnresolvedCalculationRules, classifyPresetCoverage, parseStandardQuantity, calculateStandardQuantity, standardQuantitySummary, findConditionRule, calculateConditionCorrection, calculateRuleQuantityMultiplier, overheadRate, electronicDeliverableCost, calculateRoleLine, calculateEstimate };
+  return { floorYen, roundHalfUp, normalizeDays, normalizeCorrectionFactor, normalizeQuantityUnit, inputDomainForUnit, validateDomainValue, hasUnresolvedCalculationRules, classifyPresetCoverage, parseStandardQuantity, calculateStandardQuantity, standardQuantitySummary, findConditionRule, calculateConditionCorrection, calculateRuleQuantityMultiplier, overheadRate, electronicDeliverableCost, createManualLine, calculateRoleLine, calculateEstimate };
 });

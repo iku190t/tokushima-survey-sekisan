@@ -54,6 +54,30 @@ assert.strictEqual(result.totals.geologyOverheadRate, 82.5, "100万円以下の�
 assert.strictEqual(result.totals.geologyOverhead, 295597, "地質諸経費");
 assert.strictEqual(result.totals.geologyBusinessPrice, 663897, "対象外費用を加えた地質業務価格");
 
+for (const [serviceType, role, expectedRate] of [
+  ["design", "designPrincipal", 90300],
+  ["planning", "designEngineerA", 62600],
+  ["geologyAnalysis", "designLead", 70900],
+  ["geologyGeneral", "geologyEngineer", 58300]
+]) {
+  const manual = engine.createManualLine({ id: `manual-${serviceType}`, serviceType, taskName: "匿名手動調整", role, days: "1" }, master, prices[2026].roles);
+  assert.strictEqual(manual.valid, true, `${serviceType}の手動調整行を作成できる`);
+  assert.strictEqual(manual.line.manualAdjustment, true, `${serviceType}の手動調整を標準歩掛と区別する`);
+  const manualResult = engine.calculateEstimate({ ...baseState(), lines: [manual.line] }, master, prices[2026].roles, 0);
+  assert.strictEqual(manualResult.lines.length, 1, `${serviceType}の手動調整行を計算結果へ残す`);
+  assert.strictEqual(manualResult.lines[0].dailyRate, expectedRate, `${serviceType}の手動調整へ年度職種単価を適用する`);
+}
+assert.strictEqual(engine.createManualLine({ id: "manual-empty", serviceType: "geologyGeneral", role: "geologyEngineer", days: "" }, master, prices[2026].roles).valid, false, "人工未入力の手動調整を追加しない");
+assert.strictEqual(engine.createManualLine({ id: "manual-role", serviceType: "geologyGeneral", role: "designPrincipal", days: 1 }, master, prices[2026].roles).valid, false, "業務区分に属さない職種を追加しない");
+for (const year of [2026, 2025, 2024]) {
+  for (const [serviceType, role] of [["geologyAnalysis", "designPrincipal"], ["geologyGeneral", "geologyEngineer"]]) {
+    const manual = engine.createManualLine({ id: `manual-${year}-${serviceType}`, serviceType, role, days: 1 }, master, prices[year].roles);
+    assert.strictEqual(manual.valid, true, `${year}年度${serviceType}の手動調整行を作成できる`);
+    const manualResult = engine.calculateEstimate({ ...baseState(), fiscalYear: year, lines: [manual.line] }, master, prices[year].roles, 0);
+    assert.strictEqual(manualResult.lines[0].dailyRate, prices[year].roles[role], `${year}年度${serviceType}の職種単価を適用する`);
+  }
+}
+
 const surveyPlanning = baseState();
 surveyPlanning.lines = [{ id: "s1", serviceType: "planning", costSystem: "survey", taskName: "水文観測", role: "surveyEngineer", days: 2 }];
 result = engine.calculateEstimate(surveyPlanning, master, prices[2026].roles, 0);

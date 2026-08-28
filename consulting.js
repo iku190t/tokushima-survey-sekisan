@@ -609,11 +609,11 @@
     $("consultingSourceList").innerHTML = sources.map((source) => `<li><a href="${h(source.url)}" target="_blank" rel="noopener noreferrer">${h(source.label)}</a></li>`).join("");
   }
 
-  function renderAll() {
+  function renderAll(resetManualTask = false) {
     syncScopeWorkflow();
     renderScopeLabels();
     renderYearAndProject();
-    renderServiceControls(false);
+    renderServiceControls(resetManualTask);
     renderPresets();
     renderCostsAndOptions();
     renderSources();
@@ -692,13 +692,46 @@
 
   function addLine() {
     const current = state();
-    const selectedService = service($("consultingServiceType").value);
-    const role = $("consultingRole").value;
-    const days = engine.normalizeDays($("consultingDays").value);
-    if (!days) { app.notify("人工を0より大きい値で入力してください"); return; }
-    current.lines.push({ id: `consult-${Date.now()}-${Math.random().toString(16).slice(2)}`, serviceType: selectedService.id, taskName: $("consultingTaskName").value.trim() || $("consultingTaskTemplate").value, role, days });
+    const lineId = `consult-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    const creation = engine.createManualLine({
+      id: lineId,
+      serviceType: $("consultingServiceType").value,
+      taskName: $("consultingTaskName").value,
+      fallbackTask: $("consultingTaskTemplate").value,
+      role: $("consultingRole").value,
+      days: $("consultingDays").value
+    }, master, rolePrices());
+    if (!creation.valid) {
+      app.showMissingInputPopup({ valid: false, reason: creation.reason, focusSelector: creation.reason.includes("人工") ? "#consultingDays" : "#consultingRole" });
+      return;
+    }
+    const previousLines = current.lines;
+    current.lines = [...previousLines, creation.line];
+    const result = currentResult();
+    const calculatedLine = result.lines.find((line) => line.id === lineId);
+    if (!calculatedLine) {
+      current.lines = previousLines;
+      renderLines(currentResult());
+      renderSummary(currentResult());
+      app.notify("手動調整を追加できませんでした。業務区分・職種・年度単価を確認してください");
+      return;
+    }
+    renderLines(result);
+    renderAdditionalCosts(result);
+    renderSummary(result);
+    renderRoleMeta();
+    const renderedRow = document.querySelector(`#consultingLineBody tr[data-consulting-line="${lineId}"]`);
+    if (!renderedRow) {
+      current.lines = previousLines;
+      const restoredResult = currentResult();
+      renderLines(restoredResult);
+      renderAdditionalCosts(restoredResult);
+      renderSummary(restoredResult);
+      app.notify("手動調整を表示できませんでした。入力内容は消去していません");
+      return;
+    }
     $("consultingDays").value = "";
-    updateAndRender();
+    app.saveDraft();
     app.notify(`${activeConsultingScope === "geology" ? "地質" : activeConsultingScope === "planning" ? "調査・計画" : "設計"}業務の人工を追加しました`);
   }
 
@@ -1181,8 +1214,9 @@
     document.addEventListener("ezsekisan:estimatechange", renderAll);
     document.addEventListener("ezsekisan:businessscope", (event) => {
       if (!["design", "planning", "geology"].includes(event.detail?.scope)) return;
+      const scopeChanged = activeConsultingScope !== event.detail.scope;
       activeConsultingScope = event.detail.scope;
-      renderAll();
+      renderAll(scopeChanged);
     });
     document.addEventListener("ezsekisan:consultingimport", (event) => importCandidates(event.detail || {}));
     window.addEventListener("afterprint", () => { delete $("printDocument").dataset.mode; });
