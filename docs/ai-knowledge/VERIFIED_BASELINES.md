@@ -2893,3 +2893,29 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `styles.css` | `38AE7BB134A45EEFB7A52943A976112CE70CAA9062E79184315295261B8F7A97` |
 | `tests/test-document-import-ui.js` | `86999A3C2D0A5C1050F113BB28E093B2974A0BED29CAAD6DD8AA0AA8CB24A197` |
 | `tests/test-ui-static.js` | `4EA0281DBD577FFB72D2C0992C3527BD4EA0009CB71F81D992E936652A81C554` |
+
+## B-2026-08-28-05
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-28
+- 実装コミット: `c45174738d89415eee81c594000adf13ed65371a`
+- GitHub Pages: `built`、ビルド`1179758447`、コミット`c45174738d89415eee81c594000adf13ed65371a`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: PDF右入力欄の「この行は対象外」を「PDF行の選択を解除」へ変更し、入力途中だけ有効、未選択・反映待ち追加後・編集中は灰色で無効とした。解除時は入力途中の緑表示を消し、同じPDF行を再選択できる。測量PDFの順序を作業項目1、単位2、数量3へ変更した。
+
+### 合格した試験・公開確認
+
+- `tests/test-*.js`全19本、`node --check document-import.js`、`git diff --check`が合格した。
+- ローカル匿名PDFで未選択時は灰色・無効、行選択時は白色・有効、解除後は灰色・未選択・再選択可能、反映待ち1件追加後は灰色・無効を確認した。
+- 公開版で`PDF行の選択を解除`、`1作業項目→2PDFの単位→3PDFの数量`、選択時白背景、解除後灰背景、選択・ドラッグ状態`false`、警告・エラー0件を確認した。
+- 公開版は`document-import.js?v=20260828-3`、`styles.css?v=20260828-3`を配信している。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `document-import.js` | `A017A758502B0DA56D352DD69533700351E6868A51D3675EA4A2568DD28AAE96` |
+| `index.html` | `B1FA04F0167EA27B067723303F1CD547B7ED6895A85C83DB021AEE27E78DEE62` |
+| `styles.css` | `FC1D19CCFB408B74CFA318A3A4779911061F1987BB2F3062B47730865D86BF88` |
+| `tests/test-document-import-ui.js` | `75CA9987EC8D3F737B6CD16C027B07A319C4306A31EEC546E1C0B9A3C2CD3634` |
+| `tests/test-ui-static.js` | `70563B67782AC4AC5C18AB9F58CDB713FBBE73E3C8DA3AAB3C226148BC1B06DF` |
