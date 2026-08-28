@@ -40,12 +40,11 @@ assert.ok(ui.includes("function renderAll(resetManualTask = false)") && ui.inclu
 assert.ok(html.includes('data-consulting-scope="design-planning"') && html.includes('data-consulting-scope="geology"'), "タブに対応する積上費用だけを表示する");
 assert.ok(master.includes('id: "design-note-r8"') && master.includes('id: "design-note-r7"') && master.includes('id: "design-note-r6"') && master.includes("designLead: 0.5") && master.includes("designEngineerA: 1.0"), "令和6～8年度の設計留意書歩掛をプリセットする");
 assert.ok(ui.includes("CONSULTING_RULE_PACK") && ui.includes("preset.fiscalYear") && ui.includes("consultingPresetSearch"), "照合済み標準歩掛を年度・業務タブ・補助検索語で絞る");
-assert.ok(ui.includes("classifyPresetCoverage(preset, conditionRule, familyForPreset(preset)).canCalculate") && ui.includes("MAFF_RULE_PACK"), "通常候補は選択中の基準体系で計算可能な公式項目だけにする");
+assert.ok(ui.includes("classifyPresetCoverage(preset, conditionRule, familyForPreset(preset)).canCalculate") && ui.includes("条件式まで完成した全国標準項目"), "通常候補は適用範囲・条件式まで計算可能な全国標準項目だけにする");
 assert.ok(ui.includes("setUnifiedFiscalYear") && ui.includes("ezsekisan:fiscalyearchange") && app.includes("setUnifiedFiscalYear"), "4業務の年度を同じ全国標準単価セットへ同期する");
 assert.ok(ui.includes("standardWalk?.fiscalYear") && ui.includes("year-mismatch-row") && ui.includes("測量と設計等の積算年度が一致しない"), "異年度の歩掛と測量合算を計算対象外にする");
 assert.ok(ui.includes("unitCatalog.definitions.map") && !html.includes("<option>m</option>"), "積上費用と地質市場単価で監査済み単位台帳を共用する");
 assert.ok(ui.includes("CONSULTING_WORK_CATALOG") && ui.includes("consultingKeywordDefinitions") && ui.includes("presetMatchesKeyword") && ui.includes("renderConsultingKeywords"), "設計・調査計画・地質を共用台帳の正式familyCode由来キーワードで絞る");
-assert.ok(ui.includes("const publicCode = /^\\d+(?:-\\d+)*$/.test(code) ? code : \"\"") && ui.includes("sourcePage ? `（資料 p.${sourcePage}）`") && ui.includes("label: publicCode ? `${publicCode}｜${title}`"), "内部familyCodeは値だけに保持し、作業区分には公式番号または資料ページ付き名称を表示する");
 for (const keyword of ["道路", "橋梁", "河川・水辺", "水文・観測", "ボーリング", "原位置試験", "解析"]) assert.ok(workCatalog.includes(`label: "${keyword}"`), `${keyword}キーワードを表示できる`);
 assert.ok(html.includes("名称でさらに絞り込む"), "文字検索を初期操作ではなく折りたたみの補助操作にする");
 for (const label of ["積算基準の作業区分", "作業項目", "積算数量（"]) assert.ok(html.includes(label) || ui.includes(label), `${label}を測量と共通表示する`);
@@ -60,11 +59,11 @@ assert.ok(!html.includes('id="consultingConditionsConfirmed"') && !ui.includes("
 assert.ok(ui.includes("presetInputValidation") && ui.includes("updatePresetAddState") && ui.includes("calculateConditionCorrection"), "必要な数量・条件を自動検査して追加ボタンを制御する");
 assert.ok(ui.includes("app.showMissingInputPopup(inputValidation)") && ui.includes("focusSelector") && !ui.includes('$("addConsultingPresetButton").disabled = !validation.valid'), "設計・調査計画・地質でも追加時に不足項目をポップアップ表示して該当欄へ移動する");
 assert.ok(ui.includes("completeImportedPreset") && ui.includes("数量・条件を入力") && ui.includes("pendingPresetLineId") && ui.includes("importSource: importedSource"), "PDFから作業項目だけを追加し通常入力で数量・条件を補完する");
-assert.ok(ui.includes("lineBasisDetails") && ui.includes("計算根拠を見る") && ui.includes("適用条件・補正") && ui.includes("資料・該当ページを開く"), "追加明細から年度・数量・条件・出典を一度に確認できる");
+assert.ok(ui.includes("lineBasisDetails") && ui.includes("計算根拠を見る") && ui.includes("適用条件・補正") && ui.includes("国交省資料・該当ページを開く"), "追加明細から年度・数量・条件・出典を一度に確認できる");
 assert.ok(ui.includes("familyForPreset") && ui.includes("consulting-parameter-value") && ui.includes("consultingFormulaModel") && ui.includes("compileFormula"), "適用条件表と補正式を歩掛へ結び付ける");
 assert.ok(!html.includes('id="consultingPresetMultiplier"'), "利用者へ補正係数の手計算を要求しない");
 assert.ok(html.includes("基準書にない作業・見積項目を手動調整する"), "人工直接入力を基準外の手動調整へ分離する");
-assert.ok(ui.includes("engine.createManualLine") && ui.includes("current.lines = [...previousLines, { ...creation.line, standardSystem: app.getStandardSystem() }]") , "手動調整を業務区分・職種・人工・基準体系の検証後に一括追加する");
+assert.ok(ui.includes("engine.createManualLine") && ui.includes("current.lines = [...previousLines, creation.line]"), "手動調整を業務区分・職種・人工検証後に一括追加する");
 assert.ok(ui.includes("const calculatedLine = result.lines.find") && ui.includes("const renderedRow = document.querySelector"), "手動調整は計算結果と画面表示の両方を確認する");
 assert.ok(ui.includes('$("consultingDays").value = "";\n    app.saveDraft();'), "手動調整の表示成功後だけ人工入力を消去・保存する");
 assert.ok(ui.includes("current.lines = previousLines") && ui.includes("入力内容は消去していません"), "手動調整の計算・表示失敗時はロールバックして入力を残す");

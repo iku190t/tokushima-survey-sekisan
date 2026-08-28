@@ -93,24 +93,6 @@
 
   function classifyPresetCoverage(preset, conditionRule = null, family = null) {
     if (!preset) return { status: "unavailable", canCalculate: false, label: "利用不可", note: "業務種類を選択してください。" };
-    const maffOfficial = ["maff-official-table", "maff-official-facing-table", "maff-official-market-price-method"].includes(preset.verificationStatus);
-    if (maffOfficial) {
-      if (preset.verificationStatus === "maff-official-market-price-method" || preset.serviceType === "geologyGeneral") {
-        return {
-          status: "market-rate-input", canCalculate: true, label: "農水省の市場単価方式",
-          note: "農林水産省の規格・補正方法を使用し、価格は発注者指定資料・刊行物・見積の採用単価と根拠を入力します。"
-        };
-      }
-      const reference = preset.sourceKind === "official-reference-walk";
-      return {
-        status: reference ? "official-reference-walk" : "official-standard-walk",
-        canCalculate: true,
-        label: reference ? "農水省公式・積算参考歩掛" : "農水省公式・標準歩掛",
-        note: reference
-          ? "農林水産省が積算参考歩掛として公表した表です。表示する適用条件・条件表・補正式を選択して計算します。"
-          : "農林水産省の公式表、標準数量、職種別人工、適用条件を使用して計算します。"
-      };
-    }
     if (conditionRule?.status === "verified-rule") {
       return {
         status: "verified-rule",
@@ -387,12 +369,10 @@
 
     const designLabor = sumAmount(designLines);
     const designDirectExpenses = floorYen(state?.costs?.designDirectExpenses) + additionalAmount("designDirectExpenses");
-    const electronicModes = state?.options?.electronicModes || {};
-    const designElectronicMode = electronicModes.designPlanning || state?.options?.electronicMode || "none";
-    const geologyElectronicMode = electronicModes.geology || (state?.options?.electronicMode === "geology" ? "geology" : "none");
-    const electronic = designElectronicMode === "none"
+    const electronicMode = state?.options?.electronicMode || "none";
+    const electronic = electronicMode === "none"
       ? 0
-      : electronicDeliverableCost(designLabor, master?.designRules?.electronic?.[designElectronicMode]);
+      : electronicDeliverableCost(designLabor, master?.designRules?.electronic?.[electronicMode]);
     const alpha = number(master?.designRules?.alpha, 0.35);
     const beta = number(master?.designRules?.beta, 0.35);
     const otherCost = floorYen(designLabor * alpha / Math.max(1e-9, 1 - alpha));
@@ -412,11 +392,7 @@
     const geologyDirectNonLabor = floorYen(state?.costs?.geologyDirectNonLabor) + additionalAmount("geologyDirectNonLabor");
     const geologyIndirect = floorYen(state?.costs?.geologyIndirect) + additionalAmount("geologyIndirect");
     const geologyExcluded = floorYen(state?.costs?.geologyExcluded) + additionalAmount("geologyExcluded");
-    const geologyElectronicBase = geologyLabor + geologyDirectNonLabor + geologyIndirect;
-    const geologyElectronic = geologyElectronicMode === "geology"
-      ? electronicDeliverableCost(geologyElectronicBase, master?.geologyRules?.electronic)
-      : 0;
-    const geologyTarget = geologyElectronicBase + geologyElectronic;
+    const geologyTarget = geologyLabor + geologyDirectNonLabor + geologyIndirect;
     const geologyOverheadRate = overheadRate(geologyTarget, master?.geologyRules?.overhead);
     const geologyOverhead = floorYen(geologyTarget * geologyOverheadRate / 100);
     const geologyBusinessPrice = geologyTarget + geologyOverhead + geologyExcluded;
@@ -451,7 +427,6 @@
         geologyDirectNonLabor,
         geologyIndirect,
         geologyExcluded,
-        geologyElectronic,
         geologyTarget,
         geologyOverheadRate,
         geologyOverhead,

@@ -38,8 +38,6 @@ const pages = [{
 }];
 
 const result = engine.analyze(pages, surveyMaster, consultingMaster, jurisdictions);
-assert.strictEqual(result.standardSystem, "mlit-general", "解析結果へ使用した基準体系を記録する");
-assert.ok(result.candidates.every((candidate) => candidate.standardSystem === "mlit-general"), "全候補へ使用基準を付けて異体系混入を防ぐ");
 assert.strictEqual(result.metadata.projectName, "○○地区 測量・地質調査・道路設計業務", "業務名を抽出する");
 assert.strictEqual(result.metadata.fiscalYear, 2026, "令和8年度を西暦年度へ変換する");
 assert.strictEqual(result.metadata.jurisdictionCode, "36", "発注機関候補を抽出する");
@@ -86,15 +84,6 @@ const cost = result.candidates.find((candidate) => candidate.kind === "consultin
 assert.ok(cost, "地質の間接調査費を候補化する");
 assert.strictEqual(cost.amount, 200000);
 assert.strictEqual(cost.selected, false, "金額候補は誤計上防止のため初期選択しない");
-
-assert.deepStrictEqual(engine.detectStandardSystem([{ text: "農林水産省 農村振興局 土地改良事業" }]), {
-  id: "maff-land-improvement",
-  label: "農林水産省・土地改良",
-  evidence: ["農林水産省", "農村振興局", "土地改良"],
-  confidence: "high"
-}, "農水省土地改良資料の省庁表記を検出する");
-assert.strictEqual(engine.detectStandardSystem([{ text: "国土交通省 四国地方整備局 業務数量総括表" }]).id, "mlit-general", "国土交通省資料の省庁表記を検出する");
-assert.strictEqual(engine.detectStandardSystem([{ text: "業務数量総括表" }]), null, "根拠のない資料で基準体系を推測しない");
 
 const areaItem = surveyMaster.workItems.find((item) => item.code === "7-1-2-1");
 const areaConversion = engine.convertSurveyQuantity(6.9, "standard", areaItem);

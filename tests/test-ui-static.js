@@ -30,7 +30,7 @@ assert.strictEqual((html.match(/class="accuracy-strip business-status-strip"/g) 
 assert.ok(!html.includes('id="masterStatusTitle"') && !html.includes('id="masterStatusText"'), "測量画面に全国標準の状態帯を表示しない");
 assert.ok(!app.includes("renderMasterStatus"), "測量状態帯の更新処理を残さない");
 assert.ok(!html.includes('id="consultingScopeTitle"') && !html.includes('id="consultingScopeDescription"'), "設計等だけの説明帯を表示しない");
-assert.ok(html.includes('id="consultingJurisdictionSelect"') && consulting.includes("app.getSubmissionJurisdictions") && app.includes('systemId === "maff-land-improvement" ? "maff" : "mlit"'), "設計等の見積提出先を選択中の国交省／農水省基準へ連動する");
+assert.ok(html.includes('id="consultingJurisdictionSelect"') && consulting.includes('filter((region) => region.code === "mlit")'), "設計等の見積提出先は未設定または国土交通省だけを使う");
 for (const key of ["orderingParty", "department", "contactName", "workLocation", "contractPeriod", "documentNumber", "documentDate"]) {
   assert.strictEqual((html.match(new RegExp(`data-project-info="${key}"`, "g")) || []).length, 2, `${key}を測量と設計等の両方に表示する`);
 }
@@ -61,7 +61,7 @@ assert.ok(app.includes("line.correctionSelections = {}") && app.includes("line.m
 assert.ok(app.includes("calc-detail"), "項目ごとの計算根拠表示がある");
 for (const id of ["guideSourceYear", "guideSourceLedgerSummary", "guideSourceLedgerBody"]) assert.ok(html.includes(`id="${id}"`), `${id}で年度別公式PDF台帳を表示する`);
 assert.ok(app.includes("renderGuideSourceLedger") && app.includes("surveySourceUsage") && app.includes("surveyMaster.sourceLinks"), "測量マスターが実際に使用・照合するPDFだけを年度別表示する");
-assert.ok(app.includes('master.standardSystem === "maff-land-improvement"') && app.includes("selectedSurveySourceRows") && app.includes("項目別出典ページ"), "測量明細は選択基準体系の公式資料と項目別PDF頁へリンクする");
+assert.ok(app.includes('String(entry.label || "").includes("第1編 測量業務")') && app.includes("現行全編の項目別ページ未対応"), "測量明細は国交省基準書本体へリンクし、未対応の県版ページを流用しない");
 assert.ok(app.includes("公式PDF・計算根拠一覧") && app.includes("sourceTableHtml(master)"), "測量の積算条件書にもPDF名・用途・頁数・確認状態の一覧表を出す");
 const surveyCostCardIndex = html.indexOf('class="card business-cost-card no-print"');
 const surveySourceCardIndex = html.indexOf('class="card source-card consulting-source-card survey-source-card"');
@@ -70,7 +70,7 @@ assert.ok(app.includes('<li><strong>${h(use)}</strong>${source}<small>${location
 assert.ok(app.includes("selectedSurveySourceRows") && app.includes("基準書本体・歩掛") && app.includes("作業規程上の分類"), "選択した測量項目を国交省基準書本体・年度積算基準・技術者単価・作業規程へ対応付ける");
 assert.ok(html.includes("航空局の空港設計・調査とは別") && html.includes("港湾請負工事積算基準") && html.includes("船舶損料"), "航空測量・深浅測量と空港・港湾船舶の別基準を明示する");
 assert.ok(html.includes('id="validationPanel"'), "提出前チェックがある");
-assert.ok(html.includes('id="jurisdictionSelect"') && html.includes("見積提出先") && app.includes("submissionJurisdictions(system)"), "見積提出先を選択中の国交省／農水省基準から選択できる");
+assert.ok(html.includes('id="jurisdictionSelect"') && html.includes("見積提出先") && app.includes("submissionJurisdictions()"), "見積提出先を未設定または国土交通省だけから選択できる");
 assert.ok(html.includes('id="fiscalYearSelect"') && html.includes("標準単価セット"), "全国標準単価セットの年度を選択できる");
 assert.ok(html.includes('id="checkMasterUpdatesButton"'), "年度マスターの更新を確認できる");
 assert.ok(html.includes('id="masterCoverageStatus"'), "国土交通省・全国標準の収録状況を明示する");
@@ -84,7 +84,7 @@ assert.ok(!html.includes('src="data/master-r8.js') && !html.includes('src="data/
 assert.ok(!app.includes("window.MASTER_R8") && !app.includes("window.SEKISAN_VERIFIED_MASTERS") && !app.includes("prefectureReferenceMasters"), "県別マスターを全国標準の選択肢へ混在させない");
 assert.ok(app.includes('const defaultMasterId = "standard-r8-2026"'), "新規画面は令和8年度全国標準で開始する");
 assert.ok(app.includes('submissionJurisdictionCode: "mlit"') && app.includes("normalizeSubmissionJurisdictionCode") && app.includes("getSubmissionJurisdictionName"), "新規は国土交通省全国標準を既定にし旧都道府県提出先は正規化する");
-assert.ok(app.includes("defaultSubmissionJurisdictionCode") && app.includes('return systemId === "maff-land-improvement" ? "maff" : "mlit"') && app.includes("getSubmissionJurisdictions"), "見積提出先を国交省／農水省の選択中の基準体系へ限定する");
+assert.ok(app.includes('見積提出先は「選択しない」または「国土交通省（全国標準）」だけです'), "見積提出先を2択に限定したことを明示する");
 assert.ok(nationalMasters.includes("https://www.mlit.go.jp/tec/gyoumu_sekisan.html"), "全国標準に国交省積算基準の公式出典を収録する");
 assert.ok(nationalMasters.includes("https://www.mlit.go.jp/tec/content/001724089.pdf"), "全国標準R6に公式技術者単価を収録する");
 assert.ok(app.includes("function sourceListHtml"), "マスター画面と帳票で公式出典をリンク表示する");
@@ -97,7 +97,6 @@ assert.ok(html.includes('id="newItemQuantityLabel"') && app.includes('`積算数
 assert.ok(html.includes('id="surveyConditionFields" class="consulting-condition-fields"') && html.includes('id="surveyPresetStatus"'), "測量も設計等と同じ位置へ適用範囲・条件表・補正と入力状態を表示する");
 assert.ok(app.includes("renderSurveyConditionFields") && app.includes("surveyPresetValidation") && app.includes("correctionSelections: validation.correctionSelections"), "測量の追加前条件を表示・必須検査し、選択補正を明細へ保存する");
 assert.ok(app.includes("showMissingInputPopup") && app.includes("focusSelector") && app.includes("missing-input-focus") && !app.includes('$("addItemButton").disabled = !validation.valid'), "測量の追加ボタンを押した時に不足項目を表示して該当欄へ移動する");
-assert.ok(html.includes('id="missingInputDialog"') && html.includes('id="focusMissingInputButton"') && app.includes("missingInputFieldName") && app.includes("focusMissingInputTarget") && !app.includes('alert(`追加できません。'), "未入力時はブラウザー標準警告ではなく項目名付き案内を表示して該当欄へ移動する");
 assert.ok(app.includes("defaultConditionMemory") && app.includes("normalizedConditionMemory") && app.includes('survey: { values: {} }'), "4業務別の条件継承メモリーを案件内へ保存する");
 assert.ok(app.includes("data-condition-label") && app.includes("applySurveyConditionMemory") && app.includes("rememberSurveyConditionSelections"), "測量は率ではなく条件名を記憶し、次の対応項目へ継承する");
 assert.ok(app.includes("defaultWorkflowState") && app.includes("normalizedWorkflowState") && app.includes("getWorkflowState"), "案件内の年度・作業選択・PDF絞込み状態を復元できる");
@@ -176,7 +175,7 @@ assert.ok(!html.includes('id="pdfManualSurveyQuantity" type="number" aria-label=
 assert.ok(documentImport.includes('$("pdfManualSurveyQuantity").value = "";') && documentImport.includes('$("pdfManualConsultingDays").value = "";'), "PDF取込の数量・人工を空欄へ戻す");
 assert.ok(documentImport.includes('return values.length ? values[values.length - 1][1] : "";'), "PDFに数値がなければ1を補わない");
 assert.ok(consulting.includes("calculateStandardQuantity") && consulting.includes("presetInputValidation") && consulting.includes("updatePresetAddState"), "必要な条件と標準数量を追加前に自動検査する");
-assert.ok(consulting.includes("CONSULTING_RULE_PACK") && consulting.includes("MAFF_RULE_PACK") && consulting.includes("source-table-crosschecked"), "選択基準体系のページ照合済み設計・調査・地質条件を使用する");
+assert.ok(consulting.includes("CONSULTING_RULE_PACK") && consulting.includes("国交省基準の適用条件") && consulting.includes("source-table-crosschecked"), "国交省ページ照合済みの設計・調査・地質条件を使用する");
 assert.ok(!html.includes('id="analyticsConsent"') && !html.includes('id="analyticsAcceptButton"') && !html.includes('id="analyticsDeclineButton"'), "アクセス解析の同意ポップアップを表示しない");
 assert.ok(!html.includes('id="analyticsSettingsButton"') && !analytics.includes("readConsent") && !analytics.includes("writeConsent"), "アクセス解析の同意保存と設定変更UIを残さない");
 assert.ok(!html.includes("サイト改善のため") && !html.includes("利用状況の把握と改善のため"), "アクセス解析の目的説明を画面へ表示しない");
@@ -197,4 +196,4 @@ assert.ok(app.includes('conditionMemory("survey").values[valueKey] = line.condit
 console.log("OK: UI static wiring checks passed");
 assert.ok(html.includes('data/unit-catalog.js') && html.indexOf('data/unit-catalog.js') < html.indexOf('engine.js'), "共通単位台帳を全計算エンジンより先に読み込む");
 assert.ok(!html.includes('id="itemCountBadge"') && !app.includes("項目収録`"), "測量を含む4業務の項目件数バッジを表示しない");
-assert.ok(html.includes('app.js?v=20260828-6') && html.includes('consulting.js?v=20260828-4') && html.includes('consulting-engine.js?v=20260828-2') && html.includes('document-import.js?v=20260828-5') && html.includes('document-import-engine.js?v=20260828-6') && html.includes('styles.css?v=20260828-6'), "基準体系分離・内部ID非表示・提出先連動の資産をキャッシュ更新する");
+assert.ok(html.includes('app.js?v=20260827-3') && html.includes('consulting.js?v=20260828-2') && html.includes('consulting-engine.js?v=20260828-2') && html.includes('document-import.js?v=20260828-3') && html.includes('styles.css?v=20260828-4'), "厳格な自動計算判定・PDF選択解除・手動調整安全化・YouTube埋め込みの資産をキャッシュ更新する");

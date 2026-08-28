@@ -4,10 +4,10 @@
   const app = window.EzSekisanApp;
   const reader = window.DocumentReader;
   const analyzer = window.DocumentImportEngine;
-  let consultingMaster = app?.getStandardSystem?.() === "maff-land-improvement" ? window.MAFF_CONSULTING_MASTER : window.CONSULTING_MASTER;
+  const consultingMaster = window.CONSULTING_MASTER;
   const consultingEngine = window.ConsultingEngine;
-  let consultingConditionRules = app?.getStandardSystem?.() === "maff-land-improvement" ? { rules: [] } : (window.CONSULTING_CONDITION_RULES || { rules: [] });
-  let consultingRulePack = app?.getStandardSystem?.() === "maff-land-improvement" ? (window.MAFF_RULE_PACK || { rules: [], families: [] }) : (window.CONSULTING_RULE_PACK || { rules: [], families: [] });
+  const consultingConditionRules = window.CONSULTING_CONDITION_RULES || { rules: [] };
+  const consultingRulePack = window.CONSULTING_RULE_PACK || { rules: [], families: [] };
   const workCatalog = window.CONSULTING_WORK_CATALOG || { serviceIdsByScope: {}, keywordDefinitions: {} };
   if (!app || !reader || !analyzer || !consultingMaster || !consultingEngine) return;
 
@@ -17,7 +17,6 @@
   const methodLabel = (value) => value === "ocr" ? "OCR" : "PDF文字抽出";
   const quantityFormat = new Intl.NumberFormat("ja-JP", { maximumFractionDigits: 3 });
   let currentAnalysis = null;
-  let currentExtracted = null;
   let currentFileName = "";
   const clickLineTargets = new Map();
   const clickLines = new Map();
@@ -61,27 +60,6 @@
   };
 
   function activeMaster() { return app.getActiveSurveyMaster(); }
-  function activeStandardSystem() { return app.getStandardSystem?.() || "mlit-general"; }
-  function applyStandardSystemResources() {
-    const isAgricultural = activeStandardSystem() === "maff-land-improvement";
-    consultingMaster = isAgricultural ? window.MAFF_CONSULTING_MASTER : window.CONSULTING_MASTER;
-    consultingConditionRules = isAgricultural ? { rules: [] } : (window.CONSULTING_CONDITION_RULES || { rules: [] });
-    consultingRulePack = isAgricultural ? (window.MAFF_RULE_PACK || { rules: [], families: [] }) : (window.CONSULTING_RULE_PACK || { rules: [], families: [] });
-  }
-  function renderDocumentStandardSystem(analysis = currentAnalysis) {
-    const system = activeStandardSystem();
-    const label = app.getStandardSystemLabel?.(system) || "国土交通省・全国標準";
-    $("documentStandardSystemLabel").textContent = label;
-    $("documentStandardSystemSelect").value = system;
-    $("documentStandardSystemHint").textContent = `${label}の作業項目だけを候補として解析します。基準を切り替えた場合、表示中のPDFも新しい基準で解析し直します。`;
-    const detected = analysis?.sourceSystem;
-    const notice = $("documentSourceSystemNotice");
-    notice.hidden = !detected;
-    notice.classList.toggle("is-match", Boolean(detected && detected.id === system));
-    if (detected) notice.textContent = detected.id === system
-      ? `資料内の表記も「${detected.label}」と一致しています。`
-      : `資料内の表記は「${detected.label}」の可能性があります。現在は「${label}」だけで解析しています。必要なら上で切り替えてください。`;
-  }
   function serviceById(id) { return consultingMaster.serviceTypes.find((entry) => entry.id === id) || consultingMaster.serviceTypes[0]; }
   function rolesFor(serviceType) { return consultingMaster.roleGroups[serviceById(serviceType).roleGroup] || []; }
   function isSurveyBusinessKind(kind) { return kind === "survey"; }
@@ -179,7 +157,7 @@
     return blank + surveyItemsForKind(kind).filter((item) => {
       const group = app.getSurveyRegulationGroup(item);
       return (!regulationGroupId || group?.id === regulationGroupId) && (!category || item.category === category);
-    }).map((item) => `<option value="${h(item.code)}" ${item.code === selectedCode ? "selected" : ""}>${h(app.getSurveyOptionLabel?.(item) || `${item.code}｜${item.name}`)}</option>`).join("");
+    }).map((item) => `<option value="${h(item.code)}" ${item.code === selectedCode ? "selected" : ""}>${h(item.code)}｜${h(item.name)}</option>`).join("");
   }
 
   function surveyRegulationGroupOptions(selectedGroup = "", kind = "") {
@@ -251,10 +229,7 @@
 
   function consultingFamilyLabel(rule) {
     const family = (consultingRulePack.families || []).find((entry) => Number(entry.fiscalYear) === Number(rule?.fiscalYear) && entry.serviceType === rule?.serviceType && entry.familyCode === rule?.familyCode);
-    const code = String(rule?.familyCode || "");
-    const title = family?.title || "積算基準項目";
-    const sourcePage = Number(family?.sources?.[0]?.page || 0);
-    return /^\d+(?:-\d+)*$/.test(code) ? `${code}｜${title}` : `${title}${sourcePage ? `（資料 p.${sourcePage}）` : ""}`;
+    return `${rule?.familyCode || "共通"}｜${family?.title || "積算基準項目"}`;
   }
 
   function selectedManualConsultingRule() {
@@ -611,7 +586,7 @@
   function candidateChoiceHtml(choice) {
     if (choice.type === "survey") {
       const item = choice.item;
-      return '<button class="pdf-candidate-choice" type="button" role="option" data-pdf-candidate-choice="' + h(item.code) + '"><strong>' + h(item.name) + '</strong><small>' + h(app.getSurveyDisplayCode?.(item) || item.code) + '／' + h(item.category) + '／単位：' + h(item.unit) + '</small><span class="pdf-candidate-choice-scope">測量業務</span></button>';
+      return '<button class="pdf-candidate-choice" type="button" role="option" data-pdf-candidate-choice="' + h(item.code) + '"><strong>' + h(item.name) + '</strong><small>' + h(item.code) + '／' + h(item.category) + '／単位：' + h(item.unit) + '</small><span class="pdf-candidate-choice-scope">測量業務</span></button>';
     }
     const rule = choice.rule;
     return '<button class="pdf-candidate-choice" type="button" role="option" data-pdf-candidate-choice="' + h(rule.id) + '"><strong>' + h(rule.label) + '</strong><small>' + h(consultingFamilyLabel(rule)) + '／標準単位：' + h(rule.standardUnit || "1業務当り") + '</small><span class="pdf-candidate-choice-scope">' + h(businessKindLabel(choice.kind)) + '</span></button>';
@@ -998,7 +973,6 @@
   function renderPdfClickWorkbench(extracted, analysis) {
     currentFileName = extracted.fileName;
     analysis.candidates = analysis.candidates.filter((candidate) => {
-      if (candidate.standardSystem && candidate.standardSystem !== activeStandardSystem()) return false;
       if (candidate.kind !== "consulting") return true;
       const rule = automaticRuleForCandidate(candidate);
       if (!rule) return false;
@@ -1010,9 +984,7 @@
       candidate.inputPending = true;
       return true;
     });
-    analysis.standardSystem = activeStandardSystem();
     currentAnalysis = analysis;
-    renderDocumentStandardSystem(analysis);
     clickLineTargets.clear();
     clickLines.clear();
     draggedPdfLines.clear();
@@ -1056,7 +1028,7 @@
     const selectedItem = activeMaster().workItems.find((entry) => entry.code === $("pdfManualSurveyCode").value);
     const selectedRule = selectedManualConsultingRule();
     const line = clickLines.get(primaryLineId) || { page: 1, method: "text", text: selectedItem?.name || selectedRule?.label || $("pdfManualMetadataValue").value };
-    const source = { page: line.page, method: line.method, confidence: "medium", sourceText: line.text, selected: true, applied: false, manual: true, standardSystem: activeStandardSystem() };
+    const source = { page: line.page, method: line.method, confidence: "medium", sourceText: line.text, selected: true, applied: false, manual: true };
     const editingTarget = currentEditingTarget;
     let target;
     if (isSurveyBusinessKind($("pdfManualKind").value)) {
@@ -1132,9 +1104,7 @@
     const consulting = [];
     const costs = {};
     const metadata = {};
-    const system = activeStandardSystem();
-    const selected = allClickTargets().filter((target) => target.item.selected && !target.item.applied
-      && (target.type === "metadata" || !target.item.standardSystem || target.item.standardSystem === system));
+    const selected = allClickTargets().filter((target) => target.item.selected && !target.item.applied);
     selected.forEach((target) => {
       const item = target.item;
       if (target.type === "metadata") {
@@ -1143,12 +1113,12 @@
         else metadata[item.key] = String(item.value ?? "").trim();
         return;
       }
-      const source = { fileName: currentFileName, page: item.page, method: item.method, confidence: item.confidence, sourceText: item.sourceText, standardSystem: system };
+      const source = { fileName: currentFileName, page: item.page, method: item.method, confidence: item.confidence, sourceText: item.sourceText };
       if (item.kind === "survey") survey.push({ ...source, code: item.code, quantity: item.quantity, inputPending: item.inputPending });
       if (item.kind === "consulting") consulting.push({ ...source, serviceType: item.serviceType, taskName: item.taskName, referenceRuleId: item.referenceRuleId, role: item.role, days: item.days, inputPending: item.inputPending });
       if (item.kind === "consultingCost") costs[item.costKey] = Math.max(0, Math.floor(Number(item.amount) || 0));
     });
-    return { standardSystem: system, selected, survey, consulting, costs, metadata };
+    return { selected, survey, consulting, costs, metadata };
   }
 
   function applyPdfClickSelection() {
@@ -1160,7 +1130,7 @@
     const metadataResult = app.applyImportedMetadata(payload.metadata);
     if (!metadataResult.masterFound) { app.notify("選択した年度の全国標準単価セットがありません。積算年度を確認してください"); return; }
     const surveyResult = app.importSurveyLines(payload.survey, { fileName: currentFileName });
-    const detail = { standardSystem: payload.standardSystem, fileName: currentFileName, lines: payload.consulting, costs: payload.costs, includeSurvey: payload.survey.length > 0 && payload.consulting.length > 0, result: { added: 0, rejected: 0 } };
+    const detail = { fileName: currentFileName, lines: payload.consulting, costs: payload.costs, includeSurvey: payload.survey.length > 0 && payload.consulting.length > 0, result: { added: 0, rejected: 0 } };
     document.dispatchEvent(new CustomEvent("ezsekisan:consultingimport", { detail }));
     payload.selected.forEach((target) => { target.item.selected = false; target.item.applied = true; });
     const totalAdded = metadataResult.applied + surveyResult.added + (detail.result?.added || 0) + Object.keys(payload.costs).length;
@@ -1191,7 +1161,6 @@
   function renderReview(fileName, analysis) {
     currentFileName = fileName;
     currentAnalysis = analysis;
-    renderDocumentStandardSystem(analysis);
     const methods = [...new Set(analysis.pages.map((page) => methodLabel(page.method)))];
     $("importReviewFileName").textContent = fileName;
     $("importReviewMethods").textContent = methods.join("＋") || "原文貼付け";
@@ -1205,8 +1174,7 @@
     const master = activeMaster();
     const detected = [analysis.metadata.jurisdictionName, analysis.metadata.fiscalYear ? `令和${analysis.metadata.fiscalYear - 2018}年度` : ""].filter(Boolean).join("・");
     const submissionName = app.getSubmissionJurisdictionName?.() || "未設定";
-    const systemName = app.getStandardSystem?.() === "maff-land-improvement" ? "農林水産省・土地改良" : "国土交通省・全国標準";
-    $("importedBasisHint").textContent = `${detected ? `資料候補：${detected}。` : "資料から見積提出先・年度を確定できませんでした。"} 見積提出先：${submissionName}／計算：${systemName} 令和${master.fiscalYear - 2018}年度。確認した項目だけ反映します。`;
+    $("importedBasisHint").textContent = `${detected ? `資料候補：${detected}。` : "資料から見積提出先・年度を確定できませんでした。"} 見積提出先：${submissionName}／計算：国土交通省・全国標準 令和${master.fiscalYear - 2018}年度。確認した項目だけ反映します。`;
     const warnings = [...analysis.warnings];
     if (analysis.metadata.fiscalYear && analysis.metadata.fiscalYear !== master.fiscalYear) warnings.push("資料の年度候補と現在の積算年度が異なります。閉じて年度マスターを切り替えてから再度確認してください。");
     if (analysis.metadata.jurisdictionCode && analysis.metadata.jurisdictionCode !== app.getSubmissionJurisdictionCode?.()) warnings.push("資料の発注機関候補と現在の見積提出先が異なります。提出先を確認してください（計算単価には影響しません）。");
@@ -1227,20 +1195,6 @@
     updateSelectionState();
   }
 
-  function analyzeExtracted(extracted, options = {}) {
-    const analysis = analyzer.analyze(extracted.pages, activeMaster(), consultingMaster, window.SEKISAN_JURISDICTIONS || []);
-    if (options.applyProjectName !== false) {
-      const autoProjectName = analysis.metadata.fields.find((field) => field.key === "projectName" && field.autoApply);
-      if (autoProjectName && app.applyImportedProjectName(autoProjectName.value)) {
-        autoProjectName.autoApplied = true;
-        autoProjectName.selected = false;
-      }
-    }
-    if (extracted.pages.some((page) => page.preview?.imageDataUrl)) renderPdfClickWorkbench(extracted, analysis);
-    else renderReview(extracted.fileName, analysis);
-    return analysis;
-  }
-
   async function analyzeFile(file) {
     if (running) return;
     running = true;
@@ -1255,9 +1209,14 @@
     try {
       updateProgress({ message: "資料を読み込んでいます…", progress: 0 });
       const extracted = await reader.read(file, updateProgress);
-      currentExtracted = extracted;
-      const analysis = analyzeExtracted(extracted);
-      const autoProjectName = analysis.metadata.fields.find((field) => field.key === "projectName" && field.autoApplied);
+      const analysis = analyzer.analyze(extracted.pages, activeMaster(), consultingMaster, window.SEKISAN_JURISDICTIONS || []);
+      const autoProjectName = analysis.metadata.fields.find((field) => field.key === "projectName" && field.autoApply);
+      if (autoProjectName && app.applyImportedProjectName(autoProjectName.value)) {
+        autoProjectName.autoApplied = true;
+        autoProjectName.selected = false;
+      }
+      if (extracted.pages.some((page) => page.preview?.imageDataUrl)) renderPdfClickWorkbench(extracted, analysis);
+      else renderReview(extracted.fileName, analysis);
       if (autoProjectName?.autoApplied) app.notify(`先頭見出しから業務名「${autoProjectName.value}」を4業務共通欄へ自動入力しました`);
     } catch (error) {
       updateProgress({ message: `読取り失敗：${error.message}`, progress: 0 });
@@ -1278,7 +1237,6 @@
     const consulting = [];
     const costs = {};
     const metadata = {};
-    const system = activeStandardSystem();
     document.querySelectorAll(".import-metadata-row").forEach((row) => {
       if (!row.querySelector(".import-metadata-select")?.checked) return;
       const input = row.querySelector(".import-metadata-value");
@@ -1288,8 +1246,7 @@
     document.querySelectorAll(".import-candidate").forEach((row) => {
       if (!row.querySelector(".import-candidate-select")?.checked) return;
       const original = currentAnalysis?.candidates.find((candidate) => candidate.id === row.dataset.candidateId) || {};
-      if (original.standardSystem && original.standardSystem !== system) return;
-      const source = { fileName: currentFileName, page: original.page, method: original.method, confidence: original.confidence, sourceText: original.sourceText, standardSystem: system };
+      const source = { fileName: currentFileName, page: original.page, method: original.method, confidence: original.confidence, sourceText: original.sourceText };
       if (row.dataset.kind === "survey") survey.push({ ...source, code: row.querySelector(".import-survey-code").value, quantity: row.querySelector(".import-survey-quantity").value });
       if (row.dataset.kind === "consulting") consulting.push({ ...source, serviceType: row.querySelector(".import-consulting-service").value, taskName: row.querySelector(".import-consulting-task").value, role: row.querySelector(".import-consulting-role").value, days: row.querySelector(".import-consulting-days").value });
       if (row.dataset.kind === "consultingCost") costs[row.querySelector(".import-cost-key").value] = Math.max(0, Math.floor(Number(row.querySelector(".import-cost-amount").value) || 0));
@@ -1300,7 +1257,7 @@
     const metadataResult = app.applyImportedMetadata(metadata);
     if (!metadataResult.masterFound) { app.notify("選択した年度の全国標準単価セットがありません。積算年度を確認してください"); return; }
     const surveyResult = app.importSurveyLines(survey, { fileName: currentFileName });
-    const detail = { standardSystem: system, fileName: currentFileName, lines: consulting, costs, includeSurvey: survey.length > 0 && consulting.length > 0, result: { added: 0, rejected: 0 } };
+    const detail = { fileName: currentFileName, lines: consulting, costs, includeSurvey: survey.length > 0 && consulting.length > 0, result: { added: 0, rejected: 0 } };
     document.dispatchEvent(new CustomEvent("ezsekisan:consultingimport", { detail }));
     const stayOnPdf = !$("pdfClickWorkbench").hidden;
     $("documentImportDialog").close();
@@ -1318,11 +1275,6 @@
   }
 
   function bindEvents() {
-    $("documentStandardSystemSelect").innerHTML = app.getStandardSystems().map((entry) => `<option value="${h(entry.id)}">${h(entry.label)}</option>`).join("");
-    renderDocumentStandardSystem();
-    $("documentStandardSystemSelect").addEventListener("change", (event) => {
-      if (!app.setStandardSystem(event.target.value)) renderDocumentStandardSystem();
-    });
     const zone = $("documentDropZone");
     zone.addEventListener("click", () => $("documentFileInput").click());
     $("documentFileInput").addEventListener("change", (event) => { if (event.target.files?.[0]) analyzeFile(event.target.files[0]); });
@@ -1514,22 +1466,5 @@
   bindEvents();
   document.addEventListener("ezsekisan:estimatechange", () => { if (!currentAnalysis) restoreManualWorkflow(); });
   document.addEventListener("ezsekisan:draftrestored", restoreManualWorkflow);
-  document.addEventListener("ezsekisan:standardsystemchange", () => {
-    applyStandardSystemResources();
-    if ($("documentImportDialog").open) $("documentImportDialog").close();
-    if ($("pdfCandidateChoiceDialog").open) closePdfCandidateChoice();
-    if (currentExtracted) {
-      currentAnalysis = null;
-      clickLineTargets.clear();
-      clickLines.clear();
-      draggedPdfLines.clear();
-      pdfLineRowIds.clear();
-      analyzeExtracted(currentExtracted, { applyProjectName: false });
-      app.notify(`PDFを${app.getStandardSystemLabel()}の項目だけで解析し直しました`);
-    } else {
-      renderDocumentStandardSystem();
-      restoreManualWorkflow();
-    }
-  });
   loadQaImportFixture().catch((error) => app.notify(error.message || "QA用PDFを読み込めませんでした"));
 })();

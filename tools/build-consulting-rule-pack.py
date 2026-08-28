@@ -36,11 +36,6 @@ ROLE_ALIASES = {
     "surveyAssistantEngineer": ("測量技師補",),
     "surveyAssistant": ("測量助手",),
     "surveyWorker": ("測量補助員",),
-    "pilot": ("操縦士",),
-    "mechanic": ("整備士",),
-    "cameraOperator": ("撮影士",),
-    "cameraAssistant": ("撮影助手",),
-    "boatOperator": ("測量船操縦士",),
     "geologyEngineer": ("地質調査技師",),
     "geologyChiefOperator": ("主任地質調査員",),
     "geologyOperator": ("地質調査員",),
@@ -131,16 +126,11 @@ def header_role_columns(table: list[list[object]]) -> tuple[dict[int, str], int]
         mapping: dict[int, str] = {}
         for col in range(width):
             text = compact("".join(str(table[row][col] or "") if col < len(table[row]) else "" for row in range(end)))
-            matches = [
-                (len(alias), role)
-                for role, aliases in ROLE_ALIASES.items()
-                for alias in aliases
-                if alias in text
-            ]
-            if matches:
-                # 「測量主任技師」を短い「主任技師」、「測量技師補」を
-                # 「測量技師」と誤認しないよう最長の正式職種名を優先する。
-                mapping[col] = max(matches)[1]
+            for role, aliases in ROLE_ALIASES.items():
+                if any(alias in text for alias in aliases):
+                    # 技師 is contained in 技師補; match the longer survey role first.
+                    mapping[col] = role
+                    break
         if len(mapping) > len(best):
             best, best_end = mapping, end
     return best, best_end
