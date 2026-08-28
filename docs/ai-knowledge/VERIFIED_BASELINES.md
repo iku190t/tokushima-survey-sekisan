@@ -2919,3 +2919,26 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `styles.css` | `FC1D19CCFB408B74CFA318A3A4779911061F1987BB2F3062B47730865D86BF88` |
 | `tests/test-document-import-ui.js` | `75CA9987EC8D3F737B6CD16C027B07A319C4306A31EEC546E1C0B9A3C2CD3634` |
 | `tests/test-ui-static.js` | `70563B67782AC4AC5C18AB9F58CDB713FBBE73E3C8DA3AAB3C226148BC1B06DF` |
+
+## B-2026-08-28-06
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-28
+- 実装コミット: `84d96dd6e6a74224fb3755758cc77e6429485f3f`
+- GitHub Pages: `built`、ビルド`1179866800`、コミット`84d96dd6e6a74224fb3755758cc77e6429485f3f`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: 使い方画面の紹介動画をローカルMP4からYouTube動画ID`E_SM2gWNUIA`の公開埋込みへ切り替えた。別タブの「YouTubeで見る」も同じ動画へ接続した。
+
+### 合格した試験・公開確認
+
+- `tests/test-*.js`全19本と`git diff --check`が合格した。
+- ローカル／公開実ブラウザーで、埋込みURL、公開視聴URL、遅延読込み、全画面属性、自動再生なし、16:9、横あふれ0、警告・エラー0件を確認した。
+- 公開版は`styles.css?v=20260828-4`を配信している。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `597B47BD4EA437EE4DD1C147D5FC3B5CE4A0F4CBB2C90275D84029A14C510ED1` |
+| `styles.css` | `C5433229AED6C9F76E2430D2C5473D5B5C63804BCCB7111E21D3BEA99BF92649` |
+| `tests/test-ui-static.js` | `20BFE634E2E6403AF300C18726F0B5DB08CAA598FB30AE59091BAC852580C738` |
