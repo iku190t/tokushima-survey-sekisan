@@ -2966,3 +2966,31 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `consulting.js` | `111DE71C21AB8E1039D28DE4110146162EBE90AC3F5DE3D7DBAEFDCA74F4334E` |
 | `index.html` | `60F8D2ACC16BE5934C80FB9ADFF9BE3DD5EC6982155F64789EA15758AF8D6531` |
 | `tests/test-consulting-rule-pack.js` | `67CE36E3E91664C647ABB74B49CFB5918030918D23775AE3F27B4D6934FE07EA` |
+
+## B-2026-08-29-02
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-29
+- 実装コミット: `36f6dcfe92bf499fb9f713c438fe60bb1b73255a`
+- GitHub Pages: `built`、ビルド`1181225047`、コミット`36f6dcfe92bf499fb9f713c438fe60bb1b73255a`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: PDF・写真取込から業務基本情報の反映先、候補確認、自動業務名入力、保存反映APIを撤去した。通常画面の4業務共通業務基本情報欄は維持する。国土交通省の年度別公式ページも全PDFを再取得・再監査した。
+
+### 合格した試験・公開確認
+
+- `tests/test-*.js`全19本、主要JavaScriptの`node --check`、`git diff --check`が合格した。
+- 国交省公式ページは全171リンク、PDFリンク155件、重複除外152件。152件を全件取得し、失敗0件、3,054ページ、176,433,922バイト、各PDFのSHA-256は前回監査から変化なしだった。
+- ローカル匿名デモPDFと公開版で、PDF反映先が設計・測量・調査計画・地質の4件、業務基本情報用UIが0件、PDF取込後の業務名が空欄、通常画面の業務基本情報欄が維持、警告・エラー0件を確認した。
+- 公開版は`app.js?v=20260829-2`、`document-import.js?v=20260829-2`、`document-import-engine.js?v=20260829-1`、`data/official-source-catalog.js?v=20260829-1`を配信する。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `3AF6708F1A210F32A39003C892B955F0B23DF8BCD349938CD79DC95AC355F2ED` |
+| `app.js` | `730972F0C2120FD18FD4EA2C5F5CE44E1BAC43A2572742BDC1B9491F434C0471` |
+| `document-import.js` | `6FFFF6FDA7B1F61366A4363546ECB65036D3EC32E4F1E903B9AB711B8FDF5AAB` |
+| `document-import-engine.js` | `4AAFC5E5F9DD52C0512A5A0D3F80C21FF2D7327633CF034CB20A3FC4F4BDBE94` |
+| `mlit-gyoumu-sekisan-links.json` | `BD839AC85665DAE50B303BCC22FA217AD8FE4A684DEF978C7CC800A45CCDA0B6` |
+| `mlit-gyoumu-sekisan-documents.json` | `84F65103FC5D722CD63FE9D04A51B2F5D4C94A98D2CB111C15EE9BFAF21B622B` |
+| `official-source-catalog.json` | `11CB192206D0B684C165E18C34C415493C9652680F6F2A8E64BD3CCF0121509E` |
