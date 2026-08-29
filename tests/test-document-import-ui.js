@@ -46,7 +46,8 @@ assert.ok(reader.includes("MAX_FILE_BYTES") && reader.includes("MAX_PAGES"), "�
 assert.ok(!reader.includes("FormData") && !reader.includes('fetch(file'), "資料ファイルを外部へアップロードしない");
 assert.ok(ui.includes("renderReview") && ui.includes("showModal"), "反映前に一覧確認ダイアログを開く");
 assert.ok(ui.includes("sourceText") && ui.includes("confidenceLabel") && ui.includes("methodLabel"), "原文・確信度・抽出方法を確認できる");
-assert.ok(!ui.includes("metadataHtml") && !ui.includes("import-metadata-select") && !ui.includes("app.applyImportedProjectName") && !ui.includes("app.applyImportedMetadata"), "PDFから業務基本情報を候補化・自動反映しない");
+assert.ok(!ui.includes("metadataHtml") && !ui.includes("import-metadata-select") && !ui.includes("app.applyImportedMetadata"), "PDFから業務基本情報全体の候補画面・一括反映を戻さない");
+assert.ok(ui.includes("analysis.metadata.autoProjectName") && ui.includes("app.applyImportedProjectNameIfEmpty"), "厳格判定した業務名だけをPDF取込時に自動入力する");
 assert.ok(ui.includes("renderPdfClickWorkbench") && ui.includes("pdf-line-hotspot") && ui.includes("clickLineTargets"), "PDF上の候補行をクリックして反映待ちへ選択できる");
 assert.ok(ui.includes('get("__qa_import") !== "demo"') && ui.includes('fetch("media/intro-assets/web-sekisan-demo.pdf")') && ui.includes("await analyzeFile(file)"), "匿名デモPDFを実際の取込経路でブラウザー検査できる");
 assert.ok(ui.includes("clickLines.set") && !ui.includes('if (!targets.length) return ""'), "自動判定の有無にかかわらずPDFの全抽出行をクリック対象にする");
@@ -106,7 +107,8 @@ assert.ok(ui.includes("import-consulting-service") && ui.includes("import-consul
 assert.ok(ui.includes("manualWorkflowState") && ui.includes("rememberManualWorkflow") && ui.includes("restoreManualWorkflow"), "PDF取込の業務区分・作業区分・キーワードを同一案件で保存復元する");
 assert.ok(app.includes('new CustomEvent("ezsekisan:draftrestored")') && ui.includes('document.addEventListener("ezsekisan:draftrestored", restoreManualWorkflow)'), "前回データ復元時にPDF取込み状態を再読込する");
 assert.ok(app.includes("function importSurveyLines") && app.includes("SekisanEngine.normalizeQuantity"), "確認済み測量数量を単位別規則で正規化して反映する");
-assert.ok(!app.includes("function applyImportedMetadata") && !app.includes("function applyImportedProjectName"), "PDF専用の業務基本情報反映APIを撤去する");
+assert.ok(!app.includes("function applyImportedMetadata") && app.includes("function applyImportedProjectNameIfEmpty") && app.includes('if (!value.endsWith("業務") || estimate.projectName?.trim()) return false;'), "末尾が業務の案件名だけを空欄時に反映し、手入力済み業務名を上書きしない");
+assert.ok(app.includes('$("projectName").value = value;') && app.includes('$("consultingProjectName")') && app.includes('new CustomEvent("ezsekisan:estimatechange")'), "自動入力した業務名を設計・測量・調査計画・地質の共通案件データへ反映する");
 for (const key of ["orderingParty", "department", "contactName", "workLocation", "contractPeriod", "documentNumber", "documentDate"]) {
   assert.ok(html.includes(`data-project-info="${key}"`), `${key} の反映先入力欄がある`);
 }

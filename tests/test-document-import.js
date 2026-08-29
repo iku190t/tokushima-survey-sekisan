@@ -136,7 +136,7 @@ const summaryTableResult = engine.analyze([{
 assert.strictEqual(summaryTableResult.metadata.projectName, "令和6-7年度 ○○地区工事用道路外用地調査等業務", "総括表の見出し行を業務名候補にする");
 assert.ok(summaryTableResult.metadata.fields.some((field) => field.key === "projectName" && field.confidence === "medium" && field.selected), "ラベルのない業務名は要確認候補として選択する");
 assert.ok(summaryTableResult.metadata.fields.some((field) => field.key === "projectName"), "PDF先頭の年度・案件語を含む業務見出しを解析内部で識別する");
-assert.ok(!summaryTableResult.metadata.fields.some((field) => field.autoApply), "識別した業務名をPDF取込から自動反映しない");
+assert.strictEqual(summaryTableResult.metadata.autoProjectName, "令和6-7年度 ○○地区工事用道路外用地調査等業務", "1ページ目で末尾が業務の案件名を自動入力候補にする");
 assert.strictEqual(summaryTableResult.candidates.length, 0, "総括表の式1を詳細な積算数量へ誤対応させない");
 
 const genericHeadingResult = engine.analyze([{
@@ -144,7 +144,25 @@ const genericHeadingResult = engine.analyze([{
   method: "text",
   text: ["業 務 数 量 総 括 表", "用地測量業務", "直接測量費 式 1"].join("\n")
 }], surveyMaster, consultingMaster, jurisdictions);
-assert.ok(!genericHeadingResult.metadata.fields.some((field) => field.autoApply), "一般的な費目名も業務名へ自動反映しない");
+assert.strictEqual(genericHeadingResult.metadata.autoProjectName, "", "一般的な業務区分名を案件の業務名へ自動反映しない");
+
+const secondPageProjectNameResult = engine.analyze([{
+  pageNumber: 1,
+  method: "text",
+  text: "業 務 数 量 総 括 表\n用地測量業務"
+}, {
+  pageNumber: 2,
+  method: "text",
+  text: "令和8年度 ○○地区道路詳細設計業務"
+}], surveyMaster, consultingMaster, jurisdictions);
+assert.strictEqual(secondPageProjectNameResult.metadata.autoProjectName, "", "2ページ目以降の末尾が業務の文字列は業務名へ自動入力しない");
+
+const explicitProjectNameResult = engine.analyze([{
+  pageNumber: 1,
+  method: "text",
+  text: "業務名：○○地区橋梁補修設計業務\n測量業務"
+}], surveyMaster, consultingMaster, jurisdictions);
+assert.strictEqual(explicitProjectNameResult.metadata.autoProjectName, "○○地区橋梁補修設計業務", "業務名ラベル付きの末尾が業務の案件名を優先する");
 
 const grouped = reader.textItemsToLines([
   { str: "20点", transform: [1, 0, 0, 1, 180, 700] },

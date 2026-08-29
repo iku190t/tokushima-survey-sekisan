@@ -1328,6 +1328,19 @@
     scheduleSave();
   }
 
+  function applyImportedProjectNameIfEmpty(projectName) {
+    const value = String(projectName || "").replace(/\s+/g, " ").trim().slice(0, 180);
+    if (!value.endsWith("業務") || estimate.projectName?.trim()) return false;
+    estimate.projectName = value;
+    $("projectName").value = value;
+    const consultingProjectName = $("consultingProjectName");
+    if (consultingProjectName) consultingProjectName.value = value;
+    renderReportCompleteness();
+    scheduleSave();
+    document.dispatchEvent(new CustomEvent("ezsekisan:estimatechange"));
+    return true;
+  }
+
   function updateProjectInfo(event) {
     const input = event.target;
     estimate.projectInfo = estimate.projectInfo || defaultProjectInfo();
@@ -1841,6 +1854,7 @@
     canUseDocumentImport,
     setAddButtonValidationState,
     showMissingInputPopup,
+    applyImportedProjectNameIfEmpty,
     importSurveyLines,
     addCaseSources,
     updateCaseSource,

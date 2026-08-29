@@ -359,6 +359,40 @@
     };
   }
 
+  function autoProjectNameField(entries) {
+    const firstPageEntries = entries.filter((entry) => entry.page === 1);
+    const genericBusinessName = /^(?:共通|設計|道路設計|橋梁設計|測量|用地測量|基準点測量|水準測量|現地測量|路線測量|河川測量|深浅測量|写真測量|調査|計画|調査[・･]?計画|地質|地質調査|解析等調査)業務$/;
+    const excluded = /(?:業務数量総括表|数量総括表|費目|工種|種別|細別|規格|単位|数量|摘要|直接測量費|間接測量費|直接人件費|その他原価|一般管理費|諸経費|業務価格)/;
+    const candidates = [];
+
+    firstPageEntries.forEach((entry) => {
+      const explicit = fieldFromLines([entry], METADATA_DEFINITIONS[0]);
+      const rawValue = explicit?.value || visibleLine(entry.text).replace(/^[|｜:：・\-\s]+|[|｜:：・\-\s]+$/g, "");
+      const value = visibleLine(rawValue).slice(0, 180);
+      if (!value.endsWith("業務") || value.length < 5 || excluded.test(value) || genericBusinessName.test(compact(value))) return;
+      candidates.push({
+        entry,
+        value,
+        explicit: Boolean(explicit),
+        score: (explicit ? 100000 : 0) + Math.max(0, 1000 - entry.lineIndex * 20) + Math.min(compact(value).length, 180)
+      });
+    });
+
+    candidates.sort((a, b) => b.score - a.score || b.value.length - a.value.length);
+    const best = candidates[0];
+    if (!best) return null;
+    return {
+      key: "projectName",
+      label: best.explicit ? "業務名" : "業務名（見出しから推定）",
+      value: best.value,
+      autoApply: true,
+      page: best.entry.page,
+      method: best.entry.method,
+      confidence: best.explicit && best.entry.method !== "ocr" ? "high" : best.entry.method === "ocr" ? "low" : "medium",
+      sourceText: best.entry.text
+    };
+  }
+
   function detectMetadata(pages, jurisdictions) {
     const entries = metadataLineEntries(pages);
     const fields = METADATA_DEFINITIONS.map((definition) => fieldFromLines(entries, definition)).filter(Boolean);
@@ -366,6 +400,7 @@
       const fallbackProjectName = fallbackProjectNameField(entries);
       if (fallbackProjectName) fields.unshift(fallbackProjectName);
     }
+    const autoProjectName = autoProjectNameField(entries);
     const fieldValue = (key) => fields.find((field) => field.key === key)?.value || "";
     const joined = entries.map((entry) => entry.text).join("\n");
     const yearMatch = joined.match(/令和\s*([0-9]+)\s*年度/);
@@ -404,6 +439,7 @@
     }
     return {
       projectName: fieldValue("projectName"),
+      autoProjectName: autoProjectName?.value || "",
       orderingParty: fieldValue("orderingParty"),
       department: fieldValue("department"),
       contactName: fieldValue("contactName"),
@@ -446,5 +482,5 @@
     return { metadata: detectMetadata(safePages, jurisdictions), pages: safePages, candidates, warnings };
   }
 
-  return { normalizeCharacters, compact, numericMatches, surveyUnitOptions, detectSurveyUnitId, splitSurveyQuantityUnit, convertSurveyQuantity, detectMetadata, analyze };
+  return { normalizeCharacters, compact, numericMatches, surveyUnitOptions, detectSurveyUnitId, splitSurveyQuantityUnit, convertSurveyQuantity, detectMetadata, autoProjectNameField, analyze };
 });

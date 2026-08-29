@@ -1135,6 +1135,9 @@
       updateProgress({ message: "資料を読み込んでいます…", progress: 0 });
       const extracted = await reader.read(file, updateProgress);
       const analysis = analyzer.analyze(extracted.pages, activeMaster(), consultingMaster, window.SEKISAN_JURISDICTIONS || []);
+      if (analysis.metadata.autoProjectName && app.applyImportedProjectNameIfEmpty?.(analysis.metadata.autoProjectName)) {
+        app.notify(`業務名に「${analysis.metadata.autoProjectName}」を入力しました`);
+      }
       if (extracted.pages.some((page) => page.preview?.imageDataUrl)) renderPdfClickWorkbench(extracted, analysis);
       else renderReview(extracted.fileName, analysis);
     } catch (error) {
