@@ -141,9 +141,6 @@ input:focus, select:focus, textarea:focus { border-color: var(--green); box-shad
 .work-keyword-button:hover { color: var(--green-dark); background: #e8f4ee; border-color: #8eb7a5; }
 .work-keyword-button[aria-pressed="true"] { color: #fff; background: var(--green); border-color: var(--green); box-shadow: 0 4px 12px rgba(18,100,79,.2); }
 .work-keyword-button small { margin-left: 4px; opacity: .78; font-size: 9px; }
-.work-name-search { margin: 12px 0 0; padding: 9px 11px; background: #f7faf8; border: 1px solid var(--line); border-radius: 9px; }
-.work-name-search summary { color: var(--green-dark); font-size: 11px; font-weight: 800; cursor: pointer; }
-.work-name-search .field { margin-top: 10px; max-width: 520px; }
 .verified-preset-row { display: grid; grid-template-columns: minmax(220px,.65fr) minmax(420px,1.5fr) minmax(150px,.45fr) auto; grid-template-areas: "group item quantity add" "basis basis basis basis" "conditions conditions conditions conditions" "status status status status"; gap: 12px; align-items: end; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
 .verified-preset-row > *, .verified-preset-row select, .verified-preset-row input { min-width: 0; max-width: 100%; }
 .verified-preset-row small { grid-column: 1 / -1; align-self: center; color: var(--muted); line-height: 1.5; }

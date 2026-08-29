@@ -92,7 +92,7 @@ assert.ok(html.includes("見積提出先") && html.includes("基準区分"), "�
 assert.ok(app.includes("blockInvalidQuantityKey"), "整数数量への小数キー入力を防止する");
 assert.ok(app.includes("blockInvalidQuantityPaste"), "不正な桁数の貼り付けを防止する");
 assert.ok(app.includes("normalizeQuantityInput"), "数量を単位別規則に正規化する");
-assert.ok(html.includes('id="surveyKeywordList"') && html.includes('id="surveyItemSearch"') && app.includes("surveyKeywordDefinitions"), "測量項目を常時表示キーワードから絞り込める");
+assert.ok(html.includes('id="surveyKeywordList"') && !html.includes('id="surveyItemSearch"') && app.includes("surveyKeywordDefinitions"), "測量項目を常時表示キーワードだけで絞り込む");
 assert.ok(html.includes('id="newItemQuantityLabel"') && app.includes('`積算数量（${item.unit}）`'), "測量の積算数量へ選択作業項目の単位を表示する");
 assert.ok(html.includes('id="surveyConditionFields" class="consulting-condition-fields"') && html.includes('id="surveyPresetStatus"'), "測量も設計等と同じ位置へ適用範囲・条件表・補正と入力状態を表示する");
 assert.ok(app.includes("renderSurveyConditionFields") && app.includes("surveyPresetValidation") && app.includes("correctionSelections: validation.correctionSelections"), "測量の追加前条件を表示・必須検査し、選択補正を明細へ保存する");
@@ -103,7 +103,7 @@ assert.ok(app.includes("defaultWorkflowState") && app.includes("normalizedWorkfl
 assert.ok(!html.includes("consulting-condition-check") && !html.includes("表示した適用範囲、条件表、補正式を確認し") && !consulting.includes("consultingConditionsConfirmed"), "4業務で形式的な確認チェックを使わない");
 assert.ok(!html.includes('id="regulationGroupSelect"'), "測量の最初の選択を編番号プルダウンへ戻さない");
 for (const keyword of ["基準点", "水準", "現地", "写真", "UAV・レーザ", "路線", "河川", "用地", "深浅"]) assert.ok(app.includes(`label: "${keyword}"`), `${keyword}キーワードを年度マスターの収録項目へ対応させる`);
-assert.ok(html.includes('class="work-name-search"') && (html.match(/名称でさらに絞り込む/g) || []).length === 2, "測量と設計等で文字検索の表示を統一する");
+assert.ok(!html.includes('class="work-name-search"') && !html.includes("名称でさらに絞り込む") && !html.includes("補助検索") && !app.includes("surveyItemSearch"), "4業務から重複する名称検索を撤去する");
 for (const group of ["第2編 基準点測量", "第3編 地形測量及び写真測量", "第4編 地形測量及び写真測量（三次元点群測量）", "第5編 応用測量"]) assert.ok(app.includes(group), `${group}を独立して表示する`);
 assert.ok(app.includes('"深浅測量": "作業規程 第5編 第3章 第7節 深浅測量"'), "深浅測量を応用測量の河川測量内へ位置付ける");
 assert.ok(!app.includes("aerialShipCategories") && !html.includes('data-business-scope="aerial"'), "航空・船舶を測量と並列の業務タブにしない");
@@ -196,4 +196,4 @@ assert.ok(app.includes('conditionMemory("survey").values[valueKey] = line.condit
 console.log("OK: UI static wiring checks passed");
 assert.ok(html.includes('data/unit-catalog.js') && html.indexOf('data/unit-catalog.js') < html.indexOf('engine.js'), "共通単位台帳を全計算エンジンより先に読み込む");
 assert.ok(!html.includes('id="itemCountBadge"') && !app.includes("項目収録`"), "測量を含む4業務の項目件数バッジを表示しない");
-assert.ok(html.includes('app.js?v=20260829-3') && html.includes('consulting.js?v=20260829-1') && html.includes('consulting-engine.js?v=20260829-1') && html.includes('document-import-engine.js?v=20260829-2') && html.includes('document-import.js?v=20260829-3') && html.includes('styles.css?v=20260828-4'), "全原表照合済み項目・PDF選択解除・手動調整安全化・業務名だけの自動入力資産をキャッシュ更新する");
+assert.ok(html.includes('app.js?v=20260829-4') && html.includes('consulting.js?v=20260829-2') && html.includes('consulting-engine.js?v=20260829-1') && html.includes('document-import-engine.js?v=20260829-2') && html.includes('document-import.js?v=20260829-3') && html.includes('styles.css?v=20260829-1'), "キーワード専用選択・PDF選択解除・手動調整安全化・業務名自動入力資産をキャッシュ更新する");

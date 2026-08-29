@@ -444,11 +444,10 @@
 
   function defaultWorkflowState() {
     return {
-      survey: { keyword: "all", category: "", search: "" },
+      survey: { keyword: "all", category: "" },
       consulting: {
         keywords: { design: "all", planning: "all", geology: "all" },
-        groups: { design: "", planning: "", geology: "" },
-        searches: { design: "", planning: "", geology: "" }
+        groups: { design: "", planning: "", geology: "" }
       },
       documentImport: {
         kind: "survey",
@@ -465,7 +464,6 @@
     defaults.survey = Object.assign(defaults.survey, saved.survey || {});
     defaults.consulting.keywords = Object.assign(defaults.consulting.keywords, saved.consulting?.keywords || {});
     defaults.consulting.groups = Object.assign(defaults.consulting.groups, saved.consulting?.groups || {});
-    defaults.consulting.searches = Object.assign(defaults.consulting.searches, saved.consulting?.searches || {});
     defaults.documentImport = Object.assign(defaults.documentImport, saved.documentImport || {});
     defaults.documentImport.keywords = Object.assign(defaultWorkflowState().documentImport.keywords, saved.documentImport?.keywords || {});
     defaults.documentImport.consultingGroups = Object.assign(defaultWorkflowState().documentImport.consultingGroups, saved.documentImport?.consultingGroups || {});
@@ -668,11 +666,9 @@
   function populateItems() {
     const master = activeMaster();
     const category = $("categorySelect").value;
-    const query = String($("surveyItemSearch").value || "").trim().toLocaleLowerCase("ja");
     const previous = $("itemSelect").value;
     const filtered = surveyItemsForKeyword(surveyItemsForScope(master)).filter((item) =>
-      (!category || item.category === category)
-      && (!query || `${item.code} ${item.name} ${item.category}`.toLocaleLowerCase("ja").includes(query))
+      !category || item.category === category
     );
     $("itemSelect").innerHTML = filtered.map((item) => `<option value="${h(item.code)}">${h(item.code)}｜${h(item.name)}</option>`).join("");
     if (filtered.some((item) => item.code === previous)) $("itemSelect").value = previous;
@@ -1191,7 +1187,6 @@
   function renderAll() {
     const workflow = workflowState();
     activeSurveyKeyword = workflow.survey.keyword || "all";
-    $("surveyItemSearch").value = workflow.survey.search || "";
     populateMasterSelects();
     populateCategories();
     renderEstimate();
@@ -1699,13 +1694,10 @@
       activeSurveyKeyword = button.dataset.surveyKeyword;
       workflowState().survey.keyword = activeSurveyKeyword;
       workflowState().survey.category = "";
-      $("surveyItemSearch").value = "";
-      workflowState().survey.search = "";
       populateCategories();
       scheduleSave();
     });
     $("categorySelect").addEventListener("change", () => { workflowState().survey.category = $("categorySelect").value; populateItems(); scheduleSave(); });
-    $("surveyItemSearch").addEventListener("input", () => { workflowState().survey.search = $("surveyItemSearch").value; populateItems(); scheduleSave(); });
     $("itemSelect").addEventListener("change", updateSelectedItemMeta);
     $("newItemQuantity").addEventListener("keydown", blockInvalidQuantityKey);
     $("newItemQuantity").addEventListener("paste", blockInvalidQuantityPaste);

@@ -77,7 +77,6 @@
   function syncScopeWorkflow() {
     const workflow = workflowState();
     Object.assign(activeConsultingKeywords, workflow.keywords || {});
-    $("consultingPresetSearch").value = workflow.searches?.[activeConsultingScope] || "";
   }
 
   function keywordDefinitions() {
@@ -221,7 +220,6 @@
   }
 
   function renderPresets() {
-    const query = String($("consultingPresetSearch").value || "").trim().toLocaleLowerCase("ja");
     const year = Number(state().fiscalYear);
     const allPresets = Array.isArray(rulePack.rules) && rulePack.rules.length ? rulePack.rules : master.verifiedPresets;
     const scopedPresets = allPresets.filter((preset) => {
@@ -231,10 +229,7 @@
       return engine.classifyPresetCoverage(preset, conditionRule, familyForPreset(preset)).canCalculate;
     });
     renderConsultingKeywords(scopedPresets);
-    const candidates = scopedPresets.filter((preset) =>
-      presetMatchesKeyword(preset)
-      && (!query || `${preset.label} ${preset.standardUnit || ""} ${preset.source || ""}`.toLocaleLowerCase("ja").includes(query))
-    );
+    const candidates = scopedPresets.filter((preset) => presetMatchesKeyword(preset));
     const previousGroup = $("consultingRuleGroup").value || workflowState().groups?.[activeConsultingScope] || "";
     const groups = [...new Map(candidates.map((preset) => {
       const group = presetGroup(preset);
@@ -898,11 +893,8 @@
     const workflow = workflowState();
     workflow.keywords = workflow.keywords || {};
     workflow.groups = workflow.groups || {};
-    workflow.searches = workflow.searches || {};
     workflow.keywords[activeConsultingScope] = "all";
     workflow.groups[activeConsultingScope] = presetGroup(preset).id;
-    $("consultingPresetSearch").value = "";
-    workflow.searches[activeConsultingScope] = "";
     renderPresets();
     $("consultingRuleGroup").value = presetGroup(preset).id;
     visiblePresets = (rulePack.rules || []).filter((entry) => Number(entry.fiscalYear) === Number(state().fiscalYear)
@@ -1040,19 +1032,12 @@
     $("referenceCaseFileInput").addEventListener("change", (event) => { const file = event.target.files?.[0]; if (file) compareReferenceFile(file); event.target.value = ""; });
     $("consultingServiceType").addEventListener("change", () => renderServiceControls(true));
     $("consultingTaskTemplate").addEventListener("change", () => { $("consultingTaskName").value = $("consultingTaskTemplate").value; });
-    $("consultingPresetSearch").addEventListener("input", () => {
-      workflowState().searches[activeConsultingScope] = $("consultingPresetSearch").value;
-      renderPresets();
-      app.saveDraft();
-    });
     $("consultingKeywordList").addEventListener("click", (event) => {
       const button = event.target.closest("[data-consulting-keyword]");
       if (!button) return;
       activeConsultingKeywords[activeConsultingScope] = button.dataset.consultingKeyword;
       workflowState().keywords[activeConsultingScope] = button.dataset.consultingKeyword;
       workflowState().groups[activeConsultingScope] = "";
-      $("consultingPresetSearch").value = "";
-      workflowState().searches[activeConsultingScope] = "";
       renderPresets();
       app.saveDraft();
     });

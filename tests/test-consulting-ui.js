@@ -14,7 +14,7 @@ const ids = new Set([...html.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1
 const referencedIds = new Set([...ui.matchAll(/\$\("([^"]+)"\)/g)].map((match) => match[1]));
 assert.deepStrictEqual([...referencedIds].filter((id) => !ids.has(id)), [], "consulting.jsから参照するHTML要素が揃う");
 
-for (const id of ["consultingView", "consultingFiscalYear", "consultingEstimateDate", "consultingProjectMemo", "consultingServiceType", "consultingTaskTemplate", "consultingTaskName", "consultingRole", "consultingDays", "consultingKeywordList", "consultingPresetSearch", "consultingRuleGroup", "consultingPreset", "consultingPresetBasis", "consultingQuantityFields", "consultingPresetStatus", "consultingLineBody", "consultingSummaryList", "consultingSummaryHeading", "consultingPrintButton"]) {
+for (const id of ["consultingView", "consultingFiscalYear", "consultingEstimateDate", "consultingProjectMemo", "consultingServiceType", "consultingTaskTemplate", "consultingTaskName", "consultingRole", "consultingDays", "consultingKeywordList", "consultingRuleGroup", "consultingPreset", "consultingPresetBasis", "consultingQuantityFields", "consultingPresetStatus", "consultingLineBody", "consultingSummaryList", "consultingSummaryHeading", "consultingPrintButton"]) {
   assert.ok(html.includes(`id="${id}"`), `${id}を表示する`);
 }
 for (const file of ["data/consulting-master.js", "consulting-engine.js", "consulting.js"]) {
@@ -39,14 +39,14 @@ assert.ok(ui.includes('ezsekisan:businessscope') && ui.includes("activeConsultin
 assert.ok(ui.includes("function renderAll(resetManualTask = false)") && ui.includes("const scopeChanged = activeConsultingScope !== event.detail.scope") && ui.includes("renderAll(scopeChanged);"), "業務タブが実際に変わったときだけ前業務の手動項目名を持ち越さない");
 assert.ok(html.includes('data-consulting-scope="design-planning"') && html.includes('data-consulting-scope="geology"'), "タブに対応する積上費用だけを表示する");
 assert.ok(master.includes('id: "design-note-r8"') && master.includes('id: "design-note-r7"') && master.includes('id: "design-note-r6"') && master.includes("designLead: 0.5") && master.includes("designEngineerA: 1.0"), "令和6～8年度の設計留意書歩掛をプリセットする");
-assert.ok(ui.includes("CONSULTING_RULE_PACK") && ui.includes("preset.fiscalYear") && ui.includes("consultingPresetSearch"), "照合済み標準歩掛を年度・業務タブ・補助検索語で絞る");
+assert.ok(ui.includes("CONSULTING_RULE_PACK") && ui.includes("preset.fiscalYear") && !ui.includes("consultingPresetSearch"), "照合済み標準歩掛を年度・業務タブ・キーワードで絞る");
 assert.ok(ui.includes("classifyPresetCoverage(preset, conditionRule, familyForPreset(preset)).canCalculate") && ui.includes("この業務区分の全国標準参考歩掛は未収録"), "原表照合済み全項目を共通判定で通常候補へ表示する");
 assert.ok(ui.includes("setUnifiedFiscalYear") && ui.includes("ezsekisan:fiscalyearchange") && app.includes("setUnifiedFiscalYear"), "4業務の年度を同じ全国標準単価セットへ同期する");
 assert.ok(ui.includes("standardWalk?.fiscalYear") && ui.includes("year-mismatch-row") && ui.includes("測量と設計等の積算年度が一致しない"), "異年度の歩掛と測量合算を計算対象外にする");
 assert.ok(ui.includes("unitCatalog.definitions.map") && !html.includes("<option>m</option>"), "積上費用と地質市場単価で監査済み単位台帳を共用する");
 assert.ok(ui.includes("CONSULTING_WORK_CATALOG") && ui.includes("consultingKeywordDefinitions") && ui.includes("presetMatchesKeyword") && ui.includes("renderConsultingKeywords"), "設計・調査計画・地質を共用台帳の正式familyCode由来キーワードで絞る");
 for (const keyword of ["道路", "橋梁", "河川・水辺", "水文・観測", "ボーリング", "原位置試験", "解析"]) assert.ok(workCatalog.includes(`label: "${keyword}"`), `${keyword}キーワードを表示できる`);
-assert.ok(html.includes("名称でさらに絞り込む"), "文字検索を初期操作ではなく折りたたみの補助操作にする");
+assert.ok(!html.includes("名称でさらに絞り込む") && !html.includes('id="consultingPresetSearch"') && !ui.includes("searches"), "設計・調査計画・地質はキーワードと正式分類だけで選ぶ");
 for (const label of ["積算基準の作業区分", "作業項目", "積算数量（"]) assert.ok(html.includes(label) || ui.includes(label), `${label}を測量と共通表示する`);
 assert.ok(!html.includes('id="consultingItemCountBadge"') && !ui.includes("項目計算可") && !ui.includes("計算可 ${") && ui.includes('`${label.replace(/業務$/, "")}作業項目を追加`'), "4業務の見出しと状態文に計算可・収録件数を表示しない");
 assert.ok(ui.includes("consultingMarketQuantityLabel") && ui.includes('`積算数量（${unitLabel}）`'), "市場単価方式も選択単位を積算数量へ表示する");
