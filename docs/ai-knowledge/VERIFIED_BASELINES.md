@@ -3022,3 +3022,27 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `tests/test-document-import.js` | `92AAABFF33F3294654ACA4DAC77C7BCBE2736A7C0B81FB09CF26C99CBDCE314D` |
 | `tests/test-document-import-ui.js` | `AFDC7A5A61D264B9CE675B8BDB0C86012E95875044E0C5D1DEEB362867BD213F` |
 | `tests/test-ui-static.js` | `2A649BB086C1C122B582E47461D1F6D8A3CDBD2BB996E947C02DD590FEF50EBE` |
+
+## B-2026-08-29-04
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-29
+- 実装コミット: `282c1af42c2ee583c251bb6567ac03bdc72dd40c`
+- GitHub Pages: `built`、ビルド`1181270494`、コミット`282c1af42c2ee583c251bb6567ac03bdc72dd40c`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: 設計、測量、調査・計画、地質の通常作業選択から重複する「名称でさらに絞り込む」と補助検索欄を撤去した。常時表示キーワード、正式な積算基準の作業区分、作業項目を共通の選択手順とし、旧保存データの検索語も候補へ適用しない。PDF取込み専用のキーワード絞込みは維持した。
+
+### 合格した試験・公開確認
+
+- `tests/test-*.js`全19本、`app.js`と`consulting.js`の`node --check`、`git diff --check`が合格した。
+- ローカル／公開版の4業務すべてで、キーワード、作業区分、作業項目が表示され、「名称でさらに絞り込む」、`surveyItemSearch`、`consultingPresetSearch`が0件であることを確認した。
+- 公開版で測量「基準点」を選ぶと14候補へ絞られ、`app.js?v=20260829-4`、`consulting.js?v=20260829-2`、`styles.css?v=20260829-1`が配信され、警告・エラー0件だった。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `F07070ABA6B6C5E7C45CA68B6EB35A5B52A4763FA7A7EAE014B4802FB70D1493` |
+| `app.js` | `7D2AE31B6A69B5E24D9E848D6A47A0EE74E2AB5229109C9C988AAC27236B5031` |
+| `consulting.js` | `DB7A9182AF7C37AAD90F72F7753B1FF51BEB59F07B5605DEB6982C0D7EEE40C9` |
+| `styles.css` | `F30E0CB0803C0A2475D92A34FB53F6E0FD59DC229B4B9D597154051D2FE96424` |
