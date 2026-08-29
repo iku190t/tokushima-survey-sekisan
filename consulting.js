@@ -250,11 +250,11 @@
     visiblePresets = candidates.filter((preset) => presetGroup(preset).id === selectedGroup);
     $("consultingPreset").innerHTML = visiblePresets.length
       ? visiblePresets.map((preset) => `<option value="${h(preset.id)}">${h(preset.label)}｜${h(preset.standardUnit || "1業務当り")}</option>`).join("")
-      : '<option value="">この業務区分に自動積算できる全国標準項目はありません</option>';
+      : '<option value="">この業務区分の全国標準参考歩掛は未収録</option>';
     if (visiblePresets.some((preset) => preset.id === previousPreset)) $("consultingPreset").value = previousPreset;
     $("consultingPresetStatus").textContent = visiblePresets.length
       ? `令和${year - 2018}年度：作業区分と作業項目を選択してください。`
-      : `令和${year - 2018}年度：条件式まで完成した全国標準項目がありません。必要な場合は下の根拠付き手動調整を使用してください。`;
+      : `令和${year - 2018}年度：検索条件に一致する標準歩掛がありません。`;
     renderPresetRule();
   }
 
