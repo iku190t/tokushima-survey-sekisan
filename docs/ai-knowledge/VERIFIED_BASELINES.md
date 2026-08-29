@@ -2994,3 +2994,31 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `mlit-gyoumu-sekisan-links.json` | `BD839AC85665DAE50B303BCC22FA217AD8FE4A684DEF978C7CC800A45CCDA0B6` |
 | `mlit-gyoumu-sekisan-documents.json` | `84F65103FC5D722CD63FE9D04A51B2F5D4C94A98D2CB111C15EE9BFAF21B622B` |
 | `official-source-catalog.json` | `11CB192206D0B684C165E18C34C415493C9652680F6F2A8E64BD3CCF0121509E` |
+
+## B-2026-08-29-03
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-29
+- 実装コミット: `f9a7d8106ea41b9ced8e02f2fa03be603336604f`
+- GitHub Pages: `built`、ビルド`1181257409`、コミット`f9a7d8106ea41b9ced8e02f2fa03be603336604f`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: PDF・写真取込の1ページ目から、末尾が「業務」で一般業務区分名・費目名ではない案件名だけを判定し、現在の業務名が空欄の場合に設計・測量・調査計画・地質の4業務共通へ自動入力する。手入力済み業務名は上書きしない。業務基本情報全体の候補画面・手動対応付け・一括反映は復活させていない。
+
+### 合格した試験・公開確認
+
+- `tests/test-*.js`全19本、主要JavaScriptの`node --check`、`git diff --check`が合格した。
+- 単体試験で、1ページ目の案件名、明示ラベル付き案件名、一般的な「用地測量業務」の除外、2ページ目以降の除外を確認した。
+- ローカル匿名デモPDFで、4業務すべてに`令和8年度 ○○地区基準点・用地測量業務`が共通反映された。手入力済みの匿名業務名へ変更後に同じPDFを再取込みしても上書きされず、警告・エラー0件だった。
+- 公開版で同じ匿名デモPDFを読み込み、4業務すべての業務名一致、`document-import-engine.js?v=20260829-2`、`app.js?v=20260829-3`、`document-import.js?v=20260829-3`の配信、警告・エラー0件を確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `index.html` | `25F3694EAB4C125AACFF8071D3C9760756C62A5F8E716CCA7BE75F82DCF66F91` |
+| `app.js` | `65F1860A86B6C22F3BA8FC4D97ABE30B2E1151D70C2333A5209298BB1733FABE` |
+| `document-import-engine.js` | `D520A7BEFC628554CAB8206C4FD0E7AE93E32A1D858BEB73F500A06F0FC9A08B` |
+| `document-import.js` | `3A9E4E52D308B3874C4B747A0CB1AF02F2BDE52248BD31613C36A109473CE98E` |
+| `tests/test-document-import.js` | `92AAABFF33F3294654ACA4DAC77C7BCBE2736A7C0B81FB09CF26C99CBDCE314D` |
+| `tests/test-document-import-ui.js` | `AFDC7A5A61D264B9CE675B8BDB0C86012E95875044E0C5D1DEEB362867BD213F` |
+| `tests/test-ui-static.js` | `2A649BB086C1C122B582E47461D1F6D8A3CDBD2BB996E947C02DD590FEF50EBE` |
