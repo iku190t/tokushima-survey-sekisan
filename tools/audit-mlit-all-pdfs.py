@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import hashlib
+from datetime import date
 from html.parser import HTMLParser
 import json
 from pathlib import Path
@@ -92,7 +93,7 @@ def main() -> None:
     total_bytes = sum(int(row.get("bytes", 0)) for row in documents)
     payload = {
         "sourcePage": INDEX_URL,
-        "auditedAt": "2026-08-23",
+        "auditedAt": date.today().isoformat(),
         "pdfLinkCount": len(parser.links),
         "uniquePdfLinkCount": len(grouped),
         "acquiredCount": acquired,

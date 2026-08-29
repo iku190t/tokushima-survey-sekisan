@@ -1252,7 +1252,6 @@
       });
       added += 1;
     });
-    if (metadata.projectName) estimate.projectName = String(metadata.projectName).trim().slice(0, 180);
     renderAll();
     scheduleSave();
     if (recentlyImportedSurveyLineIds.size) setTimeout(() => {
@@ -1262,52 +1261,10 @@
     return { added, rejected };
   }
 
-  function applyImportedProjectName(projectName) {
-    const normalized = String(projectName || "").trim().slice(0, 180);
-    if (!normalized) return false;
-    estimate.projectName = normalized;
-    renderAll();
-    scheduleSave();
-    return true;
-  }
-
   function preferredMaster(_jurisdictionCode, fiscalYear) {
     const priority = (master) => master.verificationStatus === "verified" ? 30 : master.verificationStatus === "user-supplied" ? 20 : 10;
     return masters.filter((master) => master.jurisdictionCode === "mlit" && (!fiscalYear || master.fiscalYear === fiscalYear))
       .sort((a, b) => priority(b) - priority(a) || num(b.fiscalYear) - num(a.fiscalYear))[0] || null;
-  }
-
-  function applyImportedMetadata(values = {}) {
-    const allowed = ["orderingParty", "department", "contactName", "workLocation", "contractPeriod", "documentNumber", "documentDate"];
-    let applied = 0;
-    let masterChanged = false;
-    let masterFound = true;
-    if (normalizeSubmissionJurisdictionCode(values.jurisdictionCode)) {
-      estimate.submissionJurisdictionCode = normalizeSubmissionJurisdictionCode(values.jurisdictionCode);
-      applied += 1;
-    }
-    const requestedMaster = preferredMaster("mlit", num(values.fiscalYear) || activeMaster().fiscalYear);
-    if (values.fiscalYear && !requestedMaster) masterFound = false;
-    else if (requestedMaster && requestedMaster.id !== activeMaster().id && values.fiscalYear) {
-      switchMaster(requestedMaster.id);
-      masterChanged = true;
-      applied += 1;
-    }
-    if (String(values.projectName || "").trim()) {
-      estimate.projectName = String(values.projectName).trim().slice(0, 180);
-      applied += 1;
-    }
-    const projectInfo = estimate.projectInfo || (estimate.projectInfo = defaultProjectInfo());
-    allowed.forEach((key) => {
-      if (!String(values[key] || "").trim()) return;
-      projectInfo[key] = String(values[key]).trim().slice(0, 180);
-      applied += 1;
-    });
-    if (String(values.orderingParty || "").trim()) estimate.report.clientName = String(values.orderingParty).trim().slice(0, 180);
-    if (String(values.contractPeriod || "").trim()) estimate.report.delivery = String(values.contractPeriod).trim().slice(0, 180);
-    renderAll();
-    scheduleSave();
-    return { applied, masterChanged, masterFound };
   }
 
   function addCaseSources(entries = []) {
@@ -1885,8 +1842,6 @@
     setAddButtonValidationState,
     showMissingInputPopup,
     importSurveyLines,
-    applyImportedProjectName,
-    applyImportedMetadata,
     addCaseSources,
     updateCaseSource,
     removeCaseSource,

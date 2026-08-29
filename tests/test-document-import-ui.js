@@ -19,7 +19,7 @@ assert.deepStrictEqual([...referencedIds].filter((id) => !ids.has(id)), [], "資
 for (const file of ["document-import-engine.js", "document-reader.js", "document-import.js", "tests/test-document-import.js"]) {
   assert.ok(fs.existsSync(path.join(root, file)), `${file} が存在する`);
 }
-for (const id of ["importView", "documentDropZone", "documentFileInput", "pdfClickWorkbench", "pdfClickPages", "pdfClickSelectedList", "pdfManualMapper", "pdfManualHeadingText", "pdfManualKind", "pdfManualKeywordFilter", "pdfManualKeywordList", "pdfManualSurveyRegulationGroup", "pdfManualSurveyCategory", "pdfManualSurveyCode", "pdfManualSurveyQuantity", "pdfManualSurveySourceUnit", "pdfManualSurveyConversion", "pdfManualConsultingService", "pdfManualConsultingRuleGroup", "pdfManualConsultingTaskTemplate", "pdfManualConsultingTask", "pdfManualConsultingRole", "pdfManualConsultingDays", "pdfManualMetadataKey", "pdfManualMetadataValue", "addPdfManualCandidateButton", "clearPdfManualLineSelectionButton", "applyPdfSelectionNowButton", "pdfCandidateChoiceDialog", "pdfCandidateChoiceTitle", "pdfCandidateChoiceSummary", "pdfCandidateChoiceList", "closePdfCandidateChoiceButton", "cancelPdfCandidateChoiceButton", "documentImportDialog", "importMetadataPanel", "documentImportMetadataList", "toggleAllImportMetadata", "documentImportEmptyGuide", "importCandidateToolbar", "documentImportCandidateList", "applyDocumentImportButton"]) {
+for (const id of ["importView", "documentDropZone", "documentFileInput", "pdfClickWorkbench", "pdfClickPages", "pdfClickSelectedList", "pdfManualMapper", "pdfManualHeadingText", "pdfManualKind", "pdfManualKeywordFilter", "pdfManualKeywordList", "pdfManualSurveyRegulationGroup", "pdfManualSurveyCategory", "pdfManualSurveyCode", "pdfManualSurveyQuantity", "pdfManualSurveySourceUnit", "pdfManualSurveyConversion", "pdfManualConsultingService", "pdfManualConsultingRuleGroup", "pdfManualConsultingTaskTemplate", "pdfManualConsultingTask", "pdfManualConsultingRole", "pdfManualConsultingDays", "addPdfManualCandidateButton", "clearPdfManualLineSelectionButton", "applyPdfSelectionNowButton", "pdfCandidateChoiceDialog", "pdfCandidateChoiceTitle", "pdfCandidateChoiceSummary", "pdfCandidateChoiceList", "closePdfCandidateChoiceButton", "cancelPdfCandidateChoiceButton", "documentImportDialog", "documentImportEmptyGuide", "importCandidateToolbar", "documentImportCandidateList", "applyDocumentImportButton"]) {
   assert.ok(ids.has(id), `${id} が存在する`);
 }
 assert.ok(html.includes("設計・測量・調査計画・地質"), "資料取込の対象業務を積算基準の4業務区分順で明示する");
@@ -28,9 +28,10 @@ assert.ok(html.includes('class="import-start-grid"') && html.includes('class="im
 assert.ok(html.indexOf('class="pdf-manual-footer"') < html.indexOf('class="pdf-manual-scroll-body"') && css.includes("grid-template-rows: auto auto minmax(0,1fr)"), "反映待ち追加ボタンを右入力欄の上部へ固定し入力項目で隠さない");
 assert.ok(css.includes(".pdf-manual-scroll-body > .field:first-child") && css.includes("isolation: isolate"), "反映先とキーワード欄を別段にして文字の重なりを防ぐ");
 assert.ok(css.includes(".utility-view-tabs { margin-left: 0;") && !css.includes(".utility-view-tabs { margin-left: auto;"), "PDF・写真から取込みを業務タブ側へ寄せる");
-const kindOptions = ['value="design">設計業務', 'value="survey">測量業務', 'value="planning">調査・計画業務', 'value="geology">地質業務', 'value="metadata">業務基本情報'];
-assert.ok(kindOptions.every((option) => html.includes(option)), "PDF反映先を4業務区分と基本情報へ分ける");
-assert.deepStrictEqual(kindOptions.map((option) => html.indexOf(option)), [...kindOptions.map((option) => html.indexOf(option))].sort((a, b) => a - b), "PDF反映先を設計・測量・調査計画・地質・基本情報の順にする");
+const kindOptions = ['value="design">設計業務', 'value="survey">測量業務', 'value="planning">調査・計画業務', 'value="geology">地質業務'];
+assert.ok(kindOptions.every((option) => html.includes(option)), "PDF反映先を4業務区分へ分ける");
+assert.deepStrictEqual(kindOptions.map((option) => html.indexOf(option)), [...kindOptions.map((option) => html.indexOf(option))].sort((a, b) => a - b), "PDF反映先を設計・測量・調査計画・地質の順にする");
+assert.ok(!html.includes('value="metadata">業務基本情報') && !html.includes('id="pdfManualMetadataFields"') && !html.includes('id="importMetadataPanel"'), "PDF取込から業務基本情報の選択・確認UIを撤去する");
 assert.ok(!html.includes("設計・調査・地質の人工"), "異なる積算基準の設計・調査・地質を1つの選択肢へまとめない");
 assert.ok(html.includes("資料内容は外部送信しません"), "ブラウザー内処理を明示する");
 assert.ok(html.includes('accept="application/pdf,image/png,image/jpeg,image/webp'), "PDFと写真を選択できる");
@@ -45,12 +46,11 @@ assert.ok(reader.includes("MAX_FILE_BYTES") && reader.includes("MAX_PAGES"), "�
 assert.ok(!reader.includes("FormData") && !reader.includes('fetch(file'), "資料ファイルを外部へアップロードしない");
 assert.ok(ui.includes("renderReview") && ui.includes("showModal"), "反映前に一覧確認ダイアログを開く");
 assert.ok(ui.includes("sourceText") && ui.includes("confidenceLabel") && ui.includes("methodLabel"), "原文・確信度・抽出方法を確認できる");
-assert.ok(ui.includes("metadataHtml") && ui.includes("import-metadata-select") && ui.includes("import-metadata-value"), "業務基本情報を項目別に確認・修正・選択できる");
-assert.ok(ui.includes('field.key === "projectName" && field.autoApply') && ui.includes("app.applyImportedProjectName(autoProjectName.value)"), "PDF先頭の高確度な業務見出しを4業務共通の業務名へ自動入力する");
+assert.ok(!ui.includes("metadataHtml") && !ui.includes("import-metadata-select") && !ui.includes("app.applyImportedProjectName") && !ui.includes("app.applyImportedMetadata"), "PDFから業務基本情報を候補化・自動反映しない");
 assert.ok(ui.includes("renderPdfClickWorkbench") && ui.includes("pdf-line-hotspot") && ui.includes("clickLineTargets"), "PDF上の候補行をクリックして反映待ちへ選択できる");
 assert.ok(ui.includes('get("__qa_import") !== "demo"') && ui.includes('fetch("media/intro-assets/web-sekisan-demo.pdf")') && ui.includes("await analyzeFile(file)"), "匿名デモPDFを実際の取込経路でブラウザー検査できる");
 assert.ok(ui.includes("clickLines.set") && !ui.includes('if (!targets.length) return ""'), "自動判定の有無にかかわらずPDFの全抽出行をクリック対象にする");
-assert.ok(ui.includes("openManualMapper") && ui.includes("addManualCandidate") && ui.includes("metadataLabels"), "未判定行の反映先・数量・人工・基本情報を右側で指定できる");
+assert.ok(ui.includes("openManualMapper") && ui.includes("addManualCandidate") && !ui.includes("metadataLabels"), "未判定行は4業務の反映先・数量・人工だけを右側で指定できる");
 assert.ok(ui.includes("surveyCategoryOptions") && ui.includes("populateManualSurveyItems") && ui.includes("pdfManualSurveyCategory"), "長い測量項目を分類で絞り込んで詳細項目を選べる");
 assert.ok(html.includes('src="data/consulting-work-catalog.js?v=') && ui.includes("CONSULTING_WORK_CATALOG") && ui.includes("CONSULTING_RULE_PACK"), "PDF取込と本体が同じキーワード定義・公式作業項目規則を使う");
 assert.ok(ui.includes("updateManualConsultingTasks") && ui.includes("updateManualConsultingItemsForGroup") && ui.includes("pdfManualConsultingRuleGroup") && ui.includes("pdfManualConsultingTaskTemplate"), "設計・調査計画・地質も積算基準の作業区分から公式作業項目を選べる");
@@ -98,15 +98,15 @@ for (const removed of ["確信度の高い候補を選択", "選択をすべて�
 const pendingControls = html.slice(html.indexOf('class="pdf-pending-controls"'), html.indexOf('</div>', html.indexOf('class="pdf-pending-controls"')) + 6);
 assert.strictEqual((pendingControls.match(/<button/g) || []).length, 1, "反映待ちの確定操作は積算へ追加ボタン1個にする");
 assert.ok(ui.includes('dataset.action = hasResults ? "apply" : "close"') && ui.includes("読み取れる項目なし・閉じる"), "候補0件では選択を要求せず閉じられる");
-assert.ok(ui.includes('$("importCandidateToolbar").hidden = candidateCount === 0') && ui.includes('$("importMetadataPanel").hidden = metadataCount === 0'), "候補がない区分の選択操作を隠す");
-assert.ok(ui.includes("window.confirm") && ui.includes("changesMaster") && ui.includes("標準単価セットの年度"), "年度単価セットの切替前だけ再確認する");
+assert.ok(ui.includes('$("importCandidateToolbar").hidden = candidateCount === 0') && !ui.includes("importMetadataPanel"), "積算候補がない場合だけ選択操作を隠す");
+assert.ok(!ui.includes("changesMaster") && !ui.includes("標準単価セットの年度を切り替える"), "PDF取込から積算年度を自動変更しない");
 assert.ok(ui.includes("計算単価には影響しません") && ui.includes("getSubmissionJurisdictionCode"), "見積提出先を単価セットから分離する");
 assert.ok(ui.includes("import-survey-code") && ui.includes("import-survey-quantity"), "測量項目と数量を修正できる");
 assert.ok(ui.includes("import-consulting-service") && ui.includes("import-consulting-role") && ui.includes("import-consulting-days"), "設計・調査・地質の区分・職種・人工を修正できる");
 assert.ok(ui.includes("manualWorkflowState") && ui.includes("rememberManualWorkflow") && ui.includes("restoreManualWorkflow"), "PDF取込の業務区分・作業区分・キーワードを同一案件で保存復元する");
 assert.ok(app.includes('new CustomEvent("ezsekisan:draftrestored")') && ui.includes('document.addEventListener("ezsekisan:draftrestored", restoreManualWorkflow)'), "前回データ復元時にPDF取込み状態を再読込する");
 assert.ok(app.includes("function importSurveyLines") && app.includes("SekisanEngine.normalizeQuantity"), "確認済み測量数量を単位別規則で正規化して反映する");
-assert.ok(app.includes("function applyImportedMetadata") && app.includes("defaultProjectInfo"), "確認済み業務基本情報を構造化して反映する");
+assert.ok(!app.includes("function applyImportedMetadata") && !app.includes("function applyImportedProjectName"), "PDF専用の業務基本情報反映APIを撤去する");
 for (const key of ["orderingParty", "department", "contactName", "workLocation", "contractPeriod", "documentNumber", "documentDate"]) {
   assert.ok(html.includes(`data-project-info="${key}"`), `${key} の反映先入力欄がある`);
 }

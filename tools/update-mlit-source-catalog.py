@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import hashlib
+from datetime import date
 from html.parser import HTMLParser
 import json
 from pathlib import Path
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 from urllib.request import Request, urlopen
 
 from pypdf import PdfReader
@@ -13,8 +14,7 @@ from pypdf import PdfReader
 ROOT = Path(__file__).resolve().parents[1]
 CATALOG = ROOT / "data/official-source-catalog.json"
 CATALOG_JS = ROOT / "data/official-source-catalog.js"
-PDF_DIR = ROOT / "tmp/pdfs/mlit"
-BASE_PDF_DIR = ROOT / "tmp/pdfs/mlit-base"
+PDF_DIR = ROOT / "tmp/pdfs/mlit-all"
 LINK_AUDIT = ROOT / "data/source-audits/mlit-gyoumu-sekisan-links.json"
 INDEX_URL = "https://www.mlit.go.jp/tec/gyoumu_sekisan.html"
 
@@ -112,7 +112,7 @@ def update_link_audit() -> None:
             row["labels"].append(link["label"])
     payload = {
         "sourcePage": INDEX_URL,
-        "auditedAt": "2026-08-23",
+        "auditedAt": date.today().isoformat(),
         "allLinkCount": len(parser.links),
         "pdfLinkCount": len(pdf_links),
         "uniquePdfLinkCount": len(unique),
@@ -127,7 +127,7 @@ def main() -> None:
     data = json.loads(CATALOG.read_text(encoding="utf-8"))
     existing = {entry["id"]: entry for entry in data.get("sources", [])}
     for source_id, year, kind, title, url, filename in BASE_DOCS:
-        path = BASE_PDF_DIR / filename
+        path = PDF_DIR / Path(urlparse(url).path).name
         existing[source_id] = {
             "id": source_id,
             "jurisdictionCode": "mlit",
@@ -145,7 +145,8 @@ def main() -> None:
     for year, meta in YEARS.items():
         existing.pop(f"mlit-{meta['prefix']}-measurement", None)
         for (slug, title, kind), content_id in zip(DOCS, meta["ids"]):
-            path = PDF_DIR / f"{meta['prefix']}-{slug}.pdf"
+            url = f"https://www.mlit.go.jp/tec/content/{content_id}.pdf"
+            path = PDF_DIR / Path(urlparse(url).path).name
             source_id = f"mlit-{meta['prefix']}-measurement-standard" if slug == "measurement" else f"mlit-{meta['prefix']}-{slug}"
             existing[source_id] = {
                 "id": source_id,
@@ -154,14 +155,14 @@ def main() -> None:
                 "fiscalYear": year,
                 "kind": kind,
                 "title": f"{meta['era']} {title}",
-                "url": f"https://www.mlit.go.jp/tec/content/{content_id}.pdf",
+                "url": url,
                 "pages": len(PdfReader(str(path)).pages),
                 "bytes": path.stat().st_size,
                 "sha256": digest(path),
                 "acquisitionStatus": "acquired",
                 "auditStatus": "indexed",
             }
-    data["auditedAt"] = "2026-08-24"
+    data["auditedAt"] = date.today().isoformat()
     data["policy"] = "公式公開元、年度、SHA-256、ページ数を確認できた原資料だけを記録する。取得・索引済みは全表の計算実装済みを意味しない。"
     data["sources"] = sorted(existing.values(), key=lambda row: (str(row.get("jurisdictionCode")), int(row.get("fiscalYear", 0)), str(row.get("kind"))))
     CATALOG.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

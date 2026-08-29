@@ -156,7 +156,7 @@ assert.ok(!html.includes('class="brand-mark"') && !css.includes(".brand-mark"), 
 assert.ok(css.includes(".publisher-signature { padding: 4px 2px;") && css.includes("border: 0; border-radius: 0;") && css.includes("text-decoration-thickness: 2px"), "Ez 積算は囲み枠を外して下線だけで表示する");
 assert.ok(app.includes('["aboutToolButton", "publisherInfoButton"]'), "ナビの免責ボタンとフッターを同じ案内へ結線する");
 assert.ok(!html.includes('class="reference-notice') && !css.includes(".reference-notice"), "大きな参考試算注意帯を表示しない");
-assert.ok(html.includes('>使い方・計算根拠</button>\n      <button id="aboutToolButton"') && html.includes("参考試算・免責</button>"), "使い方・計算根拠の右側に小さな免責ボタンを置く");
+assert.ok(/>使い方・計算根拠<\/button>\s*<button id="aboutToolButton"/.test(html) && html.includes("参考試算・免責</button>"), "使い方・計算根拠の右側に小さな免責ボタンを置く");
 for (const standardName of ["積算基準体系と現在の対応範囲", "国土交通省・港湾請負工事積算基準", "用地調査等業務費積算基準", "農林水産省・土地改良工事積算基準", "下水道用設計標準歩掛表", "水道関係基準"]) assert.ok(html.includes(standardName), `${standardName}を別基準体系として表示する`);
 assert.ok(html.includes("航空測量") && html.includes("航空局の空港設計・調査とは別") && html.includes("深浅測量") && html.includes("港湾基準の船舶損料"), "航空・船舶の名称上の混同を防ぐ説明がある");
 assert.ok(html.includes("ゲストとして送信"), "OFUSEのゲスト送信方法を案内する");
@@ -196,4 +196,4 @@ assert.ok(app.includes('conditionMemory("survey").values[valueKey] = line.condit
 console.log("OK: UI static wiring checks passed");
 assert.ok(html.includes('data/unit-catalog.js') && html.indexOf('data/unit-catalog.js') < html.indexOf('engine.js'), "共通単位台帳を全計算エンジンより先に読み込む");
 assert.ok(!html.includes('id="itemCountBadge"') && !app.includes("項目収録`"), "測量を含む4業務の項目件数バッジを表示しない");
-assert.ok(html.includes('app.js?v=20260827-3') && html.includes('consulting.js?v=20260829-1') && html.includes('consulting-engine.js?v=20260829-1') && html.includes('document-import.js?v=20260828-3') && html.includes('styles.css?v=20260828-4'), "全原表照合済み項目・PDF選択解除・手動調整安全化・YouTube埋め込みの資産をキャッシュ更新する");
+assert.ok(html.includes('app.js?v=20260829-2') && html.includes('consulting.js?v=20260829-1') && html.includes('consulting-engine.js?v=20260829-1') && html.includes('document-import.js?v=20260829-2') && html.includes('styles.css?v=20260828-4'), "全原表照合済み項目・PDF選択解除・手動調整安全化・PDF基本情報撤去の資産をキャッシュ更新する");

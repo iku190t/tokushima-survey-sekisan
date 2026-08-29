@@ -330,7 +330,7 @@
       <div class="import-layout">
         <section class="card import-hero-card">
           <div class="card-title-row"><div><p class="section-kicker">DOCUMENT TO ESTIMATE</p><h2>PDF・写真から取込み</h2></div><span class="badge">設計・測量・調査計画・地質</span></div>
-          <p class="import-lead">発注仕様書、数量表、設計書などから、業務基本情報と積算候補を作ります。文字情報を持つPDFは直接抽出し、画像PDFと写真だけ日本語OCRを使用します。</p>
+          <p class="import-lead">発注仕様書、数量表、設計書などから、4業務の積算候補を作ります。文字情報を持つPDFは直接抽出し、画像PDFと写真だけ日本語OCRを使用します。</p>
           <div class="import-start-grid">
             <button id="documentDropZone" class="document-drop-zone" type="button">
               <span class="drop-zone-icon" aria-hidden="true">↓</span>
@@ -342,7 +342,7 @@
               <h3>確定前に必ず確認</h3>
               <ol>
                 <li>PDFの状態に応じて直接抽出・OCRを自動切替</li>
-                <li>基本情報と積算候補を分けて整理</li>
+                <li>4業務の作業項目・数量を候補として整理</li>
                 <li>一覧で修正してから積算へ反映</li>
                 <li>選択項目だけを反映</li>
               </ol>
@@ -366,7 +366,7 @@
                 <div class="pdf-manual-actions"><button id="addPdfManualCandidateButton" class="button primary" type="button">反映待ちへ追加</button><button id="clearPdfManualLineSelectionButton" class="button" type="button" disabled>PDF行の選択を解除</button></div>
               </footer>
               <div class="pdf-manual-scroll-body">
-              <label class="field"><span>反映先</span><select id="pdfManualKind"><option value="design">設計業務</option><option value="survey">測量業務</option><option value="planning">調査・計画業務</option><option value="geology">地質業務</option><option value="metadata">業務基本情報</option></select></label>
+              <label class="field"><span>反映先</span><select id="pdfManualKind"><option value="design">設計業務</option><option value="survey">測量業務</option><option value="planning">調査・計画業務</option><option value="geology">地質業務</option></select></label>
               <div id="pdfManualKeywordFilter" class="work-keyword-filter pdf-manual-keyword-filter"><span>キーワードから選ぶ</span><div id="pdfManualKeywordList" class="work-keyword-list" role="group" aria-label="PDF取込の作業キーワード"></div></div>
               <div id="pdfManualSurveyFields" class="pdf-manual-fields">
                 <select id="pdfManualSurveyRegulationGroup" hidden aria-hidden="true"></select>
@@ -382,10 +382,6 @@
                 <select id="pdfManualConsultingRole" hidden aria-hidden="true"></select>
                 <input id="pdfManualConsultingDays" type="hidden">
                 <small class="field-note">作業項目だけを続けて反映待ちへ追加できます。積算数量と、この項目に必要な適用条件は、追加後に該当業務タブで入力します。</small>
-              </div>
-              <div id="pdfManualMetadataFields" class="pdf-manual-fields" hidden>
-                <label class="field"><span>基本情報の項目</span><select id="pdfManualMetadataKey"><option value="projectName">業務名</option><option value="orderingParty">発注者</option><option value="department">担当部署</option><option value="contactName">担当者</option><option value="workLocation">業務場所</option><option value="contractPeriod">履行期間</option><option value="documentNumber">文書・業務番号</option><option value="documentDate">公告・資料日</option></select></label>
-                <label class="field"><span>反映する内容</span><input id="pdfManualMetadataValue" type="text"></label>
               </div>
               </div>
             </section>
@@ -638,11 +634,6 @@
         <div><span>抽出方法</span><strong id="importReviewMethods">—</strong></div>
         <div><span>候補</span><strong id="importReviewCount">0件</strong></div>
       </section>
-      <section id="importMetadataPanel" class="import-metadata-panel">
-        <div class="import-metadata-heading"><div><strong>業務基本情報</strong><p>読み取れた項目を修正し、反映する項目だけチェックしてください。</p></div><label id="toggleAllImportMetadataLabel" class="check"><input id="toggleAllImportMetadata" type="checkbox"><span>基本情報をすべて選択／解除</span></label></div>
-        <div id="documentImportMetadataList" class="import-metadata-list"></div>
-        <p id="importedBasisHint">現在選択中の国土交通省・全国標準単価セットへ取り込みます。都道府県名を読み取っても見積提出先は自動変更しません。</p>
-      </section>
       <div id="documentImportWarnings" class="import-warning-list" hidden></div>
       <div id="documentImportEmptyGuide" class="import-empty-guide" hidden></div>
       <div id="importCandidateToolbar" class="import-review-toolbar"><label class="check"><input id="toggleAllImportCandidates" type="checkbox" checked><span>積算候補をすべて選択／解除</span></label><span>黄色・赤色の候補は元資料を重点確認してください。</span></div>
@@ -672,7 +663,7 @@
   <script src="data/prefectures.js?v=20260823-1"></script>
   <script src="data/national-standard-masters.js?v=20260824-2"></script>
   <script src="data/official-role-prices.js?v=20260822-1"></script>
-  <script src="data/official-source-catalog.js?v=20260824-1"></script>
+  <script src="data/official-source-catalog.js?v=20260829-1"></script>
   <script src="data/consulting-master.js?v=20260823-1"></script>
   <script src="data/consulting-work-catalog.js?v=20260824-1"></script>
   <script src="data/consulting-condition-rules.js?v=20260824-2"></script>
@@ -683,11 +674,11 @@
   <script src="engine.js?v=20260824-2"></script>
   <script src="consulting-engine.js?v=20260829-1"></script>
   <script src="reference-case-engine.js?v=20260824-1"></script>
-  <script src="document-import-engine.js?v=20260824-5"></script>
+  <script src="document-import-engine.js?v=20260829-1"></script>
   <script src="document-reader.js?v=20260823-1"></script>
-  <script src="app.js?v=20260827-3"></script>
+  <script src="app.js?v=20260829-2"></script>
   <script src="consulting.js?v=20260829-1"></script>
-  <script src="document-import.js?v=20260828-3"></script>
+  <script src="document-import.js?v=20260829-2"></script>
   <script src="analytics.js?v=20260823-1"></script>
 </body>
 </html>

@@ -355,7 +355,6 @@
       page: best.entry.page,
       method: best.entry.method,
       confidence: best.entry.method === "ocr" ? "low" : "medium",
-      autoApply: best.looksLikeLeadingTitle && best.entry.method === "text",
       sourceText: best.entry.text
     };
   }

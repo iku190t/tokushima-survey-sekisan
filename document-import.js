@@ -44,19 +44,7 @@
     design: "PDFから設計業務の作業項目を入れる",
     survey: "PDFから測量業務の項目・数量・単位を入れる",
     planning: "PDFから調査・計画業務の作業項目を入れる",
-    geology: "PDFから地質業務の作業項目を入れる",
-    metadata: "PDFから業務基本情報を入れる"
-  };
-
-  const metadataLabels = {
-    projectName: "業務名",
-    orderingParty: "発注者",
-    department: "担当部署",
-    contactName: "担当者",
-    workLocation: "業務場所",
-    contractPeriod: "履行期間",
-    documentNumber: "文書・業務番号",
-    documentDate: "公告・資料日"
+    geology: "PDFから地質業務の作業項目を入れる"
   };
 
   function activeMaster() { return app.getActiveSurveyMaster(); }
@@ -173,7 +161,7 @@
   function renderManualKeywords() {
     const kind = $("pdfManualKind").value;
     const filter = $("pdfManualKeywordFilter");
-    filter.hidden = kind === "metadata";
+    filter.hidden = false;
     if (filter.hidden) { $("pdfManualKeywordList").innerHTML = ""; return; }
     let definitions;
     let allEntries;
@@ -266,10 +254,6 @@
     syncManualConsultingRule();
   }
 
-  function jurisdictionOptions(selectedCode) {
-    return (window.SEKISAN_JURISDICTIONS || []).map((entry) => `<option value="${h(entry.code)}" ${entry.code === selectedCode ? "selected" : ""}>${h(entry.name)}</option>`).join("");
-  }
-
   function quantityFromLine(text) {
     const values = [...String(text || "").replace(/,/g, "").matchAll(/(?:^|\s)(\d+(?:\.\d+)?)(?=\s|$|点|km|m|ha|業務|式|回|人日)/g)];
     return values.length ? values[values.length - 1][1] : "";
@@ -320,7 +304,7 @@
       ? Boolean($("pdfManualSurveyCode").value)
       : isConsultingBusinessKind(kind)
         ? Boolean(selectedManualConsultingRule())
-        : Boolean($("pdfManualMetadataValue").value.trim());
+        : false;
     const button = $("addPdfManualCandidateButton");
     const hint = $("pdfManualAddHint");
     button.disabled = !ready;
@@ -332,12 +316,12 @@
         ? "作業項目だけでも追加できます。数量・単位は積算画面で後から入力できます。"
         : isConsultingBusinessKind(kind)
           ? "作業項目だけでも追加できます。数量・適用条件は各業務画面で後から入力できます。"
-          : "この内容を反映待ちへ追加できます。"
+          : ""
       : isSurveyBusinessKind(kind)
         ? "作業項目を選ぶと、数量・単位が未入力でも反映待ちへ追加できます。"
         : isConsultingBusinessKind(kind)
           ? "作業項目を選ぶと、数量・適用条件が未入力でも反映待ちへ追加できます。"
-          : "反映する内容を入力してください。";
+          : "";
   }
 
   function updateManualSurveyConversion() {
@@ -407,7 +391,6 @@
     const consultingKind = isConsultingBusinessKind(kind);
     $("pdfManualSurveyFields").hidden = !surveyKind;
     $("pdfManualConsultingFields").hidden = !consultingKind;
-    $("pdfManualMetadataFields").hidden = kind !== "metadata";
     renderManualKeywords();
     if (!currentManualLineId && !currentEditingTarget) $("pdfManualHeadingText").textContent = manualKindHeadings[kind] || "PDFから積算項目を入れる";
     if (surveyKind) {
@@ -519,7 +502,6 @@
       $("pdfManualSurveyCategory").innerHTML = surveyCategoryOptions("", isSurveyBusinessKind(kind) ? kind : "survey", "");
       $("pdfManualSurveyCategory").value = "";
       populateManualSurveyItems();
-      $("pdfManualMetadataValue").value = line.text;
       updateManualKind();
       clearManualInputValues();
     } else {
@@ -746,16 +728,6 @@
     applyDraggedPdfLine(drag.lineId, target.dataset.pdfDropTarget);
   }
 
-  function metadataHtml(field) {
-    const display = field.displayValue || field.value;
-    const editor = field.key === "jurisdiction"
-      ? `<select class="import-metadata-value" data-metadata-key="jurisdictionCode">${jurisdictionOptions(field.code)}</select>`
-      : field.key === "fiscalYear"
-        ? `<label class="mini-field">西暦年度 <input class="import-metadata-value" data-metadata-key="fiscalYear" type="number" min="2019" max="2100" step="1" value="${h(field.value)}"></label>`
-        : `<input class="import-metadata-value" data-metadata-key="${h(field.key)}" type="text" value="${h(field.value)}" aria-label="${h(field.label)}">`;
-    return `<article class="import-metadata-row" data-metadata-key="${h(field.key)}" data-confidence="${h(field.confidence)}" data-affects-calculation="${field.affectsCalculation ? "true" : "false"}"><input class="import-metadata-select" type="checkbox" ${field.selected ? "checked" : ""} aria-label="${h(field.label)}を反映"><div class="import-metadata-label"><strong>${h(field.label)}</strong><span>${h(methodLabel(field.method))}／p.${h(field.page)}</span></div>${editor}<div class="import-metadata-source"><q>${h(field.sourceText || display)}</q></div><span class="confidence-chip">${h(confidenceLabel(field.confidence))}</span></article>`;
-  }
-
   function candidateHtml(candidate) {
     const businessLabel = candidate.kind === "survey"
       ? "測量業務"
@@ -775,10 +747,7 @@
 
   function allClickTargets() {
     if (!currentAnalysis) return [];
-    return [
-      ...currentAnalysis.metadata.fields.map((item) => ({ type: "metadata", item })),
-      ...currentAnalysis.candidates.map((item) => ({ type: "candidate", item }))
-    ];
+    return currentAnalysis.candidates.map((item) => ({ type: "candidate", item }));
   }
 
   function lineTargets(pageNumber, text) {
@@ -794,7 +763,6 @@
 
   function clickTargetLabel(target) {
     const item = target.item;
-    if (target.type === "metadata") return `${item.label}：${item.displayValue || item.value}`;
     if (item.kind === "survey") {
       if (item.inputPending) return `${item.label}：数量未入力（計算対象外）`;
       const source = item.sourceQuantity != null && item.sourceUnitLabel ? `（資料：${item.sourceQuantity} × ${item.sourceUnitLabel}）` : "";
@@ -809,13 +777,10 @@
   }
 
   function isEditableClickTarget(target) {
-    return target.type === "metadata"
-      ? Object.prototype.hasOwnProperty.call(metadataLabels, target.item.key)
-      : target.item.kind === "survey" || target.item.kind === "consulting";
+    return target.item.kind === "survey" || target.item.kind === "consulting";
   }
 
   function clickTargetBusinessLabel(target) {
-    if (target.type === "metadata") return "基本情報";
     if (target.item.kind === "survey") return "測量";
     const kind = businessKindForService(target.item.serviceType);
     return kind === "planning" ? "調査・計画" : kind === "geology" ? "地質" : "設計";
@@ -848,11 +813,7 @@
     $("pdfManualKind").disabled = true;
     $("pdfManualHeadingText").textContent = "追加した項目を変更";
     $("addPdfManualCandidateButton").textContent = "変更を保存";
-    if (target.type === "metadata") {
-      $("pdfManualKind").value = "metadata";
-      $("pdfManualMetadataKey").value = target.item.key;
-      $("pdfManualMetadataValue").value = target.item.value || target.item.displayValue || "";
-    } else if (target.item.kind === "survey") {
+    if (target.item.kind === "survey") {
       const selectedItem = activeMaster().workItems.find((entry) => entry.code === target.item.code);
       $("pdfManualKind").value = businessKindForSurveyItem(selectedItem);
       updateManualKind();
@@ -1011,10 +972,6 @@
       const allLines = (preview.lines || []).length;
       return `<article class="pdf-click-page"><header><span>${h(page.pageNumber)}ページ／${h(methodLabel(page.method))}</span><span>選択可能 ${allLines}文字ブロック／自動判定 ${mappedLines}</span></header><div class="pdf-click-stage"><img src="${h(preview.imageDataUrl)}" alt="${h(page.pageNumber)}ページ"><div class="pdf-click-overlay">${rowHighlights}${buttons}</div></div></article>`;
     }).join("");
-    analysis.metadata.fields.forEach((field) => {
-      field.selected = false;
-      field.applied = Boolean(field.autoApplied);
-    });
     analysis.candidates.forEach((candidate) => { candidate.selected = false; candidate.applied = false; });
     $("pdfClickWorkbench").hidden = false;
     showEmptyManualMapper();
@@ -1027,7 +984,7 @@
     if (!currentAnalysis) return;
     const selectedItem = activeMaster().workItems.find((entry) => entry.code === $("pdfManualSurveyCode").value);
     const selectedRule = selectedManualConsultingRule();
-    const line = clickLines.get(primaryLineId) || { page: 1, method: "text", text: selectedItem?.name || selectedRule?.label || $("pdfManualMetadataValue").value };
+    const line = clickLines.get(primaryLineId) || { page: 1, method: "text", text: selectedItem?.name || selectedRule?.label || "" };
     const source = { page: line.page, method: line.method, confidence: "medium", sourceText: line.text, selected: true, applied: false, manual: true };
     const editingTarget = currentEditingTarget;
     let target;
@@ -1070,17 +1027,8 @@
         target = { type: "candidate", item: candidate };
       }
     } else {
-      const key = $("pdfManualMetadataKey").value;
-      const value = $("pdfManualMetadataValue").value.trim();
-      if (!value) { app.notify("反映する内容を入力してください"); return; }
-      if (editingTarget) {
-        Object.assign(editingTarget.item, { key, label: metadataLabels[key] || key, value, displayValue: value, selected: true });
-        target = editingTarget;
-      } else {
-        const field = { ...source, key, label: metadataLabels[key] || key, value, displayValue: value, affectsCalculation: false };
-        currentAnalysis.metadata.fields.push(field);
-        target = { type: "metadata", item: field };
-      }
+      app.notify("反映先を4業務から選択してください");
+      return;
     }
     if (editingTarget) {
       const changedLabel = clickTargetLabel(target);
@@ -1103,37 +1051,25 @@
     const survey = [];
     const consulting = [];
     const costs = {};
-    const metadata = {};
     const selected = allClickTargets().filter((target) => target.item.selected && !target.item.applied);
     selected.forEach((target) => {
       const item = target.item;
-      if (target.type === "metadata") {
-        if (item.key === "jurisdiction") metadata.jurisdictionCode = item.code;
-        else if (item.key === "fiscalYear") metadata.fiscalYear = Math.floor(Number(item.value) || 0);
-        else metadata[item.key] = String(item.value ?? "").trim();
-        return;
-      }
       const source = { fileName: currentFileName, page: item.page, method: item.method, confidence: item.confidence, sourceText: item.sourceText };
       if (item.kind === "survey") survey.push({ ...source, code: item.code, quantity: item.quantity, inputPending: item.inputPending });
       if (item.kind === "consulting") consulting.push({ ...source, serviceType: item.serviceType, taskName: item.taskName, referenceRuleId: item.referenceRuleId, role: item.role, days: item.days, inputPending: item.inputPending });
       if (item.kind === "consultingCost") costs[item.costKey] = Math.max(0, Math.floor(Number(item.amount) || 0));
     });
-    return { selected, survey, consulting, costs, metadata };
+    return { selected, survey, consulting, costs };
   }
 
   function applyPdfClickSelection() {
     const payload = selectedClickPayload();
     if (!payload.selected.length) return;
-    const active = activeMaster();
-    const changesMaster = payload.metadata.fiscalYear && payload.metadata.fiscalYear !== active.fiscalYear;
-    if (changesMaster && !window.confirm("標準単価セットの年度を切り替えると、現在の積算行の一部が対象外になる場合があります。確認済みの資料年度へ切り替えますか？")) return;
-    const metadataResult = app.applyImportedMetadata(payload.metadata);
-    if (!metadataResult.masterFound) { app.notify("選択した年度の全国標準単価セットがありません。積算年度を確認してください"); return; }
     const surveyResult = app.importSurveyLines(payload.survey, { fileName: currentFileName });
     const detail = { fileName: currentFileName, lines: payload.consulting, costs: payload.costs, includeSurvey: payload.survey.length > 0 && payload.consulting.length > 0, result: { added: 0, rejected: 0 } };
     document.dispatchEvent(new CustomEvent("ezsekisan:consultingimport", { detail }));
     payload.selected.forEach((target) => { target.item.selected = false; target.item.applied = true; });
-    const totalAdded = metadataResult.applied + surveyResult.added + (detail.result?.added || 0) + Object.keys(payload.costs).length;
+    const totalAdded = surveyResult.added + (detail.result?.added || 0) + Object.keys(payload.costs).length;
     $("lastImportSummary").hidden = false;
     $("lastImportSummary").innerHTML = `<strong>PDFから${totalAdded}件を追加しました</strong><br>追加した行は該当する4業務タブで変更できます。`;
     updatePdfClickSelection();
@@ -1142,15 +1078,11 @@
 
   function updateSelectionState() {
     const candidateBoxes = [...document.querySelectorAll(".import-candidate-select")];
-    const metadataBoxes = [...document.querySelectorAll(".import-metadata-select")];
     const candidateChecked = candidateBoxes.filter((box) => box.checked).length;
-    const metadataChecked = metadataBoxes.filter((box) => box.checked).length;
     $("toggleAllImportCandidates").checked = candidateBoxes.length > 0 && candidateChecked === candidateBoxes.length;
     $("toggleAllImportCandidates").indeterminate = candidateChecked > 0 && candidateChecked < candidateBoxes.length;
-    $("toggleAllImportMetadata").checked = metadataBoxes.length > 0 && metadataChecked === metadataBoxes.length;
-    $("toggleAllImportMetadata").indeterminate = metadataChecked > 0 && metadataChecked < metadataBoxes.length;
-    const checked = candidateChecked + metadataChecked;
-    const hasResults = candidateBoxes.length + metadataBoxes.length > 0;
+    const checked = candidateChecked;
+    const hasResults = candidateBoxes.length > 0;
     const button = $("applyDocumentImportButton");
     button.dataset.action = hasResults ? "apply" : "close";
     button.disabled = hasResults && checked === 0;
@@ -1164,17 +1096,10 @@
     const methods = [...new Set(analysis.pages.map((page) => methodLabel(page.method)))];
     $("importReviewFileName").textContent = fileName;
     $("importReviewMethods").textContent = methods.join("＋") || "原文貼付け";
-    $("importReviewCount").textContent = `基本情報${analysis.metadata.fields.length}件＋積算${analysis.candidates.length}件`;
-    const metadataCount = analysis.metadata.fields.length;
+    $("importReviewCount").textContent = `積算${analysis.candidates.length}件`;
     const candidateCount = analysis.candidates.length;
-    const hasResults = metadataCount + candidateCount > 0;
-    $("documentImportMetadataList").innerHTML = analysis.metadata.fields.map(metadataHtml).join("");
-    $("importMetadataPanel").hidden = metadataCount === 0;
-    $("toggleAllImportMetadataLabel").hidden = metadataCount === 0;
+    const hasResults = candidateCount > 0;
     const master = activeMaster();
-    const detected = [analysis.metadata.jurisdictionName, analysis.metadata.fiscalYear ? `令和${analysis.metadata.fiscalYear - 2018}年度` : ""].filter(Boolean).join("・");
-    const submissionName = app.getSubmissionJurisdictionName?.() || "未設定";
-    $("importedBasisHint").textContent = `${detected ? `資料候補：${detected}。` : "資料から見積提出先・年度を確定できませんでした。"} 見積提出先：${submissionName}／計算：国土交通省・全国標準 令和${master.fiscalYear - 2018}年度。確認した項目だけ反映します。`;
     const warnings = [...analysis.warnings];
     if (analysis.metadata.fiscalYear && analysis.metadata.fiscalYear !== master.fiscalYear) warnings.push("資料の年度候補と現在の積算年度が異なります。閉じて年度マスターを切り替えてから再度確認してください。");
     if (analysis.metadata.jurisdictionCode && analysis.metadata.jurisdictionCode !== app.getSubmissionJurisdictionCode?.()) warnings.push("資料の発注機関候補と現在の見積提出先が異なります。提出先を確認してください（計算単価には影響しません）。");
@@ -1187,7 +1112,7 @@
     guide.hidden = candidateCount > 0;
     guide.innerHTML = !hasResults
       ? "<strong>この資料から自動反映できる項目を見つけられませんでした。</strong><p>選択操作は不要です。下の抽出原文を確認し、「読み取れる項目なし・閉じる」を押してください。その後、上部の4業務タブから該当画面を開いて手入力できます。</p>"
-      : "<strong>積算数量・人工は見つかりませんでした。</strong><p>上の業務基本情報だけ反映できます。内容とチェックを確認して、下の反映ボタンを押してください。数量は該当する業務タブから手入力してください。</p>";
+      : "";
     $("documentImportSourcePages").innerHTML = analysis.pages.map((page) => `<section class="import-source-page"><h3>${h(page.pageNumber)}ページ／${h(methodLabel(page.method))}</h3><pre>${h(page.text || "（文字を検出できませんでした）")}</pre></section>`).join("");
     $("toggleAllImportCandidates").checked = analysis.candidates.every((candidate) => candidate.selected);
     $("documentImportDialog").showModal();
@@ -1210,14 +1135,8 @@
       updateProgress({ message: "資料を読み込んでいます…", progress: 0 });
       const extracted = await reader.read(file, updateProgress);
       const analysis = analyzer.analyze(extracted.pages, activeMaster(), consultingMaster, window.SEKISAN_JURISDICTIONS || []);
-      const autoProjectName = analysis.metadata.fields.find((field) => field.key === "projectName" && field.autoApply);
-      if (autoProjectName && app.applyImportedProjectName(autoProjectName.value)) {
-        autoProjectName.autoApplied = true;
-        autoProjectName.selected = false;
-      }
       if (extracted.pages.some((page) => page.preview?.imageDataUrl)) renderPdfClickWorkbench(extracted, analysis);
       else renderReview(extracted.fileName, analysis);
-      if (autoProjectName?.autoApplied) app.notify(`先頭見出しから業務名「${autoProjectName.value}」を4業務共通欄へ自動入力しました`);
     } catch (error) {
       updateProgress({ message: `読取り失敗：${error.message}`, progress: 0 });
       app.notify(error.message || "資料を読み取れませんでした");
@@ -1236,13 +1155,6 @@
     const survey = [];
     const consulting = [];
     const costs = {};
-    const metadata = {};
-    document.querySelectorAll(".import-metadata-row").forEach((row) => {
-      if (!row.querySelector(".import-metadata-select")?.checked) return;
-      const input = row.querySelector(".import-metadata-value");
-      if (!input) return;
-      metadata[input.dataset.metadataKey] = input.dataset.metadataKey === "fiscalYear" ? Math.floor(Number(input.value) || 0) : input.value.trim();
-    });
     document.querySelectorAll(".import-candidate").forEach((row) => {
       if (!row.querySelector(".import-candidate-select")?.checked) return;
       const original = currentAnalysis?.candidates.find((candidate) => candidate.id === row.dataset.candidateId) || {};
@@ -1251,19 +1163,14 @@
       if (row.dataset.kind === "consulting") consulting.push({ ...source, serviceType: row.querySelector(".import-consulting-service").value, taskName: row.querySelector(".import-consulting-task").value, role: row.querySelector(".import-consulting-role").value, days: row.querySelector(".import-consulting-days").value });
       if (row.dataset.kind === "consultingCost") costs[row.querySelector(".import-cost-key").value] = Math.max(0, Math.floor(Number(row.querySelector(".import-cost-amount").value) || 0));
     });
-    const active = activeMaster();
-    const changesMaster = metadata.fiscalYear && metadata.fiscalYear !== active.fiscalYear;
-    if (changesMaster && !window.confirm("標準単価セットの年度を切り替えると、現在の積算行の一部が対象外になる場合があります。確認済みの資料年度へ切り替えますか？")) return;
-    const metadataResult = app.applyImportedMetadata(metadata);
-    if (!metadataResult.masterFound) { app.notify("選択した年度の全国標準単価セットがありません。積算年度を確認してください"); return; }
     const surveyResult = app.importSurveyLines(survey, { fileName: currentFileName });
     const detail = { fileName: currentFileName, lines: consulting, costs, includeSurvey: survey.length > 0 && consulting.length > 0, result: { added: 0, rejected: 0 } };
     document.dispatchEvent(new CustomEvent("ezsekisan:consultingimport", { detail }));
     const stayOnPdf = !$("pdfClickWorkbench").hidden;
     $("documentImportDialog").close();
-    const totalAdded = metadataResult.applied + surveyResult.added + (detail.result?.added || 0) + Object.keys(costs).length;
+    const totalAdded = surveyResult.added + (detail.result?.added || 0) + Object.keys(costs).length;
     $("lastImportSummary").hidden = false;
-    $("lastImportSummary").innerHTML = `<strong>直近の取込</strong><br>${h(currentFileName)}から、基本情報${metadataResult.applied}件、測量${surveyResult.added}件、設計・調査人工${detail.result?.added || 0}件、積上費用${Object.keys(costs).length}件を反映しました。原文照合済みとして自動確定はしていません。`;
+    $("lastImportSummary").innerHTML = `<strong>直近の取込</strong><br>${h(currentFileName)}から、測量${surveyResult.added}件、設計・調査・地質${detail.result?.added || 0}件、積上費用${Object.keys(costs).length}件を反映しました。原文照合済みとして自動確定はしていません。`;
     app.notify(`${totalAdded}件を積算へ反映しました`);
     if (stayOnPdf) {
       allClickTargets().filter((target) => target.item.selected).forEach((target) => { target.item.selected = false; target.item.applied = true; });
@@ -1387,7 +1294,6 @@
     $("pdfManualConsultingRole").addEventListener("change", updatePdfRowStatuses);
     $("pdfManualConsultingRuleGroup").addEventListener("change", () => { updateManualConsultingItemsForGroup(); rememberManualWorkflow(); });
     $("pdfManualConsultingTaskTemplate").addEventListener("change", () => { syncManualConsultingRule(); updateManualAddButtonState(); updatePdfRowStatuses(); });
-    $("pdfManualMetadataValue").addEventListener("input", updateManualAddButtonState);
     $("addPdfManualCandidateButton").addEventListener("click", addManualCandidate);
     $("pdfClickSelectedList").addEventListener("click", (event) => {
       const removeButton = event.target.closest("[data-pdf-remove-target]");
@@ -1422,8 +1328,6 @@
     ["closeDocumentImportDialogButton", "cancelDocumentImportButton"].forEach((id) => $(id).addEventListener("click", () => $("documentImportDialog").close()));
     $("documentImportDialog").addEventListener("click", (event) => { if (event.target === $("documentImportDialog")) $("documentImportDialog").close(); });
     $("toggleAllImportCandidates").addEventListener("change", (event) => { document.querySelectorAll(".import-candidate-select").forEach((box) => { box.checked = event.target.checked; }); updateSelectionState(); });
-    $("toggleAllImportMetadata").addEventListener("change", (event) => { document.querySelectorAll(".import-metadata-select").forEach((box) => { box.checked = event.target.checked; }); updateSelectionState(); });
-    $("documentImportMetadataList").addEventListener("change", (event) => { if (event.target.classList.contains("import-metadata-select")) updateSelectionState(); });
     $("documentImportCandidateList").addEventListener("change", (event) => {
       const row = event.target.closest(".import-candidate");
       if (event.target.classList.contains("import-candidate-select")) updateSelectionState();

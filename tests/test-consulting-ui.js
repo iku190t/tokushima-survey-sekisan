@@ -65,7 +65,7 @@ assert.ok(!html.includes('id="consultingPresetMultiplier"'), "利用者へ補正
 assert.ok(html.includes("基準書にない作業・見積項目を手動調整する"), "人工直接入力を基準外の手動調整へ分離する");
 assert.ok(ui.includes("engine.createManualLine") && ui.includes("current.lines = [...previousLines, creation.line]"), "手動調整を業務区分・職種・人工検証後に一括追加する");
 assert.ok(ui.includes("const calculatedLine = result.lines.find") && ui.includes("const renderedRow = document.querySelector"), "手動調整は計算結果と画面表示の両方を確認する");
-assert.ok(ui.includes('$("consultingDays").value = "";\n    app.saveDraft();'), "手動調整の表示成功後だけ人工入力を消去・保存する");
+assert.ok(/\$\("consultingDays"\)\.value = "";\s*app\.saveDraft\(\);/.test(ui), "手動調整の表示成功後だけ人工入力を消去・保存する");
 assert.ok(ui.includes("current.lines = previousLines") && ui.includes("入力内容は消去していません"), "手動調整の計算・表示失敗時はロールバックして入力を残す");
 assert.ok(ui.includes("OFFICIAL_SOURCE_CATALOG") && ui.includes('source.jurisdictionCode === "mlit"') && ui.includes("fullBook.ruleCount"), "選択年度の国交省資料と照合済み歩掛を計算根拠に表示する");
 assert.ok(ui.includes("人工入力の行があります"), "未確認人工を提出前警告する");
