@@ -2942,3 +2942,27 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `index.html` | `597B47BD4EA437EE4DD1C147D5FC3B5CE4A0F4CBB2C90275D84029A14C510ED1` |
 | `styles.css` | `C5433229AED6C9F76E2430D2C5473D5B5C63804BCCB7111E21D3BEA99BF92649` |
 | `tests/test-ui-static.js` | `20BFE634E2E6403AF300C18726F0B5DB08CAA598FB30AE59091BAC852580C738` |
+
+## B-2026-08-29-01
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-29
+- 実装コミット: `36ed2466e52d9556176a2e68708493ffeb4f482d`
+- GitHub Pages: `built`、ビルド`1181202442`、コミット`36ed2466e52d9556176a2e68708493ffeb4f482d`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: 農林水産省対応を含まない8月28日版の画面・PDF取込・計算根拠表示を維持し、国交省原表照合済み全項目を通常入力へ復元した。令和8年度の公開件数は設計313、測量141、調査計画117、地質40。
+
+### 合格した試験・公開確認
+
+- `tests/test-*.js`全19本、`node --check consulting-engine.js`、`node --check consulting.js`、`git diff --check`が合格した。
+- ローカル／公開実ブラウザーで設計313、測量141、調査計画117、地質40を確認した。
+- 公開版は`consulting-engine.js?v=20260829-1`、`consulting.js?v=20260829-1`を配信し、農林水産省選択肢0件、農林水産省スクリプト0件、警告・エラー0件だった。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `consulting-engine.js` | `21E62C6010BCF326A78E94F8E95DD6D7043220EEE65D11692C08022EC0C1E02D` |
+| `consulting.js` | `111DE71C21AB8E1039D28DE4110146162EBE90AC3F5DE3D7DBAEFDCA74F4334E` |
+| `index.html` | `60F8D2ACC16BE5934C80FB9ADFF9BE3DD5EC6982155F64789EA15758AF8D6531` |
+| `tests/test-consulting-rule-pack.js` | `67CE36E3E91664C647ABB74B49CFB5918030918D23775AE3F27B4D6934FE07EA` |
