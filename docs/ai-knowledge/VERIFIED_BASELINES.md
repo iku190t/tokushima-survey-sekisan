@@ -3046,3 +3046,30 @@ OK: official case search UI is removed while saved-data compatibility remains
 | `app.js` | `7D2AE31B6A69B5E24D9E848D6A47A0EE74E2AB5229109C9C988AAC27236B5031` |
 | `consulting.js` | `DB7A9182AF7C37AAD90F72F7753B1FF51BEB59F07B5605DEB6982C0D7EEE40C9` |
 | `styles.css` | `F30E0CB0803C0A2475D92A34FB53F6E0FD59DC229B4B9D597154051D2FE96424` |
+
+## B-2026-08-31-01
+
+- 状態: **検証済み・GitHub Pages公開済み**
+- 検証日: 2026-08-31
+- 実装コミット: `c608702799b363a613b150dde177e12703d94492`
+- GitHub Pages: `built`、コミット`c608702799b363a613b150dde177e12703d94492`
+- 公開URL: `https://iku190t.github.io/tokushima-survey-sekisan/`
+- 内容: 測量の年度切替で手動補正と互換条件を保持し、路線横断測量へ測量幅16区分×測点間隔5区分の80通りを追加した。路線測量13工程の適用条件と河川横断測量の幅比例式も国交省第1編へ再照合した。設計・調査計画・地質は未構造化条件が残る行を再び安全停止し、自動積算候補を各年度で設計33、調査計画33、地質7へ固定した。
+
+### 合格した試験・公開確認
+
+- `tests/test-*.js`全19本、`app.js`・`consulting-engine.js`・`consulting.js`の構文検査、`git diff --check`が合格した。
+- ローカル実ブラウザーで横断測量の幅・間隔選択、R8→R7の地域条件・95m以上105m未満・25m・手動追加12.5%保持、4業務候補数、スマホ幅の縦配置、警告・エラー0件を確認した。
+- 公開版で`app.js?v=20260831-1`、`consulting-engine.js?v=20260831-1`、`national-standard-masters.js?v=20260831-1`、`styles.css?v=20260831-2`を配信し、横断測量の幅17選択肢（未選択を含む）・間隔6選択肢（未選択を含む）、標準45m以上75m未満・20m、コンソールエラー0件を確認した。
+
+### 主要ファイルのSHA-256
+
+| ファイル | SHA-256 |
+|---|---|
+| `app.js` | `EA4D4F33470486D6A72486B7F7A38096680C85C65A79F3577FEBCE376C8D6485` |
+| `consulting-engine.js` | `0049A9321C5C36201734A5A52113171C975931899CFBA82C673476D61A2841C2` |
+| `data/consulting-condition-rules.js` | `375100F9B216DA1A59A71CFF781D192BA6B3FE6203F89630CDF07A3A8F0965CD` |
+| `data/master-standard-r8.json` | `B225607567B932AC3D82C4AE0E2405C87C29704AA73E0926B66A5C6F821363EA` |
+| `tests/test-nationwide-standard.js` | `0A795FE4972A2D6B134D3644B6B231B96D1A765B109DEE9F73FCF88F2F23AFE4` |
+| `tests/test-consulting-rule-pack.js` | `2A107ED2E3E49DB9AC40C8F7F3274218DB23B9AD928C92C483C740F23BF9A1C4` |
+| `index.html` | `99F5D679B56EE7118E12E350598C755C3EB85A568FD5BF126CD218B39F7FB242` |
