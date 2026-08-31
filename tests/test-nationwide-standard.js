@@ -56,6 +56,34 @@ for (const master of masters) {
     expected[year].secondClass,
     `${year}: 2級基準点測量10点の固定値`
   );
+
+  const routeCrossSection = master.workItems.find((entry) => entry.code === "4-1-10");
+  const widthInterval = routeCrossSection.correctionRules.find((rule) => rule.id === "crossSectionWidthInterval");
+  assert.strictEqual(widthInterval.type, "matrix", `${year}: 路線横断測量の幅・間隔表を2次元条件として収録`);
+  assert.deepStrictEqual(widthInterval.dimensions.map((dimension) => dimension.options.length), [16, 5], `${year}: 測量幅16区分・測点間隔5区分`);
+  assert.strictEqual(Object.keys(widthInterval.rates).length, 80, `${year}: 幅×間隔80組合せを漏れなく収録`);
+  assert.strictEqual(widthInterval.rates["45-75|20"], 0, `${year}: 標準60m・20mは変化率0`);
+  assert.strictEqual(widthInterval.rates["lt45|10"], 0.6, `${year}: 表3.4左上の変化率`);
+  assert.strictEqual(widthInterval.rates["250-300|100"], 0.1, `${year}: 表3.4右下の変化率`);
+  const routeApplicability = {
+    "4-1-1": [], "4-1-2": ["region", "traffic"], "4-1-3": ["region", "traffic"], "4-1-4": ["region"],
+    "4-1-5": ["region"], "4-1-6": ["region", "traffic", "curves"], "4-1-7": ["region", "traffic", "curves", "interval"],
+    "4-1-8": ["region", "traffic"], "4-1-9": ["region", "traffic"], "4-1-10": ["region", "traffic", "curves", "crossSectionWidthInterval"],
+    "4-1-11": ["region", "traffic"], "4-1-12": ["region", "traffic"], "4-1-13": ["region", "traffic"]
+  };
+  for (const [code, ruleIds] of Object.entries(routeApplicability)) {
+    const routeItem = master.workItems.find((entry) => entry.code === code);
+    assert.deepStrictEqual(routeItem.correctionRules.map((rule) => rule.id), ruleIds, `${year}: ${code}を路線測量変化率適用表どおりに割当`);
+  }
+
+  for (const [code, baseWidth] of [["5-1-6", 400], ["5-1-8", 100], ["5-1-9", 100]]) {
+    const riverCrossSection = master.workItems.find((entry) => entry.code === code);
+    assert.strictEqual(riverCrossSection.conditionFormula.default, baseWidth, `${year}: ${code}の標準測量幅`);
+    assert.strictEqual(riverCrossSection.conditionFormula.a, 1 / baseWidth, `${year}: ${code}の幅比例係数`);
+    const riverResult = engine.calculateItem({ masterItem: riverCrossSection, quantity: 10, conditionValue: baseWidth * 1.5 }, master, {});
+    assert.strictEqual(riverResult.conditionFactor, 1.5, `${year}: ${code}は断面数×測量幅で比例補正`);
+  }
+  assert.ok(master.workItems.filter((entry) => /幅|間隔/.test(entry.standard || "")).every((entry) => entry.conditionFormula || entry.correctionRules.some((rule) => rule.type === "matrix")), `${year}: 標準欄に幅・間隔がある全項目へ入力規則を接続`);
 }
 
 console.log("OK: nationwide R6-R8 standard reference master checks passed");

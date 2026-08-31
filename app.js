@@ -700,6 +700,44 @@
     renderSelectedSurveySources(item);
   }
 
+  function isMatrixRule(rule) {
+    return rule?.type === "matrix" && Array.isArray(rule.dimensions) && rule.dimensions.length > 0;
+  }
+
+  function matrixRuleValues(rule, source = null) {
+    return Object.fromEntries((rule.dimensions || []).map((dimension) => {
+      const requested = source?.[dimension.id] ?? rule.defaultValues?.[dimension.id] ?? "";
+      const valid = (dimension.options || []).some((option) => String(option.value) === String(requested));
+      return [dimension.id, valid ? String(requested) : ""];
+    }));
+  }
+
+  function matrixRuleKey(rule, values) {
+    return (rule.dimensions || []).map((dimension) => String(values?.[dimension.id] ?? "")).join("|");
+  }
+
+  function matrixRuleRate(rule, values) {
+    const value = rule.rates?.[matrixRuleKey(rule, values)];
+    return Number.isFinite(Number(value)) ? Number(value) : null;
+  }
+
+  function matrixRuleLabel(rule, values) {
+    return (rule.dimensions || []).map((dimension) => {
+      const option = (dimension.options || []).find((entry) => String(entry.value) === String(values?.[dimension.id]));
+      return `${dimension.label}：${option?.label || "未選択"}`;
+    }).join("／");
+  }
+
+  function matrixValuesFrom(root, rule, selectorClass) {
+    const values = {};
+    for (const dimension of rule.dimensions || []) {
+      const select = root.querySelector(`.${selectorClass}[data-rule="${CSS.escape(rule.id)}"][data-dimension="${CSS.escape(dimension.id)}"]`);
+      if (!select?.value) return null;
+      values[dimension.id] = select.value;
+    }
+    return values;
+  }
+
   function renderSurveyConditionFields(item) {
     const applicability = item.applicability
       ? `<details class="consulting-applicability"><summary>適用範囲</summary><ol><li>${h(item.applicability.note)}</li></ol></details>`
@@ -707,7 +745,12 @@
     const conditionInput = item.conditionFormula
       ? `<label class="field"><span>${h(item.conditionFormula.label)}（${h(item.conditionFormula.unit)}）</span><input id="surveyConditionValue" type="number" min="0" step="0.1" inputmode="decimal" value="${h(item.conditionFormula.default)}"><small>${h(item.conditionFormula.note || "入力値から規定の補正係数を自動計算します。")}</small></label>`
       : "";
-    const correctionInputs = (item.correctionRules || []).map((rule) => `<label class="field"><span>${h(rule.label)}</span><select class="survey-rule-condition" data-rule="${h(rule.id)}"><option value="">選択してください</option>${(rule.options || []).map((option) => `<option value="${h(option.rate)}" data-condition-label="${h(option.label)}">${h(option.label)}（${option.rate >= 0 ? "+" : ""}${h(enginePercent(option.rate))}%）</option>`).join("")}</select></label>`).join("");
+    const correctionInputs = (item.correctionRules || []).map((rule) => {
+      if (!isMatrixRule(rule)) return `<label class="field"><span>${h(rule.label)}</span><select class="survey-rule-condition" data-rule="${h(rule.id)}"><option value="">選択してください</option>${(rule.options || []).map((option) => `<option value="${h(option.rate)}" data-condition-label="${h(option.label)}">${h(option.label)}（${option.rate >= 0 ? "+" : ""}${h(enginePercent(option.rate))}%）</option>`).join("")}</select></label>`;
+      const defaults = matrixRuleValues(rule);
+      const dimensions = rule.dimensions.map((dimension) => `<label class="field survey-matrix-dimension"><span>${h(dimension.label)}</span><select class="survey-rule-matrix" data-rule="${h(rule.id)}" data-dimension="${h(dimension.id)}"><option value="">選択してください</option>${(dimension.options || []).map((option) => `<option value="${h(option.value)}" ${String(option.value) === defaults[dimension.id] ? "selected" : ""}>${h(option.label)}</option>`).join("")}</select></label>`).join("");
+      return `<div class="survey-matrix-field"><strong>${h(rule.label)}</strong><div class="survey-matrix-grid">${dimensions}</div>${rule.note ? `<small>${h(rule.note)}</small>` : ""}</div>`;
+    }).join("");
     const formulas = [];
     if (item.conditionFormula) formulas.push(`${item.conditionFormula.label}：補正係数＝${item.conditionFormula.a}×入力値${item.conditionFormula.b >= 0 ? "+" : ""}${item.conditionFormula.b}`);
     if (item.quantityFormula?.note) formulas.push(item.quantityFormula.note);
@@ -733,6 +776,14 @@
     const memory = conditionMemory("survey").values;
     for (const rule of item.correctionRules || []) {
       const saved = memory[rule.id];
+      if (isMatrixRule(rule)) {
+        const values = matrixRuleValues(rule, saved?.values);
+        for (const dimension of rule.dimensions) {
+          const select = $("surveyConditionFields").querySelector(`.survey-rule-matrix[data-rule="${CSS.escape(rule.id)}"][data-dimension="${CSS.escape(dimension.id)}"]`);
+          if (select) select.value = values[dimension.id];
+        }
+        continue;
+      }
       if (!saved?.label) continue;
       const select = $("surveyConditionFields").querySelector(`.survey-rule-condition[data-rule="${CSS.escape(rule.id)}"]`);
       const option = [...(select?.options || [])].find((candidate) => candidate.dataset.conditionLabel
@@ -751,6 +802,13 @@
       if (!select.value || !selected?.dataset.conditionLabel) delete memory[select.dataset.rule];
       else memory[select.dataset.rule] = { label: selected.dataset.conditionLabel, rate: num(select.value) };
     });
+    for (const rule of item?.correctionRules || []) {
+      if (!isMatrixRule(rule)) continue;
+      const values = matrixValuesFrom($("surveyConditionFields"), rule, "survey-rule-matrix");
+      const rate = values ? matrixRuleRate(rule, values) : null;
+      if (!values || rate === null) delete memory[rule.id];
+      else memory[rule.id] = { label: matrixRuleLabel(rule, values), rate, values };
+    }
     const valueKey = surveyConditionValueMemoryKey(item);
     const valueInput = $("surveyConditionFields").querySelector("#surveyConditionValue");
     if (valueKey && valueInput) {
@@ -773,7 +831,18 @@
     if (item.applicability?.maximum != null && quantity > Number(item.applicability.maximum)) return { valid: false, reason: `適用範囲は${item.applicability.note}です。`, focusSelector: "#newItemQuantity" };
     const correctionSelections = {};
     const correctionSelectionLabels = {};
+    const correctionSelectionValues = {};
     for (const rule of item.correctionRules || []) {
+      if (isMatrixRule(rule)) {
+        const values = matrixValuesFrom($("surveyConditionFields"), rule, "survey-rule-matrix");
+        if (!values) return { valid: false, reason: `条件表「${rule.label}」の測量幅と測点間隔を選択してください。`, focusSelector: `.survey-rule-matrix[data-rule="${CSS.escape(rule.id)}"]` };
+        const rate = matrixRuleRate(rule, values);
+        if (rate === null) return { valid: false, reason: `条件表「${rule.label}」の組合せを確認してください。`, focusSelector: `.survey-rule-matrix[data-rule="${CSS.escape(rule.id)}"]` };
+        correctionSelections[rule.id] = rate;
+        correctionSelectionLabels[rule.id] = matrixRuleLabel(rule, values);
+        correctionSelectionValues[rule.id] = values;
+        continue;
+      }
       const select = $("surveyConditionFields").querySelector(`.survey-rule-condition[data-rule="${CSS.escape(rule.id)}"]`);
       if (!select || select.value === "") return { valid: false, reason: `条件表「${rule.label}」を選択してください。`, focusSelector: `.survey-rule-condition[data-rule="${CSS.escape(rule.id)}"]` };
       const selected = select.selectedOptions[0];
@@ -783,7 +852,7 @@
     const conditionInput = $("surveyConditionFields").querySelector("#surveyConditionValue");
     const conditionValue = conditionInput ? Number(conditionInput.value) : item.conditionFormula?.default;
     if (conditionInput && (!Number.isFinite(conditionValue) || conditionValue < 0)) return { valid: false, reason: `${item.conditionFormula.label}を入力してください。`, focusSelector: "#surveyConditionValue" };
-    return { valid: true, reason: "必要な数量・条件が入力済みです。追加できます。", quantity, correctionSelections, correctionSelectionLabels, conditionValue };
+    return { valid: true, reason: "必要な数量・条件が入力済みです。追加できます。", quantity, correctionSelections, correctionSelectionLabels, correctionSelectionValues, conditionValue };
   }
 
   function setAddButtonValidationState(button, validation) {
@@ -825,6 +894,14 @@
   }
 
   function renderCorrectionRule(rule, line) {
+    if (isMatrixRule(rule)) {
+      const values = matrixRuleValues(rule, line.correctionSelectionValues?.[rule.id]);
+      const dimensions = rule.dimensions.map((dimension) => {
+        const choices = (dimension.options || []).map((option) => `<option value="${h(option.value)}" ${String(option.value) === values[dimension.id] ? "selected" : ""}>${h(option.label)}</option>`).join("");
+        return `<label class="mini-field">${h(dimension.label)} <select class="line-rule-matrix" data-rule="${h(rule.id)}" data-dimension="${h(dimension.id)}">${choices}</select></label>`;
+      }).join("");
+      return `<div class="line-matrix-rule"><strong>${h(rule.label)}</strong>${dimensions}</div>`;
+    }
     const current = num(line.correctionSelections?.[rule.id]);
     const savedLabel = normalizedConditionLabel(line.correctionSelectionLabels?.[rule.id]);
     const exactIndex = savedLabel ? rule.options.findIndex((option) => normalizedConditionLabel(option.label) === savedLabel) : -1;
@@ -1208,7 +1285,7 @@
     const item = activeMaster().workItems.find((entry) => entry.code === code);
     const validation = updateSurveyAddState(item);
     if (!validation.valid) { showMissingInputPopup(validation); return; }
-    estimate.lines.push({ id: `line-${Date.now()}-${Math.random().toString(16).slice(2)}`, code, quantity: validation.quantity, correctionRate: 0, correctionSelections: validation.correctionSelections, correctionSelectionLabels: validation.correctionSelectionLabels, conditionValue: validation.conditionValue, precisionRate: item.precisionRate, manualUnitPrice: 0 });
+    estimate.lines.push({ id: `line-${Date.now()}-${Math.random().toString(16).slice(2)}`, code, quantity: validation.quantity, correctionRate: 0, correctionSelections: validation.correctionSelections, correctionSelectionLabels: validation.correctionSelectionLabels, correctionSelectionValues: validation.correctionSelectionValues, conditionValue: validation.conditionValue, precisionRate: item.precisionRate, manualUnitPrice: 0 });
     $("newItemQuantity").value = "";
     updateSelectedItemMeta();
     recalculate();
@@ -1235,6 +1312,7 @@
         correctionRate: 0,
         correctionSelections: {},
         correctionSelectionLabels: {},
+        correctionSelectionValues: {},
         conditionValue: item.conditionFormula?.default,
         precisionRate: item.precisionRate,
         manualUnitPrice: 0,
@@ -1360,25 +1438,61 @@
     recalculate();
   }
 
+  function migrateSurveyLineToMaster(line, previousItem, nextItem) {
+    const correctionSelections = {};
+    const correctionSelectionLabels = {};
+    const correctionSelectionValues = {};
+    for (const rule of nextItem.correctionRules || []) {
+      if (isMatrixRule(rule)) {
+        const values = matrixRuleValues(rule, line.correctionSelectionValues?.[rule.id]);
+        const rate = matrixRuleRate(rule, values);
+        if (rate !== null) {
+          correctionSelections[rule.id] = rate;
+          correctionSelectionLabels[rule.id] = matrixRuleLabel(rule, values);
+          correctionSelectionValues[rule.id] = values;
+        }
+        continue;
+      }
+      const savedLabel = normalizedConditionLabel(line.correctionSelectionLabels?.[rule.id]);
+      const savedRate = num(line.correctionSelections?.[rule.id], Number.NaN);
+      const option = (rule.options || []).find((entry) => savedLabel && normalizedConditionLabel(entry.label) === savedLabel)
+        || (rule.options || []).find((entry) => Number.isFinite(savedRate) && num(entry.rate) === savedRate);
+      if (!option) continue;
+      correctionSelections[rule.id] = num(option.rate);
+      correctionSelectionLabels[rule.id] = option.label;
+    }
+    const sameCondition = previousItem?.conditionFormula && nextItem.conditionFormula
+      && normalizedConditionLabel(previousItem.conditionFormula.label) === normalizedConditionLabel(nextItem.conditionFormula.label)
+      && String(previousItem.conditionFormula.unit || "") === String(nextItem.conditionFormula.unit || "");
+    const allowedPrecision = !nextItem.precisionRateOptions
+      || nextItem.precisionRateOptions.some((option) => num(option.rate) === num(line.precisionRate));
+    return {
+      ...line,
+      correctionRate: num(line.correctionRate),
+      correctionSelections,
+      correctionSelectionLabels,
+      correctionSelectionValues,
+      conditionValue: sameCondition ? line.conditionValue : nextItem.conditionFormula?.default,
+      precisionRate: allowedPrecision ? num(line.precisionRate, nextItem.precisionRate) : nextItem.precisionRate,
+      manualUnitPrice: nextItem.pricingMode === "manualUnitPrice" ? Math.max(0, num(line.manualUnitPrice)) : 0
+    };
+  }
+
   function switchMaster(id, options = {}) {
     const next = masters.find((master) => master.id === id);
     if (!next) return false;
+    const previous = activeMaster();
     estimate.masterId = id;
     estimate.options.taxRate = next.taxRate;
     estimate.lines = estimate.lines.filter((line) => next.workItems.some((item) => item.code === line.code)).map((line) => {
       const item = next.workItems.find((entry) => entry.code === line.code);
+      const previousItem = previous?.workItems?.find((entry) => entry.code === line.code);
       const value = validatedQuantity(line.quantity, item, next);
       const validQuantity = value !== null;
       return {
-        ...line,
+        ...migrateSurveyLineToMaster(line, previousItem, item),
         quantity: validQuantity ? value : null,
-        inputPending: !validQuantity,
-        correctionRate: 0,
-        correctionSelections: {},
-        correctionSelectionLabels: {},
-        conditionValue: item?.conditionFormula?.default,
-        precisionRate: item?.precisionRate,
-        manualUnitPrice: 0
+        inputPending: !validQuantity
       };
     });
     if (options.syncConsulting !== false && estimate.consulting) estimate.consulting.fiscalYear = Number(next.fiscalYear);
@@ -1708,7 +1822,7 @@
       updateSurveyAddState();
     });
     $("surveyConditionFields").addEventListener("change", (event) => {
-      if (event.target.classList.contains("survey-rule-condition") || event.target.id === "surveyConditionValue") rememberSurveyConditionSelections();
+      if (event.target.classList.contains("survey-rule-condition") || event.target.classList.contains("survey-rule-matrix") || event.target.id === "surveyConditionValue") rememberSurveyConditionSelections();
       updateSurveyAddState();
     });
     $("addItemButton").addEventListener("click", addItem);
@@ -1763,6 +1877,7 @@
           line.correctionRate = 0;
           line.correctionSelections = {};
           line.correctionSelectionLabels = {};
+          line.correctionSelectionValues = {};
           line.conditionValue = item.conditionFormula?.default;
           line.precisionRate = item.precisionRate;
           line.manualUnitPrice = 0;
@@ -1785,6 +1900,22 @@
         line.correctionSelections[event.target.dataset.rule] = rate;
         line.correctionSelectionLabels[event.target.dataset.rule] = label;
         conditionMemory("survey").values[event.target.dataset.rule] = { label, rate };
+      }
+      if (line && event.target.classList.contains("line-rule-matrix")) {
+        const item = activeMaster().workItems.find((entry) => entry.code === line.code);
+        const rule = (item?.correctionRules || []).find((entry) => entry.id === event.target.dataset.rule);
+        const values = rule ? matrixValuesFrom(row, rule, "line-rule-matrix") : null;
+        const rate = values && rule ? matrixRuleRate(rule, values) : null;
+        if (rule && values && rate !== null) {
+          const label = matrixRuleLabel(rule, values);
+          line.correctionSelections = line.correctionSelections || {};
+          line.correctionSelectionLabels = line.correctionSelectionLabels || {};
+          line.correctionSelectionValues = line.correctionSelectionValues || {};
+          line.correctionSelections[rule.id] = rate;
+          line.correctionSelectionLabels[rule.id] = label;
+          line.correctionSelectionValues[rule.id] = values;
+          conditionMemory("survey").values[rule.id] = { label, rate, values };
+        }
       }
       renderLines(currentResult());
       renderSummary(currentResult());

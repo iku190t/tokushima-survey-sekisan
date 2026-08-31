@@ -130,8 +130,8 @@ let coverage = engine.classifyPresetCoverage({ ...master.verifiedPresets[0], ver
 assert.strictEqual(coverage.status, "base-walk-verified", "職種別歩掛表の確認と条件規則までの検証を区別する");
 assert.strictEqual(coverage.canCalculate, true, "条件表・補正式を持たない確認済み歩掛は自動計算できる");
 coverage = engine.classifyPresetCoverage({ ...master.verifiedPresets[0], verificationStatus: "source-table-crosschecked" }, null, { adjustments: [{ type: "rate", rate: 0.1 }], parameterTables: [], formulas: [] });
-assert.strictEqual(coverage.status, "rule-assisted", "原表確認済み歩掛は同じ画面の条件選択と組み合わせる");
-assert.strictEqual(coverage.canCalculate, true, "原表人工を一律停止せず条件表・補正式の選択反映を許可する");
+assert.strictEqual(coverage.status, "incomplete-rule", "未構造化の条件表がある歩掛は安全停止する");
+assert.strictEqual(coverage.canCalculate, false, "条件表・補正式を数値化するまで数量比例だけで計算しない");
 coverage = engine.classifyPresetCoverage({ ...master.verifiedPresets[0] });
 assert.strictEqual(coverage.canCalculate, false, "検証状態がないプリセットを既定で許可しない");
 coverage = engine.classifyPresetCoverage({ ...master.verifiedPresets[0] }, { status: "verified-rule" }, { adjustments: [{ type: "rate", rate: 0.1 }] });
@@ -144,14 +144,14 @@ coverage = engine.classifyPresetCoverage({ label: "2-3-1 道路詳細設計（A�
 assert.strictEqual(coverage.status, "incomplete-rule", "補正未実装の全国標準候補は自動計算不可として区別する");
 assert.strictEqual(coverage.canCalculate, false, "条件規則のない候補を数量比例だけで追加しない");
 coverage = engine.classifyPresetCoverage({ label: "2-1-2 編成人員 人員", serviceType: "geologyGeneral", verificationStatus: "source-table-crosschecked" });
-assert.strictEqual(coverage.status, "market-rate-input", "地質一般は編成人員を人工単価へ置換せず市場単価入力へ接続する");
-assert.strictEqual(coverage.canCalculate, true, "根拠付き市場単価方式で地質一般を計算できる");
+assert.strictEqual(coverage.status, "reference-only", "地質一般でも編成人員表を単独項目として計算しない");
+assert.strictEqual(coverage.canCalculate, false, "関連する日当たり作業量がない編成人員表は市場単価項目にも流用しない");
 coverage = engine.classifyPresetCoverage({ label: "2-1-1 機械ボーリング", serviceType: "geologyGeneral", verificationStatus: "source-table-crosschecked" });
 assert.strictEqual(coverage.status, "market-rate-input", "原表照合済み地質一般を市場単価入力へ接続する");
 assert.strictEqual(coverage.canCalculate, true, "根拠付き市場単価方式で地質項目を計算できる");
 coverage = engine.classifyPresetCoverage({ label: "2-1-2 機械ボーリング", serviceType: "geologyGeneral", verificationStatus: "source-table-crosschecked" }, null, { adjustments: [{ type: "rate", rate: 0.1 }], parameterTables: [], formulas: [] });
-assert.strictEqual(coverage.status, "market-rate-input", "地質市場単価の補正条件は同じ画面で選択反映する");
-assert.strictEqual(coverage.canCalculate, true, "採用単価と根拠を必須にして地質一般を入力可能にする");
+assert.strictEqual(coverage.status, "incomplete-rule", "地質市場単価でも未構造化の補正条件があれば安全停止する");
+assert.strictEqual(coverage.canCalculate, false, "採用単価だけで条件表を省略しない");
 
 const detailed = baseState();
 detailed.additionalCosts = [

@@ -99,6 +99,8 @@ assert.ok(app.includes("renderSurveyConditionFields") && app.includes("surveyPre
 assert.ok(app.includes("showMissingInputPopup") && app.includes("focusSelector") && app.includes("missing-input-focus") && !app.includes('$("addItemButton").disabled = !validation.valid'), "測量の追加ボタンを押した時に不足項目を表示して該当欄へ移動する");
 assert.ok(app.includes("defaultConditionMemory") && app.includes("normalizedConditionMemory") && app.includes('survey: { values: {} }'), "4業務別の条件継承メモリーを案件内へ保存する");
 assert.ok(app.includes("data-condition-label") && app.includes("applySurveyConditionMemory") && app.includes("rememberSurveyConditionSelections"), "測量は率ではなく条件名を記憶し、次の対応項目へ継承する");
+assert.ok(app.includes("survey-rule-matrix") && app.includes("line-rule-matrix") && app.includes("matrixRuleRate"), "路線横断測量の測量幅×測点間隔を追加前・追加後とも編集できる");
+assert.ok(app.includes("migrateSurveyLineToMaster") && app.includes("correctionRate: num(line.correctionRate)") && app.includes("sameCondition ? line.conditionValue"), "年度・単価マスター切替時も手動補正と互換条件を保持する");
 assert.ok(app.includes("defaultWorkflowState") && app.includes("normalizedWorkflowState") && app.includes("getWorkflowState"), "案件内の年度・作業選択・PDF絞込み状態を復元できる");
 assert.ok(!html.includes("consulting-condition-check") && !html.includes("表示した適用範囲、条件表、補正式を確認し") && !consulting.includes("consultingConditionsConfirmed"), "4業務で形式的な確認チェックを使わない");
 assert.ok(!html.includes('id="regulationGroupSelect"'), "測量の最初の選択を編番号プルダウンへ戻さない");
@@ -196,4 +198,4 @@ assert.ok(app.includes('conditionMemory("survey").values[valueKey] = line.condit
 console.log("OK: UI static wiring checks passed");
 assert.ok(html.includes('data/unit-catalog.js') && html.indexOf('data/unit-catalog.js') < html.indexOf('engine.js'), "共通単位台帳を全計算エンジンより先に読み込む");
 assert.ok(!html.includes('id="itemCountBadge"') && !app.includes("項目収録`"), "測量を含む4業務の項目件数バッジを表示しない");
-assert.ok(html.includes('app.js?v=20260829-4') && html.includes('consulting.js?v=20260829-2') && html.includes('consulting-engine.js?v=20260829-1') && html.includes('document-import-engine.js?v=20260829-2') && html.includes('document-import.js?v=20260829-3') && html.includes('styles.css?v=20260831-1'), "キーワード専用選択・PDF選択解除・手動調整安全化・業務名自動入力資産をキャッシュ更新する");
+assert.ok(html.includes('app.js?v=20260831-1') && html.includes('consulting.js?v=20260829-2') && html.includes('consulting-engine.js?v=20260831-1') && html.includes('document-import-engine.js?v=20260829-2') && html.includes('document-import.js?v=20260829-3') && html.includes('styles.css?v=20260831-2') && html.includes('national-standard-masters.js?v=20260831-1') && html.includes('consulting-condition-rules.js?v=20260831-1'), "測量条件表・年度切替継承・4業務安全判定の資産をキャッシュ更新する");
